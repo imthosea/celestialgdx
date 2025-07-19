@@ -1,0 +1,103 @@
+/*******************************************************************************
+ * Copyright 2011 See AUTHORS file.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+import org.gradle.internal.os.OperatingSystem
+
+sourceSets {
+	generator {
+		java {
+			srcDir 'generator'
+		}
+		resources {
+			srcDir 'generator'
+		}
+	}
+	main {
+		java {
+			srcDir 'src'
+		}
+		resources {
+			srcDir 'res'
+		}
+	}
+}
+configurations {
+	generatorCompile.extendsFrom testCompile
+	generatorRuntime.extendsFrom testRuntime
+}
+
+configurations { generator }
+
+dependencies {
+	api libraries.robovm
+	generatorImplementation 'com.github.javaparser:javaparser-core:3.24.2'
+}
+
+tasks.register('generate', JavaExec) {
+	dependsOn configurations.generator
+
+	mainClass = 'JavaCodeGenerator'
+	classpath = sourceSets.generator.runtimeClasspath
+
+	inputs.dir '../gdx-backend-robovm/src/'
+	outputs.dir 'src/'
+}
+
+tasks.register('fetchMetalANGLEKit', Download) {
+	doFirst {
+		file("build/tmp").mkdirs();
+	}
+	src 'https://github.com/libgdx/MetalANGLEKit/releases/download/v1.2/metalanglekit.zip'
+	dest 'build/tmp/MetalANGLEKit.zip'
+	onlyIfModified true
+	useETag "all"
+}
+
+tasks.register('verifyMetalANGLEKit', Verify) {
+	dependsOn fetchMetalANGLEKit
+	src 'build/tmp/MetalANGLEKit.zip'
+	algorithm 'SHA-256'
+	checksum '91f2b78208a1d8f59c28e2dc4a2d2a122a2cb2e61dcb853baa339386e6faf4a0'
+}
+
+tasks.register('extractMetalANGLEKit', Copy) {
+	dependsOn verifyMetalANGLEKit
+
+	doFirst {
+		delete("res/META-INF/robovm/ios/libs/")
+		delete("res/META-INF/robovm/ios/libs/")
+		file("res/META-INF/robovm/ios/libs").mkdirs();
+	}
+	from zipTree('build/tmp/MetalANGLEKit.zip')
+	into 'res/META-INF/robovm/ios/libs/'
+}
+
+tasks.register('jnigenBuildIOS') {
+	dependsOn extractMetalANGLEKit
+}
+
+tasks.register('jnigenBuild') {
+}
+
+//Dummy task to make compatible with publish
+tasks.register('jnigen') {
+}
+
+if(OperatingSystem.current() == OperatingSystem.MAC_OS) {
+	jnigenBuild.dependsOn jnigenBuildIOS
+}
+
+processResources.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+sourcesJar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
