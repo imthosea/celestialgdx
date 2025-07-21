@@ -16,30 +16,27 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.nio.IntBuffer;
-
 import com.badlogic.gdx.AbstractGraphics;
 import com.badlogic.gdx.Application;
-
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
-
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.GL31;
 import com.badlogic.gdx.graphics.GL32;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.Configuration;
+
+import java.nio.IntBuffer;
 
 public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	final Lwjgl3Window window;
@@ -73,20 +70,16 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	GLFWFramebufferSizeCallback resizeCallback = new GLFWFramebufferSizeCallback() {
 		@Override
 		public void invoke (long windowHandle, final int width, final int height) {
-			if (!"glfw_async".equals(Configuration.GLFW_LIBRARY_NAME.get())) {
-				updateFramebufferInfo();
-				if (!window.isListenerInitialized()) {
-					return;
-				}
-				window.makeCurrent();
-				gl20.glViewport(0, 0, backBufferWidth, backBufferHeight);
-				window.getListener().resize(getWidth(), getHeight());
-				update();
-				window.getListener().render();
-				GLFW.glfwSwapBuffers(windowHandle);
-			} else {
-				window.asyncResized = true;
+			updateFramebufferInfo();
+			if (!window.isListenerInitialized()) {
+				return;
 			}
+			window.makeCurrent();
+			gl20.glViewport(0, 0, backBufferWidth, backBufferHeight);
+			window.getListener().resize(getWidth(), getHeight());
+			update();
+			window.getListener().render();
+			GLFW.glfwSwapBuffers(windowHandle);
 		}
 	};
 
