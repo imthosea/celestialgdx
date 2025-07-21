@@ -1,19 +1,8 @@
 configure([
-	project(":gdx"),
-	project(":backends:gdx-backend-android"),
-	project(":backends:gdx-backend-headless"),
-	project(":backends:gdx-backend-lwjgl"),
-	project(":backends:gdx-backend-lwjgl3"),
-	project(":backends:gdx-backend-robovm"),
-	project(":backends:gdx-backend-robovm-metalangle"),
-	project(":backends:gdx-backend-gwt"),
-	project(":extensions:gdx-box2d-parent"),
-	project(":extensions:gdx-box2d-parent:gdx-box2d"),
-	project(":extensions:gdx-box2d-parent:gdx-box2d-gwt"),
-	project(":extensions:gdx-bullet"),
-	project(":extensions:gdx-freetype"),
-	project(":extensions:gdx-lwjgl3-angle"),
-	project(":extensions:gdx-tools")
+		project(":gdx"),
+		project(":backends:gdx-backend-lwjgl3"),
+		project(":extensions:gdx-freetype"),
+		project(":extensions:gdx-lwjgl3-angle")
 ]) {
 	apply plugin: 'maven-publish'
 	apply plugin: 'signing'
@@ -27,12 +16,6 @@ configure([
 						//Most normal java projects
 						if(components.findByName("java") != null)
 							from components.java
-
-						//Android
-						if(components.findByName("release") != null) {
-							from components.release
-						}
-
 
 						pom {
 							name = POM_NAME
@@ -67,10 +50,10 @@ configure([
 								artifact jnigenJarNativesDesktop { }
 
 							[
-								'arm64-v8a',
-								'armeabi-v7a',
-								'x86_64',
-								'x86'
+									'arm64-v8a',
+									'armeabi-v7a',
+									'x86_64',
+									'x86'
 							].each { id ->
 								if(project.tasks.findByName("jnigenJarNativesAndroid${id}"))
 									artifact "jnigenJarNativesAndroid${id}" { }
@@ -109,17 +92,9 @@ configure([
 
 				repositories {
 					maven {
-						url = version.endsWith('SNAPSHOT')
-								? getSnapshotRepositoryUrl()
-								// If release build, dump artifacts to local build/staging-deploy folder for consumption by jreleaser below
-								: rootProject.layout.buildDirectory.dir('staging-deploy')
-
-						if (version.endsWith('SNAPSHOT') && (getRepositoryUsername() || getRepositoryPassword())) {
-							credentials {
-								username = getRepositoryUsername()
-								password = getRepositoryPassword()
-							}
-						}
+						name = "teamCelestialPublic"
+						url = "https://maven.teamcelestial.org/public"
+						credentials(PasswordCredentials)
 					}
 				}
 			}
