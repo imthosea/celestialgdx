@@ -26,6 +26,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.GLEmulation;
+import com.badlogic.gdx.backends.lwjgl3.angle.ANGLELoader;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Array;
@@ -85,11 +86,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 
 	static void loadANGLE () {
 		try {
-			Class angleLoader = Class.forName("com.badlogic.gdx.backends.lwjgl3.angle.ANGLELoader");
-			Method load = angleLoader.getMethod("load");
-			load.invoke(angleLoader);
-		} catch (ClassNotFoundException t) {
-			return;
+			ANGLELoader.load();
 		} catch (Throwable t) {
 			throw new GdxRuntimeException("Couldn't load ANGLE.", t);
 		}
@@ -97,11 +94,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 
 	static void postLoadANGLE () {
 		try {
-			Class angleLoader = Class.forName("com.badlogic.gdx.backends.lwjgl3.angle.ANGLELoader");
-			Method load = angleLoader.getMethod("postGlfwInit");
-			load.invoke(angleLoader);
-		} catch (ClassNotFoundException t) {
-			return;
+			ANGLELoader.postGlfwInit();
 		} catch (Throwable t) {
 			throw new GdxRuntimeException("Couldn't load ANGLE.", t);
 		}
