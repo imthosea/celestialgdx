@@ -25,6 +25,7 @@ targetCompatibility = versions.java
 dependencies {
 	api libraries.lwjgl3
 	api gdxnatives.desktop
+	api project(":extensions:gdx-lwjgl3-angle")
 }
 
 
