@@ -16,10 +16,16 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.nio.IntBuffer;
-
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.LifecycleListener;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWDropCallback;
@@ -30,10 +36,7 @@ import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 import org.lwjgl.glfw.GLFWWindowMaximizeCallback;
 import org.lwjgl.glfw.GLFWWindowRefreshCallback;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
+import java.nio.IntBuffer;
 
 public class Lwjgl3Window implements Disposable {
 	private long windowHandle;
@@ -51,7 +54,6 @@ public class Lwjgl3Window implements Disposable {
 	private final IntBuffer tmpBuffer2;
 	boolean iconified = false;
 	boolean focused = false;
-	boolean asyncResized = false;
 	private boolean requestRendering = false;
 
 	private final GLFWWindowFocusCallback focusCallback = new GLFWWindowFocusCallback() {
@@ -416,18 +418,6 @@ public class Lwjgl3Window implements Disposable {
 		synchronized (this) {
 			shouldRender |= requestRendering && !iconified;
 			requestRendering = false;
-		}
-
-		// In case glfw_async is used, we need to resize outside the GLFW
-		if (asyncResized) {
-			asyncResized = false;
-			graphics.updateFramebufferInfo();
-			graphics.gl20.glViewport(0, 0, graphics.getBackBufferWidth(), graphics.getBackBufferHeight());
-			listener.resize(graphics.getWidth(), graphics.getHeight());
-			graphics.update();
-			listener.render();
-			GLFW.glfwSwapBuffers(windowHandle);
-			return true;
 		}
 
 		if (shouldRender) {

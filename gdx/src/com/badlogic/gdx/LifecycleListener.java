@@ -27,12 +27,6 @@ package com.badlogic.gdx;
  * 
  * @author mzechner */
 public interface LifecycleListener {
-	/** Called when the {@link Application} is about to pause */
-	public void pause ();
-
-	/** Called when the Application is about to be resumed */
-	public void resume ();
-
 	/** Called when the {@link Application} is about to be disposed */
 	public void dispose ();
 }
