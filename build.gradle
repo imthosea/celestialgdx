@@ -53,7 +53,7 @@ ext {
 }
 
 allprojects {
-	group = 'com.badlogicgames.gdx'
+	group = 'me.thosea.celestialgdx'
 	version = project.getProperty('version') + (isReleaseBuild() ? "" : "-SNAPSHOT")
 
 	buildscript {
@@ -88,7 +88,7 @@ allprojects {
 		systemProperty 'file.encoding', 'UTF-8'
 	}
 
-	if (JavaVersion.current().isJava8Compatible()) {
+	if(JavaVersion.current().isJava8Compatible()) {
 		tasks.withType(Javadoc) {
 			options.addStringOption('Xdoclint:none,-missing', '-quiet')
 		}
@@ -111,7 +111,7 @@ allprojects {
 	}
 }
 
-configure(subprojects - project(":tests:gdx-tests-android") - project(":backends:gdx-backend-android")) {
+subprojects {
 	apply plugin: "java-library"
 
 	compileJava {
@@ -125,7 +125,7 @@ configure(subprojects - project(":tests:gdx-tests-android") - project(":backends
 	}
 }
 
-configure(subprojects - project(":backends") - project(":extensions") - project(":tests") - project(":extensions:gdx-box2d-parent")) {
+configure(subprojects - project(":backends") - project(":extensions")) {
 	apply plugin: "idea"
 	apply plugin: "eclipse"
 
