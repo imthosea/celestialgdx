@@ -36,14 +36,6 @@ public class ScreenAdapter implements Screen {
 	}
 
 	@Override
-	public void pause () {
-	}
-
-	@Override
-	public void resume () {
-	}
-
-	@Override
 	public void dispose () {
 	}
 }

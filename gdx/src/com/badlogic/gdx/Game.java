@@ -34,16 +34,6 @@ public abstract class Game implements ApplicationListener {
 	}
 
 	@Override
-	public void pause () {
-		if (screen != null) screen.pause();
-	}
-
-	@Override
-	public void resume () {
-		if (screen != null) screen.resume();
-	}
-
-	@Override
 	public void render () {
 		if (screen != null) screen.render(Gdx.graphics.getDeltaTime());
 	}

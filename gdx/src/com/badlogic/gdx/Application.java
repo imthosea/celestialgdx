@@ -114,17 +114,11 @@ public interface Application {
 	/** @return the {@link Graphics} instance */
 	public Graphics getGraphics ();
 
-	/** @return the {@link Audio} instance */
-	public Audio getAudio ();
-
 	/** @return the {@link Input} instance */
 	public Input getInput ();
 
 	/** @return the {@link Files} instance */
 	public Files getFiles ();
-
-	/** @return the {@link Net} instance */
-	public Net getNet ();
 
 	/** Logs a message to the console or logcat */
 	public void log (String tag, String message);
