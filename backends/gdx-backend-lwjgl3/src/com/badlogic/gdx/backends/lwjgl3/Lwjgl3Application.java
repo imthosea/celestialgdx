@@ -19,18 +19,13 @@ package com.badlogic.gdx.backends.lwjgl3;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ApplicationLogger;
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.LifecycleListener;
-import com.badlogic.gdx.Net;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.GLEmulation;
-import com.badlogic.gdx.backends.lwjgl3.audio.Lwjgl3Audio;
-import com.badlogic.gdx.backends.lwjgl3.audio.OpenALLwjgl3Audio;
-import com.badlogic.gdx.backends.lwjgl3.audio.mock.MockAudio;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Array;
@@ -60,9 +55,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	private final Lwjgl3ApplicationConfiguration config;
 	final Array<Lwjgl3Window> windows = new Array<Lwjgl3Window>();
 	private volatile Lwjgl3Window currentWindow;
-	private Lwjgl3Audio audio;
 	private final Files files;
-	private final Net net;
 	private final ObjectMap<String, Preferences> preferences = new ObjectMap<String, Preferences>();
 	private final Lwjgl3Clipboard clipboard;
 	private int logLevel = LOG_INFO;
@@ -127,19 +120,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		if (config.title == null) config.title = listener.getClass().getSimpleName();
 
 		Gdx.app = this;
-		if (!config.disableAudio) {
-			try {
-				this.audio = createAudio(config);
-			} catch (Throwable t) {
-				log("Lwjgl3Application", "Couldn't initialize audio, disabling audio", t);
-				this.audio = new MockAudio();
-			}
-		} else {
-			this.audio = new MockAudio();
-		}
-		Gdx.audio = audio;
 		this.files = Gdx.files = createFiles();
-		this.net = Gdx.net = new Lwjgl3Net(config);
 		this.clipboard = new Lwjgl3Clipboard();
 
 		this.sync = new Sync();
@@ -163,9 +144,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	protected void loop () {
 		Array<Lwjgl3Window> closedWindows = new Array<Lwjgl3Window>();
 		while (running && windows.size > 0) {
-			// FIXME put it on a separate thread
-			audio.update();
-
 			closedWindows.clear();
 			int targetFramerate = -2;
 			for (Lwjgl3Window window : windows) {
@@ -228,7 +206,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 
 	protected void cleanup () {
 		Lwjgl3Cursor.disposeSystemCursors();
-		audio.dispose();
 		errorCallback.free();
 		errorCallback = null;
 		if (glDebugCallback != null) {
@@ -249,11 +226,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	}
 
 	@Override
-	public Audio getAudio () {
-		return audio;
-	}
-
-	@Override
 	public Input getInput () {
 		return currentWindow.getInput();
 	}
@@ -261,11 +233,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	@Override
 	public Files getFiles () {
 		return files;
-	}
-
-	@Override
-	public Net getNet () {
-		return net;
 	}
 
 	@Override
@@ -379,12 +346,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		synchronized (lifecycleListeners) {
 			lifecycleListeners.removeValue(listener, true);
 		}
-	}
-
-	@Override
-	public Lwjgl3Audio createAudio (Lwjgl3ApplicationConfiguration config) {
-		return new OpenALLwjgl3Audio(config.audioDeviceSimultaneousSources, config.audioDeviceBufferCount,
-			config.audioDeviceBufferSize);
 	}
 
 	@Override

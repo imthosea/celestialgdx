@@ -32,14 +32,6 @@ public abstract class ApplicationAdapter implements ApplicationListener {
 	}
 
 	@Override
-	public void pause () {
-	}
-
-	@Override
-	public void resume () {
-	}
-
-	@Override
 	public void dispose () {
 	}
 }

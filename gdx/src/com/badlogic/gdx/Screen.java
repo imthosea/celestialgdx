@@ -38,12 +38,6 @@ public interface Screen extends Disposable {
 	/** @see ApplicationListener#resize(int, int) */
 	public void resize (int width, int height);
 
-	/** @see ApplicationListener#pause() */
-	public void pause ();
-
-	/** @see ApplicationListener#resume() */
-	public void resume ();
-
 	/** Called when this screen is no longer the current screen for a {@link Game}. */
 	public void hide ();
 

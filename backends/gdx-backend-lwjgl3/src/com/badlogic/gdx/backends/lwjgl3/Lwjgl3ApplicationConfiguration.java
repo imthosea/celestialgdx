@@ -16,13 +16,11 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics.Lwjgl3Monitor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
@@ -39,15 +37,6 @@ import java.nio.IntBuffer;
 
 public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	public static PrintStream errorStream = System.err;
-
-	boolean disableAudio = false;
-
-	/** The maximum number of threads to use for network requests. Default is {@link Integer#MAX_VALUE}. */
-	int maxNetThreads = Integer.MAX_VALUE;
-
-	int audioDeviceSimultaneousSources = 16;
-	int audioDeviceBufferSize = 512;
-	int audioDeviceBufferCount = 9;
 
 	public enum GLEmulation {
 		ANGLE_GLES20, GL20, GL30, GL31, GL32
@@ -81,10 +70,6 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 
 	void set (Lwjgl3ApplicationConfiguration config) {
 		super.setWindowConfiguration(config);
-		disableAudio = config.disableAudio;
-		audioDeviceSimultaneousSources = config.audioDeviceSimultaneousSources;
-		audioDeviceBufferSize = config.audioDeviceBufferSize;
-		audioDeviceBufferCount = config.audioDeviceBufferCount;
 		glEmulation = config.glEmulation;
 		gles30ContextMajorVersion = config.gles30ContextMajorVersion;
 		gles30ContextMinorVersion = config.gles30ContextMinorVersion;
@@ -110,28 +95,6 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 		this.initialVisible = visibility;
 	}
 
-	/** Whether to disable audio or not. If set to true, the returned audio class instances like {@link Audio} or {@link Music}
-	 * will be mock implementations. */
-	public void disableAudio (boolean disableAudio) {
-		this.disableAudio = disableAudio;
-	}
-
-	/** Sets the maximum number of threads to use for network requests. */
-	public void setMaxNetThreads (int maxNetThreads) {
-		this.maxNetThreads = maxNetThreads;
-	}
-
-	/** Sets the audio device configuration.
-	 * 
-	 * @param simultaneousSources the maximum number of sources that can be played simultaniously (default 16)
-	 * @param bufferSize the audio device buffer size in samples (default 512)
-	 * @param bufferCount the audio device buffer count (default 9) */
-	public void setAudioConfig (int simultaneousSources, int bufferSize, int bufferCount) {
-		this.audioDeviceSimultaneousSources = simultaneousSources;
-		this.audioDeviceBufferSize = bufferSize;
-		this.audioDeviceBufferCount = bufferCount;
-	}
-
 	/** Sets which OpenGL version to use to emulate OpenGL ES. If the given major/minor version is not supported, the backend falls
 	 * back to OpenGL ES 2.0 emulation through OpenGL 2.0. The default parameters for major and minor should be 3 and 2
 	 * respectively to be compatible with Mac OS X. Specifying major version 4 and minor version 2 will ensure that all OpenGL ES
@@ -142,7 +105,7 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	 * @param glVersion which OpenGL ES emulation version to use
 	 * @param gles3MajorVersion OpenGL ES major version, use 3 as default
 	 * @param gles3MinorVersion OpenGL ES minor version, use 2 as default */
-	public void setOpenGLEmulation (GLEmulation glVersion, int gles3MajorVersion, int gles3MinorVersion) {
+	public void setOpenGLEmulation (Lwjgl3ApplicationConfiguration.GLEmulation glVersion, int gles3MajorVersion, int gles3MinorVersion) {
 		this.glEmulation = glVersion;
 		this.gles30ContextMajorVersion = gles3MajorVersion;
 		this.gles30ContextMinorVersion = gles3MinorVersion;
