@@ -16,11 +16,9 @@
 
 package com.badlogic.gdx.scenes.scene2d.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -238,10 +236,6 @@ public class Button extends Table implements Disableable, Styleable<Button.Butto
 			for (int i = 0; i < children.size; i++)
 				children.get(i).moveBy(-offsetX, -offsetY);
 		}
-
-		Stage stage = getStage();
-		if (stage != null && stage.getActionsRequestRendering() && isPressed() != clickListener.isPressed())
-			Gdx.graphics.requestRendering();
 	}
 
 	public float getPrefWidth () {

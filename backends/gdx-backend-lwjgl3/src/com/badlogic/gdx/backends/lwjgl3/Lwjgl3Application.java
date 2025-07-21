@@ -16,17 +16,29 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.nio.IntBuffer;
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ApplicationLogger;
+import com.badlogic.gdx.Audio;
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.LifecycleListener;
+import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.GLEmulation;
 import com.badlogic.gdx.backends.lwjgl3.audio.Lwjgl3Audio;
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALLwjgl3Audio;
+import com.badlogic.gdx.backends.lwjgl3.audio.mock.MockAudio;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
-
-import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Clipboard;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.Os;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.AMDDebugOutput;
@@ -39,23 +51,10 @@ import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.opengl.KHRDebug;
 import org.lwjgl.system.Callback;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Audio;
-import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.LifecycleListener;
-import com.badlogic.gdx.Net;
-import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.backends.lwjgl3.audio.mock.MockAudio;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Clipboard;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
+import java.io.File;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.nio.IntBuffer;
 
 public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	private final Lwjgl3ApplicationConfiguration config;
@@ -167,7 +166,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 			// FIXME put it on a separate thread
 			audio.update();
 
-			boolean haveWindowsRendered = false;
 			closedWindows.clear();
 			int targetFramerate = -2;
 			for (Lwjgl3Window window : windows) {
@@ -177,7 +175,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 				}
 				if (targetFramerate == -2) targetFramerate = window.getConfig().foregroundFPS;
 				synchronized (lifecycleListeners) {
-					haveWindowsRendered |= window.update();
+					window.update();
 				}
 				if (window.shouldClose()) {
 					closedWindows.add(window);
@@ -185,22 +183,13 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 			}
 			GLFW.glfwPollEvents();
 
-			boolean shouldRequestRendering;
 			synchronized (runnables) {
-				shouldRequestRendering = runnables.size > 0;
 				executedRunnables.clear();
 				executedRunnables.addAll(runnables);
 				runnables.clear();
 			}
 			for (Runnable runnable : executedRunnables) {
 				runnable.run();
-			}
-			if (shouldRequestRendering) {
-				// Must follow Runnables execution so changes done by Runnables are reflected
-				// in the following render.
-				for (Lwjgl3Window window : windows) {
-					if (!window.getGraphics().isContinuousRendering()) window.requestRendering();
-				}
 			}
 
 			for (Lwjgl3Window closedWindow : closedWindows) {
@@ -210,7 +199,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 					// when there is only 1 window left, which is in the process of being disposed.
 					for (int i = lifecycleListeners.size - 1; i >= 0; i--) {
 						LifecycleListener l = lifecycleListeners.get(i);
-						l.pause();
 						l.dispose();
 					}
 					lifecycleListeners.clear();
@@ -220,15 +208,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 				windows.removeValue(closedWindow, false);
 			}
 
-			if (!haveWindowsRendered) {
-				// Sleep a few milliseconds in case no rendering was requested
-				// with continuous rendering disabled.
-				try {
-					Thread.sleep(1000 / config.idleFPS);
-				} catch (InterruptedException e) {
-					// ignore
-				}
-			} else if (targetFramerate > 0) {
+			if (targetFramerate > 0) {
 				sync.sync(targetFramerate); // sleep as needed to meet the target framerate
 			}
 		}
@@ -237,7 +217,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	protected void cleanupWindows () {
 		synchronized (lifecycleListeners) {
 			for (LifecycleListener lifecycleListener : lifecycleListeners) {
-				lifecycleListener.pause();
 				lifecycleListener.dispose();
 			}
 		}

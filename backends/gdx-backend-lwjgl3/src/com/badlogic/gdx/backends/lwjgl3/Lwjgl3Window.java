@@ -34,7 +34,6 @@ import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 import org.lwjgl.glfw.GLFWWindowMaximizeCallback;
-import org.lwjgl.glfw.GLFWWindowRefreshCallback;
 
 import java.nio.IntBuffer;
 
@@ -54,7 +53,6 @@ public class Lwjgl3Window implements Disposable {
 	private final IntBuffer tmpBuffer2;
 	boolean iconified = false;
 	boolean focused = false;
-	private boolean requestRendering = false;
 
 	private final GLFWWindowFocusCallback focusCallback = new GLFWWindowFocusCallback() {
 		@Override
@@ -63,28 +61,12 @@ public class Lwjgl3Window implements Disposable {
 				@Override
 				public void run () {
 					if (focused) {
-						if (config.pauseWhenLostFocus) {
-							synchronized (lifecycleListeners) {
-								for (LifecycleListener lifecycleListener : lifecycleListeners) {
-									lifecycleListener.resume();
-								}
-							}
-							listener.resume();
-						}
 						if (windowListener != null) {
 							windowListener.focusGained();
 						}
 					} else {
 						if (windowListener != null) {
 							windowListener.focusLost();
-						}
-						if (config.pauseWhenLostFocus) {
-							synchronized (lifecycleListeners) {
-								for (LifecycleListener lifecycleListener : lifecycleListeners) {
-									lifecycleListener.pause();
-								}
-							}
-							listener.pause();
 						}
 					}
 					Lwjgl3Window.this.focused = focused;
@@ -103,25 +85,6 @@ public class Lwjgl3Window implements Disposable {
 						windowListener.iconified(iconified);
 					}
 					Lwjgl3Window.this.iconified = iconified;
-					if (iconified) {
-						if (config.pauseWhenMinimized) {
-							synchronized (lifecycleListeners) {
-								for (LifecycleListener lifecycleListener : lifecycleListeners) {
-									lifecycleListener.pause();
-								}
-							}
-							listener.pause();
-						}
-					} else {
-						if (config.pauseWhenMinimized) {
-							synchronized (lifecycleListeners) {
-								for (LifecycleListener lifecycleListener : lifecycleListeners) {
-									lifecycleListener.resume();
-								}
-							}
-							listener.resume();
-						}
-					}
 				}
 			});
 		}
@@ -176,20 +139,6 @@ public class Lwjgl3Window implements Disposable {
 		}
 	};
 
-	private final GLFWWindowRefreshCallback refreshCallback = new GLFWWindowRefreshCallback() {
-		@Override
-		public void invoke (long windowHandle) {
-			postRunnable(new Runnable() {
-				@Override
-				public void run () {
-					if (windowListener != null) {
-						windowListener.refreshRequested();
-					}
-				}
-			});
-		}
-	};
-
 	Lwjgl3Window (ApplicationListener listener, Array<LifecycleListener> lifecycleListeners, Lwjgl3ApplicationConfiguration config,
 		Lwjgl3ApplicationBase application) {
 		this.listener = listener;
@@ -211,7 +160,6 @@ public class Lwjgl3Window implements Disposable {
 		GLFW.glfwSetWindowMaximizeCallback(windowHandle, maximizeCallback);
 		GLFW.glfwSetWindowCloseCallback(windowHandle, closeCallback);
 		GLFW.glfwSetDropCallback(windowHandle, dropCallback);
-		GLFW.glfwSetWindowRefreshCallback(windowHandle, refreshCallback);
 
 		if (windowListener != null) {
 			windowListener.created(this);
@@ -399,7 +347,7 @@ public class Lwjgl3Window implements Disposable {
 		input.windowHandleChanged(windowHandle);
 	}
 
-	boolean update () {
+	void update () {
 		if (!listenerInitialized) {
 			initializeListener();
 		}
@@ -410,31 +358,15 @@ public class Lwjgl3Window implements Disposable {
 		for (Runnable runnable : executedRunnables) {
 			runnable.run();
 		}
-		boolean shouldRender = executedRunnables.size > 0 || graphics.isContinuousRendering();
 		executedRunnables.clear();
 
 		if (!iconified) input.update();
 
-		synchronized (this) {
-			shouldRender |= requestRendering && !iconified;
-			requestRendering = false;
-		}
-
-		if (shouldRender) {
-			graphics.update();
-			listener.render();
-			GLFW.glfwSwapBuffers(windowHandle);
-		}
+		graphics.update();
+		listener.render();
+		GLFW.glfwSwapBuffers(windowHandle);
 
 		if (!iconified) input.prepareNext();
-
-		return shouldRender;
-	}
-
-	void requestRendering () {
-		synchronized (this) {
-			this.requestRendering = true;
-		}
 	}
 
 	boolean shouldClose () {
@@ -471,7 +403,6 @@ public class Lwjgl3Window implements Disposable {
 
 	@Override
 	public void dispose () {
-		listener.pause();
 		listener.dispose();
 		Lwjgl3Cursor.dispose(this);
 		graphics.dispose();
@@ -487,7 +418,6 @@ public class Lwjgl3Window implements Disposable {
 		maximizeCallback.free();
 		closeCallback.free();
 		dropCallback.free();
-		refreshCallback.free();
 	}
 
 	@Override

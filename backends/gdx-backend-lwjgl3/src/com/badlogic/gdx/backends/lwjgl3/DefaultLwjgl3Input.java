@@ -16,6 +16,11 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
+import com.badlogic.gdx.AbstractInput;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputEventQueue;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.badlogic.gdx.input.NativeInputConfiguration;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
@@ -23,12 +28,6 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
-
-import com.badlogic.gdx.AbstractInput;
-import com.badlogic.gdx.graphics.glutils.HdpiMode;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputEventQueue;
-import com.badlogic.gdx.InputProcessor;
 
 public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 	final Lwjgl3Window window;
@@ -54,7 +53,6 @@ public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 		public void invoke (long window, int codepoint) {
 			if ((codepoint & 0xff00) == 0xf700) return;
 			lastCharacter = (char)codepoint;
-			DefaultLwjgl3Input.this.window.getGraphics().requestRendering();
 			eventQueue.keyTyped((char)codepoint, System.nanoTime());
 		}
 	};
@@ -62,7 +60,6 @@ public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 	private GLFWScrollCallback scrollCallback = new GLFWScrollCallback() {
 		@Override
 		public void invoke (long window, double scrollX, double scrollY) {
-			DefaultLwjgl3Input.this.window.getGraphics().requestRendering();
 			eventQueue.scrolled(-(float)scrollX, -(float)scrollY, System.nanoTime());
 		}
 	};
@@ -87,7 +84,6 @@ public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 				mouseY = (int)(mouseY * yScale);
 			}
 
-			DefaultLwjgl3Input.this.window.getGraphics().requestRendering();
 			long time = System.nanoTime();
 			if (mousePressed > 0) {
 				eventQueue.touchDragged(mouseX, mouseY, 0, time);
@@ -108,11 +104,9 @@ public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 				mousePressed++;
 				justTouched = true;
 				justPressedButtons[gdxButton] = true;
-				DefaultLwjgl3Input.this.window.getGraphics().requestRendering();
 				eventQueue.touchDown(mouseX, mouseY, 0, gdxButton, time);
 			} else {
 				mousePressed = Math.max(0, mousePressed - 1);
-				DefaultLwjgl3Input.this.window.getGraphics().requestRendering();
 				eventQueue.touchUp(mouseX, mouseY, 0, gdxButton, time);
 			}
 		}
@@ -141,7 +135,6 @@ public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 			keyJustPressed = true;
 			pressedKeys[key] = true;
 			justPressedKeys[key] = true;
-			DefaultLwjgl3Input.this.window.getGraphics().requestRendering();
 			lastCharacter = 0;
 			char character = characterForKeyCode(key);
 			if (character != 0) charCallback.invoke(window, character);
@@ -150,12 +143,10 @@ public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 			key = getGdxKeyCode(key);
 			pressedKeyCount--;
 			pressedKeys[key] = false;
-			DefaultLwjgl3Input.this.window.getGraphics().requestRendering();
 			eventQueue.keyUp(key, System.nanoTime());
 			break;
 		case GLFW.GLFW_REPEAT:
 			if (lastCharacter != 0) {
-				DefaultLwjgl3Input.this.window.getGraphics().requestRendering();
 				eventQueue.keyTyped(lastCharacter, System.nanoTime());
 			}
 			break;

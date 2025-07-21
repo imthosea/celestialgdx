@@ -64,9 +64,4 @@ public interface Lwjgl3WindowListener {
 	 * 
 	 * @param files array with absolute paths to the files */
 	void filesDropped (String[] files);
-
-	/** Called when the window content is damaged and needs to be refreshed. When this occurs,
-	 * {@link Lwjgl3Graphics#requestRendering()} is automatically called. */
-	void refreshRequested ();
-
 }
