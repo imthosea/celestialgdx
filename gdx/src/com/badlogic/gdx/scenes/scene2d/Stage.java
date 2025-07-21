@@ -79,7 +79,6 @@ public class Stage extends InputAdapter implements Disposable {
 	private @Null Actor mouseOverActor;
 	private @Null Actor keyboardFocus, scrollFocus;
 	final SnapshotArray<TouchFocus> touchFocuses = new SnapshotArray<>(true, 4, TouchFocus[]::new);
-	private boolean actionsRequestRendering = true;
 
 	private ShapeRenderer debugShapes;
 	private boolean debugInvisible, debugAll, debugUnderMouse, debugParentUnderMouse;
@@ -782,17 +781,6 @@ public class Stage extends InputAdapter implements Disposable {
 		else
 			transformMatrix = batch.getTransformMatrix();
 		viewport.calculateScissors(transformMatrix, localRect, scissorRect);
-	}
-
-	/** If true, any actions executed during a call to {@link #act()}) will result in a call to
-	 * {@link Graphics#requestRendering()}. Widgets that animate or otherwise require additional rendering may check this setting
-	 * before calling {@link Graphics#requestRendering()}. Default is true. */
-	public void setActionsRequestRendering (boolean actionsRequestRendering) {
-		this.actionsRequestRendering = actionsRequestRendering;
-	}
-
-	public boolean getActionsRequestRendering () {
-		return actionsRequestRendering;
 	}
 
 	/** The default color that can be used by actors to draw debug lines. */

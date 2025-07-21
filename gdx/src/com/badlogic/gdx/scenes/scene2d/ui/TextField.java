@@ -118,7 +118,6 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 				return;
 			}
 			cursorOn = !cursorOn;
-			Gdx.graphics.requestRendering();
 		}
 	};
 

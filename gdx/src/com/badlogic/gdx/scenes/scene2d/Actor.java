@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.scenes.scene2d;
 
-import static com.badlogic.gdx.utils.Align.*;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -35,6 +32,11 @@ import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
+
+import static com.badlogic.gdx.utils.Align.bottom;
+import static com.badlogic.gdx.utils.Align.left;
+import static com.badlogic.gdx.utils.Align.right;
+import static com.badlogic.gdx.utils.Align.top;
 
 /** 2D scene graph node. An actor has a position, rectangular size, origin, scale, rotation, Z index, and color. The position
  * corresponds to the unrotated, unscaled bottom left corner of the actor. The position is relative to the actor's parent. The
@@ -91,7 +93,6 @@ public class Actor {
 	public void act (float delta) {
 		Array<Action> actions = this.actions;
 		if (actions.size == 0) return;
-		if (stage != null && stage.getActionsRequestRendering()) Gdx.graphics.requestRendering();
 		try {
 			for (int i = 0; i < actions.size; i++) {
 				Action action = actions.get(i);
@@ -259,8 +260,6 @@ public class Actor {
 	public void addAction (Action action) {
 		action.setActor(this);
 		actions.add(action);
-
-		if (stage != null && stage.getActionsRequestRendering()) Gdx.graphics.requestRendering();
 	}
 
 	/** @param action May be null, in which case nothing is done. */

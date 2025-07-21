@@ -519,21 +519,6 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public void setContinuousRendering (boolean isContinuous) {
-		this.isContinuous = isContinuous;
-	}
-
-	@Override
-	public boolean isContinuousRendering () {
-		return isContinuous;
-	}
-
-	@Override
-	public void requestRendering () {
-		window.requestRendering();
-	}
-
-	@Override
 	public boolean isFullscreen () {
 		return GLFW.glfwGetWindowMonitor(window.getWindowHandle()) != 0;
 	}

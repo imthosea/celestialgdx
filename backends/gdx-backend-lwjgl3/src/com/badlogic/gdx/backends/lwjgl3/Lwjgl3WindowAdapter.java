@@ -33,8 +33,4 @@ public class Lwjgl3WindowAdapter implements Lwjgl3WindowListener {
 	@Override
 	public void filesDropped (String[] files) {
 	}
-
-	@Override
-	public void refreshRequested () {
-	}
 }

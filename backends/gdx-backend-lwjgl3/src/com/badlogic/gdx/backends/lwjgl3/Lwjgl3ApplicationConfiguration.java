@@ -16,17 +16,6 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.io.PrintStream;
-import java.nio.IntBuffer;
-
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.LifecycleListener;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWVidMode.Buffer;
-
 import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Files.FileType;
@@ -39,6 +28,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.GridPoint2;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWVidMode.Buffer;
+
+import java.io.PrintStream;
+import java.nio.IntBuffer;
 
 public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	public static PrintStream errorStream = System.err;
@@ -67,9 +64,6 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 
 	int idleFPS = 60;
 	int foregroundFPS = 0;
-
-	boolean pauseWhenMinimized = true;
-	boolean pauseWhenLostFocus = false;
 
 	String preferencesDirectory = ".prefs/";
 	Files.FileType preferencesFileType = FileType.External;
@@ -104,8 +98,6 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 		transparentFramebuffer = config.transparentFramebuffer;
 		idleFPS = config.idleFPS;
 		foregroundFPS = config.foregroundFPS;
-		pauseWhenMinimized = config.pauseWhenMinimized;
-		pauseWhenLostFocus = config.pauseWhenLostFocus;
 		preferencesDirectory = config.preferencesDirectory;
 		preferencesFileType = config.preferencesFileType;
 		hdpiMode = config.hdpiMode;
@@ -190,18 +182,6 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	 * 0. */
 	public void setForegroundFPS (int fps) {
 		this.foregroundFPS = fps;
-	}
-
-	/** Sets whether to pause the application {@link ApplicationListener#pause()} and fire
-	 * {@link LifecycleListener#pause()}/{@link LifecycleListener#resume()} events on when window is minimized/restored. **/
-	public void setPauseWhenMinimized (boolean pauseWhenMinimized) {
-		this.pauseWhenMinimized = pauseWhenMinimized;
-	}
-
-	/** Sets whether to pause the application {@link ApplicationListener#pause()} and fire
-	 * {@link LifecycleListener#pause()}/{@link LifecycleListener#resume()} events on when window loses/gains focus. **/
-	public void setPauseWhenLostFocus (boolean pauseWhenLostFocus) {
-		this.pauseWhenLostFocus = pauseWhenLostFocus;
 	}
 
 	/** Sets the directory where {@link Preferences} will be stored, as well as the file type to be used to store them. Defaults to
