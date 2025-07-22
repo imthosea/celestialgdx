@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.utils;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout.GlyphRun;
 import com.badlogic.gdx.math.Rectangle;
@@ -58,8 +57,6 @@ import com.badlogic.gdx.utils.DefaultPool.PoolSupplier;
  * @author Nathan Sweet */
 public class Pools {
 	static private final ObjectMap<Class<?>, Pool<?>> typePools = new ObjectMap<>();
-	static public boolean WARN_ON_REFLECTION_POOL_CREATION = true;
-	static public boolean THROW_ON_REFLECTION_POOL_CREATION = false;
 
 	static {
 		set(Array::new);
@@ -105,14 +102,10 @@ public class Pools {
 	/** Returns a new or existing pool for the specified type, stored in a Class to {@link Pool} map. Note the max size is ignored
 	 * if this is not the first time this pool has been requested. */
 	static public <T> Pool<T> get (Class<T> type, int max) {
-		Pool pool = typePools.get(type);
+		Pool<T> pool = (Pool<T>) typePools.get(type);
 		if (pool == null) {
-			if (THROW_ON_REFLECTION_POOL_CREATION) throw new RuntimeException(
+			throw new RuntimeException(
 					"Please manually define a Pool for " + type + " by calling Pools#set before calling Pools#get");
-			if (WARN_ON_REFLECTION_POOL_CREATION && Gdx.app != null) Gdx.app.error("Pools",
-					"Please manually define a Pool for " + type + " by calling Pools#set before calling Pools#get");
-			pool = new ReflectionPool(type, 4, max);
-			typePools.put(type, pool);
 		}
 		return pool;
 	}
