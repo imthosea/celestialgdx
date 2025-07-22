@@ -64,11 +64,6 @@ public interface InputProcessor {
 	 * @return whether the input was processed */
 	public boolean touchCancelled (int screenX, int screenY, int pointer, int button);
 
-	/** Called when a finger or the mouse was dragged.
-	 * @param pointer the pointer for the event.
-	 * @return whether the input was processed */
-	public boolean touchDragged (int screenX, int screenY, int pointer);
-
 	/** Called when the mouse was moved without any buttons being pressed. Will not be called on iOS.
 	 * @return whether the input was processed */
 	public boolean mouseMoved (int screenX, int screenY);
@@ -77,5 +72,5 @@ public interface InputProcessor {
 	 * @param amountX the horizontal scroll amount, negative or positive depending on the direction the wheel was scrolled.
 	 * @param amountY the vertical scroll amount, negative or positive depending on the direction the wheel was scrolled.
 	 * @return whether the input was processed. */
-	public boolean scrolled (float amountX, float amountY);
+	public boolean scrolled (double amountX, double amountY);
 }

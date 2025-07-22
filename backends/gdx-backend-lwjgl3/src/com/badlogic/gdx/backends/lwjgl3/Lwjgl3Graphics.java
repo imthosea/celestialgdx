@@ -410,7 +410,6 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 
 	@Override
 	public boolean setFullscreenMode (DisplayMode displayMode) {
-		window.getInput().resetPollingStates();
 		Lwjgl3DisplayMode newMode = (Lwjgl3DisplayMode)displayMode;
 		if (isFullscreen()) {
 			Lwjgl3DisplayMode currentMode = (Lwjgl3DisplayMode)getDisplayMode();
@@ -447,7 +446,6 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 
 	@Override
 	public boolean setWindowedMode (int width, int height) {
-		window.getInput().resetPollingStates();
 		if (!isFullscreen()) {
 			GridPoint2 newPos = null;
 			boolean centerWindow = false;

@@ -23,7 +23,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.Align;
@@ -51,7 +50,6 @@ import static com.badlogic.gdx.utils.Align.top;
  * for more details.
  * <p>
  * An {@link InputListener} can receive all the basic input events. More complex listeners (like {@link ClickListener} and
- * {@link ActorGestureListener}) can listen for and combine primitive events and recognize complex interactions like multi-touch
  * or pinch.
  * @author mzechner
  * @author Nathan Sweet */
