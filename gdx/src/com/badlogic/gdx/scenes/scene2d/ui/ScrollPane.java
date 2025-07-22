@@ -24,12 +24,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Cullable;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
@@ -52,7 +49,6 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 	final Rectangle hScrollBounds = new Rectangle(), hKnobBounds = new Rectangle();
 	final Rectangle vScrollBounds = new Rectangle(), vKnobBounds = new Rectangle();
 	private final Rectangle actorCullingArea = new Rectangle();
-	private final ActorGestureListener flickScrollListener;
 
 	boolean scrollX, scrollY;
 	boolean vScrollOnRight = true, hScrollOnBottom = true;
@@ -63,7 +59,6 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 	final Vector2 lastPoint = new Vector2();
 	boolean fadeScrollBars = true, smoothScrolling = true, scrollBarTouch = true;
 	float fadeAlpha, fadeAlphaSeconds = 1, fadeDelay, fadeDelaySeconds = 1;
-	boolean cancelTouchFocus = true;
 
 	boolean flickScroll = true;
 	float flingTime = 1f, flingTimer, velocityX, velocityY;
@@ -99,8 +94,6 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 		setSize(150, 150);
 
 		addCaptureListener();
-		flickScrollListener = getFlickScrollListener();
-		addListener(flickScrollListener);
 		addScrollListener();
 	}
 
@@ -181,39 +174,6 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 		});
 	}
 
-	/** Called by constructor. */
-	protected ActorGestureListener getFlickScrollListener () {
-		return new ActorGestureListener() {
-			public void pan (InputEvent event, float x, float y, float deltaX, float deltaY) {
-				setScrollbarsVisible(true);
-				if (!scrollX) deltaX = 0;
-				if (!scrollY) deltaY = 0;
-				amountX -= deltaX;
-				amountY += deltaY;
-				clamp();
-				if (cancelTouchFocus && (deltaX != 0 || deltaY != 0)) cancelTouchFocus();
-			}
-
-			public void fling (InputEvent event, float x, float y, int button) {
-				float velocityX = Math.abs(x) > 150 && scrollX ? x : 0;
-				float velocityY = Math.abs(y) > 150 && scrollY ? -y : 0;
-				if (velocityX != 0 || velocityY != 0) {
-					if (cancelTouchFocus) cancelTouchFocus();
-					ScrollPane.this.fling(flingTime, velocityX, velocityY);
-				}
-			}
-
-			public boolean handle (Event event) {
-				if (super.handle(event)) {
-					if (((InputEvent)event).getType() == InputEvent.Type.touchDown) flingTimer = 0;
-					return true;
-				} else if (event instanceof InputEvent && ((InputEvent)event).isTouchFocusCancel()) //
-					cancel();
-				return false;
-			}
-		};
-	}
-
 	protected void addScrollListener () {
 		addListener(new InputListener() {
 			public boolean scrolled (InputEvent event, float x, float y, float scrollAmountX, float scrollAmountY) {
@@ -245,20 +205,11 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 		}
 	}
 
-	/** Cancels the stage's touch focus for all listeners except this scroll pane's flick scroll listener. This causes any actors
-	 * inside the scrollpane that have received touchDown to receive touchUp.
-	 * @see #setCancelTouchFocus(boolean) */
-	public void cancelTouchFocus () {
-		Stage stage = getStage();
-		if (stage != null) stage.cancelTouchFocusExcept(flickScrollListener, this);
-	}
-
 	/** If currently scrolling by tracking a touch down, stop scrolling. */
 	public void cancel () {
 		draggingPointer = -1;
 		touchScrollH = false;
 		touchScrollV = false;
-		flickScrollListener.getGestureDetector().cancel();
 	}
 
 	void clamp () {
@@ -284,13 +235,9 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 	public void act (float delta) {
 		super.act(delta);
 
-		boolean panning = flickScrollListener.getGestureDetector().isPanning();
-		boolean animating = false;
-
-		if (fadeAlpha > 0 && fadeScrollBars && !panning && !touchScrollH && !touchScrollV) {
+		if (fadeAlpha > 0 && fadeScrollBars && !touchScrollH && !touchScrollV) {
 			fadeDelay -= delta;
 			if (fadeDelay <= 0) fadeAlpha = Math.max(0, fadeAlpha - delta);
-			animating = true;
 		}
 
 		if (flingTimer > 0) {
@@ -313,10 +260,9 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 				velocityY = 0;
 			}
 
-			animating = true;
 		}
 
-		if (smoothScrolling && flingTimer <= 0 && !panning && //
+		if (smoothScrolling && flingTimer <= 0 && //
 				// Scroll smoothly when grabbing the scrollbar if one pixel of scrollbar movement is > 10% of the scroll area.
 				((!touchScrollH || (scrollX && maxX / (hScrollBounds.width - hKnobBounds.width) > actorArea.width * 0.1f)) && //
 						(!touchScrollV || (scrollY && maxY / (vScrollBounds.height - vKnobBounds.height) > actorArea.height * 0.1f))) //
@@ -326,50 +272,42 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 					visualScrollX(Math.min(amountX, visualAmountX + Math.max(200 * delta, (amountX - visualAmountX) * 7 * delta)));
 				else
 					visualScrollX(Math.max(amountX, visualAmountX - Math.max(200 * delta, (visualAmountX - amountX) * 7 * delta)));
-				animating = true;
 			}
 			if (visualAmountY != amountY) {
 				if (visualAmountY < amountY)
 					visualScrollY(Math.min(amountY, visualAmountY + Math.max(200 * delta, (amountY - visualAmountY) * 7 * delta)));
 				else
 					visualScrollY(Math.max(amountY, visualAmountY - Math.max(200 * delta, (visualAmountY - amountY) * 7 * delta)));
-				animating = true;
 			}
 		} else {
 			if (visualAmountX != amountX) visualScrollX(amountX);
 			if (visualAmountY != amountY) visualScrollY(amountY);
 		}
 
-		if (!panning) {
-			if (overscrollX && scrollX) {
-				if (amountX < 0) {
-					setScrollbarsVisible(true);
-					amountX += (overscrollSpeedMin + (overscrollSpeedMax - overscrollSpeedMin) * -amountX / overscrollDistance)
-							* delta;
-					if (amountX > 0) scrollX(0);
-					animating = true;
-				} else if (amountX > maxX) {
-					setScrollbarsVisible(true);
-					amountX -= (overscrollSpeedMin
-							+ (overscrollSpeedMax - overscrollSpeedMin) * -(maxX - amountX) / overscrollDistance) * delta;
-					if (amountX < maxX) scrollX(maxX);
-					animating = true;
-				}
+		if (overscrollX && scrollX) {
+			if (amountX < 0) {
+				setScrollbarsVisible(true);
+				amountX += (overscrollSpeedMin + (overscrollSpeedMax - overscrollSpeedMin) * -amountX / overscrollDistance)
+						* delta;
+				if (amountX > 0) scrollX(0);
+			} else if (amountX > maxX) {
+				setScrollbarsVisible(true);
+				amountX -= (overscrollSpeedMin
+						+ (overscrollSpeedMax - overscrollSpeedMin) * -(maxX - amountX) / overscrollDistance) * delta;
+				if (amountX < maxX) scrollX(maxX);
 			}
-			if (overscrollY && scrollY) {
-				if (amountY < 0) {
-					setScrollbarsVisible(true);
-					amountY += (overscrollSpeedMin + (overscrollSpeedMax - overscrollSpeedMin) * -amountY / overscrollDistance)
-							* delta;
-					if (amountY > 0) scrollY(0);
-					animating = true;
-				} else if (amountY > maxY) {
-					setScrollbarsVisible(true);
-					amountY -= (overscrollSpeedMin
-							+ (overscrollSpeedMax - overscrollSpeedMin) * -(maxY - amountY) / overscrollDistance) * delta;
-					if (amountY < maxY) scrollY(maxY);
-					animating = true;
-				}
+		}
+		if (overscrollY && scrollY) {
+			if (amountY < 0) {
+				setScrollbarsVisible(true);
+				amountY += (overscrollSpeedMin + (overscrollSpeedMax - overscrollSpeedMin) * -amountY / overscrollDistance)
+						* delta;
+				if (amountY > 0) scrollY(0);
+			} else if (amountY > maxY) {
+				setScrollbarsVisible(true);
+				amountY -= (overscrollSpeedMin
+						+ (overscrollSpeedMax - overscrollSpeedMin) * -(maxY - amountY) / overscrollDistance) * delta;
+				if (amountY < maxY) scrollY(maxY);
 			}
 		}
 	}
@@ -802,20 +740,6 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 		scrollY(maxY * MathUtils.clamp(percentY, 0, 1));
 	}
 
-	public void setFlickScroll (boolean flickScroll) {
-		if (this.flickScroll == flickScroll) return;
-		this.flickScroll = flickScroll;
-		if (flickScroll)
-			addListener(flickScrollListener);
-		else
-			removeListener(flickScrollListener);
-		invalidate();
-	}
-
-	public void setFlickScrollTapSquareSize (float halfTapSquareSize) {
-		flickScrollListener.getGestureDetector().setTapSquareSize(halfTapSquareSize);
-	}
-
 	/** Sets the scroll offset so the specified rectangle is fully in view, if possible. Coordinates are in the scroll pane actor's
 	 * coordinate system. */
 	public void scrollTo (float x, float y, float width, float height) {
@@ -923,10 +847,6 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 
 	public boolean isDragging () {
 		return draggingPointer != -1;
-	}
-
-	public boolean isPanning () {
-		return flickScrollListener.getGestureDetector().isPanning();
 	}
 
 	public boolean isFlinging () {
@@ -1043,12 +963,6 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 	 * based on {@link Drawable#getMinWidth()} or {@link Drawable#getMinHeight()}. Default is true. */
 	public void setVariableSizeKnobs (boolean variableSizeKnobs) {
 		this.variableSizeKnobs = variableSizeKnobs;
-	}
-
-	/** When true (default) and flick scrolling begins, {@link #cancelTouchFocus()} is called. This causes any actors inside the
-	 * scrollpane that have received touchDown to receive touchUp when flick scrolling begins. */
-	public void setCancelTouchFocus (boolean cancelTouchFocus) {
-		this.cancelTouchFocus = cancelTouchFocus;
 	}
 
 	public void drawDebug (ShapeRenderer shapes) {

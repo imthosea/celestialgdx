@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.SnapshotArray;
  * processor returns true, which indicates that the event was handled.
  * @author Nathan Sweet */
 public class InputMultiplexer implements InputProcessor {
-	private final SnapshotArray<InputProcessor> processors = new SnapshotArray(4);
+	private final SnapshotArray<InputProcessor> processors = new SnapshotArray<>(4);
 
 	public InputMultiplexer () {
 	}
@@ -139,17 +139,6 @@ public class InputMultiplexer implements InputProcessor {
 		return false;
 	}
 
-	public boolean touchDragged (int screenX, int screenY, int pointer) {
-		Object[] items = processors.begin();
-		try {
-			for (int i = 0, n = processors.size; i < n; i++)
-				if (((InputProcessor)items[i]).touchDragged(screenX, screenY, pointer)) return true;
-		} finally {
-			processors.end();
-		}
-		return false;
-	}
-
 	public boolean mouseMoved (int screenX, int screenY) {
 		Object[] items = processors.begin();
 		try {
@@ -161,7 +150,7 @@ public class InputMultiplexer implements InputProcessor {
 		return false;
 	}
 
-	public boolean scrolled (float amountX, float amountY) {
+	public boolean scrolled (double amountX, double amountY) {
 		Object[] items = processors.begin();
 		try {
 			for (int i = 0, n = processors.size; i < n; i++)
