@@ -20,10 +20,12 @@ package com.badlogic.gdx.utils;
 import java.util.Arrays;
 
 /** A {@link java.lang.StringBuilder} that implements equals and hashcode.
+ * @deprecated celestialgdx - use stdlib
  * @see CharSequence
  * @see Appendable
  * @see java.lang.StringBuilder
  * @see String */
+@Deprecated
 public class StringBuilder implements Appendable, CharSequence {
 	static final int INITIAL_CAPACITY = 16;
 
