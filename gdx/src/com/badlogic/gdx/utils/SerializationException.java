@@ -53,7 +53,7 @@ public class SerializationException extends RuntimeException {
 		if (trace == null) return super.getMessage();
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(super.getMessage());
-		if (sb.length() > 0) sb.append('\n');
+		if (!sb.isEmpty()) sb.append('\n');
 		sb.append("Serialization trace:");
 		sb.append(trace);
 		return sb.toString();

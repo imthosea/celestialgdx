@@ -157,8 +157,8 @@ public class ShaderProgram implements Disposable {
 		if (vertexShader == null) throw new IllegalArgumentException("vertex shader must not be null");
 		if (fragmentShader == null) throw new IllegalArgumentException("fragment shader must not be null");
 
-		if (prependVertexCode != null && prependVertexCode.length() > 0) vertexShader = prependVertexCode + vertexShader;
-		if (prependFragmentCode != null && prependFragmentCode.length() > 0) fragmentShader = prependFragmentCode + fragmentShader;
+		if (prependVertexCode != null && !prependVertexCode.isEmpty()) vertexShader = prependVertexCode + vertexShader;
+		if (prependFragmentCode != null && !prependFragmentCode.isEmpty()) fragmentShader = prependFragmentCode + fragmentShader;
 
 		this.vertexShaderSource = vertexShader;
 		this.fragmentShaderSource = fragmentShader;

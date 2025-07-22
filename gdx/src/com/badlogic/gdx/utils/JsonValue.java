@@ -355,7 +355,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	public char asChar () {
 		switch (type) {
 		case stringValue:
-			return stringValue.length() == 0 ? 0 : stringValue.charAt(0);
+			return stringValue.isEmpty() ? 0 : stringValue.charAt(0);
 		case doubleValue:
 			return (char)doubleValue;
 		case longValue:
@@ -611,7 +611,7 @@ public class JsonValue implements Iterable<JsonValue> {
 			char v;
 			switch (value.type) {
 			case stringValue:
-				v = value.stringValue.length() == 0 ? 0 : value.stringValue.charAt(0);
+				v = value.stringValue.isEmpty() ? 0 : value.stringValue.charAt(0);
 				break;
 			case doubleValue:
 				v = (char)value.doubleValue;

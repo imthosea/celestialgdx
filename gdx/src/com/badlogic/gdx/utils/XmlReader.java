@@ -571,12 +571,12 @@ public class XmlReader {
 					buffer.append('\"');
 				}
 			}
-			if (children == null && (text == null || text.length() == 0))
+			if (children == null && (text == null || text.isEmpty()))
 				buffer.append("/>");
 			else {
 				buffer.append(">\n");
 				String childIndent = indent + '\t';
-				if (text != null && text.length() > 0) {
+				if (text != null && !text.isEmpty()) {
 					buffer.append(childIndent);
 					buffer.append(text);
 					buffer.append('\n');
