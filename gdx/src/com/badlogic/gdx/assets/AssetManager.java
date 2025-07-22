@@ -768,7 +768,7 @@ public class AssetManager implements Disposable {
 			String fileName = entry.key;
 			Class type = entry.value;
 
-			if (buffer.length() > 0) buffer.append('\n');
+			if (!buffer.isEmpty()) buffer.append('\n');
 			buffer.append(fileName);
 			buffer.append(", ");
 			buffer.append(type.getSimpleName());

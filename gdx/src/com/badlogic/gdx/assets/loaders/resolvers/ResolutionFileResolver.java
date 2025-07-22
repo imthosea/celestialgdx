@@ -94,7 +94,7 @@ public class ResolutionFileResolver implements FileHandleResolver {
 	protected String resolve (FileHandle originalHandle, String suffix) {
 		String parentString = "";
 		FileHandle parent = originalHandle.parent();
-		if (parent != null && !parent.name().equals("")) {
+		if (parent != null && !parent.name().isEmpty()) {
 			parentString = parent + "/";
 		}
 		return parentString + suffix + "/" + originalHandle.name();

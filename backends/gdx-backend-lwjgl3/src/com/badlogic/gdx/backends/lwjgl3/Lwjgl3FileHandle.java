@@ -16,11 +16,11 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.io.File;
-
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import java.io.File;
 
 /** @author mzechner
  * @author Nathan Sweet */
@@ -34,12 +34,12 @@ public final class Lwjgl3FileHandle extends FileHandle {
 	}
 
 	public FileHandle child (String name) {
-		if (file.getPath().length() == 0) return new Lwjgl3FileHandle(new File(name), type);
+		if (file.getPath().isEmpty()) return new Lwjgl3FileHandle(new File(name), type);
 		return new Lwjgl3FileHandle(new File(file, name), type);
 	}
 
 	public FileHandle sibling (String name) {
-		if (file.getPath().length() == 0) throw new GdxRuntimeException("Cannot get the sibling of the root.");
+		if (file.getPath().isEmpty()) throw new GdxRuntimeException("Cannot get the sibling of the root.");
 		return new Lwjgl3FileHandle(new File(file.getParent(), name), type);
 	}
 

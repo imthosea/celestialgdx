@@ -72,7 +72,7 @@ public class Label extends Widget implements Styleable<Label.LabelStyle> {
 	public Label (@Null CharSequence text, LabelStyle style) {
 		if (text != null) this.text.append(text);
 		setStyle(style);
-		if (text != null && text.length() > 0) setSize(getPrefWidth(), getPrefHeight());
+		if (text != null && !text.isEmpty()) setSize(getPrefWidth(), getPrefHeight());
 	}
 
 	public void setStyle (LabelStyle style) {

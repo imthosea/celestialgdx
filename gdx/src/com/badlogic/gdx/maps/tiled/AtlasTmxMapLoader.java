@@ -177,7 +177,7 @@ public class AtlasTmxMapLoader extends BaseTmxMapLoader<AtlasTmxMapLoader.AtlasT
 		props.put("margin", margin);
 		props.put("spacing", spacing);
 
-		if (imageSource != null && imageSource.length() > 0) {
+		if (imageSource != null && !imageSource.isEmpty()) {
 			int lastgid = firstgid + ((imageWidth / tilewidth) * (imageHeight / tileheight)) - 1;
 			for (AtlasRegion region : atlas.findRegions(regionsName)) {
 				// Handle unused tileIds

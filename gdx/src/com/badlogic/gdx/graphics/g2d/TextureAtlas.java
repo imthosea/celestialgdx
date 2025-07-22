@@ -349,7 +349,7 @@ public class TextureAtlas implements Disposable {
 				Array<int[]> values = null;
 				while (true) {
 					if (line == null) break;
-					if (line.trim().length() == 0) {
+					if (line.trim().isEmpty()) {
 						page = null;
 						line = reader.readLine();
 					} else if (page == null) {
@@ -431,7 +431,7 @@ public class TextureAtlas implements Disposable {
 		static private int readEntry (String[] entry, @Null String line) {
 			if (line == null) return 0;
 			line = line.trim();
-			if (line.length() == 0) return 0;
+			if (line.isEmpty()) return 0;
 			int colon = line.indexOf(':');
 			if (colon == -1) return 0;
 			entry[0] = line.substring(0, colon).trim();

@@ -16,6 +16,12 @@
 
 package com.badlogic.gdx.files;
 
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.StreamUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -37,12 +43,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-
-import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Files.FileType;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.StreamUtils;
 
 /** Represents a file or directory on the filesystem, classpath, Android app storage, or Android assets directory. FileHandles are
  * created via a {@link Files} instance.
@@ -520,14 +520,14 @@ public class FileHandle {
 
 	/** Returns a handle to the child with the specified name. */
 	public FileHandle child (String name) {
-		if (file.getPath().length() == 0) return new FileHandle(new File(name), type);
+		if (file.getPath().isEmpty()) return new FileHandle(new File(name), type);
 		return new FileHandle(new File(file, name), type);
 	}
 
 	/** Returns a handle to the sibling with the specified name.
 	 * @throws GdxRuntimeException if this file is the root. */
 	public FileHandle sibling (String name) {
-		if (file.getPath().length() == 0) throw new GdxRuntimeException("Cannot get the sibling of the root.");
+		if (file.getPath().isEmpty()) throw new GdxRuntimeException("Cannot get the sibling of the root.");
 		return new FileHandle(new File(file.getParent(), name), type);
 	}
 

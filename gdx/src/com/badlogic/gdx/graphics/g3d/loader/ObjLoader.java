@@ -125,7 +125,7 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 				tokens = line.split("\\s+");
 				if (tokens.length < 1) break;
 
-				if (tokens[0].length() == 0) {
+				if (tokens[0].isEmpty()) {
 					continue;
 				} else if ((firstChar = tokens[0].toLowerCase().charAt(0)) == '#') {
 					continue;
@@ -152,18 +152,18 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 							if (i == 1) activeGroup.hasNorms = true;
 							faces.add(getIndex(parts[2], norms.size));
 						}
-						if (parts.length > 1 && parts[1].length() > 0) {
+						if (parts.length > 1 && !parts[1].isEmpty()) {
 							if (i == 1) activeGroup.hasUVs = true;
 							faces.add(getIndex(parts[1], uvs.size));
 						}
 						parts = tokens[++i].split("/");
 						faces.add(getIndex(parts[0], verts.size));
 						if (parts.length > 2) faces.add(getIndex(parts[2], norms.size));
-						if (parts.length > 1 && parts[1].length() > 0) faces.add(getIndex(parts[1], uvs.size));
+						if (parts.length > 1 && !parts[1].isEmpty()) faces.add(getIndex(parts[1], uvs.size));
 						parts = tokens[++i].split("/");
 						faces.add(getIndex(parts[0], verts.size));
 						if (parts.length > 2) faces.add(getIndex(parts[2], norms.size));
-						if (parts.length > 1 && parts[1].length() > 0) faces.add(getIndex(parts[1], uvs.size));
+						if (parts.length > 1 && !parts[1].isEmpty()) faces.add(getIndex(parts[1], uvs.size));
 						activeGroup.numFaces++;
 					}
 				} else if (firstChar == 'o' || firstChar == 'g') {
@@ -303,7 +303,7 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 	}
 
 	private int getIndex (String index, int size) {
-		if (index == null || index.length() == 0) return 0;
+		if (index == null || index.isEmpty()) return 0;
 		final int idx = Integer.parseInt(index);
 		if (idx < 0)
 			return size + idx;
@@ -346,11 +346,11 @@ class MtlLoader {
 		try {
 			while ((line = reader.readLine()) != null) {
 
-				if (line.length() > 0 && line.charAt(0) == '\t') line = line.substring(1).trim();
+				if (!line.isEmpty() && line.charAt(0) == '\t') line = line.substring(1).trim();
 
 				tokens = line.split("\\s+");
 
-				if (tokens[0].length() == 0) {
+				if (tokens[0].isEmpty()) {
 					continue;
 				} else if (tokens[0].charAt(0) == '#')
 					continue;

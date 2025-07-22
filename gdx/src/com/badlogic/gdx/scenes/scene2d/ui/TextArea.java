@@ -132,7 +132,7 @@ public class TextArea extends TextField {
 
 	/** Returns if there's a new line at then end of the text **/
 	public boolean newLineAtEnd () {
-		return text.length() != 0
+		return !text.isEmpty()
 			&& (text.charAt(text.length() - 1) == NEWLINE || text.charAt(text.length() - 1) == CARRIAGE_RETURN);
 	}
 
@@ -172,7 +172,7 @@ public class TextArea extends TextField {
 		// wider than the box
 		if (index % 2 == 0 || index + 1 >= linesBreak.size || cursor != linesBreak.items[index]
 			|| linesBreak.items[index + 1] != linesBreak.items[index]) {
-			if (line < linesBreak.size / 2 || text.length() == 0 || text.charAt(text.length() - 1) == NEWLINE
+			if (line < linesBreak.size / 2 || text.isEmpty() || text.charAt(text.length() - 1) == NEWLINE
 				|| text.charAt(text.length() - 1) == CARRIAGE_RETURN) {
 				cursorLine = line;
 			}
