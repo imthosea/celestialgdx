@@ -332,8 +332,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	public boolean equals (Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof ObjectMap)) return false;
-		ObjectMap other = (ObjectMap)obj;
+		if (!(obj instanceof ObjectMap other)) return false;
 		if (other.size != size) return false;
 		K[] keyTable = this.keyTable;
 		V[] valueTable = this.valueTable;
@@ -354,8 +353,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	/** Uses == for comparison of each value. */
 	public boolean equalsIdentity (@Null Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof ObjectMap)) return false;
-		ObjectMap other = (ObjectMap)obj;
+		if (!(obj instanceof ObjectMap other)) return false;
 		if (other.size != size) return false;
 		K[] keyTable = this.keyTable;
 		V[] valueTable = this.valueTable;
@@ -536,7 +534,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	}
 
 	static public class Entries<K, V> extends MapIterator<K, V, Entry<K, V>> {
-		Entry<K, V> entry = new Entry<K, V>();
+		final Entry<K, V> entry = new Entry<>();
 
 		public Entries (ObjectMap<K, V> map) {
 			super(map);
@@ -625,7 +623,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 		/** Returns a new array containing the remaining keys. */
 		public Array<K> toArray () {
-			return toArray(new Array<K>(true, map.size));
+			return toArray(new Array<>(true, map.size));
 		}
 
 		/** Adds the remaining keys to the array. */

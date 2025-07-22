@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.graphics;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetLoaderParameters.LoadedCallback;
@@ -33,11 +30,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** Wraps a standard OpenGL ES Cubemap. Must be disposed when it is no longer used.
  * @author Xoppa */
 public class Cubemap extends GLTexture {
 	private static AssetManager assetManager;
-	final static Map<Application, Array<Cubemap>> managedCubemaps = new HashMap<Application, Array<Cubemap>>();
+	final static Map<Application, Array<Cubemap>> managedCubemaps = new HashMap<>();
 
 	/** Enum to identify each side of a Cubemap */
 	public enum CubemapSide {
@@ -86,7 +86,7 @@ public class Cubemap extends GLTexture {
 		}
 	}
 
-	protected CubemapData data;
+	protected final CubemapData data;
 
 	/** Construct a Cubemap based on the given CubemapData. */
 	public Cubemap (CubemapData data) {
@@ -198,7 +198,7 @@ public class Cubemap extends GLTexture {
 
 	private static void addManagedCubemap (Application app, Cubemap cubemap) {
 		Array<Cubemap> managedCubemapArray = managedCubemaps.get(app);
-		if (managedCubemapArray == null) managedCubemapArray = new Array<Cubemap>();
+		if (managedCubemapArray == null) managedCubemapArray = new Array<>();
 		managedCubemapArray.add(cubemap);
 		managedCubemaps.put(app, managedCubemapArray);
 	}
@@ -226,7 +226,7 @@ public class Cubemap extends GLTexture {
 
 			// next we go through each cubemap and reload either directly or via the
 			// asset manager.
-			Array<Cubemap> cubemaps = new Array<Cubemap>(managedCubemapArray);
+			Array<Cubemap> cubemaps = new Array<>(managedCubemapArray);
 			for (Cubemap cubemap : cubemaps) {
 				String fileName = assetManager.getAssetFileName(cubemap);
 				if (fileName == null) {
@@ -278,8 +278,8 @@ public class Cubemap extends GLTexture {
 	public static String getManagedStatus () {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Managed cubemap/app: { ");
-		for (Application app : managedCubemaps.keySet()) {
-			builder.append(managedCubemaps.get(app).size);
+		for (Array<Cubemap> cubemaps : managedCubemaps.values()) {
+			builder.append(cubemaps.size);
 			builder.append(" ");
 		}
 		builder.append("}");

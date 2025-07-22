@@ -19,7 +19,7 @@ package com.badlogic.gdx.maps;
 /** Map layer containing a set of MapLayers, objects and properties */
 public class MapGroupLayer extends MapLayer {
 
-	private MapLayers layers = new MapLayers();
+	private final MapLayers layers = new MapLayers();
 
 	/** @return the {@link MapLayers} owned by this group */
 	public MapLayers getLayers () {

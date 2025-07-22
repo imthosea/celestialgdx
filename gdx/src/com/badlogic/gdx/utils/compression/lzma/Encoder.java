@@ -16,10 +16,11 @@
 
 package com.badlogic.gdx.utils.compression.lzma;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.utils.compression.ICodeProgress;
 import com.badlogic.gdx.utils.compression.rangecoder.BitTreeEncoder;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class Encoder {
 	public static final int EMatchFinderTypeBT2 = 0;
@@ -27,7 +28,7 @@ public class Encoder {
 
 	static final int kIfinityPrice = 0xFFFFFFF;
 
-	static byte[] g_FastPos = new byte[1 << 11];
+	static final byte[] g_FastPos = new byte[1 << 11];
 
 	static {
 		int kFastSlots = 22;
@@ -55,21 +56,20 @@ public class Encoder {
 
 	int _state = Base.StateInit();
 	byte _previousByte;
-	int[] _repDistances = new int[Base.kNumRepDistances];
+	final int[] _repDistances = new int[Base.kNumRepDistances];
 
 	void BaseInit () {
 		_state = Base.StateInit();
 		_previousByte = 0;
-		for (int i = 0; i < Base.kNumRepDistances; i++)
-			_repDistances[i] = 0;
+		Arrays.fill(_repDistances, 0);
 	}
 
 	static final int kDefaultDictionaryLogSize = 22;
 	static final int kNumFastBytesDefault = 0x20;
 
-	class LiteralEncoder {
-		class Encoder2 {
-			short[] m_Encoders = new short[0x300];
+	private static class LiteralEncoder {
+		private static class Encoder2 {
+			final short[] m_Encoders = new short[0x300];
 
 			public void Init () {
 				com.badlogic.gdx.utils.compression.rangecoder.Encoder.InitBitModels(m_Encoders);
@@ -154,11 +154,11 @@ public class Encoder {
 		}
 	}
 
-	class LenEncoder {
-		short[] _choice = new short[2];
-		BitTreeEncoder[] _lowCoder = new BitTreeEncoder[Base.kNumPosStatesEncodingMax];
-		BitTreeEncoder[] _midCoder = new BitTreeEncoder[Base.kNumPosStatesEncodingMax];
-		BitTreeEncoder _highCoder = new BitTreeEncoder(Base.kNumHighLenBits);
+	private static class LenEncoder {
+		final short[] _choice = new short[2];
+		final BitTreeEncoder[] _lowCoder = new BitTreeEncoder[Base.kNumPosStatesEncodingMax];
+		final BitTreeEncoder[] _midCoder = new BitTreeEncoder[Base.kNumPosStatesEncodingMax];
+		final BitTreeEncoder _highCoder = new BitTreeEncoder(Base.kNumHighLenBits);
 
 		public LenEncoder () {
 			for (int posState = 0; posState < Base.kNumPosStatesEncodingMax; posState++) {
@@ -216,10 +216,10 @@ public class Encoder {
 
 	public static final int kNumLenSpecSymbols = Base.kNumLowLenSymbols + Base.kNumMidLenSymbols;
 
-	class LenPriceTableEncoder extends LenEncoder {
-		int[] _prices = new int[Base.kNumLenSymbols << Base.kNumPosStatesBitsEncodingMax];
+	static class LenPriceTableEncoder extends LenEncoder {
+		final int[] _prices = new int[Base.kNumLenSymbols << Base.kNumPosStatesBitsEncodingMax];
 		int _tableSize;
-		int[] _counters = new int[Base.kNumPosStatesEncodingMax];
+		final int[] _counters = new int[Base.kNumPosStatesEncodingMax];
 
 		public void SetTableSize (int tableSize) {
 			_tableSize = tableSize;
@@ -248,7 +248,7 @@ public class Encoder {
 
 	static final int kNumOpts = 1 << 12;
 
-	class Optimal {
+	static class Optimal {
 		public int State;
 
 		public boolean Prev1IsChar;
@@ -282,28 +282,28 @@ public class Encoder {
 		}
 	};
 
-	Optimal[] _optimum = new Optimal[kNumOpts];
+	final Optimal[] _optimum = new Optimal[kNumOpts];
 	com.badlogic.gdx.utils.compression.lz.BinTree _matchFinder = null;
-	com.badlogic.gdx.utils.compression.rangecoder.Encoder _rangeEncoder = new com.badlogic.gdx.utils.compression.rangecoder.Encoder();
+	final com.badlogic.gdx.utils.compression.rangecoder.Encoder _rangeEncoder = new com.badlogic.gdx.utils.compression.rangecoder.Encoder();
 
-	short[] _isMatch = new short[Base.kNumStates << Base.kNumPosStatesBitsMax];
-	short[] _isRep = new short[Base.kNumStates];
-	short[] _isRepG0 = new short[Base.kNumStates];
-	short[] _isRepG1 = new short[Base.kNumStates];
-	short[] _isRepG2 = new short[Base.kNumStates];
-	short[] _isRep0Long = new short[Base.kNumStates << Base.kNumPosStatesBitsMax];
+	final short[] _isMatch = new short[Base.kNumStates << Base.kNumPosStatesBitsMax];
+	final short[] _isRep = new short[Base.kNumStates];
+	final short[] _isRepG0 = new short[Base.kNumStates];
+	final short[] _isRepG1 = new short[Base.kNumStates];
+	final short[] _isRepG2 = new short[Base.kNumStates];
+	final short[] _isRep0Long = new short[Base.kNumStates << Base.kNumPosStatesBitsMax];
 
-	BitTreeEncoder[] _posSlotEncoder = new BitTreeEncoder[Base.kNumLenToPosStates]; // kNumPosSlotBits
+	final BitTreeEncoder[] _posSlotEncoder = new BitTreeEncoder[Base.kNumLenToPosStates]; // kNumPosSlotBits
 
-	short[] _posEncoders = new short[Base.kNumFullDistances - Base.kEndPosModelIndex];
-	BitTreeEncoder _posAlignEncoder = new BitTreeEncoder(Base.kNumAlignBits);
+	final short[] _posEncoders = new short[Base.kNumFullDistances - Base.kEndPosModelIndex];
+	final BitTreeEncoder _posAlignEncoder = new BitTreeEncoder(Base.kNumAlignBits);
 
-	LenPriceTableEncoder _lenEncoder = new LenPriceTableEncoder();
-	LenPriceTableEncoder _repMatchLenEncoder = new LenPriceTableEncoder();
+	final LenPriceTableEncoder _lenEncoder = new LenPriceTableEncoder();
+	final LenPriceTableEncoder _repMatchLenEncoder = new LenPriceTableEncoder();
 
-	LiteralEncoder _literalEncoder = new LiteralEncoder();
+	final LiteralEncoder _literalEncoder = new LiteralEncoder();
 
-	int[] _matchDistances = new int[Base.kMatchMaxLen * 2 + 2];
+	final int[] _matchDistances = new int[Base.kMatchMaxLen * 2 + 2];
 
 	int _numFastBytes = kNumFastBytesDefault;
 	int _longestMatchLength;
@@ -316,9 +316,9 @@ public class Encoder {
 
 	boolean _longestMatchWasFound;
 
-	int[] _posSlotPrices = new int[1 << (Base.kNumPosSlotBits + Base.kNumLenToPosStatesBits)];
-	int[] _distancesPrices = new int[Base.kNumFullDistances << Base.kNumLenToPosStatesBits];
-	int[] _alignPrices = new int[Base.kAlignTableSize];
+	final int[] _posSlotPrices = new int[1 << (Base.kNumPosSlotBits + Base.kNumLenToPosStatesBits)];
+	final int[] _distancesPrices = new int[Base.kNumFullDistances << Base.kNumLenToPosStatesBits];
+	final int[] _alignPrices = new int[Base.kAlignTableSize];
 	int _alignPriceCount;
 
 	int _distTableSize = (kDefaultDictionaryLogSize * 2);
@@ -400,7 +400,7 @@ public class Encoder {
 		_numDistancePairs = _matchFinder.GetMatches(_matchDistances);
 		if (_numDistancePairs > 0) {
 			lenRes = _matchDistances[_numDistancePairs - 2];
-			if (lenRes == _numFastBytes) lenRes += _matchFinder.GetMatchLen((int)lenRes - 1, _matchDistances[_numDistancePairs - 1],
+			if (lenRes == _numFastBytes) lenRes += _matchFinder.GetMatchLen(lenRes - 1, _matchDistances[_numDistancePairs - 1],
 				Base.kMatchMaxLen - lenRes);
 		}
 		_additionalOffset++;
@@ -482,8 +482,8 @@ public class Encoder {
 		return _optimumCurrentIndex;
 	}
 
-	int[] reps = new int[Base.kNumRepDistances];
-	int[] repLens = new int[Base.kNumRepDistances];
+	final int[] reps = new int[Base.kNumRepDistances];
+	final int[] repLens = new int[Base.kNumRepDistances];
 	int backRes;
 
 	int GetOptimum (int position) throws IOException {
@@ -560,7 +560,7 @@ public class Encoder {
 			}
 		}
 
-		int lenEnd = ((lenMain >= repLens[repMaxIndex]) ? lenMain : repLens[repMaxIndex]);
+		int lenEnd = (Math.max(lenMain, repLens[repMaxIndex]));
 
 		if (lenEnd < 2) {
 			backRes = _optimum[1].BackPrev;
@@ -920,7 +920,7 @@ public class Encoder {
 		_rangeEncoder.Encode(_isRep, _state, 0);
 		_state = Base.StateUpdateMatch(_state);
 		int len = Base.kMatchMinLen;
-		_lenEncoder.Encode(_rangeEncoder, len - Base.kMatchMinLen, posState);
+		_lenEncoder.Encode(_rangeEncoder, 0, posState);
 		int posSlot = (1 << Base.kNumPosSlotBits) - 1;
 		int lenToPosState = Base.GetLenToPosState(len);
 		_posSlotEncoder[lenToPosState].Encode(_rangeEncoder, posSlot);
@@ -981,10 +981,10 @@ public class Encoder {
 			int complexState = (_state << Base.kNumPosStatesBitsMax) + posState;
 			if (len == 1 && pos == -1) {
 				_rangeEncoder.Encode(_isMatch, complexState, 0);
-				byte curByte = _matchFinder.GetIndexByte((int)(0 - _additionalOffset));
+				byte curByte = _matchFinder.GetIndexByte(-_additionalOffset);
 				LiteralEncoder.Encoder2 subCoder = _literalEncoder.GetSubCoder((int)nowPos64, _previousByte);
 				if (!Base.StateIsCharState(_state)) {
-					byte matchByte = _matchFinder.GetIndexByte((int)(0 - _repDistances[0] - 1 - _additionalOffset));
+					byte matchByte = _matchFinder.GetIndexByte(-_repDistances[0] - 1 - _additionalOffset);
 					subCoder.EncodeMatched(_rangeEncoder, matchByte, curByte);
 				} else
 					subCoder.Encode(_rangeEncoder, curByte);
@@ -1031,7 +1031,7 @@ public class Encoder {
 					_posSlotEncoder[lenToPosState].Encode(_rangeEncoder, posSlot);
 
 					if (posSlot >= Base.kStartPosModelIndex) {
-						int footerBits = (int)((posSlot >> 1) - 1);
+						int footerBits = (posSlot >> 1) - 1;
 						int baseVal = ((2 | (posSlot & 1)) << footerBits);
 						int posReduced = pos - baseVal;
 
@@ -1114,9 +1114,9 @@ public class Encoder {
 		nowPos64 = 0;
 	}
 
-	long[] processedInSize = new long[1];
-	long[] processedOutSize = new long[1];
-	boolean[] finished = new boolean[1];
+	final long[] processedInSize = new long[1];
+	final long[] processedOutSize = new long[1];
+	final boolean[] finished = new boolean[1];
 
 	public void Code (java.io.InputStream inStream, java.io.OutputStream outStream, long inSize, long outSize,
 		ICodeProgress progress) throws IOException {
@@ -1137,7 +1137,7 @@ public class Encoder {
 	}
 
 	public static final int kPropSize = 5;
-	byte[] properties = new byte[kPropSize];
+	final byte[] properties = new byte[kPropSize];
 
 	public void WriteCoderProperties (java.io.OutputStream outStream) throws IOException {
 		properties[0] = (byte)((_posStateBits * 5 + _numLiteralPosStateBits) * 9 + _numLiteralContextBits);
@@ -1146,13 +1146,13 @@ public class Encoder {
 		outStream.write(properties, 0, kPropSize);
 	}
 
-	int[] tempPrices = new int[Base.kNumFullDistances];
+	final int[] tempPrices = new int[Base.kNumFullDistances];
 	int _matchPriceCount;
 
 	void FillDistancesPrices () {
 		for (int i = Base.kStartPosModelIndex; i < Base.kNumFullDistances; i++) {
 			int posSlot = GetPosSlot(i);
-			int footerBits = (int)((posSlot >> 1) - 1);
+			int footerBits = (posSlot >> 1) - 1;
 			int baseVal = ((2 | (posSlot & 1)) << footerBits);
 			tempPrices[i] = BitTreeEncoder.ReverseGetPrice(_posEncoders, baseVal - posSlot - 1, footerBits, i - baseVal);
 		}

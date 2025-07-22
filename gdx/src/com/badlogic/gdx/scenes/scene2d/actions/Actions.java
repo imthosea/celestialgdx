@@ -374,8 +374,7 @@ public class Actions {
 
 	static public SequenceAction sequence (Action... actions) {
 		SequenceAction action = action(SequenceAction.class);
-		for (int i = 0, n = actions.length; i < n; i++)
-			action.addAction(actions[i]);
+		for (Action value : actions) action.addAction(value);
 		return action;
 	}
 
@@ -425,8 +424,7 @@ public class Actions {
 
 	static public ParallelAction parallel (Action... actions) {
 		ParallelAction action = action(ParallelAction.class);
-		for (int i = 0, n = actions.length; i < n; i++)
-			action.addAction(actions[i]);
+		for (Action value : actions) action.addAction(value);
 		return action;
 	}
 

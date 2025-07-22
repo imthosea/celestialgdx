@@ -89,13 +89,13 @@ public class BaseAnimationController {
 		}
 	}
 
-	private final Pool<Transform> transformPool = new Pool<Transform>() {
+	private final Pool<Transform> transformPool = new Pool<>() {
 		@Override
 		protected Transform newObject () {
 			return new Transform();
 		}
 	};
-	private final static ObjectMap<Node, Transform> transforms = new ObjectMap<Node, Transform>();
+	private final static ObjectMap<Node, Transform> transforms = new ObjectMap<>();
 	private boolean applying = false;
 	/** The {@link ModelInstance} on which the animations are being performed. */
 	public final ModelInstance target;

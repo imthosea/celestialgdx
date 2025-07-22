@@ -16,32 +16,32 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWImage;
-
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Blending;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWImage;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public class Lwjgl3Cursor implements Cursor {
-	static final Array<Lwjgl3Cursor> cursors = new Array<Lwjgl3Cursor>();
-	static final Map<SystemCursor, Long> systemCursors = new HashMap<SystemCursor, Long>();
+	private static final Array<Lwjgl3Cursor> cursors = new Array<>();
+	private static final Map<SystemCursor, Long> systemCursors = new EnumMap<>(SystemCursor.class);
 
 	private static int inputModeBeforeNoneCursor = -1;
 
 	final Lwjgl3Window window;
-	Pixmap pixmapCopy;
-	GLFWImage glfwImage;
-	final long glfwCursor;
+	private Pixmap pixmapCopy;
+	private final GLFWImage glfwImage;
+	public final long glfwCursor;
 
 	Lwjgl3Cursor (Lwjgl3Window window, Pixmap pixmap, int xHotspot, int yHotspot) {
 		this.window = window;
-		if (pixmap.getFormat() != Pixmap.Format.RGBA8888) {
+		if (pixmap.getFormat() != Format.RGBA8888) {
 			throw new GdxRuntimeException("Cursor image pixmap is not in RGBA8888 format.");
 		}
 
@@ -65,7 +65,7 @@ public class Lwjgl3Cursor implements Cursor {
 				"yHotspot coordinate of " + yHotspot + " is not within image height bounds: [0, " + pixmap.getHeight() + ").");
 		}
 
-		this.pixmapCopy = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), Pixmap.Format.RGBA8888);
+		this.pixmapCopy = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), Format.RGBA8888);
 		this.pixmapCopy.setBlending(Blending.None);
 		this.pixmapCopy.drawPixmap(pixmap, 0, 0);
 
@@ -116,35 +116,20 @@ public class Lwjgl3Cursor implements Cursor {
 		}
 		Long glfwCursor = systemCursors.get(systemCursor);
 		if (glfwCursor == null) {
-			long handle = 0;
-			if (systemCursor == SystemCursor.Arrow) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
-			} else if (systemCursor == SystemCursor.Crosshair) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_CROSSHAIR_CURSOR);
-			} else if (systemCursor == SystemCursor.Hand) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HAND_CURSOR);
-			} else if (systemCursor == SystemCursor.HorizontalResize) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
-			} else if (systemCursor == SystemCursor.VerticalResize) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR);
-			} else if (systemCursor == SystemCursor.Ibeam) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_IBEAM_CURSOR);
-			} else if (systemCursor == SystemCursor.NWSEResize) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NWSE_CURSOR);
-			} else if (systemCursor == SystemCursor.NESWResize) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NESW_CURSOR);
-			} else if (systemCursor == SystemCursor.AllResize) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_ALL_CURSOR);
-			} else if (systemCursor == SystemCursor.NotAllowed) {
-				handle = GLFW.glfwCreateStandardCursor(GLFW.GLFW_NOT_ALLOWED_CURSOR);
-			} else {
-				throw new GdxRuntimeException("Unknown system cursor " + systemCursor);
-			}
-
-			if (handle == 0) {
-				return;
-			}
-			glfwCursor = handle;
+			int shape = switch (systemCursor) {
+				case Arrow -> GLFW.GLFW_ARROW_CURSOR;
+				case Ibeam -> GLFW.GLFW_IBEAM_CURSOR;
+				case Crosshair -> GLFW.GLFW_CROSSHAIR_CURSOR;
+				case Hand -> GLFW.GLFW_HAND_CURSOR;
+				case HorizontalResize -> GLFW.GLFW_HRESIZE_CURSOR;
+				case VerticalResize -> GLFW.GLFW_VRESIZE_CURSOR;
+				case NWSEResize -> GLFW.GLFW_RESIZE_NWSE_CURSOR;
+				case NESWResize -> GLFW.GLFW_RESIZE_NESW_CURSOR;
+				case AllResize -> GLFW.GLFW_RESIZE_ALL_CURSOR;
+				case NotAllowed -> GLFW.GLFW_NOT_ALLOWED_CURSOR;
+				default -> throw new GdxRuntimeException("Unknown system cursor " + systemCursor);
+			};
+			glfwCursor = GLFW.glfwCreateStandardCursor(shape);
 			systemCursors.put(systemCursor, glfwCursor);
 		}
 		GLFW.glfwSetCursor(windowHandle, glfwCursor);

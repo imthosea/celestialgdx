@@ -128,10 +128,10 @@ public class Animation<T> {
 			frameNumber = Math.min(keyFrames.length - 1, frameNumber);
 			break;
 		case LOOP:
-			frameNumber = frameNumber % keyFrames.length;
+			frameNumber %= keyFrames.length;
 			break;
 		case LOOP_PINGPONG:
-			frameNumber = frameNumber % ((keyFrames.length * 2) - 2);
+			frameNumber %= ((keyFrames.length * 2) - 2);
 			if (frameNumber >= keyFrames.length) frameNumber = keyFrames.length - 2 - (frameNumber - keyFrames.length);
 			break;
 		case LOOP_RANDOM:
@@ -146,7 +146,7 @@ public class Animation<T> {
 			frameNumber = Math.max(keyFrames.length - frameNumber - 1, 0);
 			break;
 		case LOOP_REVERSED:
-			frameNumber = frameNumber % keyFrames.length;
+			frameNumber %= keyFrames.length;
 			frameNumber = keyFrames.length - frameNumber - 1;
 			break;
 		}

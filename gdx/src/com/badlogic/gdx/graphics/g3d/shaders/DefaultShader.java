@@ -55,17 +55,17 @@ public class DefaultShader extends BaseShader {
 		/** The uber fragment shader to use, null to use the default fragment shader. */
 		public String fragmentShader = null;
 		/** The number of directional lights to use */
-		public int numDirectionalLights = 2;
+		public final int numDirectionalLights = 2;
 		/** The number of point lights to use */
-		public int numPointLights = 5;
+		public final int numPointLights = 5;
 		/** The number of spot lights to use */
-		public int numSpotLights = 0;
+		public final int numSpotLights = 0;
 		/** The number of bones to use */
-		public int numBones = 12;
+		public final int numBones = 12;
 		/** The number of bone weights to use (up to 8 with default vertex shader), default is 4. */
-		public int numBoneWeights = 4;
+		public final int numBoneWeights = 4;
 		/** */
-		public boolean ignoreUnimplemented = true;
+		public final boolean ignoreUnimplemented = true;
 		/** Set to 0 to disable culling, -1 to inherit from {@link DefaultShader#defaultCullFace} */
 		public int defaultCullFace = -1;
 		/** Set to 0 to disable depth test, -1 to inherit from {@link DefaultShader#defaultDepthFunc} */
@@ -406,13 +406,13 @@ public class DefaultShader extends BaseShader {
 		return defaultFragmentShader;
 	}
 
-	protected static long implementedFlags = BlendingAttribute.Type | TextureAttribute.Diffuse | ColorAttribute.Diffuse
+	protected static final long implementedFlags = BlendingAttribute.Type | TextureAttribute.Diffuse | ColorAttribute.Diffuse
 		| ColorAttribute.Specular | FloatAttribute.Shininess;
 
 	/** @deprecated Replaced by {@link Config#defaultCullFace} Set to 0 to disable culling */
-	@Deprecated public static int defaultCullFace = GL20.GL_BACK;
+	@Deprecated public static final int defaultCullFace = GL20.GL_BACK;
 	/** @deprecated Replaced by {@link Config#defaultDepthFunc} Set to 0 to disable depth test */
-	@Deprecated public static int defaultDepthFunc = GL20.GL_LEQUAL;
+	@Deprecated public static final int defaultDepthFunc = GL20.GL_LEQUAL;
 
 	// Global uniforms
 	public final int u_projTrans;
@@ -673,78 +673,80 @@ public class DefaultShader extends BaseShader {
 
 	public static String createPrefix (final Renderable renderable, final Config config) {
 		final Attributes attributes = combineAttributes(renderable);
-		String prefix = "";
+		StringBuilder prefix = new StringBuilder();
 		final long attributesMask = attributes.getMask();
 		final long vertexMask = renderable.meshPart.mesh.getVertexAttributes().getMask();
-		if (and(vertexMask, Usage.Position)) prefix += "#define positionFlag\n";
-		if (or(vertexMask, Usage.ColorUnpacked | Usage.ColorPacked)) prefix += "#define colorFlag\n";
-		if (and(vertexMask, Usage.BiNormal)) prefix += "#define binormalFlag\n";
-		if (and(vertexMask, Usage.Tangent)) prefix += "#define tangentFlag\n";
-		if (and(vertexMask, Usage.Normal)) prefix += "#define normalFlag\n";
+		if (and(vertexMask, Usage.Position)) prefix.append("#define positionFlag\n");
+		if (or(vertexMask, Usage.ColorUnpacked | Usage.ColorPacked)) prefix.append("#define colorFlag\n");
+		if (and(vertexMask, Usage.BiNormal)) prefix.append("#define binormalFlag\n");
+		if (and(vertexMask, Usage.Tangent)) prefix.append("#define tangentFlag\n");
+		if (and(vertexMask, Usage.Normal)) prefix.append("#define normalFlag\n");
 		if (and(vertexMask, Usage.Normal) || and(vertexMask, Usage.Tangent | Usage.BiNormal)) {
 			if (renderable.environment != null) {
-				prefix += "#define lightingFlag\n";
-				prefix += "#define ambientCubemapFlag\n";
-				prefix += "#define numDirectionalLights " + config.numDirectionalLights + "\n";
-				prefix += "#define numPointLights " + config.numPointLights + "\n";
-				prefix += "#define numSpotLights " + config.numSpotLights + "\n";
+				prefix.append("#define lightingFlag\n");
+				prefix.append("#define ambientCubemapFlag\n");
+				prefix.append("#define numDirectionalLights ").append(config.numDirectionalLights).append("\n");
+				prefix.append("#define numPointLights ").append(config.numPointLights).append("\n");
+				prefix.append("#define numSpotLights ").append(config.numSpotLights).append("\n");
 				if (attributes.has(ColorAttribute.Fog)) {
-					prefix += "#define fogFlag\n";
+					prefix.append("#define fogFlag\n");
 				}
-				if (renderable.environment.shadowMap != null) prefix += "#define shadowMapFlag\n";
-				if (attributes.has(CubemapAttribute.EnvironmentMap)) prefix += "#define environmentCubemapFlag\n";
+				if (renderable.environment.shadowMap != null) prefix.append("#define shadowMapFlag\n");
+				if (attributes.has(CubemapAttribute.EnvironmentMap)) prefix.append("#define environmentCubemapFlag\n");
 			}
 		}
 		final int n = renderable.meshPart.mesh.getVertexAttributes().size();
 		for (int i = 0; i < n; i++) {
 			final VertexAttribute attr = renderable.meshPart.mesh.getVertexAttributes().get(i);
-			if (attr.usage == Usage.TextureCoordinates) prefix += "#define texCoord" + attr.unit + "Flag\n";
+			if (attr.usage == Usage.TextureCoordinates)
+				prefix.append("#define texCoord").append(attr.unit).append("Flag\n");
 		}
 		if (renderable.bones != null) {
 			for (int i = 0; i < config.numBoneWeights; i++) {
-				prefix += "#define boneWeight" + i + "Flag\n";
+				prefix.append("#define boneWeight").append(i).append("Flag\n");
 			}
 		}
 		if ((attributesMask & BlendingAttribute.Type) == BlendingAttribute.Type)
-			prefix += "#define " + BlendingAttribute.Alias + "Flag\n";
+			prefix.append("#define " + BlendingAttribute.Alias + "Flag\n");
 		if ((attributesMask & TextureAttribute.Diffuse) == TextureAttribute.Diffuse) {
-			prefix += "#define " + TextureAttribute.DiffuseAlias + "Flag\n";
-			prefix += "#define " + TextureAttribute.DiffuseAlias + "Coord texCoord0\n"; // FIXME implement UV mapping
+			prefix.append("#define " + TextureAttribute.DiffuseAlias + "Flag\n");
+			prefix.append("#define " + TextureAttribute.DiffuseAlias + "Coord texCoord0\n"); // FIXME implement UV mapping
 		}
 		if ((attributesMask & TextureAttribute.Specular) == TextureAttribute.Specular) {
-			prefix += "#define " + TextureAttribute.SpecularAlias + "Flag\n";
-			prefix += "#define " + TextureAttribute.SpecularAlias + "Coord texCoord0\n"; // FIXME implement UV mapping
+			prefix.append("#define " + TextureAttribute.SpecularAlias + "Flag\n");
+			prefix.append("#define " + TextureAttribute.SpecularAlias + "Coord texCoord0\n"); // FIXME implement UV mapping
 		}
 		if ((attributesMask & TextureAttribute.Normal) == TextureAttribute.Normal) {
-			prefix += "#define " + TextureAttribute.NormalAlias + "Flag\n";
-			prefix += "#define " + TextureAttribute.NormalAlias + "Coord texCoord0\n"; // FIXME implement UV mapping
+			prefix.append("#define " + TextureAttribute.NormalAlias + "Flag\n");
+			prefix.append("#define " + TextureAttribute.NormalAlias + "Coord texCoord0\n"); // FIXME implement UV mapping
 		}
 		if ((attributesMask & TextureAttribute.Emissive) == TextureAttribute.Emissive) {
-			prefix += "#define " + TextureAttribute.EmissiveAlias + "Flag\n";
-			prefix += "#define " + TextureAttribute.EmissiveAlias + "Coord texCoord0\n"; // FIXME implement UV mapping
+			prefix.append("#define " + TextureAttribute.EmissiveAlias + "Flag\n");
+			prefix.append("#define " + TextureAttribute.EmissiveAlias + "Coord texCoord0\n"); // FIXME implement UV mapping
 		}
 		if ((attributesMask & TextureAttribute.Reflection) == TextureAttribute.Reflection) {
-			prefix += "#define " + TextureAttribute.ReflectionAlias + "Flag\n";
-			prefix += "#define " + TextureAttribute.ReflectionAlias + "Coord texCoord0\n"; // FIXME implement UV mapping
+			prefix.append("#define " + TextureAttribute.ReflectionAlias + "Flag\n");
+			prefix.append("#define " + TextureAttribute.ReflectionAlias + "Coord texCoord0\n"); // FIXME implement UV mapping
 		}
 		if ((attributesMask & TextureAttribute.Ambient) == TextureAttribute.Ambient) {
-			prefix += "#define " + TextureAttribute.AmbientAlias + "Flag\n";
-			prefix += "#define " + TextureAttribute.AmbientAlias + "Coord texCoord0\n"; // FIXME implement UV mapping
+			prefix.append("#define " + TextureAttribute.AmbientAlias + "Flag\n");
+			prefix.append("#define " + TextureAttribute.AmbientAlias + "Coord texCoord0\n"); // FIXME implement UV mapping
 		}
 		if ((attributesMask & ColorAttribute.Diffuse) == ColorAttribute.Diffuse)
-			prefix += "#define " + ColorAttribute.DiffuseAlias + "Flag\n";
+			prefix.append("#define " + ColorAttribute.DiffuseAlias + "Flag\n");
 		if ((attributesMask & ColorAttribute.Specular) == ColorAttribute.Specular)
-			prefix += "#define " + ColorAttribute.SpecularAlias + "Flag\n";
+			prefix.append("#define " + ColorAttribute.SpecularAlias + "Flag\n");
 		if ((attributesMask & ColorAttribute.Emissive) == ColorAttribute.Emissive)
-			prefix += "#define " + ColorAttribute.EmissiveAlias + "Flag\n";
+			prefix.append("#define " + ColorAttribute.EmissiveAlias + "Flag\n");
 		if ((attributesMask & ColorAttribute.Reflection) == ColorAttribute.Reflection)
-			prefix += "#define " + ColorAttribute.ReflectionAlias + "Flag\n";
+			prefix.append("#define " + ColorAttribute.ReflectionAlias + "Flag\n");
 		if ((attributesMask & FloatAttribute.Shininess) == FloatAttribute.Shininess)
-			prefix += "#define " + FloatAttribute.ShininessAlias + "Flag\n";
+			prefix.append("#define " + FloatAttribute.ShininessAlias + "Flag\n");
 		if ((attributesMask & FloatAttribute.AlphaTest) == FloatAttribute.AlphaTest)
-			prefix += "#define " + FloatAttribute.AlphaTestAlias + "Flag\n";
-		if (renderable.bones != null && config.numBones > 0) prefix += "#define numBones " + config.numBones + "\n";
-		return prefix;
+			prefix.append("#define " + FloatAttribute.AlphaTestAlias + "Flag\n");
+		if (renderable.bones != null && config.numBones > 0)
+			prefix.append("#define numBones ").append(config.numBones).append("\n");
+		return prefix.toString();
 	}
 
 	@Override

@@ -85,7 +85,7 @@ public class DelaunayTriangulator {
 			if (value > ymax) ymax = value;
 		}
 		float dx = xmax - xmin, dy = ymax - ymin;
-		float dmax = (dx > dy ? dx : dy) * 20f;
+		float dmax = (Math.max(dx, dy)) * 20f;
 		float xmid = (xmax + xmin) / 2f, ymid = (ymax + ymin) / 2f;
 
 		// Setup the super triangle, which contains all points.

@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.utils;
 
-import java.util.Arrays;
-
 import com.badlogic.gdx.math.MathUtils;
+
+import java.util.Arrays;
 
 /** A resizable, ordered or unordered char array. Avoids the boxing that occurs with ArrayList<Character>. If unordered, this
  * class avoids a memory copy when removing elements (the last element is moved to the removed element's position).
@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class CharArray {
 	public char[] items;
 	public int size;
-	public boolean ordered;
+	public final boolean ordered;
 
 	/** Creates an ordered array with a capacity of 16. */
 	public CharArray () {
@@ -421,8 +421,7 @@ public class CharArray {
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof CharArray)) return false;
-		CharArray array = (CharArray)object;
+		if (!(object instanceof CharArray array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;

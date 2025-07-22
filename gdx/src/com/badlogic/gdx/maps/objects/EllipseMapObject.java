@@ -22,7 +22,7 @@ import com.badlogic.gdx.math.Ellipse;
 /** @brief Represents {@link Ellipse} map objects. */
 public class EllipseMapObject extends MapObject {
 
-	private Ellipse ellipse;
+	private final Ellipse ellipse;
 
 	/** @return ellipse shape */
 	public Ellipse getEllipse () {

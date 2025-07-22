@@ -60,7 +60,7 @@ import java.util.zip.InflaterInputStream;
 
 public abstract class BaseTmjMapLoader<P extends BaseTiledMapLoader.Parameters> extends BaseTiledMapLoader<P> {
 
-	protected JsonReader json = new JsonReader();
+	protected final JsonReader json = new JsonReader();
 	protected JsonValue root;
 
 	public BaseTmjMapLoader (FileHandleResolver resolver) {

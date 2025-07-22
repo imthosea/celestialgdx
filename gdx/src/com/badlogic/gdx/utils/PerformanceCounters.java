@@ -23,7 +23,7 @@ public class PerformanceCounters {
 	private final static float nano2seconds = MathUtils.nanoToSec;
 
 	private long lastTick = 0L;
-	public final Array<PerformanceCounter> counters = new Array<PerformanceCounter>();
+	public final Array<PerformanceCounter> counters = new Array<>();
 
 	public PerformanceCounter add (final String name, final int windowSize) {
 		PerformanceCounter result = new PerformanceCounter(name, windowSize);

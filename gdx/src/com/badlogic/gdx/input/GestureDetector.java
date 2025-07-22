@@ -47,7 +47,7 @@ public class GestureDetector extends InputAdapter {
 	private final VelocityTracker tracker = new VelocityTracker();
 	private float tapRectangleCenterX, tapRectangleCenterY;
 	private long touchDownTime;
-	Vector2 pointer1 = new Vector2();
+	final Vector2 pointer1 = new Vector2();
 	private final Vector2 pointer2 = new Vector2();
 	private final Vector2 initialPointer1 = new Vector2();
 	private final Vector2 initialPointer2 = new Vector2();
@@ -91,9 +91,9 @@ public class GestureDetector extends InputAdapter {
 		if (listener == null) throw new IllegalArgumentException("listener cannot be null.");
 		this.tapRectangleWidth = halfTapRectangleWidth;
 		this.tapRectangleHeight = halfTapRectangleHeight;
-		this.tapCountInterval = (long)(tapCountInterval * 1000000000l);
+		this.tapCountInterval = (long)(tapCountInterval * 1000000000L);
 		this.longPressSeconds = longPressDuration;
-		this.maxFlingDelay = (long)(maxFlingDelay * 1000000000l);
+		this.maxFlingDelay = (long)(maxFlingDelay * 1000000000L);
 		this.listener = listener;
 	}
 
@@ -401,14 +401,14 @@ public class GestureDetector extends InputAdapter {
 	}
 
 	static class VelocityTracker {
-		int sampleSize = 10;
+		final int sampleSize = 10;
 		float lastX, lastY;
 		float deltaX, deltaY;
 		long lastTime;
 		int numSamples;
-		float[] meanX = new float[sampleSize];
-		float[] meanY = new float[sampleSize];
-		long[] meanTime = new long[sampleSize];
+		final float[] meanX = new float[sampleSize];
+		final float[] meanY = new float[sampleSize];
+		final long[] meanTime = new long[sampleSize];
 
 		public void start (float x, float y, long timeStamp) {
 			lastX = x;

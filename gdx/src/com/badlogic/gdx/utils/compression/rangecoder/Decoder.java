@@ -17,6 +17,7 @@
 package com.badlogic.gdx.utils.compression.rangecoder;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Decoder {
 	static final int kTopMask = ~((1 << 24) - 1);
@@ -85,7 +86,6 @@ public class Decoder {
 	}
 
 	public static void InitBitModels (short[] probs) {
-		for (int i = 0; i < probs.length; i++)
-			probs[i] = (kBitModelTotal >>> 1);
+		Arrays.fill(probs, (short)(kBitModelTotal >>> 1));
 	}
 }

@@ -40,7 +40,7 @@ import com.badlogic.gdx.utils.Pool;
 public class ModelInstance implements RenderableProvider {
 	/** Whether, by default, {@link NodeKeyframe}'s are shared amongst {@link Model} and ModelInstance. Can be overridden per
 	 * ModelInstance using the constructor argument. */
-	public static boolean defaultShareKeyframes = true;
+	public static final boolean defaultShareKeyframes = true;
 
 	/** the materials of the model, used by nodes that have a graphical representation FIXME not sure if superfluous, allows
 	 * modification of materials without having to traverse the nodes **/
@@ -52,7 +52,7 @@ public class ModelInstance implements RenderableProvider {
 	/** the {@link Model} this instances derives from **/
 	public final Model model;
 	/** the world transform **/
-	public Matrix4 transform;
+	public final Matrix4 transform;
 	/** user definable value, which is passed to the {@link Shader}. */
 	public Object userData;
 
@@ -325,19 +325,19 @@ public class ModelInstance implements RenderableProvider {
 				nodeAnim.scaling = nanim.scaling;
 			} else {
 				if (nanim.translation != null) {
-					nodeAnim.translation = new Array<NodeKeyframe<Vector3>>();
+					nodeAnim.translation = new Array<>();
 					for (final NodeKeyframe<Vector3> kf : nanim.translation)
-						nodeAnim.translation.add(new NodeKeyframe<Vector3>(kf.keytime, kf.value));
+						nodeAnim.translation.add(new NodeKeyframe<>(kf.keytime, kf.value));
 				}
 				if (nanim.rotation != null) {
-					nodeAnim.rotation = new Array<NodeKeyframe<Quaternion>>();
+					nodeAnim.rotation = new Array<>();
 					for (final NodeKeyframe<Quaternion> kf : nanim.rotation)
-						nodeAnim.rotation.add(new NodeKeyframe<Quaternion>(kf.keytime, kf.value));
+						nodeAnim.rotation.add(new NodeKeyframe<>(kf.keytime, kf.value));
 				}
 				if (nanim.scaling != null) {
-					nodeAnim.scaling = new Array<NodeKeyframe<Vector3>>();
+					nodeAnim.scaling = new Array<>();
 					for (final NodeKeyframe<Vector3> kf : nanim.scaling)
-						nodeAnim.scaling.add(new NodeKeyframe<Vector3>(kf.keytime, kf.value));
+						nodeAnim.scaling.add(new NodeKeyframe<>(kf.keytime, kf.value));
 				}
 			}
 			if (nodeAnim.translation != null || nodeAnim.rotation != null || nodeAnim.scaling != null)

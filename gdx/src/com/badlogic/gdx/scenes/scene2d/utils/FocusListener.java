@@ -25,8 +25,7 @@ import com.badlogic.gdx.utils.Null;
  * @author Nathan Sweet */
 abstract public class FocusListener implements EventListener {
 	public boolean handle (Event event) {
-		if (!(event instanceof FocusEvent)) return false;
-		FocusEvent focusEvent = (FocusEvent)event;
+		if (!(event instanceof FocusEvent focusEvent)) return false;
 		switch (focusEvent.getType()) {
 		case keyboard:
 			keyboardFocusChanged(focusEvent, event.getTarget(), focusEvent.isFocused());

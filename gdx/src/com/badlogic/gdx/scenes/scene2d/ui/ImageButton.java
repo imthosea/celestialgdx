@@ -61,7 +61,7 @@ public class ImageButton extends Button {
 	}
 
 	protected Image newImage () {
-		return new Image((Drawable)null, Scaling.fit);
+		return new Image(null, Scaling.fit);
 	}
 
 	public void setStyle (ButtonStyle style) {

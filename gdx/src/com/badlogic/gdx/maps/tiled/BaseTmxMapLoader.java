@@ -60,7 +60,7 @@ import java.util.zip.InflaterInputStream;
 
 public abstract class BaseTmxMapLoader<P extends BaseTiledMapLoader.Parameters> extends BaseTiledMapLoader<P> {
 
-	protected XmlReader xml = new XmlReader();
+	protected final XmlReader xml = new XmlReader();
 	protected Element root;
 
 	public BaseTmxMapLoader (FileHandleResolver resolver) {
@@ -189,14 +189,12 @@ public abstract class BaseTmxMapLoader<P extends BaseTiledMapLoader.Parameters> 
 	protected void loadLayer (TiledMap map, MapLayers parentLayers, Element element, FileHandle tmxFile,
 		ImageResolver imageResolver) {
 		String name = element.getName();
-		if (name.equals("group")) {
-			loadLayerGroup(map, parentLayers, element, tmxFile, imageResolver);
-		} else if (name.equals("layer")) {
-			loadTileLayer(map, parentLayers, element);
-		} else if (name.equals("objectgroup")) {
-			loadObjectGroup(map, parentLayers, element);
-		} else if (name.equals("imagelayer")) {
-			loadImageLayer(map, parentLayers, element, tmxFile, imageResolver);
+		switch (name) {
+			case "group" -> loadLayerGroup(map, parentLayers, element, tmxFile, imageResolver);
+			case "layer" -> loadTileLayer(map, parentLayers, element);
+			case "objectgroup" -> loadObjectGroup(map, parentLayers, element);
+			case "imagelayer" -> loadImageLayer(map, parentLayers, element, tmxFile, imageResolver);
+			default -> {}
 		}
 	}
 
@@ -571,7 +569,7 @@ public abstract class BaseTmxMapLoader<P extends BaseTiledMapLoader.Parameters> 
 			for (int i = 0; i < array.length; i++)
 				ids[i] = (int)Long.parseLong(array[i].trim());
 		} else {
-			if (true) if (encoding.equals("base64")) {
+			if (encoding.equals("base64")) {
 				InputStream is = null;
 				try {
 					String compression = data.getAttribute("compression", null);
@@ -676,7 +674,7 @@ public abstract class BaseTmxMapLoader<P extends BaseTiledMapLoader.Parameters> 
 			addStaticTiles(tmxFile, imageResolver, tileSet, element, tileElements, name, firstgid, tilewidth, tileheight, spacing,
 				margin, source, offsetX, offsetY, imageSource, imageWidth, imageHeight, image);
 
-			Array<AnimatedTiledMapTile> animatedTiles = new Array<AnimatedTiledMapTile>();
+			Array<AnimatedTiledMapTile> animatedTiles = new Array<>();
 
 			for (Element tileElement : tileElements) {
 				int localtid = tileElement.getIntAttribute("id", 0);
@@ -742,7 +740,7 @@ public abstract class BaseTmxMapLoader<P extends BaseTiledMapLoader.Parameters> 
 		int firstgid) {
 		Element animationElement = tileElement.getChildByName("animation");
 		if (animationElement != null) {
-			Array<StaticTiledMapTile> staticTiles = new Array<StaticTiledMapTile>();
+			Array<StaticTiledMapTile> staticTiles = new Array<>();
 			IntArray intervals = new IntArray();
 			for (Element frameElement : animationElement.getChildrenByName("frame")) {
 				staticTiles.add((StaticTiledMapTile)tileSet.getTile(firstgid + frameElement.getIntAttribute("tileid")));

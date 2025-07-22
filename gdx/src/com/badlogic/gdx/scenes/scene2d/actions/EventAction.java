@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
 
 /** Adds a listener to the actor for a specific event type and does not complete until {@link #handle(Event)} returns true.
  * @author JavadocMD
@@ -16,7 +15,7 @@ abstract public class EventAction<T extends Event> extends Action {
 
 	private final EventListener listener = new EventListener() {
 		public boolean handle (Event event) {
-			if (!active || !ClassReflection.isInstance(eventClass, event)) return false;
+			if (!active || !eventClass.isInstance(event)) return false;
 			result = EventAction.this.handle((T)event);
 			return result;
 		}

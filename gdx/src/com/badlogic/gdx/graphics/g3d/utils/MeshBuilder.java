@@ -69,9 +69,9 @@ public class MeshBuilder implements MeshPartBuilder {
 	/** The vertex attributes of the resulting mesh */
 	private VertexAttributes attributes;
 	/** The vertices to construct, no size checking is done */
-	private FloatArray vertices = new FloatArray();
+	private final FloatArray vertices = new FloatArray();
 	/** The indices to construct, no size checking is done */
-	private ShortArray indices = new ShortArray();
+	private final ShortArray indices = new ShortArray();
 	/** The size (in number of floats) of each vertex */
 	private int stride;
 	/** The current vertex index, used for indexing */
@@ -99,7 +99,7 @@ public class MeshBuilder implements MeshPartBuilder {
 	/** The meshpart currently being created */
 	private MeshPart part;
 	/** The parts created between begin and end */
-	private Array<MeshPart> parts = new Array<MeshPart>();
+	private final Array<MeshPart> parts = new Array<>();
 	/** The color used if no vertex color is specified. */
 	private final Color color = new Color(Color.WHITE);
 	private boolean hasColor = false;
@@ -118,7 +118,7 @@ public class MeshBuilder implements MeshPartBuilder {
 	/** @param usage bitwise mask of the {@link com.badlogic.gdx.graphics.VertexAttributes.Usage}, only Position, Color, Normal and
 	 *           TextureCoordinates is supported. */
 	public static VertexAttributes createAttributes (long usage) {
-		final Array<VertexAttribute> attrs = new Array<VertexAttribute>();
+		final Array<VertexAttribute> attrs = new Array<>();
 		if ((usage & Usage.Position) == Usage.Position)
 			attrs.add(new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE));
 		if ((usage & Usage.ColorUnpacked) == Usage.ColorUnpacked)
@@ -772,7 +772,7 @@ public class MeshBuilder implements MeshPartBuilder {
 		}
 		ensureIndices(numIndices);
 		final int numVertices = vertices.length / stride;
-		ensureVertices(numVertices < numIndices ? numVertices : numIndices);
+		ensureVertices(Math.min(numVertices, numIndices));
 		for (int i = 0; i < numIndices; i++) {
 			final int sidx = indices[indexOffset + i] & 0xFFFF;
 			int didx = indicesMap.get(sidx, -1);
@@ -794,8 +794,7 @@ public class MeshBuilder implements MeshPartBuilder {
 			addVertex(vertices, v);
 
 		ensureIndices(indices.length);
-		for (int i = 0; i < indices.length; ++i)
-			index((short)((indices[i] & 0xFFFF) + offset));
+		for (short index : indices) index((short)((index & 0xFFFF) + offset));
 	}
 
 	// TODO: The following methods are deprecated and will be removed in a future release

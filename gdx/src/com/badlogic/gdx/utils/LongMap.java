@@ -364,8 +364,7 @@ public class LongMap<V> implements Iterable<LongMap.Entry<V>> {
 
 	public boolean equals (Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof LongMap)) return false;
-		LongMap other = (LongMap)obj;
+		if (!(obj instanceof LongMap other)) return false;
 		if (other.size != size) return false;
 		if (other.hasZeroValue != hasZeroValue) return false;
 		if (hasZeroValue) {
@@ -394,8 +393,7 @@ public class LongMap<V> implements Iterable<LongMap.Entry<V>> {
 	/** Uses == for comparison of each value. */
 	public boolean equalsIdentity (@Null Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof LongMap)) return false;
-		LongMap other = (LongMap)obj;
+		if (!(obj instanceof LongMap other)) return false;
 		if (other.size != size) return false;
 		if (other.hasZeroValue != hasZeroValue) return false;
 		if (hasZeroValue && zeroValue != other.zeroValue) return false;

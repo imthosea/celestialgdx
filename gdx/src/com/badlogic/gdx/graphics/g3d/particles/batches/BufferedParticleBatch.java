@@ -25,7 +25,7 @@ import com.badlogic.gdx.utils.ArraySupplier;
 /** Base class of all the batches requiring to buffer {@link ParticleControllerRenderData}
  * @author Inferno */
 public abstract class BufferedParticleBatch<T extends ParticleControllerRenderData> implements ParticleBatch<T> {
-	protected Array<T> renderData;
+	protected final Array<T> renderData;
 	protected int bufferedParticlesCount, currentCapacity = 0;
 	protected ParticleSorter sorter;
 	protected Camera camera;
@@ -33,12 +33,12 @@ public abstract class BufferedParticleBatch<T extends ParticleControllerRenderDa
 	@Deprecated
 	protected BufferedParticleBatch (Class<T> type) {
 		this.sorter = new ParticleSorter.Distance();
-		renderData = new com.badlogic.gdx.utils.Array<T>(false, 10, type);
+		renderData = new com.badlogic.gdx.utils.Array<>(false, 10, type);
 	}
 
 	protected BufferedParticleBatch (ArraySupplier<T[]> arraySupplier) {
 		this.sorter = new ParticleSorter.Distance();
-		renderData = new com.badlogic.gdx.utils.Array<T>(false, 10, arraySupplier);
+		renderData = new com.badlogic.gdx.utils.Array<>(false, 10, arraySupplier);
 	}
 
 	public void begin () {

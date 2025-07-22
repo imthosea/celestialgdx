@@ -45,9 +45,9 @@ public class SpriteBatch implements Batch {
 	 * with this flag */
 	@Deprecated public static VertexDataType overrideVertexType = null;
 
-	private VertexDataType currentDataType;
+	private final VertexDataType currentDataType;
 
-	private Mesh mesh;
+	private final Mesh mesh;
 
 	final float[] vertices;
 	int idx = 0;
@@ -978,7 +978,7 @@ public class SpriteBatch implements Batch {
 
 		// Only upload indices for the vertex array type
 		if (currentDataType == VertexDataType.VertexArray) {
-			Buffer indicesBuffer = (Buffer)mesh.getIndicesBuffer(true);
+			Buffer indicesBuffer = mesh.getIndicesBuffer(true);
 			indicesBuffer.position(0);
 			indicesBuffer.limit(count);
 		}

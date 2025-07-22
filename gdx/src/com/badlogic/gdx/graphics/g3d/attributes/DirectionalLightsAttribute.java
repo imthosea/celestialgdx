@@ -22,7 +22,7 @@ public class DirectionalLightsAttribute extends Attribute {
 
 	public DirectionalLightsAttribute () {
 		super(Type);
-		lights = new Array<DirectionalLight>(1);
+		lights = new Array<>(1);
 	}
 
 	public DirectionalLightsAttribute (final DirectionalLightsAttribute copyFrom) {

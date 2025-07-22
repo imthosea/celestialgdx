@@ -22,7 +22,7 @@ import com.badlogic.gdx.math.Rectangle;
 /** @brief Represents a rectangle shaped map object */
 public class RectangleMapObject extends MapObject {
 
-	private Rectangle rectangle;
+	private final Rectangle rectangle;
 
 	/** @return rectangle shape */
 	public Rectangle getRectangle () {

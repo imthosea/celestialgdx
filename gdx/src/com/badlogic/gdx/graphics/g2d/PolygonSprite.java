@@ -31,7 +31,7 @@ public class PolygonSprite {
 	private float originX, originY;
 	private float[] vertices;
 	private boolean dirty;
-	private Rectangle bounds = new Rectangle();
+	private final Rectangle bounds = new Rectangle();
 	private final Color color = new Color(1f, 1f, 1f, 1f);
 
 	public PolygonSprite (PolygonRegion region) {
@@ -242,10 +242,10 @@ public class PolygonSprite {
 		for (int i = 5; i < vertices.length; i += 5) {
 			float x = vertices[i];
 			float y = vertices[i + 1];
-			minx = minx > x ? x : minx;
-			maxx = maxx < x ? x : maxx;
-			miny = miny > y ? y : miny;
-			maxy = maxy < y ? y : maxy;
+			minx = Math.min(minx, x);
+			maxx = Math.max(maxx, x);
+			miny = Math.min(miny, y);
+			maxy = Math.max(maxy, y);
 		}
 
 		bounds.x = minx;

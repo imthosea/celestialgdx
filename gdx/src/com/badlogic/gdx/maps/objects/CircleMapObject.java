@@ -22,7 +22,7 @@ import com.badlogic.gdx.math.Circle;
 /** @brief Represents {@link Circle} shaped map objects */
 public class CircleMapObject extends MapObject {
 
-	private Circle circle;
+	private final Circle circle;
 
 	/** @return circle shape */
 	public Circle getCircle () {

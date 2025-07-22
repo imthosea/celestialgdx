@@ -39,22 +39,22 @@ public class Decal {
 	public static final int SIZE = 4 * VERTEX_SIZE;
 
 	/** Temporary vector for various calculations. */
-	private static Vector3 tmp = new Vector3();
-	private static Vector3 tmp2 = new Vector3();
+	private static final Vector3 tmp = new Vector3();
+	private static final Vector3 tmp2 = new Vector3();
 
 	/** Set a multipurpose value which can be queried and used for things like group identification. */
 	public int value;
 
-	protected float[] vertices = new float[SIZE];
-	protected Vector3 position = new Vector3();
-	protected Quaternion rotation = new Quaternion();
-	protected Vector2 scale = new Vector2(1, 1);
-	protected Color color = new Color();
+	protected final float[] vertices = new float[SIZE];
+	protected final Vector3 position = new Vector3();
+	protected final Quaternion rotation = new Quaternion();
+	protected final Vector2 scale = new Vector2(1, 1);
+	protected final Color color = new Color();
 
 	/** The transformation offset can be used to change the pivot point for rotation and scaling. By default the pivot is the
 	 * middle of the decal. */
-	public Vector2 transformationOffset = null;
-	protected Vector2 dimensions = new Vector2();
+	public final Vector2 transformationOffset = null;
+	protected final Vector2 dimensions = new Vector2();
 
 	protected DecalMaterial material;
 	protected boolean updated = false;
@@ -614,7 +614,7 @@ public class Decal {
 	public static final int U4 = 22;
 	public static final int V4 = 23;
 
-	protected static Quaternion rotator = new Quaternion(0, 0, 0, 0);
+	protected static final Quaternion rotator = new Quaternion(0, 0, 0, 0);
 
 	/** Creates a decal assuming the dimensions of the texture region
 	 * 

@@ -197,8 +197,7 @@ public class BinaryHeap<T extends BinaryHeap.Node> {
 	}
 
 	public boolean equals (Object obj) {
-		if (!(obj instanceof BinaryHeap)) return false;
-		BinaryHeap other = (BinaryHeap)obj;
+		if (!(obj instanceof BinaryHeap other)) return false;
 		if (other.size != size) return false;
 		Node[] nodes1 = this.nodes, nodes2 = other.nodes;
 		for (int i = 0, n = size; i < n; i++)

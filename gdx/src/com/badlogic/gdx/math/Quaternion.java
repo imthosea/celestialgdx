@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.math;
 
-import java.io.Serializable;
-
 import com.badlogic.gdx.utils.NumberUtils;
+
+import java.io.Serializable;
 
 /** A simple quaternion class.
  * @see <a href="http://en.wikipedia.org/wiki/Quaternion">http://en.wikipedia.org/wiki/Quaternion</a>
@@ -27,8 +27,8 @@ import com.badlogic.gdx.utils.NumberUtils;
  * @author xoppa */
 public class Quaternion implements Serializable {
 	private static final long serialVersionUID = -7661875440774897168L;
-	private static Quaternion tmp1 = new Quaternion(0, 0, 0, 0);
-	private static Quaternion tmp2 = new Quaternion(0, 0, 0, 0);
+	private static final Quaternion tmp1 = new Quaternion(0, 0, 0, 0);
+	private static final Quaternion tmp2 = new Quaternion(0, 0, 0, 0);
 
 	public float x;
 	public float y;
@@ -696,10 +696,9 @@ public class Quaternion implements Serializable {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Quaternion)) {
+		if (!(obj instanceof Quaternion other)) {
 			return false;
 		}
-		Quaternion other = (Quaternion)obj;
 		return (NumberUtils.floatToRawIntBits(w) == NumberUtils.floatToRawIntBits(other.w))
 			&& (NumberUtils.floatToRawIntBits(x) == NumberUtils.floatToRawIntBits(other.x))
 			&& (NumberUtils.floatToRawIntBits(y) == NumberUtils.floatToRawIntBits(other.y))

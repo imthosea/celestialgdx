@@ -28,7 +28,7 @@ import java.util.BitSet;
 public class BooleanArray {
 	public boolean[] items;
 	public int size;
-	public boolean ordered;
+	public final boolean ordered;
 
 	/** Creates an ordered array with a capacity of 16. */
 	public BooleanArray () {
@@ -364,8 +364,7 @@ public class BooleanArray {
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof BooleanArray)) return false;
-		BooleanArray array = (BooleanArray)object;
+		if (!(object instanceof BooleanArray array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;

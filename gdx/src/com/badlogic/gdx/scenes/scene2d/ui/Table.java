@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.scenes.scene2d.ui;
 
-import java.util.Arrays;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -35,6 +33,8 @@ import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 
+import java.util.Arrays;
+
 /** A group that sizes and positions children using table constraints.
  * <p>
  * Children added with {@link #add(Actor...)} (and similar methods returning a {@link Cell}) are laid out in rows and columns.
@@ -46,11 +46,11 @@ import com.badlogic.gdx.utils.Pools;
  * The preferred and minimum sizes are that of the children laid out in columns and rows.
  * @author Nathan Sweet */
 public class Table extends WidgetGroup {
-	static public Color debugTableColor = new Color(0, 0, 1, 1);
-	static public Color debugCellColor = new Color(1, 0, 0, 1);
-	static public Color debugActorColor = new Color(0, 1, 0, 1);
+	static public final Color debugTableColor = new Color(0, 0, 1, 1);
+	static public final Color debugCellColor = new Color(1, 0, 0, 1);
+	static public final Color debugActorColor = new Color(0, 1, 0, 1);
 
-	static final Pool<Cell> cellPool = new Pool<Cell>() {
+	static final Pool<Cell> cellPool = new Pool<>() {
 		protected Cell newObject () {
 			return new Cell();
 		}
@@ -261,8 +261,7 @@ public class Table extends WidgetGroup {
 	}
 
 	public Table add (Actor... actors) {
-		for (int i = 0, n = actors.length; i < n; i++)
-			add(actors[i]);
+		for (Actor actor : actors) add(actor);
 		return this;
 	}
 
@@ -304,8 +303,7 @@ public class Table extends WidgetGroup {
 	public Cell<Stack> stack (@Null Actor... actors) {
 		Stack stack = new Stack();
 		if (actors != null) {
-			for (int i = 0, n = actors.length; i < n; i++)
-				stack.addActor(actors[i]);
+			for (Actor actor : actors) stack.addActor(actor);
 		}
 		return add(stack);
 	}
@@ -1273,7 +1271,7 @@ public class Table extends WidgetGroup {
 		static {
 			Pools.set(DebugRect::new);
 		}
-		static Pool<DebugRect> pool = Pools.get(DebugRect.class);
+		static final Pool<DebugRect> pool = Pools.get(DebugRect.class);
 		Color color;
 	}
 
@@ -1284,7 +1282,7 @@ public class Table extends WidgetGroup {
 
 	/** Value that is the top padding of the table's background.
 	 * @author Nathan Sweet */
-	static public Value backgroundTop = new Value() {
+	static public final Value backgroundTop = new Value() {
 		public float get (@Null Actor context) {
 			Drawable background = ((Table)context).background;
 			return background == null ? 0 : background.getTopHeight();
@@ -1293,7 +1291,7 @@ public class Table extends WidgetGroup {
 
 	/** Value that is the left padding of the table's background.
 	 * @author Nathan Sweet */
-	static public Value backgroundLeft = new Value() {
+	static public final Value backgroundLeft = new Value() {
 		public float get (@Null Actor context) {
 			Drawable background = ((Table)context).background;
 			return background == null ? 0 : background.getLeftWidth();
@@ -1302,7 +1300,7 @@ public class Table extends WidgetGroup {
 
 	/** Value that is the bottom padding of the table's background.
 	 * @author Nathan Sweet */
-	static public Value backgroundBottom = new Value() {
+	static public final Value backgroundBottom = new Value() {
 		public float get (@Null Actor context) {
 			Drawable background = ((Table)context).background;
 			return background == null ? 0 : background.getBottomHeight();
@@ -1311,7 +1309,7 @@ public class Table extends WidgetGroup {
 
 	/** Value that is the right padding of the table's background.
 	 * @author Nathan Sweet */
-	static public Value backgroundRight = new Value() {
+	static public final Value backgroundRight = new Value() {
 		public float get (@Null Actor context) {
 			Drawable background = ((Table)context).background;
 			return background == null ? 0 : background.getRightWidth();

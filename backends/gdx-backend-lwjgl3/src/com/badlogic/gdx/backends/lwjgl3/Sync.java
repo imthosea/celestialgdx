@@ -50,8 +50,8 @@ class Sync {
 	private boolean initialised = false;
 
 	/** for calculating the averages the previous sleep/yield times are stored */
-	private RunningAvg sleepDurations = new RunningAvg(10);
-	private RunningAvg yieldDurations = new RunningAvg(10);
+	private final RunningAvg sleepDurations = new RunningAvg(10);
+	private final RunningAvg yieldDurations = new RunningAvg(10);
 
 	public Sync () {
 
@@ -105,12 +105,10 @@ class Sync {
 			// over 10ms making in unusable. However it can be forced to
 			// be a bit more accurate by running a separate sleeping daemon
 			// thread.
-			Thread timerAccuracyThread = new Thread(new Runnable() {
-				public void run () {
-					try {
-						Thread.sleep(Long.MAX_VALUE);
-					} catch (Exception e) {
-					}
+			Thread timerAccuracyThread = new Thread(() -> {
+				try {
+					Thread.sleep(Long.MAX_VALUE);
+				} catch (InterruptedException ignored) {
 				}
 			});
 
@@ -127,7 +125,7 @@ class Sync {
 		return (long)(glfwGetTime() * NANOS_IN_SECOND);
 	}
 
-	private class RunningAvg {
+	private static class RunningAvg {
 		private final long[] slots;
 		private int offset;
 
@@ -152,8 +150,8 @@ class Sync {
 
 		public long avg () {
 			long sum = 0;
-			for (int i = 0; i < this.slots.length; i++) {
-				sum += this.slots[i];
+			for (long slot : this.slots) {
+				sum += slot;
 			}
 			return sum / this.slots.length;
 		}

@@ -45,8 +45,7 @@ public class InputListener implements EventListener {
 	 * added to the stage's {@link Stage#addTouchFocus(EventListener, Actor, Actor, int, int) touch focus} so it will receive all
 	 * touch dragged events until the next touch up event. */
 	public boolean handle (Event e) {
-		if (!(e instanceof InputEvent)) return false;
-		InputEvent event = (InputEvent)e;
+		if (!(e instanceof InputEvent event)) return false;
 
 		switch (event.getType()) {
 		case keyDown:

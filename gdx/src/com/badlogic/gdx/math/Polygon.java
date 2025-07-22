@@ -208,10 +208,10 @@ public class Polygon implements Shape2D {
 
 		final int numFloats = vertices.length;
 		for (int i = 2; i < numFloats; i += 2) {
-			minX = minX > vertices[i] ? vertices[i] : minX;
-			minY = minY > vertices[i + 1] ? vertices[i + 1] : minY;
-			maxX = maxX < vertices[i] ? vertices[i] : maxX;
-			maxY = maxY < vertices[i + 1] ? vertices[i + 1] : maxY;
+			minX = Math.min(minX, vertices[i]);
+			minY = Math.min(minY, vertices[i + 1]);
+			maxX = Math.max(maxX, vertices[i]);
+			maxY = Math.max(maxY, vertices[i + 1]);
 		}
 
 		if (bounds == null) bounds = new Rectangle();

@@ -31,12 +31,12 @@ public class BlendingAttribute extends Attribute {
 
 	/** Whether this material should be considered blended (default: true). This is used for sorting (back to front instead of
 	 * front to back). */
-	public boolean blended;
+	public final boolean blended;
 	/** Specifies how the (incoming) red, green, blue, and alpha source blending factors are computed (default: GL_SRC_ALPHA) */
-	public int sourceFunction;
+	public final int sourceFunction;
 	/** Specifies how the (existing) red, green, blue, and alpha destination blending factors are computed (default:
 	 * GL_ONE_MINUS_SRC_ALPHA) */
-	public int destFunction;
+	public final int destFunction;
 	/** The opacity used as source alpha value, ranging from 0 (fully transparent) to 1 (fully opaque), (default: 1). */
 	public float opacity = 1.f;
 

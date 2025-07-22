@@ -3,7 +3,7 @@
 package com.badlogic.gdx.utils.compression;
 
 public class CRC {
-	static public int[] Table = new int[256];
+	static public final int[] Table = new int[256];
 
 	static {
 		for (int i = 0; i < 256; i++) {
@@ -30,8 +30,7 @@ public class CRC {
 
 	public void Update (byte[] data) {
 		int size = data.length;
-		for (int i = 0; i < size; i++)
-			_value = Table[(_value ^ data[i]) & 0xFF] ^ (_value >>> 8);
+		for (byte datum : data) _value = Table[(_value ^ datum) & 0xFF] ^ (_value >>> 8);
 	}
 
 	public void UpdateByte (int b) {

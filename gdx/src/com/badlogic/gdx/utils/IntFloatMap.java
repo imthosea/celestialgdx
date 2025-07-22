@@ -398,8 +398,7 @@ public class IntFloatMap implements Iterable<IntFloatMap.Entry> {
 
 	public boolean equals (Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof IntFloatMap)) return false;
-		IntFloatMap other = (IntFloatMap)obj;
+		if (!(obj instanceof IntFloatMap other)) return false;
 		if (other.size != size) return false;
 		if (other.hasZeroValue != hasZeroValue) return false;
 		if (hasZeroValue) {

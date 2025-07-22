@@ -29,7 +29,6 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
 
 /** Base class of all the particle controllers. Encapsulate the generic structure of a controller and methods to update the
  * particles simulation.
@@ -56,10 +55,10 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 	public ParticleChannels particleChannels;
 
 	/** Current transform of the controller DO NOT CHANGE MANUALLY */
-	public Matrix4 transform;
+	public final Matrix4 transform;
 
 	/** Transform flags */
-	public Vector3 scale;
+	public final Vector3 scale;
 
 	/** Not used by the simulation, it should represent the bounding box containing all the particles */
 	protected BoundingBox boundingBox;
@@ -81,7 +80,7 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 		this.emitter = emitter;
 		this.renderer = renderer;
 		this.particleChannels = new ParticleChannels();
-		this.influencers = new Array<Influencer>(influencers);
+		this.influencers = new Array<>(influencers);
 	}
 
 	/** Sets the delta used to step the simulation */
@@ -247,7 +246,7 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 		for (Influencer influencer : this.influencers) {
 			influencers[i++] = (Influencer)influencer.copy();
 		}
-		return new ParticleController(new String(this.name), emitter, (ParticleControllerRenderer<?, ?>)renderer.copy(),
+		return new ParticleController(this.name, emitter, (ParticleControllerRenderer<?, ?>)renderer.copy(),
 			influencers);
 	}
 
@@ -278,7 +277,7 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 	private <K extends Influencer> int findIndex (Class<K> type) {
 		for (int i = 0; i < influencers.size; ++i) {
 			Influencer influencer = influencers.get(i);
-			if (ClassReflection.isAssignableFrom(type, influencer.getClass())) {
+			if (type.isAssignableFrom(influencer.getClass())) {
 				return i;
 			}
 		}

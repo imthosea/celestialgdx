@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,7 +52,7 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 	final Rectangle hScrollBounds = new Rectangle(), hKnobBounds = new Rectangle();
 	final Rectangle vScrollBounds = new Rectangle(), vKnobBounds = new Rectangle();
 	private final Rectangle actorCullingArea = new Rectangle();
-	private ActorGestureListener flickScrollListener;
+	private final ActorGestureListener flickScrollListener;
 
 	boolean scrollX, scrollY;
 	boolean vScrollOnRight = true, hScrollOnBottom = true;
@@ -264,9 +264,9 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 	void clamp () {
 		if (!clamp) return;
 		scrollX(overscrollX ? MathUtils.clamp(amountX, -overscrollDistance, maxX + overscrollDistance)
-			: MathUtils.clamp(amountX, 0, maxX));
+				: MathUtils.clamp(amountX, 0, maxX));
 		scrollY(overscrollY ? MathUtils.clamp(amountY, -overscrollDistance, maxY + overscrollDistance)
-			: MathUtils.clamp(amountY, 0, maxY));
+				: MathUtils.clamp(amountY, 0, maxY));
 	}
 
 	public void setStyle (ScrollPaneStyle style) {
@@ -317,9 +317,9 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 		}
 
 		if (smoothScrolling && flingTimer <= 0 && !panning && //
-		// Scroll smoothly when grabbing the scrollbar if one pixel of scrollbar movement is > 10% of the scroll area.
-			((!touchScrollH || (scrollX && maxX / (hScrollBounds.width - hKnobBounds.width) > actorArea.width * 0.1f)) && //
-				(!touchScrollV || (scrollY && maxY / (vScrollBounds.height - vKnobBounds.height) > actorArea.height * 0.1f))) //
+				// Scroll smoothly when grabbing the scrollbar if one pixel of scrollbar movement is > 10% of the scroll area.
+				((!touchScrollH || (scrollX && maxX / (hScrollBounds.width - hKnobBounds.width) > actorArea.width * 0.1f)) && //
+						(!touchScrollV || (scrollY && maxY / (vScrollBounds.height - vKnobBounds.height) > actorArea.height * 0.1f))) //
 		) {
 			if (visualAmountX != amountX) {
 				if (visualAmountX < amountX)
@@ -345,13 +345,13 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 				if (amountX < 0) {
 					setScrollbarsVisible(true);
 					amountX += (overscrollSpeedMin + (overscrollSpeedMax - overscrollSpeedMin) * -amountX / overscrollDistance)
-						* delta;
+							* delta;
 					if (amountX > 0) scrollX(0);
 					animating = true;
 				} else if (amountX > maxX) {
 					setScrollbarsVisible(true);
 					amountX -= (overscrollSpeedMin
-						+ (overscrollSpeedMax - overscrollSpeedMin) * -(maxX - amountX) / overscrollDistance) * delta;
+							+ (overscrollSpeedMax - overscrollSpeedMin) * -(maxX - amountX) / overscrollDistance) * delta;
 					if (amountX < maxX) scrollX(maxX);
 					animating = true;
 				}
@@ -360,13 +360,13 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 				if (amountY < 0) {
 					setScrollbarsVisible(true);
 					amountY += (overscrollSpeedMin + (overscrollSpeedMax - overscrollSpeedMin) * -amountY / overscrollDistance)
-						* delta;
+							* delta;
 					if (amountY > 0) scrollY(0);
 					animating = true;
 				} else if (amountY > maxY) {
 					setScrollbarsVisible(true);
 					amountY -= (overscrollSpeedMin
-						+ (overscrollSpeedMax - overscrollSpeedMin) * -(maxY - amountY) / overscrollDistance) * delta;
+							+ (overscrollSpeedMax - overscrollSpeedMin) * -(maxY - amountY) / overscrollDistance) * delta;
 					if (amountY < maxY) scrollY(maxY);
 					animating = true;
 				}
@@ -396,8 +396,7 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 
 		// Get actor's desired width.
 		float actorWidth, actorHeight;
-		if (actor instanceof Layout) {
-			Layout layout = (Layout)actor;
+		if (actor instanceof Layout layout) {
 			actorWidth = layout.getPrefWidth();
 			actorHeight = layout.getPrefHeight();
 		} else {
@@ -475,7 +474,7 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 				vKnobBounds.width = vScrollKnob.getMinWidth();
 				if (variableSizeKnobs)
 					vKnobBounds.height = Math.max(vScrollKnob.getMinHeight(),
-						(int)(vScrollBounds.height * actorArea.height / actorHeight));
+							(int)(vScrollBounds.height * actorArea.height / actorHeight));
 				else
 					vKnobBounds.height = vScrollKnob.getMinHeight();
 				if (vKnobBounds.height > actorHeight) vKnobBounds.height = 0;
@@ -556,7 +555,7 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 		boolean y = scrollY && vKnobBounds.height > 0;
 		if (x) {
 			if (y && style.corner != null) style.corner.draw(batch, hScrollBounds.x + hScrollBounds.width, hScrollBounds.y,
-				vScrollBounds.width, vScrollBounds.y);
+					vScrollBounds.width, vScrollBounds.y);
 
 			if (style.hScroll != null)
 				style.hScroll.draw(batch, hScrollBounds.x, hScrollBounds.y, hScrollBounds.width, hScrollBounds.height);
@@ -1075,7 +1074,7 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 		}
 
 		public ScrollPaneStyle (@Null Drawable background, @Null Drawable hScroll, @Null Drawable hScrollKnob,
-			@Null Drawable vScroll, @Null Drawable vScrollKnob) {
+		                        @Null Drawable vScroll, @Null Drawable vScrollKnob) {
 			this.background = background;
 			this.hScroll = hScroll;
 			this.hScrollKnob = hScrollKnob;

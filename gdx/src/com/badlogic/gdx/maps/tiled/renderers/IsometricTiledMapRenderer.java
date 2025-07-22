@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.maps.tiled.renderers;
 
-import static com.badlogic.gdx.graphics.g2d.Batch.*;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -30,40 +28,41 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import static com.badlogic.gdx.graphics.g2d.Batch.*;
+
 public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 
-	private Matrix4 isoTransform;
-	private Matrix4 invIsotransform;
-	private Vector3 screenPos = new Vector3();
+	private final Matrix4 invIsotransform;
+	private final Vector3 screenPos = new Vector3();
 
-	private Vector2 topRight = new Vector2();
-	private Vector2 bottomLeft = new Vector2();
-	private Vector2 topLeft = new Vector2();
-	private Vector2 bottomRight = new Vector2();
+	private final Vector2 topRight = new Vector2();
+	private final Vector2 bottomLeft = new Vector2();
+	private final Vector2 topLeft = new Vector2();
+	private final Vector2 bottomRight = new Vector2();
 
 	public IsometricTiledMapRenderer (TiledMap map) {
 		super(map);
-		init();
+		this.invIsotransform = init();
 	}
 
 	public IsometricTiledMapRenderer (TiledMap map, Batch batch) {
 		super(map, batch);
-		init();
+		this.invIsotransform = init();
 	}
 
 	public IsometricTiledMapRenderer (TiledMap map, float unitScale) {
 		super(map, unitScale);
-		init();
+		this.invIsotransform = init();
 	}
 
 	public IsometricTiledMapRenderer (TiledMap map, float unitScale, Batch batch) {
 		super(map, unitScale, batch);
-		init();
+		this.invIsotransform = init();
 	}
 
-	private void init () {
+	private Matrix4 init () {
 		// create the isometric transform
-		isoTransform = new Matrix4();
+		Matrix4 isoTransform = new Matrix4();
 		isoTransform.idt();
 
 		// isoTransform.translate(0, 32, 0);
@@ -71,8 +70,7 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 		isoTransform.rotate(0.0f, 0.0f, 1.0f, -45);
 
 		// ... and the inverse matrix
-		invIsotransform = new Matrix4(isoTransform);
-		invIsotransform.inv();
+		return isoTransform.inv();
 	}
 
 	private Vector3 translateScreenToIso (Vector2 vec) {

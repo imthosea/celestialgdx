@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -169,7 +169,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 	protected int[] wordUnderCursor (int at) {
 		String text = this.text;
-		int start = at, right = text.length(), left = 0, index = start;
+		int right = text.length(), left = 0, index = at;
 		if (at >= text.length()) {
 			left = text.length();
 			right = 0;
@@ -180,7 +180,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 					break;
 				}
 			}
-			for (index = start - 1; index > -1; index--) {
+			for (index = at - 1; index > -1; index--) {
 				if (!isWordCharacter(text.charAt(index))) {
 					left = index + 1;
 					break;
@@ -313,7 +313,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 		final BitmapFont font = style.font;
 		final Color fontColor = (disabled && style.disabledFontColor != null) ? style.disabledFontColor
-			: ((focused && style.focusedFontColor != null) ? style.focusedFontColor : style.fontColor);
+				: ((focused && style.focusedFontColor != null) ? style.focusedFontColor : style.fontColor);
 		final Drawable selection = style.selection;
 		final Drawable cursorPatch = style.cursor;
 		final Drawable background = getBackgroundDrawable();
@@ -345,7 +345,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 				BitmapFont messageFont = style.messageFont != null ? style.messageFont : font;
 				if (style.messageFontColor != null) {
 					messageFont.setColor(style.messageFontColor.r, style.messageFontColor.g, style.messageFontColor.b,
-						style.messageFontColor.a * color.a * parentAlpha);
+							style.messageFontColor.a * color.a * parentAlpha);
 				} else
 					messageFont.setColor(0.7f, 0.7f, 0.7f, color.a * parentAlpha);
 				drawMessageText(batch, messageFont, x + bgLeftWidth, y + textY + yOffset, width - bgLeftWidth - bgRightWidth);
@@ -383,7 +383,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 	/** Draws selection rectangle **/
 	protected void drawSelection (Drawable selection, Batch batch, BitmapFont font, float x, float y) {
 		selection.draw(batch, x + textOffset + selectionX + fontOffset, y - textHeight - font.getDescent(), selectionWidth,
-			textHeight);
+				textHeight);
 	}
 
 	protected void drawText (Batch batch, BitmapFont font, float x, float y) {
@@ -396,8 +396,8 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 	protected void drawCursor (Drawable cursorPatch, Batch batch, BitmapFont font, float x, float y) {
 		cursorPatch.draw(batch,
-			x + textOffset + glyphPositions.get(cursor) - glyphPositions.get(visibleTextStart) + fontOffset + font.getData().cursorX,
-			y - textHeight - font.getDescent(), cursorPatch.getMinWidth(), textHeight);
+				x + textOffset + glyphPositions.get(cursor) - glyphPositions.get(visibleTextStart) + fontOffset + font.getData().cursorX,
+				y - textHeight - font.getDescent(), cursorPatch.getMinWidth(), textHeight);
 	}
 
 	protected void updateDisplayText () {
@@ -418,8 +418,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 			if (passwordBuffer.length() > textLength)
 				passwordBuffer.setLength(textLength);
 			else {
-				for (int i = passwordBuffer.length(); i < textLength; i++)
-					passwordBuffer.append(passwordCharacter);
+				passwordBuffer.append(String.valueOf(passwordCharacter).repeat(Math.max(0, textLength - passwordBuffer.length())));
 			}
 			displayText = passwordBuffer;
 		} else
@@ -499,8 +498,8 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 	}
 
 	String insert (int position, CharSequence text, String to) {
-		if (to.length() == 0) return text.toString();
-		return to.substring(0, position) + text + to.substring(position, to.length());
+		if (to.isEmpty()) return text.toString();
+		return to.substring(0, position) + text + to.substring(position);
 	}
 
 	int delete (boolean fireChangeEvent) {
@@ -509,7 +508,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 		int minIndex = Math.min(from, to);
 		int maxIndex = Math.max(from, to);
 		String newText = (minIndex > 0 ? text.substring(0, minIndex) : "")
-			+ (maxIndex < text.length() ? text.substring(maxIndex, text.length()) : "");
+				+ (maxIndex < text.length() ? text.substring(maxIndex) : "");
 		if (fireChangeEvent)
 			changeText(text, newText);
 		else
@@ -551,12 +550,11 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 	/** @return May be null. */
 	private @Null TextField findNextTextField (Array<Actor> actors, @Null TextField best, Vector2 bestCoords,
-		Vector2 currentCoords, boolean up) {
+	                                           Vector2 currentCoords, boolean up) {
 		for (int i = 0, n = actors.size; i < n; i++) {
 			Actor actor = actors.get(i);
-			if (actor instanceof TextField) {
+			if (actor instanceof TextField textField) {
 				if (actor == this) continue;
-				TextField textField = (TextField)actor;
 				if (textField.isDisabled() || !textField.focusTraversal || !textField.ascendantsVisible()) continue;
 				Vector2 actorCoords = actor.getParent().localToStageCoordinates(tmp3.set(actor.getX(), actor.getY()));
 				boolean below = actorCoords.y != currentCoords.y && (actorCoords.y < currentCoords.y ^ up);
@@ -565,7 +563,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 				boolean better = best == null || (actorCoords.y != bestCoords.y && (actorCoords.y > bestCoords.y ^ up));
 				if (!better) better = actorCoords.y == bestCoords.y && (actorCoords.x < bestCoords.x ^ up);
 				if (better) {
-					best = (TextField)actor;
+					best = textField;
 					bestCoords.set(actorCoords);
 				}
 			} else if (actor instanceof Group)
@@ -733,12 +731,12 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 		}
 		if (style.focusedBackground != null) {
 			topAndBottom = Math.max(topAndBottom,
-				style.focusedBackground.getBottomHeight() + style.focusedBackground.getTopHeight());
+					style.focusedBackground.getBottomHeight() + style.focusedBackground.getTopHeight());
 			minHeight = Math.max(minHeight, style.focusedBackground.getMinHeight());
 		}
 		if (style.disabledBackground != null) {
 			topAndBottom = Math.max(topAndBottom,
-				style.disabledBackground.getBottomHeight() + style.disabledBackground.getTopHeight());
+					style.disabledBackground.getBottomHeight() + style.disabledBackground.getTopHeight());
 			minHeight = Math.max(minHeight, style.disabledBackground.getMinHeight());
 		}
 		return Math.max(topAndBottom + textHeight, minHeight);
@@ -909,39 +907,39 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 			if (ctrl) {
 				switch (keycode) {
-				case Keys.V:
-					paste(clipboard.getContents(), true);
-					repeat = true;
-					break;
-				case Keys.C:
-				case Keys.INSERT:
-					copy();
-					return true;
-				case Keys.X:
-					cut(true);
-					return true;
-				case Keys.A:
-					selectAll();
-					return true;
-				case Keys.Z:
-					String oldText = text;
-					setText(undoText);
-					undoText = oldText;
-					updateDisplayText();
-					return true;
-				default:
-					handled = false;
+					case Keys.V:
+						paste(clipboard.getContents(), true);
+						repeat = true;
+						break;
+					case Keys.C:
+					case Keys.INSERT:
+						copy();
+						return true;
+					case Keys.X:
+						cut(true);
+						return true;
+					case Keys.A:
+						selectAll();
+						return true;
+					case Keys.Z:
+						String oldText = text;
+						setText(undoText);
+						undoText = oldText;
+						updateDisplayText();
+						return true;
+					default:
+						handled = false;
 				}
 			}
 
 			if (UIUtils.shift()) {
 				switch (keycode) {
-				case Keys.INSERT:
-					paste(clipboard.getContents(), true);
-					break;
-				case Keys.FORWARD_DEL:
-					cut(true);
-					break;
+					case Keys.INSERT:
+						paste(clipboard.getContents(), true);
+						break;
+					case Keys.FORWARD_DEL:
+						cut(true);
+						break;
 				}
 
 				selection:
@@ -950,24 +948,24 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 					keys:
 					{
 						switch (keycode) {
-						case Keys.LEFT:
-							moveCursor(false, jump);
-							repeat = true;
-							handled = true;
-							break keys;
-						case Keys.RIGHT:
-							moveCursor(true, jump);
-							repeat = true;
-							handled = true;
-							break keys;
-						case Keys.HOME:
-							goHome(jump);
-							handled = true;
-							break keys;
-						case Keys.END:
-							goEnd(jump);
-							handled = true;
-							break keys;
+							case Keys.LEFT:
+								moveCursor(false, jump);
+								repeat = true;
+								handled = true;
+								break keys;
+							case Keys.RIGHT:
+								moveCursor(true, jump);
+								repeat = true;
+								handled = true;
+								break keys;
+							case Keys.HOME:
+								goHome(jump);
+								handled = true;
+								break keys;
+							case Keys.END:
+								goEnd(jump);
+								handled = true;
+								break keys;
 						}
 						break selection;
 					}
@@ -979,28 +977,28 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 			} else {
 				// Cursor movement or other keys (kills selection).
 				switch (keycode) {
-				case Keys.LEFT:
-					moveCursor(false, jump);
-					clearSelection();
-					repeat = true;
-					handled = true;
-					break;
-				case Keys.RIGHT:
-					moveCursor(true, jump);
-					clearSelection();
-					repeat = true;
-					handled = true;
-					break;
-				case Keys.HOME:
-					goHome(jump);
-					clearSelection();
-					handled = true;
-					break;
-				case Keys.END:
-					goEnd(jump);
-					clearSelection();
-					handled = true;
-					break;
+					case Keys.LEFT:
+						moveCursor(false, jump);
+						clearSelection();
+						repeat = true;
+						handled = true;
+						break;
+					case Keys.RIGHT:
+						moveCursor(true, jump);
+						clearSelection();
+						repeat = true;
+						handled = true;
+						break;
+					case Keys.HOME:
+						goHome(jump);
+						clearSelection();
+						handled = true;
+						break;
+					case Keys.END:
+						goEnd(jump);
+						clearSelection();
+						handled = true;
+						break;
 				}
 			}
 
@@ -1030,7 +1028,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 		 * @return true if the focus should change to the {@link TextField#next(boolean) next} input field. */
 		protected boolean checkFocusTraversal (char character) {
 			return focusTraversal && (character == TAB
-				|| ((character == CARRIAGE_RETURN || character == NEWLINE) && (UIUtils.isAndroid || UIUtils.isIos)));
+					|| ((character == CARRIAGE_RETURN || character == NEWLINE) && (UIUtils.isAndroid || UIUtils.isIos)));
 		}
 
 		public boolean keyTyped (InputEvent event, char character) {
@@ -1038,13 +1036,13 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 			// Disallow "typing" most ASCII control characters, which would show up as a space when onlyFontChars is true.
 			switch (character) {
-			case BACKSPACE:
-			case TAB:
-			case NEWLINE:
-			case CARRIAGE_RETURN:
-				break;
-			default:
-				if (character < 32) return false;
+				case BACKSPACE:
+				case TAB:
+				case NEWLINE:
+				case CARRIAGE_RETURN:
+					break;
+				default:
+					if (character < 32) return false;
 			}
 
 			if (!hasKeyboardFocus()) return false;
@@ -1113,7 +1111,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 		}
 
 		public TextFieldStyle (BitmapFont font, Color fontColor, @Null Drawable cursor, @Null Drawable selection,
-			@Null Drawable background) {
+		                       @Null Drawable background) {
 			this.font = font;
 			this.fontColor = fontColor;
 			this.cursor = cursor;

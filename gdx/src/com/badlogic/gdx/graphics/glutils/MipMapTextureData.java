@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 /** This class will load each contained TextureData to the chosen mipmap level. All the mipmap levels must be defined and cannot
  * be null. */
 public class MipMapTextureData implements TextureData {
-	TextureData[] mips;
+	final TextureData[] mips;
 
 	/** @param mipMapData must be != null and its length must be >= 1 */
 	public MipMapTextureData (TextureData... mipMapData) {

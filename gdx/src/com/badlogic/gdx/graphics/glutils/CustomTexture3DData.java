@@ -16,13 +16,13 @@
 
 package com.badlogic.gdx.graphics.glutils;
 
-import java.nio.ByteBuffer;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture3DData;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import java.nio.ByteBuffer;
 
 /** A {@link Texture3DData} implementation that addresses 2 use cases :
  * 
@@ -34,11 +34,13 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  * @author mgsx */
 public class CustomTexture3DData implements Texture3DData {
 
-	private int width, height, depth;
-	private int mipMapLevel;
-	private int glFormat;
-	private int glInternalFormat;
-	private int glType;
+	private final int width;
+	private final int height;
+	private final int depth;
+	private final int mipMapLevel;
+	private final int glFormat;
+	private final int glInternalFormat;
+	private final int glType;
 	private ByteBuffer pixels;
 
 	/** @see "https://registry.khronos.org/OpenGL-Refpages/es3.0/html/glTexImage3D.xhtml" */

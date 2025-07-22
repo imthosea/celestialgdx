@@ -66,7 +66,7 @@ abstract public class Value {
 	}
 
 	/** Value that is the minWidth of the actor in the cell. */
-	static public Value minWidth = new Value() {
+	static public final Value minWidth = new Value() {
 		public float get (@Null Actor context) {
 			if (context instanceof Layout) return ((Layout)context).getMinWidth();
 			return context == null ? 0 : context.getWidth();
@@ -74,7 +74,7 @@ abstract public class Value {
 	};
 
 	/** Value that is the minHeight of the actor in the cell. */
-	static public Value minHeight = new Value() {
+	static public final Value minHeight = new Value() {
 		public float get (@Null Actor context) {
 			if (context instanceof Layout) return ((Layout)context).getMinHeight();
 			return context == null ? 0 : context.getHeight();
@@ -82,7 +82,7 @@ abstract public class Value {
 	};
 
 	/** Value that is the prefWidth of the actor in the cell. */
-	static public Value prefWidth = new Value() {
+	static public final Value prefWidth = new Value() {
 		public float get (@Null Actor context) {
 			if (context instanceof Layout) return ((Layout)context).getPrefWidth();
 			return context == null ? 0 : context.getWidth();
@@ -91,7 +91,7 @@ abstract public class Value {
 	};
 
 	/** Value that is the prefHeight of the actor in the cell. */
-	static public Value prefHeight = new Value() {
+	static public final Value prefHeight = new Value() {
 		public float get (@Null Actor context) {
 			if (context instanceof Layout) return ((Layout)context).getPrefHeight();
 			return context == null ? 0 : context.getHeight();
@@ -99,7 +99,7 @@ abstract public class Value {
 	};
 
 	/** Value that is the maxWidth of the actor in the cell. */
-	static public Value maxWidth = new Value() {
+	static public final Value maxWidth = new Value() {
 		public float get (@Null Actor context) {
 			if (context instanceof Layout) return ((Layout)context).getMaxWidth();
 			return context == null ? 0 : context.getWidth();
@@ -107,7 +107,7 @@ abstract public class Value {
 	};
 
 	/** Value that is the maxHeight of the actor in the cell. */
-	static public Value maxHeight = new Value() {
+	static public final Value maxHeight = new Value() {
 		public float get (@Null Actor context) {
 			if (context instanceof Layout) return ((Layout)context).getMaxHeight();
 			return context == null ? 0 : context.getHeight();

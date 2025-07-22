@@ -16,13 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Writer;
-
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -31,6 +24,13 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.StreamUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Writer;
 
 /** See <a href=
  * "https://web.archive.org/web/20200427191041/http://www.badlogicgames.com/wordpress/?p=12555">http://www.badlogicgames.com/wordpress/?p=12555</a>
@@ -205,7 +205,7 @@ public class ParticleEffect implements Disposable {
 		for (int i = 0, n = emitters.size; i < n; i++) {
 			ParticleEmitter emitter = emitters.get(i);
 			if (emitter.getImagePaths().size == 0) continue;
-			Array<Sprite> sprites = new Array<Sprite>();
+			Array<Sprite> sprites = new Array<>();
 			for (String imagePath : emitter.getImagePaths()) {
 				String imageName = new File(imagePath.replace('\\', '/')).getName();
 				int lastDotIndex = imageName.lastIndexOf('.');
@@ -221,11 +221,11 @@ public class ParticleEffect implements Disposable {
 
 	public void loadEmitterImages (FileHandle imagesDir) {
 		ownsTexture = true;
-		ObjectMap<String, Sprite> loadedSprites = new ObjectMap<String, Sprite>(emitters.size);
+		ObjectMap<String, Sprite> loadedSprites = new ObjectMap<>(emitters.size);
 		for (int i = 0, n = emitters.size; i < n; i++) {
 			ParticleEmitter emitter = emitters.get(i);
 			if (emitter.getImagePaths().size == 0) continue;
-			Array<Sprite> sprites = new Array<Sprite>();
+			Array<Sprite> sprites = new Array<>();
 			for (String imagePath : emitter.getImagePaths()) {
 				String imageName = new File(imagePath.replace('\\', '/')).getName();
 				Sprite sprite = loadedSprites.get(imageName);

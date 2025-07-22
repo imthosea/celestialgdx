@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
@@ -33,6 +30,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+
 /** loads {@link PolygonRegion PolygonRegions} using a {@link com.badlogic.gdx.graphics.g2d.PolygonRegionLoader}
  * @author dermetfan */
 public class PolygonRegionLoader extends SynchronousAssetLoader<PolygonRegion, PolygonRegionParameters> {
@@ -40,21 +40,21 @@ public class PolygonRegionLoader extends SynchronousAssetLoader<PolygonRegion, P
 	public static class PolygonRegionParameters extends AssetLoaderParameters<PolygonRegion> {
 
 		/** what the line starts with that contains the file name of the texture for this {@code PolygonRegion} */
-		public String texturePrefix = "i ";
+		public final String texturePrefix = "i ";
 
 		/** what buffer size of the reader should be used to read the {@link #texturePrefix} line
 		 * @see FileHandle#reader(int) */
-		public int readerBuffer = 1024;
+		public final int readerBuffer = 1024;
 
 		/** the possible file name extensions of the texture file */
-		public String[] textureExtensions = new String[] {"png", "PNG", "jpeg", "JPEG", "jpg", "JPG", "cim", "CIM", "etc1", "ETC1",
+		public final String[] textureExtensions = new String[] {"png", "PNG", "jpeg", "JPEG", "jpg", "JPG", "cim", "CIM", "etc1", "ETC1",
 			"ktx", "KTX", "zktx", "ZKTX"};
 
 	}
 
-	private PolygonRegionParameters defaultParameters = new PolygonRegionParameters();
+	private final PolygonRegionParameters defaultParameters = new PolygonRegionParameters();
 
-	private EarClippingTriangulator triangulator = new EarClippingTriangulator();
+	private final EarClippingTriangulator triangulator = new EarClippingTriangulator();
 
 	public PolygonRegionLoader () {
 		this(new InternalFileHandleResolver());
@@ -96,8 +96,8 @@ public class PolygonRegionLoader extends SynchronousAssetLoader<PolygonRegion, P
 		}
 
 		if (image != null) {
-			Array<AssetDescriptor> deps = new Array<AssetDescriptor>(1);
-			deps.add(new AssetDescriptor<Texture>(file.sibling(image), Texture.class));
+			Array<AssetDescriptor> deps = new Array<>(1);
+			deps.add(new AssetDescriptor<>(file.sibling(image), Texture.class));
 			return deps;
 		}
 

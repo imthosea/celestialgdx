@@ -25,7 +25,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  * @author Xoppa */
 public abstract class Attribute implements Comparable<Attribute> {
 	/** The registered type aliases */
-	private final static Array<String> types = new Array<String>();
+	private final static Array<String> types = new Array<>();
 
 	/** The long bitmask is limited to 64 bits **/
 	private final static int MAX_ATTRIBUTE_COUNT = 64;
@@ -82,8 +82,7 @@ public abstract class Attribute implements Comparable<Attribute> {
 	public boolean equals (Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof Attribute)) return false;
-		final Attribute other = (Attribute)obj;
+		if (!(obj instanceof Attribute other)) return false;
 		if (this.type != other.type) return false;
 		return equals(other);
 	}

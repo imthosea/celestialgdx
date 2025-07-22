@@ -20,7 +20,7 @@ package com.badlogic.gdx.utils;
  * 
  * @param <E> */
 public class SortedIntList<E> implements Iterable<SortedIntList.Node<E>> {
-	private NodePool<E> nodePool = new NodePool<E>(); // avoid allocating nodes
+	private final NodePool<E> nodePool = new NodePool<>(); // avoid allocating nodes
 	private transient Iterator iterator;
 	int size = 0;
 
@@ -179,7 +179,7 @@ public class SortedIntList<E> implements Iterable<SortedIntList.Node<E>> {
 	static class NodePool<E> extends Pool<Node<E>> {
 		@Override
 		protected Node<E> newObject () {
-			return new Node<E>();
+			return new Node<>();
 		}
 
 		public Node<E> obtain (Node<E> p, Node<E> n, E value, int index) {

@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  * @author mzechner */
 public class Version {
 	/** The current version of libGDX as a String in the major.minor.revision format **/
-	public static final String VERSION = "1.13.5".toString();
+	public static final String VERSION = "1.13.5";
 
 	/** The current major version of libGDX **/
 	public static final int MAJOR;
@@ -37,9 +37,9 @@ public class Version {
 	static {
 		try {
 			String[] v = VERSION.split("\\.");
-			MAJOR = v.length < 1 ? 0 : Integer.valueOf(v[0]);
-			MINOR = v.length < 2 ? 0 : Integer.valueOf(v[1]);
-			REVISION = v.length < 3 ? 0 : Integer.valueOf(v[2]);
+			MAJOR = v.length < 1 ? 0 : Integer.parseInt(v[0]);
+			MINOR = v.length < 2 ? 0 : Integer.parseInt(v[1]);
+			REVISION = v.length < 3 ? 0 : Integer.parseInt(v[2]);
 		} catch (Throwable t) {
 			// Should never happen
 			throw new GdxRuntimeException("Invalid version " + VERSION, t);

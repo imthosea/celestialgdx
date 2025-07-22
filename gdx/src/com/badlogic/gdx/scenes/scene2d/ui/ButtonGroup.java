@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.Null;
  * @author Nathan Sweet */
 public class ButtonGroup<T extends Button> {
 	private final Array<T> buttons = new Array();
-	private Array<T> checkedButtons = new Array(1);
+	private final Array<T> checkedButtons = new Array(1);
 	private int minCheckCount, maxCheckCount = 1;
 	private boolean uncheckLast = true;
 	private T lastChecked;
@@ -53,8 +53,7 @@ public class ButtonGroup<T extends Button> {
 
 	public void add (T... buttons) {
 		if (buttons == null) throw new IllegalArgumentException("buttons cannot be null.");
-		for (int i = 0, n = buttons.length; i < n; i++)
-			add(buttons[i]);
+		for (T button : buttons) add(button);
 	}
 
 	public void remove (T button) {
@@ -66,8 +65,7 @@ public class ButtonGroup<T extends Button> {
 
 	public void remove (T... buttons) {
 		if (buttons == null) throw new IllegalArgumentException("buttons cannot be null.");
-		for (int i = 0, n = buttons.length; i < n; i++)
-			remove(buttons[i]);
+		for (T button : buttons) remove(button);
 	}
 
 	public void clear () {
@@ -106,7 +104,7 @@ public class ButtonGroup<T extends Button> {
 					minCheckCount = 0;
 					lastChecked.setChecked(false); // May have listeners that change button states.
 					minCheckCount = old;
-					if (button.isChecked == newState) return false;
+					if (button.isChecked) return false;
 					if (checkedButtons.size < maxCheckCount) break;
 					if (tries++ > 10) return false; // Unable to uncheck another button.
 				}

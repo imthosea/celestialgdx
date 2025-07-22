@@ -100,9 +100,9 @@ public abstract class BaseShader implements Shader {
 		}
 	}
 
-	private final Array<String> uniforms = new Array<String>();
-	private final Array<Validator> validators = new Array<Validator>();
-	private final Array<Setter> setters = new Array<Setter>();
+	private final Array<String> uniforms = new Array<>();
+	private final Array<Validator> validators = new Array<>();
+	private final Array<Setter> setters = new Array<>();
 	private int locations[];
 	private final IntArray globalUniforms = new IntArray();
 	private final IntArray localUniforms = new IntArray();
@@ -246,7 +246,7 @@ public abstract class BaseShader implements Shader {
 		return tempArray2.items;
 	}
 
-	private Attributes combinedAttributes = new Attributes();
+	private final Attributes combinedAttributes = new Attributes();
 
 	@Override
 	public void render (Renderable renderable) {

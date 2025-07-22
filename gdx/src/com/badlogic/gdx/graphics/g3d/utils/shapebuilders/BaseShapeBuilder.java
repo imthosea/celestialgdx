@@ -57,14 +57,14 @@ public class BaseShapeBuilder {
 	/* Matrix4 */
 	protected static final Matrix4 matTmp1 = new Matrix4();
 
-	private final static FlushablePool<Vector3> vectorPool = new FlushablePool<Vector3>() {
+	private final static FlushablePool<Vector3> vectorPool = new FlushablePool<>() {
 		@Override
 		protected Vector3 newObject () {
 			return new Vector3();
 		}
 	};
 
-	private final static FlushablePool<Matrix4> matrices4Pool = new FlushablePool<Matrix4>() {
+	private final static FlushablePool<Matrix4> matrices4Pool = new FlushablePool<>() {
 		@Override
 		protected Matrix4 newObject () {
 			return new Matrix4();

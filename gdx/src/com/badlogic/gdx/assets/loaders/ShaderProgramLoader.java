@@ -95,7 +95,7 @@ public class ShaderProgramLoader extends AsynchronousAssetLoader<ShaderProgram, 
 		 * asset to AssetManager. */
 		public String fragmentFile;
 		/** Whether to log (at the error level) the shader's log if it fails to compile. Default true. */
-		public boolean logOnCompileFailure = true;
+		public final boolean logOnCompileFailure = true;
 		/** Code that is always added to the vertex shader code. This is added as-is, and you should include a newline (`\n`) if
 		 * needed. {@linkplain ShaderProgram#prependVertexCode} is placed before this code. */
 		public String prependVertexCode;

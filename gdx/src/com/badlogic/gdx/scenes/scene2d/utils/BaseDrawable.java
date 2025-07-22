@@ -18,7 +18,6 @@ package com.badlogic.gdx.scenes.scene2d.utils;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Null;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
 
 /** Drawable that stores the size information but doesn't draw anything.
  * @author Nathan Sweet */
@@ -100,7 +99,6 @@ public class BaseDrawable implements Drawable {
 	}
 
 	public @Null String toString () {
-		if (name == null) return ClassReflection.getSimpleName(getClass());
-		return name;
+		return name != null ? name : getClass().getSimpleName();
 	}
 }

@@ -44,8 +44,8 @@ import com.badlogic.gdx.utils.Disposable;
  * 
  * Maps must be disposed through a call to {@link #dispose()} when no longer used. */
 public class Map implements Disposable {
-	private MapLayers layers = new MapLayers();
-	private MapProperties properties = new MapProperties();
+	private final MapLayers layers = new MapLayers();
+	private final MapProperties properties = new MapProperties();
 
 	/** Creates empty map */
 	public Map () {

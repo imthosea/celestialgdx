@@ -57,17 +57,17 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 
 	protected TiledMap map;
 
-	protected float unitScale;
+	protected final float unitScale;
 
-	protected Batch batch;
+	protected final Batch batch;
 
-	protected Rectangle viewBounds;
-	protected Rectangle imageBounds = new Rectangle();
-	protected Rectangle repeatedImageBounds = new Rectangle();
+	protected final Rectangle viewBounds;
+	protected final Rectangle imageBounds = new Rectangle();
+	protected final Rectangle repeatedImageBounds = new Rectangle();
 
-	protected boolean ownsBatch;
+	protected final boolean ownsBatch;
 
-	protected float vertices[] = new float[NUM_VERTICES];
+	protected final float[] vertices = new float[NUM_VERTICES];
 
 	public TiledMap getMap () {
 		return map;

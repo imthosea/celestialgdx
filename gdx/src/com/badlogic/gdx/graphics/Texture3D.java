@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.graphics;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
@@ -26,11 +23,14 @@ import com.badlogic.gdx.graphics.glutils.CustomTexture3DData;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** Open GLES wrapper for Texture3D
  * @author mgsx */
 public class Texture3D extends GLTexture {
 
-	final static Map<Application, Array<Texture3D>> managedTexture3Ds = new HashMap<Application, Array<Texture3D>>();
+	final static Map<Application, Array<Texture3D>> managedTexture3Ds = new HashMap<>();
 
 	private Texture3DData data;
 
@@ -107,7 +107,7 @@ public class Texture3D extends GLTexture {
 
 	private static void addManagedTexture (Application app, Texture3D texture) {
 		Array<Texture3D> managedTextureArray = managedTexture3Ds.get(app);
-		if (managedTextureArray == null) managedTextureArray = new Array<Texture3D>();
+		if (managedTextureArray == null) managedTextureArray = new Array<>();
 		managedTextureArray.add(texture);
 		managedTexture3Ds.put(app, managedTextureArray);
 	}
@@ -131,8 +131,8 @@ public class Texture3D extends GLTexture {
 	public static String getManagedStatus () {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Managed TextureArrays/app: { ");
-		for (Application app : managedTexture3Ds.keySet()) {
-			builder.append(managedTexture3Ds.get(app).size);
+		for (Array<Texture3D> texture3DS : managedTexture3Ds.values()) {
+			builder.append(texture3DS.size);
 			builder.append(" ");
 		}
 		builder.append("}");

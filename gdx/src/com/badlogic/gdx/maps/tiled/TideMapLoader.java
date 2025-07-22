@@ -47,7 +47,7 @@ public class TideMapLoader extends SynchronousAssetLoader<TiledMap, TideMapLoade
 
 	}
 
-	private XmlReader xml = new XmlReader();
+	private final XmlReader xml = new XmlReader();
 	private Element root;
 
 	public TideMapLoader () {
@@ -62,7 +62,7 @@ public class TideMapLoader extends SynchronousAssetLoader<TiledMap, TideMapLoade
 		try {
 			FileHandle tideFile = resolve(fileName);
 			root = xml.parse(tideFile);
-			ObjectMap<String, Texture> textures = new ObjectMap<String, Texture>();
+			ObjectMap<String, Texture> textures = new ObjectMap<>();
 			for (FileHandle textureFile : loadTileSheets(root, tideFile)) {
 				textures.put(textureFile.path(), new Texture(textureFile));
 			}
@@ -87,7 +87,7 @@ public class TideMapLoader extends SynchronousAssetLoader<TiledMap, TideMapLoade
 
 	@Override
 	public Array<AssetDescriptor> getDependencies (String fileName, FileHandle tmxFile, Parameters parameter) {
-		Array<AssetDescriptor> dependencies = new Array<AssetDescriptor>();
+		Array<AssetDescriptor> dependencies = new Array<>();
 		try {
 			root = xml.parse(tmxFile);
 			for (FileHandle image : loadTileSheets(root, tmxFile)) {
@@ -126,7 +126,7 @@ public class TideMapLoader extends SynchronousAssetLoader<TiledMap, TideMapLoade
 	 * @return a list of filenames for images containing tiles
 	 * @throws IOException */
 	private Array<FileHandle> loadTileSheets (Element root, FileHandle tideFile) throws IOException {
-		Array<FileHandle> images = new Array<FileHandle>();
+		Array<FileHandle> images = new Array<>();
 		Element tilesheets = root.getChildByName("TileSheets");
 		for (Element tileset : tilesheets.getChildrenByName("TileSheet")) {
 			Element imageSource = tileset.getChildByName("ImageSource");
@@ -244,7 +244,7 @@ public class TideMapLoader extends SynchronousAssetLoader<TiledMap, TideMapLoade
 						// Create an AnimatedTile
 						int interval = currentChild.getInt("Interval");
 						Element frames = currentChild.getChildByName("Frames");
-						Array<StaticTiledMapTile> frameTiles = new Array<StaticTiledMapTile>();
+						Array<StaticTiledMapTile> frameTiles = new Array<>();
 						for (int frameChild = 0, frameChildCount = frames.getChildCount(); frameChild < frameChildCount; frameChild++) {
 							Element frame = frames.getChild(frameChild);
 							String frameName = frame.getName();

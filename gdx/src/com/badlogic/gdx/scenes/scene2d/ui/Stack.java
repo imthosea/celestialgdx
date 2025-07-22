@@ -72,8 +72,7 @@ public class Stack extends WidgetGroup {
 		for (int i = 0, n = children.size; i < n; i++) {
 			Actor child = children.get(i);
 			float childMaxWidth, childMaxHeight;
-			if (child instanceof Layout) {
-				Layout layout = (Layout)child;
+			if (child instanceof Layout layout) {
 				prefWidth = Math.max(prefWidth, layout.getPrefWidth());
 				prefHeight = Math.max(prefHeight, layout.getPrefHeight());
 				minWidth = Math.max(minWidth, layout.getMinWidth());

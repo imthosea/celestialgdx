@@ -16,12 +16,8 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-
+import com.badlogic.gdx.graphics.GL32;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
@@ -29,13 +25,14 @@ import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL40;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GL45;
-import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.opengl.KHRBlendEquationAdvanced;
 import org.lwjgl.system.MemoryUtil;
 
-import com.badlogic.gdx.graphics.GL32;
-import com.badlogic.gdx.graphics.GL32.DebugProc;
-import com.badlogic.gdx.utils.GdxRuntimeException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 public class Lwjgl3GL32 extends Lwjgl3GL31 implements GL32 {
 
@@ -68,11 +65,8 @@ public class Lwjgl3GL32 extends Lwjgl3GL31 implements GL32 {
 	@Override
 	public void glDebugMessageCallback (DebugProc callback) {
 		if (callback != null) {
-			GL43.glDebugMessageCallback(new GLDebugMessageCallbackI() {
-				@Override
-				public void invoke (int source, int type, int id, int severity, int length, long message, long userParam) {
-					callback.onMessage(source, type, id, severity, MemoryUtil.memUTF8(message, length));
-				}
+			GL43.glDebugMessageCallback((source, type, id, severity, length, message, userParam) -> {
+				callback.onMessage(source, type, id, severity, MemoryUtil.memUTF8(message, length));
 			}, 0);
 		} else {
 			GL43.glDebugMessageCallback(null, 0);
@@ -154,8 +148,7 @@ public class Lwjgl3GL32 extends Lwjgl3GL31 implements GL32 {
 
 	@Override
 	public void glDrawElementsBaseVertex (int mode, int count, int type, Buffer indices, int basevertex) {
-		if (indices instanceof ShortBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
-			ShortBuffer sb = (ShortBuffer)indices;
+		if (indices instanceof ShortBuffer sb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
 			int position = sb.position();
 			int oldLimit = sb.limit();
 			sb.limit(position + count);
@@ -168,8 +161,7 @@ public class Lwjgl3GL32 extends Lwjgl3GL31 implements GL32 {
 			sb.limit(position + count);
 			org.lwjgl.opengl.GL32.glDrawElementsBaseVertex(mode, sb, basevertex);
 			sb.limit(oldLimit);
-		} else if (indices instanceof ByteBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
-			ByteBuffer bb = (ByteBuffer)indices;
+		} else if (indices instanceof ByteBuffer bb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
 			int position = bb.position();
 			int oldLimit = bb.limit();
 			bb.limit(position + count);
@@ -182,8 +174,7 @@ public class Lwjgl3GL32 extends Lwjgl3GL31 implements GL32 {
 
 	@Override
 	public void glDrawRangeElementsBaseVertex (int mode, int start, int end, int count, int type, Buffer indices, int basevertex) {
-		if (indices instanceof ShortBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
-			ShortBuffer sb = (ShortBuffer)indices;
+		if (indices instanceof ShortBuffer sb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
 			int position = sb.position();
 			int oldLimit = sb.limit();
 			sb.limit(position + count);
@@ -196,8 +187,7 @@ public class Lwjgl3GL32 extends Lwjgl3GL31 implements GL32 {
 			sb.limit(position + count);
 			org.lwjgl.opengl.GL32.glDrawRangeElementsBaseVertex(mode, start, end, sb, basevertex);
 			sb.limit(oldLimit);
-		} else if (indices instanceof ByteBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
-			ByteBuffer bb = (ByteBuffer)indices;
+		} else if (indices instanceof ByteBuffer bb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
 			int position = bb.position();
 			int oldLimit = bb.limit();
 			bb.limit(position + count);
@@ -211,8 +201,7 @@ public class Lwjgl3GL32 extends Lwjgl3GL31 implements GL32 {
 	@Override
 	public void glDrawElementsInstancedBaseVertex (int mode, int count, int type, Buffer indices, int instanceCount,
 		int basevertex) {
-		if (indices instanceof ShortBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
-			ShortBuffer sb = (ShortBuffer)indices;
+		if (indices instanceof ShortBuffer sb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
 			int position = sb.position();
 			int oldLimit = sb.limit();
 			sb.limit(position + count);
@@ -225,8 +214,7 @@ public class Lwjgl3GL32 extends Lwjgl3GL31 implements GL32 {
 			sb.limit(position + count);
 			org.lwjgl.opengl.GL32.glDrawElementsInstancedBaseVertex(mode, sb, instanceCount, basevertex);
 			sb.limit(oldLimit);
-		} else if (indices instanceof ByteBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
-			ByteBuffer bb = (ByteBuffer)indices;
+		} else if (indices instanceof ByteBuffer bb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
 			int position = bb.position();
 			int oldLimit = bb.limit();
 			bb.limit(position + count);

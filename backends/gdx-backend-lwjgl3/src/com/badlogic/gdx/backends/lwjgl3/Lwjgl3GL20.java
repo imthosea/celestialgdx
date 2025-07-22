@@ -16,14 +16,7 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -31,7 +24,13 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
-import com.badlogic.gdx.utils.GdxRuntimeException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 class Lwjgl3GL20 implements com.badlogic.gdx.graphics.GL20 {
 	private ByteBuffer buffer = null;
@@ -276,8 +275,7 @@ class Lwjgl3GL20 implements com.badlogic.gdx.graphics.GL20 {
 	}
 
 	public void glDrawElements (int mode, int count, int type, Buffer indices) {
-		if (indices instanceof ShortBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
-			ShortBuffer sb = (ShortBuffer)indices;
+		if (indices instanceof ShortBuffer sb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
 			int position = sb.position();
 			int oldLimit = sb.limit();
 			sb.limit(position + count);
@@ -290,8 +288,7 @@ class Lwjgl3GL20 implements com.badlogic.gdx.graphics.GL20 {
 			sb.limit(position + count);
 			GL11.glDrawElements(mode, sb);
 			sb.limit(oldLimit);
-		} else if (indices instanceof ByteBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
-			ByteBuffer bb = (ByteBuffer)indices;
+		} else if (indices instanceof ByteBuffer bb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
 			int position = bb.position();
 			int oldLimit = bb.limit();
 			bb.limit(position + count);

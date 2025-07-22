@@ -16,13 +16,12 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.util.Arrays;
-
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics.Lwjgl3DisplayMode;
-import com.badlogic.gdx.graphics.Color;
+
+import java.util.Arrays;
 
 public class Lwjgl3WindowConfiguration {
 	int windowX = -1;
@@ -40,7 +39,6 @@ public class Lwjgl3WindowConfiguration {
 	Lwjgl3WindowListener windowListener;
 	Lwjgl3DisplayMode fullscreenMode;
 	String title;
-	Color initialBackgroundColor = Color.BLACK;
 	boolean initialVisible = true;
 	boolean vSyncEnabled = true;
 
@@ -63,7 +61,6 @@ public class Lwjgl3WindowConfiguration {
 		windowListener = config.windowListener;
 		fullscreenMode = config.fullscreenMode;
 		title = config.title;
-		initialBackgroundColor = config.initialBackgroundColor;
 		initialVisible = config.initialVisible;
 		vSyncEnabled = config.vSyncEnabled;
 	}
@@ -153,11 +150,6 @@ public class Lwjgl3WindowConfiguration {
 	/** Sets the window title. If null, the application listener's class name is used. */
 	public void setTitle (String title) {
 		this.title = title;
-	}
-
-	/** Sets the initial background color. Defaults to black. */
-	public void setInitialBackgroundColor (Color color) {
-		initialBackgroundColor = color;
 	}
 
 	/** Sets whether to use vsync. This setting can be changed anytime at runtime via {@link Graphics#setVSync(boolean)}.

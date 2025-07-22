@@ -29,7 +29,7 @@ import com.badlogic.gdx.utils.Disposable;
  * the particles controllers.
  * @author inferno */
 public class ParticleEffect implements Disposable, ResourceData.Configurable {
-	private Array<ParticleController> controllers;
+	private final Array<ParticleController> controllers;
 	private BoundingBox bounds;
 
 	public ParticleEffect () {
@@ -37,13 +37,13 @@ public class ParticleEffect implements Disposable, ResourceData.Configurable {
 	}
 
 	public ParticleEffect (ParticleEffect effect) {
-		controllers = new Array<ParticleController>(true, effect.controllers.size);
+		controllers = new Array<>(true, effect.controllers.size);
 		for (int i = 0, n = effect.controllers.size; i < n; i++)
 			controllers.add(effect.controllers.get(i).copy());
 	}
 
 	public ParticleEffect (ParticleController... emitters) {
-		this.controllers = new Array<ParticleController>(emitters);
+		this.controllers = new Array<>(emitters);
 	}
 
 	public void init () {

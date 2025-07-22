@@ -55,12 +55,12 @@ public class TextButton extends Button {
 
 	public void setStyle (ButtonStyle style) {
 		if (style == null) throw new NullPointerException("style cannot be null");
-		if (!(style instanceof TextButtonStyle)) throw new IllegalArgumentException("style must be a TextButtonStyle.");
-		this.style = (TextButtonStyle)style;
+		if (!(style instanceof TextButtonStyle textButtonStyle))
+			throw new IllegalArgumentException("style must be a TextButtonStyle.");
+		this.style = textButtonStyle;
 		super.setStyle(style);
 
 		if (label != null) {
-			TextButtonStyle textButtonStyle = (TextButtonStyle)style;
 			LabelStyle labelStyle = label.getStyle();
 			labelStyle.font = textButtonStyle.font;
 			labelStyle.fontColor = textButtonStyle.fontColor;

@@ -18,39 +18,26 @@ package com.badlogic.gdx.backends.lwjgl3.angle;
 
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-import java.io.*;
-import java.lang.reflect.Method;
-import java.util.Random;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
 public class ANGLELoader {
-	static public boolean isWindows = System.getProperty("os.name").contains("Windows");
-	static public boolean isLinux = System.getProperty("os.name").contains("Linux")
-		|| System.getProperty("os.name").contains("FreeBSD");
-	static public boolean isMac = System.getProperty("os.name").contains("Mac");
-	static public boolean isARM = System.getProperty("os.arch").startsWith("arm")
-		|| System.getProperty("os.arch").startsWith("aarch64");
-	static public boolean is64Bit = System.getProperty("os.arch").contains("64")
-		|| System.getProperty("os.arch").startsWith("armv8");
+	public static final boolean isWindows = System.getProperty("os.name").contains("Windows");
+	public static final boolean isLinux = System.getProperty("os.name").contains("Linux")
+			|| System.getProperty("os.name").contains("FreeBSD");
+	public static final boolean isMac = System.getProperty("os.name").contains("Mac");
+	public static final boolean isARM = System.getProperty("os.arch").startsWith("arm")
+			|| System.getProperty("os.arch").startsWith("aarch64");
+	public static final boolean is64Bit = System.getProperty("os.arch").contains("64")
+			|| System.getProperty("os.arch").startsWith("armv8");
 
-	static private final Random random = new Random();
-	static private File egl;
-	static private File gles;
-	static private File lastWorkingDir;
-
-	public static void closeQuietly (Closeable c) {
-		if (c != null) {
-			try {
-				c.close();
-			} catch (Throwable ignored) {
-			}
-		}
-	}
-
-	static String randomUUID () {
-		return new UUID(random.nextLong(), random.nextLong()).toString();
-	}
+	private static File egl;
+	private static File gles;
+	private static File lastWorkingDir;
 
 	public static String crc (InputStream input) {
 		if (input == null) throw new IllegalArgumentException("input cannot be null.");
@@ -62,9 +49,7 @@ public class ANGLELoader {
 				if (length == -1) break;
 				crc.update(buffer, 0, length);
 			}
-		} catch (Exception ex) {
-		} finally {
-			closeQuietly(input);
+		} catch (Exception ignored) {
 		}
 		return Long.toString(crc.getValue(), 16);
 	}
@@ -72,39 +57,35 @@ public class ANGLELoader {
 	private static File extractFile (String sourcePath, File outFile) {
 		try {
 			if (!outFile.getParentFile().exists() && !outFile.getParentFile().mkdirs()) throw new GdxRuntimeException(
-				"Couldn't create ANGLE native library output directory " + outFile.getParentFile().getAbsolutePath());
-			OutputStream out = null;
-			InputStream in = null;
-
+					"Couldn't create ANGLE native library output directory " + outFile.getParentFile().getAbsolutePath());
 			if (outFile.exists()) {
 				return outFile;
 			}
 
-			try {
-				out = new FileOutputStream(outFile);
-				in = ANGLELoader.class.getResourceAsStream("/" + sourcePath);
+			try (
+					var out = new FileOutputStream(outFile);
+					var in = ANGLELoader.class.getResourceAsStream("/" + sourcePath)
+			) {
 				byte[] buffer = new byte[4096];
 				while (true) {
 					int length = in.read(buffer);
-					if (length == -1) break;
+					if (length == -1) return outFile;
 					out.write(buffer, 0, length);
 				}
-				return outFile;
-			} finally {
-				closeQuietly(out);
-				closeQuietly(in);
 			}
 		} catch (Throwable t) {
 			throw new GdxRuntimeException("Couldn't load ANGLE shared library " + sourcePath, t);
 		}
 	}
 
-	/** Returns a path to a file that can be written. Tries multiple locations and verifies writing succeeds.
-	 * @return null if a writable path could not be found. */
+	/**
+	 * Returns a path to a file that can be written. Tries multiple locations and verifies writing succeeds.
+	 * @return null if a writable path could not be found.
+	 */
 	private static File getExtractedFile (String dirName, String fileName) {
 		// Temp directory with username in path.
 		File idealFile = new File(
-			System.getProperty("java.io.tmpdir") + "/libgdx" + System.getProperty("user.name") + "/" + dirName, fileName);
+				System.getProperty("java.io.tmpdir") + "/libgdx" + System.getProperty("user.name") + "/" + dirName, fileName);
 		if (canWrite(idealFile)) return idealFile;
 
 		// System provided temp directory.
@@ -131,14 +112,16 @@ public class ANGLELoader {
 		return null;
 	}
 
-	/** Returns true if the parent directories of the file can be created and the file can be written. */
+	/**
+	 * Returns true if the parent directories of the file can be created and the file can be written.
+	 */
 	private static boolean canWrite (File file) {
 		File parent = file.getParentFile();
 		File testFile;
 		if (file.exists()) {
 			if (!file.canWrite() || !canExecute(file)) return false;
 			// Don't overwrite existing file just to check if we can write to directory.
-			testFile = new File(parent, randomUUID().toString());
+			testFile = new File(parent, UUID.randomUUID().toString());
 		} else {
 			parent.mkdirs();
 			if (!parent.isDirectory()) return false;
@@ -156,22 +139,11 @@ public class ANGLELoader {
 	}
 
 	private static boolean canExecute (File file) {
-		try {
-			Method canExecute = File.class.getMethod("canExecute");
-			if ((Boolean)canExecute.invoke(file)) return true;
-
-			Method setExecutable = File.class.getMethod("setExecutable", boolean.class, boolean.class);
-			setExecutable.invoke(file, true, false);
-
-			return (Boolean)canExecute.invoke(file);
-		} catch (Exception ignored) {
-		}
-		return false;
+		if (file.canExecute()) return true;
+		return file.setExecutable(true, false);
 	}
 
-	public static void load () {
-		if ((isARM && !isMac) || (!isWindows && !isLinux && !isMac))
-			throw new GdxRuntimeException("ANGLE is only supported on x86/x86_64 Windows, x64 Linux, and x64/arm64 macOS.");
+	public static void load() {
 		String osDir = null;
 		String ext = null;
 		if (isWindows) {
@@ -182,15 +154,20 @@ public class ANGLELoader {
 			osDir = "linux64";
 			ext = ".so";
 		}
-		if (isMac) {
+		if(isMac) {
 			osDir = isARM ? "macosxarm64" : "macosx64";
 			ext = ".dylib";
 		}
 
 		String eglSource = osDir + "/libEGL" + ext;
 		String glesSource = osDir + "/libGLESv2" + ext;
-		String crc = crc(ANGLELoader.class.getResourceAsStream("/" + eglSource))
-			+ crc(ANGLELoader.class.getResourceAsStream("/" + glesSource));
+		String crc = "";
+		try (
+				var egl = ANGLELoader.class.getResourceAsStream("/" + eglSource);
+				var gles = ANGLELoader.class.getResourceAsStream("/" + glesSource)
+		) {
+			crc = crc(egl) + crc(gles);
+		} catch (Exception ignored) {}
 		egl = getExtractedFile(crc, new File(eglSource).getName());
 		gles = getExtractedFile(crc, new File(glesSource).getName());
 
@@ -213,7 +190,7 @@ public class ANGLELoader {
 		}
 	}
 
-	public static void postGlfwInit () {
+	public static void postGlfwInit() {
 		new File(lastWorkingDir, egl.getName()).delete();
 		new File(lastWorkingDir, gles.getName()).delete();
 	}

@@ -106,7 +106,7 @@ public class AnimationController extends BaseAnimationController {
 		}
 	}
 
-	protected final Pool<AnimationDesc> animationPool = new Pool<AnimationDesc>() {
+	protected final Pool<AnimationDesc> animationPool = new Pool<>() {
 		@Override
 		protected AnimationDesc newObject () {
 			return new AnimationDesc();

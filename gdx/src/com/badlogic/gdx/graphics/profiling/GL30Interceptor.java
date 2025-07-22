@@ -16,13 +16,13 @@
 
 package com.badlogic.gdx.graphics.profiling;
 
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
+
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
 
 /** @author Daniel Holderbaum
  * @author Jan Polák */
@@ -35,7 +35,7 @@ public class GL30Interceptor extends GLInterceptor implements GL30 {
 		this.gl30 = gl30;
 	}
 
-	private void check () {
+	protected void check () {
 		int error = gl30.glGetError();
 		while (error != GL20.GL_NO_ERROR) {
 			glProfiler.getListener().onError(error);

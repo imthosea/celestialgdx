@@ -65,15 +65,15 @@ public class Tree<N extends Node, V> extends WidgetGroup implements Styleable<Tr
 	}
 
 	public Tree (TreeStyle style) {
-		selection = new Selection<N>() {
+		selection = new Selection<>() {
 			protected void changed () {
 				switch (size()) {
-				case 0:
-					rangeStart = null;
-					break;
-				case 1:
-					rangeStart = first();
-					break;
+					case 0:
+						rangeStart = null;
+						break;
+					case 1:
+						rangeStart = first();
+						break;
 				}
 			}
 		};
@@ -222,8 +222,7 @@ public class Tree<N extends Node, V> extends WidgetGroup implements Styleable<Tr
 			N node = nodes.get(i);
 			float rowWidth = indent + plusMinusWidth;
 			Actor actor = node.actor;
-			if (actor instanceof Layout) {
-				Layout layout = (Layout)actor;
+			if (actor instanceof Layout layout) {
 				rowWidth += layout.getPrefWidth();
 				node.height = layout.getPrefHeight();
 			} else {

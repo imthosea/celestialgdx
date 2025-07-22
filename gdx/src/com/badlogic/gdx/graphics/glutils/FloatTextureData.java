@@ -34,11 +34,11 @@ public class FloatTextureData implements TextureData {
 	int width = 0;
 	int height = 0;
 
-	int internalFormat;
-	int format;
-	int type;
+	final int internalFormat;
+	final int format;
+	final int type;
 
-	boolean isGpuOnly;
+	final boolean isGpuOnly;
 
 	boolean isPrepared = false;
 	FloatBuffer buffer;

@@ -54,15 +54,15 @@ public class DecalBatch implements Disposable {
 	private float[] vertices;
 	private Mesh mesh;
 
-	private final SortedIntList<Array<Decal>> groupList = new SortedIntList<Array<Decal>>();
+	private final SortedIntList<Array<Decal>> groupList = new SortedIntList<>();
 	private GroupStrategy groupStrategy;
-	private final Pool<Array<Decal>> groupPool = new Pool<Array<Decal>>(16) {
+	private final Pool<Array<Decal>> groupPool = new Pool<>(16) {
 		@Override
 		protected Array<Decal> newObject () {
-			return new Array<Decal>(false, 100);
+			return new Array<>(false, 100);
 		}
 	};
-	private final Array<Array<Decal>> usedGroups = new Array<Array<Decal>>(16);
+	private final Array<Array<Decal>> usedGroups = new Array<>(16);
 
 	/** Creates a new DecalBatch using the given {@link GroupStrategy}. The most commong strategy to use is a
 	 * {@link CameraGroupStrategy}

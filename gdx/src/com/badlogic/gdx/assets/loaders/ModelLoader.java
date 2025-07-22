@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import java.util.Iterator;
-
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
@@ -32,13 +30,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 
+import java.util.Iterator;
+
 public abstract class ModelLoader<P extends ModelLoader.ModelParameters> extends AsynchronousAssetLoader<Model, P> {
 	public ModelLoader (FileHandleResolver resolver) {
 		super(resolver);
 	}
 
-	protected Array<ObjectMap.Entry<String, ModelData>> items = new Array<ObjectMap.Entry<String, ModelData>>();
-	protected ModelParameters defaultParameters = new ModelParameters();
+	protected final Array<ObjectMap.Entry<String, ModelData>> items = new Array<>();
+	protected final ModelParameters defaultParameters = new ModelParameters();
 
 	/** Directly load the raw model data on the calling thread. */
 	public abstract ModelData loadModelData (final FileHandle fileHandle, P parameters);
@@ -75,7 +75,7 @@ public abstract class ModelLoader<P extends ModelLoader.ModelParameters> extends
 		ModelData data = loadModelData(file, parameters);
 		if (data == null) return deps;
 
-		ObjectMap.Entry<String, ModelData> item = new ObjectMap.Entry<String, ModelData>();
+		ObjectMap.Entry<String, ModelData> item = new ObjectMap.Entry<>();
 		item.key = fileName;
 		item.value = data;
 		synchronized (items) {
@@ -124,7 +124,7 @@ public abstract class ModelLoader<P extends ModelLoader.ModelParameters> extends
 	}
 
 	static public class ModelParameters extends AssetLoaderParameters<Model> {
-		public TextureLoader.TextureParameter textureParameter;
+		public final TextureLoader.TextureParameter textureParameter;
 
 		public ModelParameters () {
 			textureParameter = new TextureLoader.TextureParameter();

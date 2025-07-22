@@ -26,7 +26,7 @@ import java.util.Arrays;
 public class ByteArray {
 	public byte[] items;
 	public int size;
-	public boolean ordered;
+	public final boolean ordered;
 
 	/** Creates an ordered array with a capacity of 16. */
 	public ByteArray () {
@@ -421,8 +421,7 @@ public class ByteArray {
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof ByteArray)) return false;
-		ByteArray array = (ByteArray)object;
+		if (!(object instanceof ByteArray array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;

@@ -80,8 +80,7 @@ public class HorizontalGroup extends WidgetGroup {
 				Actor child = children.get(i);
 
 				float width, height;
-				if (child instanceof Layout) {
-					Layout layout = (Layout)child;
+				if (child instanceof Layout layout) {
 					width = layout.getPrefWidth();
 					if (width > groupWidth) width = Math.max(groupWidth, layout.getMinWidth());
 					height = layout.getPrefHeight();
@@ -113,8 +112,7 @@ public class HorizontalGroup extends WidgetGroup {
 			prefWidth = padLeft + padRight + space * (n - 1);
 			for (int i = 0; i < n; i++) {
 				Actor child = children.get(i);
-				if (child instanceof Layout) {
-					Layout layout = (Layout)child;
+				if (child instanceof Layout layout) {
 					prefWidth += layout.getPrefWidth();
 					prefHeight = Math.max(prefHeight, layout.getPrefHeight());
 				} else {

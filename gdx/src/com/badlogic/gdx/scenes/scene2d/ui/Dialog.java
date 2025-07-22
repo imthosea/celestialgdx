@@ -41,12 +41,12 @@ import com.badlogic.gdx.utils.ObjectMap;
 public class Dialog extends Window {
 	Table contentTable, buttonTable;
 	private @Null Skin skin;
-	ObjectMap<Actor, Object> values = new ObjectMap();
+	final ObjectMap<Actor, Object> values = new ObjectMap();
 	boolean cancelHide;
 	Actor previousKeyboardFocus, previousScrollFocus;
 	FocusListener focusListener;
 
-	protected InputListener ignoreTouchDown = new InputListener() {
+	protected final InputListener ignoreTouchDown = new InputListener() {
 		public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 			event.cancel();
 			return false;

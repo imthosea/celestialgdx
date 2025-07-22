@@ -30,11 +30,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 
 public class DepthShader extends DefaultShader {
 	public static class Config extends DefaultShader.Config {
-		public boolean depthBufferOnly = false;
-		public float defaultAlphaTest = 0.5f;
+		public final boolean depthBufferOnly = false;
+		public final float defaultAlphaTest = 0.5f;
 
 		public Config () {
-			super();
 			defaultCullFace = GL20.GL_FRONT;
 		}
 
@@ -88,7 +87,7 @@ public class DepthShader extends DefaultShader {
 
 	public DepthShader (final Renderable renderable, final Config config, final ShaderProgram shaderProgram) {
 		super(renderable, config, shaderProgram);
-		final Attributes attributes = combineAttributes(renderable);
+		final Attributes attributes = depthCombineAttributes(renderable);
 
 		if (renderable.bones != null && renderable.bones.length > config.numBones) {
 			throw new GdxRuntimeException("too many bones: " + renderable.bones.length + ", max configured: " + config.numBones);
@@ -121,7 +120,7 @@ public class DepthShader extends DefaultShader {
 			if (renderable.bones.length > config.numBones) return false;
 			if (renderable.meshPart.mesh.getVertexAttributes().getBoneWeights() > config.numBoneWeights) return false;
 		}
-		final Attributes attributes = combineAttributes(renderable);
+		final Attributes attributes = depthCombineAttributes(renderable);
 
 		boolean isBlendedTextureShader = (attributesMask & BlendingAttribute.Type) == BlendingAttribute.Type
 			&& (attributesMask & TextureAttribute.Diffuse) == TextureAttribute.Diffuse;
@@ -151,7 +150,7 @@ public class DepthShader extends DefaultShader {
 	private final static Attributes tmpAttributes = new Attributes();
 
 	// TODO: Move responsibility for combining attributes to RenderableProvider
-	private static final Attributes combineAttributes (final Renderable renderable) {
+	private static Attributes depthCombineAttributes (final Renderable renderable) {
 		tmpAttributes.clear();
 		if (renderable.environment != null) tmpAttributes.set(renderable.environment);
 		if (renderable.material != null) tmpAttributes.set(renderable.material);

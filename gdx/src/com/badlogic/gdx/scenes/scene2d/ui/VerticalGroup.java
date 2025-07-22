@@ -80,8 +80,7 @@ public class VerticalGroup extends WidgetGroup {
 				Actor child = children.get(i);
 
 				float width, height;
-				if (child instanceof Layout) {
-					Layout layout = (Layout)child;
+				if (child instanceof Layout layout) {
 					width = layout.getPrefWidth();
 					height = layout.getPrefHeight();
 					if (height > groupHeight) height = Math.max(groupHeight, layout.getMinHeight());
@@ -113,8 +112,7 @@ public class VerticalGroup extends WidgetGroup {
 			prefHeight = padTop + padBottom + space * (n - 1);
 			for (int i = 0; i < n; i++) {
 				Actor child = children.get(i);
-				if (child instanceof Layout) {
-					Layout layout = (Layout)child;
+				if (child instanceof Layout layout) {
 					prefWidth = Math.max(prefWidth, layout.getPrefWidth());
 					prefHeight += layout.getPrefHeight();
 				} else {

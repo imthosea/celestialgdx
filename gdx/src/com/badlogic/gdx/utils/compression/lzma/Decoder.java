@@ -16,17 +16,17 @@
 
 package com.badlogic.gdx.utils.compression.lzma;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.utils.compression.lz.OutWindow;
 import com.badlogic.gdx.utils.compression.rangecoder.BitTreeDecoder;
 
+import java.io.IOException;
+
 public class Decoder {
-	class LenDecoder {
-		short[] m_Choice = new short[2];
-		BitTreeDecoder[] m_LowCoder = new BitTreeDecoder[Base.kNumPosStatesMax];
-		BitTreeDecoder[] m_MidCoder = new BitTreeDecoder[Base.kNumPosStatesMax];
-		BitTreeDecoder m_HighCoder = new BitTreeDecoder(Base.kNumHighLenBits);
+	private static class LenDecoder {
+		final short[] m_Choice = new short[2];
+		final BitTreeDecoder[] m_LowCoder = new BitTreeDecoder[Base.kNumPosStatesMax];
+		final BitTreeDecoder[] m_MidCoder = new BitTreeDecoder[Base.kNumPosStatesMax];
+		final BitTreeDecoder m_HighCoder = new BitTreeDecoder(Base.kNumHighLenBits);
 		int m_NumPosStates = 0;
 
 		public void Create (int numPosStates) {
@@ -56,9 +56,9 @@ public class Decoder {
 		}
 	}
 
-	class LiteralDecoder {
-		class Decoder2 {
-			short[] m_Decoders = new short[0x300];
+	private static class LiteralDecoder {
+		private static class Decoder2 {
+			final short[] m_Decoders = new short[0x300];
 
 			public void Init () {
 				com.badlogic.gdx.utils.compression.rangecoder.Decoder.InitBitModels(m_Decoders);
@@ -117,25 +117,25 @@ public class Decoder {
 		}
 	}
 
-	OutWindow m_OutWindow = new OutWindow();
-	com.badlogic.gdx.utils.compression.rangecoder.Decoder m_RangeDecoder = new com.badlogic.gdx.utils.compression.rangecoder.Decoder();
+	final OutWindow m_OutWindow = new OutWindow();
+	final com.badlogic.gdx.utils.compression.rangecoder.Decoder m_RangeDecoder = new com.badlogic.gdx.utils.compression.rangecoder.Decoder();
 
-	short[] m_IsMatchDecoders = new short[Base.kNumStates << Base.kNumPosStatesBitsMax];
-	short[] m_IsRepDecoders = new short[Base.kNumStates];
-	short[] m_IsRepG0Decoders = new short[Base.kNumStates];
-	short[] m_IsRepG1Decoders = new short[Base.kNumStates];
-	short[] m_IsRepG2Decoders = new short[Base.kNumStates];
-	short[] m_IsRep0LongDecoders = new short[Base.kNumStates << Base.kNumPosStatesBitsMax];
+	final short[] m_IsMatchDecoders = new short[Base.kNumStates << Base.kNumPosStatesBitsMax];
+	final short[] m_IsRepDecoders = new short[Base.kNumStates];
+	final short[] m_IsRepG0Decoders = new short[Base.kNumStates];
+	final short[] m_IsRepG1Decoders = new short[Base.kNumStates];
+	final short[] m_IsRepG2Decoders = new short[Base.kNumStates];
+	final short[] m_IsRep0LongDecoders = new short[Base.kNumStates << Base.kNumPosStatesBitsMax];
 
-	BitTreeDecoder[] m_PosSlotDecoder = new BitTreeDecoder[Base.kNumLenToPosStates];
-	short[] m_PosDecoders = new short[Base.kNumFullDistances - Base.kEndPosModelIndex];
+	final BitTreeDecoder[] m_PosSlotDecoder = new BitTreeDecoder[Base.kNumLenToPosStates];
+	final short[] m_PosDecoders = new short[Base.kNumFullDistances - Base.kEndPosModelIndex];
 
-	BitTreeDecoder m_PosAlignDecoder = new BitTreeDecoder(Base.kNumAlignBits);
+	final BitTreeDecoder m_PosAlignDecoder = new BitTreeDecoder(Base.kNumAlignBits);
 
-	LenDecoder m_LenDecoder = new LenDecoder();
-	LenDecoder m_RepLenDecoder = new LenDecoder();
+	final LenDecoder m_LenDecoder = new LenDecoder();
+	final LenDecoder m_RepLenDecoder = new LenDecoder();
 
-	LiteralDecoder m_LiteralDecoder = new LiteralDecoder();
+	final LiteralDecoder m_LiteralDecoder = new LiteralDecoder();
 
 	int m_DictionarySize = -1;
 	int m_DictionarySizeCheck = -1;

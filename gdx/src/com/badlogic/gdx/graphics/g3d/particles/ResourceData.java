@@ -25,8 +25,6 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
-import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 /** This class handles the assets and configurations required by a given resource when de/serialized. It's handy when a given
  * object or one of its members requires some assets to be loaded to work properly after being deserialized. To save the assets,
@@ -52,18 +50,18 @@ public class ResourceData<T> implements Json.Serializable {
 	 * {@link ResourceData} */
 	public static class SaveData implements Json.Serializable {
 		ObjectMap<String, Object> data;
-		IntArray assets;
+		final IntArray assets;
 		private int loadIndex;
 		protected ResourceData resources;
 
 		public SaveData () {
-			data = new ObjectMap<String, Object>();
+			data = new ObjectMap<>();
 			assets = new IntArray();
 			loadIndex = 0;
 		}
 
 		public SaveData (ResourceData resources) {
-			data = new ObjectMap<String, Object>();
+			data = new ObjectMap<>();
 			assets = new IntArray();
 			loadIndex = 0;
 			this.resources = resources;
@@ -129,8 +127,8 @@ public class ResourceData<T> implements Json.Serializable {
 			filename = json.readValue("filename", String.class, jsonData);
 			String className = json.readValue("type", String.class, jsonData);
 			try {
-				type = (Class<T>)ClassReflection.forName(className);
-			} catch (ReflectionException e) {
+				type = (Class<T>)Class.forName(className);
+			} catch (ClassNotFoundException e) {
 				throw new GdxRuntimeException("Class not found: " + className, e);
 			}
 		}
@@ -144,14 +142,14 @@ public class ResourceData<T> implements Json.Serializable {
 	private Array<SaveData> data;
 
 	/** Shared assets among all the configurable objects */
-	Array<AssetData> sharedAssets;
+	final Array<AssetData> sharedAssets;
 	private int currentLoadIndex;
 	public T resource;
 
 	public ResourceData () {
-		uniqueData = new ObjectMap<String, SaveData>();
+		uniqueData = new ObjectMap<>();
 		data = new Array<>(true, 3, SaveData[]::new);
-		sharedAssets = new Array<AssetData>();
+		sharedAssets = new Array<>();
 		currentLoadIndex = 0;
 	}
 
@@ -163,7 +161,7 @@ public class ResourceData<T> implements Json.Serializable {
 	<K> int getAssetData (String filename, Class<K> type) {
 		int i = 0;
 		for (AssetData data : sharedAssets) {
-			if (data.filename.equals(filename) && data.type.equals(type)) {
+			if (data.filename.equals(filename) && data.type == type) {
 				return i;
 			}
 			++i;
@@ -172,7 +170,7 @@ public class ResourceData<T> implements Json.Serializable {
 	}
 
 	public Array<AssetDescriptor> getAssetDescriptors () {
-		Array<AssetDescriptor> descriptors = new Array<AssetDescriptor>();
+		Array<AssetDescriptor> descriptors = new Array<>();
 		for (AssetData data : sharedAssets) {
 			descriptors.add(new AssetDescriptor<T>(data.filename, data.type));
 		}

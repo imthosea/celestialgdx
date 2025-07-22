@@ -27,7 +27,7 @@ public abstract class GLInterceptor implements GL20 {
 	protected int shaderSwitches;
 	protected final FloatCounter vertexCount = new FloatCounter(0);
 
-	protected GLProfiler glProfiler;
+	protected final GLProfiler glProfiler;
 
 	protected GLInterceptor (GLProfiler profiler) {
 		this.glProfiler = profiler;

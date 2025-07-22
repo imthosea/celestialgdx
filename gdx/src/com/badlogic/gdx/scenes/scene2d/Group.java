@@ -470,7 +470,7 @@ public class Group extends Actor implements Cullable {
 		if (recursively) {
 			for (Actor child : children) {
 				if (child instanceof Group) {
-					((Group)child).setDebug(enabled, recursively);
+					((Group)child).setDebug(enabled, true);
 				} else {
 					child.setDebug(enabled);
 				}
@@ -498,8 +498,7 @@ public class Group extends Actor implements Cullable {
 
 		Actor[] actors = children.begin();
 		for (int i = 0, n = children.size; i < n; i++) {
-			for (int ii = 0; ii < indent; ii++)
-				buffer.append("|  ");
+			buffer.append("|  ".repeat(Math.max(0, indent)));
 			Actor actor = actors[i];
 			if (actor instanceof Group)
 				((Group)actor).toString(buffer, indent + 1);

@@ -241,10 +241,10 @@ public final class Intersector {
 		return false;
 	}
 
-	static Vector2 v2a = new Vector2();
-	static Vector2 v2b = new Vector2();
-	static Vector2 v2c = new Vector2();
-	static Vector2 v2d = new Vector2();
+	static final Vector2 v2a = new Vector2();
+	static final Vector2 v2b = new Vector2();
+	static final Vector2 v2c = new Vector2();
+	static final Vector2 v2d = new Vector2();
 
 	/** Returns the distance between the given line and point. Note the specified line is not a line segment. */
 	public static float distanceLinePoint (float startX, float startY, float endX, float endY, float pointX, float pointY) {
@@ -842,11 +842,11 @@ public final class Intersector {
 		return true;
 	}
 
-	static Vector3 best = new Vector3();
-	static Vector3 tmp = new Vector3();
-	static Vector3 tmp1 = new Vector3();
-	static Vector3 tmp2 = new Vector3();
-	static Vector3 tmp3 = new Vector3();
+	static final Vector3 best = new Vector3();
+	static final Vector3 tmp = new Vector3();
+	static final Vector3 tmp1 = new Vector3();
+	static final Vector3 tmp2 = new Vector3();
+	static final Vector3 tmp3 = new Vector3();
 
 	/** Intersects the given ray with list of triangles. Returns the nearest intersection point in intersection
 	 * @param triangles The triangles, each successive 9 elements are the 3 vertices of a triangle, a vertex is made of 3
@@ -1429,7 +1429,7 @@ public final class Intersector {
 		}
 	}
 
-	static Vector3 intersection = new Vector3();
+	static final Vector3 intersection = new Vector3();
 
 	private static void splitEdge (float[] vertices, int s, int e, int stride, Plane plane, float[] split, int offset) {
 		float t = Intersector.intersectLinePlane(vertices[s], vertices[s + 1], vertices[s + 2], vertices[e], vertices[e + 1],
@@ -1445,9 +1445,9 @@ public final class Intersector {
 	}
 
 	public static class SplitTriangle {
-		public float[] front;
-		public float[] back;
-		float[] edgeSplit;
+		public final float[] front;
+		public final float[] back;
+		final float[] edgeSplit;
 		public int numFront;
 		public int numBack;
 		public int total;
@@ -1500,7 +1500,7 @@ public final class Intersector {
 	/** Minimum translation required to separate two polygons. */
 	public static class MinimumTranslationVector {
 		/** Unit length vector that indicates the direction for the separation */
-		public Vector2 normal = new Vector2();
+		public final Vector2 normal = new Vector2();
 		/** Distance of the translation required for the separation */
 		public float depth = 0;
 	}

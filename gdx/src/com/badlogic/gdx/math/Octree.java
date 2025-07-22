@@ -67,14 +67,14 @@ public class Octree<T> {
 
 	final int maxItemsPerNode;
 
-	final Pool<OctreeNode> nodePool = new Pool<OctreeNode>() {
+	final Pool<OctreeNode> nodePool = new Pool<>() {
 		@Override
 		protected OctreeNode newObject () {
 			return new OctreeNode();
 		}
 	};
 
-	protected OctreeNode root;
+	protected final OctreeNode root;
 	final Collider<T> collider;
 
 	static final Vector3 tmp = new Vector3();
@@ -156,7 +156,7 @@ public class Octree<T> {
 		final BoundingBox bounds = new BoundingBox();
 		boolean leaf;
 		private Octree.OctreeNode[] children; // May be null when leaf is true.
-		private final Array<T> geometries = new Array<T>(Math.min(16, maxItemsPerNode));
+		private final Array<T> geometries = new Array<>(Math.min(16, maxItemsPerNode));
 
 		private void split () {
 			float midx = (bounds.max.x + bounds.min.x) * 0.5f;
@@ -241,7 +241,7 @@ public class Octree<T> {
 				}
 
 				if (removed) {
-					ObjectSet<T> geometrySet = new ObjectSet<T>();
+					ObjectSet<T> geometrySet = new ObjectSet<>();
 					for (Octree.OctreeNode node : children) {
 						node.getAll(geometrySet);
 					}
@@ -377,6 +377,6 @@ public class Octree<T> {
 	public static class RayCastResult<T> {
 		T geometry;
 		float distance;
-		float maxDistanceSq = Float.MAX_VALUE;
+		final float maxDistanceSq = Float.MAX_VALUE;
 	}
 }

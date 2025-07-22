@@ -23,7 +23,7 @@ public class FreetypeFontLoader extends AsynchronousAssetLoader<BitmapFont, Free
 		/** the name of the TTF file to be used to load the font **/
 		public String fontFileName;
 		/** the parameters used to generate the font, e.g. size, characters, etc. **/
-		public FreeTypeFontParameter fontParameters = new FreeTypeFontParameter();
+		public final FreeTypeFontParameter fontParameters = new FreeTypeFontParameter();
 	}
 
 	@Override
@@ -43,8 +43,8 @@ public class FreetypeFontLoader extends AsynchronousAssetLoader<BitmapFont, Free
 
 	@Override
 	public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, FreeTypeFontLoaderParameter parameter) {
-		Array<AssetDescriptor> deps = new Array<AssetDescriptor>();
-		deps.add(new AssetDescriptor<FreeTypeFontGenerator>(parameter.fontFileName + ".gen", FreeTypeFontGenerator.class));
+		Array<AssetDescriptor> deps = new Array<>();
+		deps.add(new AssetDescriptor<>(parameter.fontFileName + ".gen", FreeTypeFontGenerator.class));
 		return deps;
 	}
 }

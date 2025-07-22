@@ -26,10 +26,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 public class ModelData {
 	public String id;
 	public final short version[] = new short[2];
-	public final Array<ModelMesh> meshes = new Array<ModelMesh>();
-	public final Array<ModelMaterial> materials = new Array<ModelMaterial>();
-	public final Array<ModelNode> nodes = new Array<ModelNode>();
-	public final Array<ModelAnimation> animations = new Array<ModelAnimation>();
+	public final Array<ModelMesh> meshes = new Array<>();
+	public final Array<ModelMaterial> materials = new Array<>();
+	public final Array<ModelNode> nodes = new Array<>();
+	public final Array<ModelAnimation> animations = new Array<>();
 
 	public void addMesh (ModelMesh mesh) {
 		for (ModelMesh other : meshes) {

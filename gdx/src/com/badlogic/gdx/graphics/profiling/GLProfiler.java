@@ -33,8 +33,8 @@ import com.badlogic.gdx.math.FloatCounter;
  * @author Jan Polák */
 public class GLProfiler {
 
-	private Graphics graphics;
-	private GLInterceptor glInterceptor;
+	private final Graphics graphics;
+	private final GLInterceptor glInterceptor;
 	private GLErrorListener listener;
 	private boolean enabled = false;
 
