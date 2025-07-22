@@ -658,8 +658,7 @@ public class FileHandle {
 	}
 
 	public boolean equals (Object obj) {
-		if (!(obj instanceof FileHandle)) return false;
-		FileHandle other = (FileHandle)obj;
+		if (!(obj instanceof FileHandle other)) return false;
 		return type == other.type && path().equals(other.path());
 	}
 
