@@ -24,7 +24,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.LifecycleListener;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.GLEmulation;
 import com.badlogic.gdx.backends.lwjgl3.angle.ANGLELoader;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
@@ -49,10 +48,10 @@ import org.lwjgl.opengles.GLES;
 import org.lwjgl.opengles.GLES20;
 import org.lwjgl.system.Callback;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.nio.IntBuffer;
 import java.util.function.Function;
+import java.util.prefs.Preferences;
 
 public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	public final Lwjgl3ApplicationConfiguration config;
@@ -269,18 +268,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	@Override
 	public long getNativeHeap () {
 		return getJavaHeap();
-	}
-
-	@Override
-	public Preferences getPreferences (String name) {
-		if (preferences.containsKey(name)) {
-			return preferences.get(name);
-		} else {
-			Preferences prefs = new Lwjgl3Preferences(
-					new Lwjgl3FileHandle(new File(config.preferencesDirectory, name), config.preferencesFileType));
-			preferences.put(name, prefs);
-			return prefs;
-		}
 	}
 
 	@Override
