@@ -38,11 +38,12 @@ import java.nio.IntBuffer;
 import java.util.function.Function;
 
 public class Lwjgl3Window implements Disposable {
-	private long windowHandle;
+	public final long windowHandle;
+	public final Lwjgl3Graphics graphics;
+
 	private final ApplicationListener listener;
 	private boolean listenerInitialized = false;
 	Lwjgl3WindowListener windowListener;
-	private final Lwjgl3Graphics graphics;
 	private final Lwjgl3Input input;
 	private final Lwjgl3ApplicationConfiguration config;
 	private final Array<Runnable> runnables = new Array<>();
@@ -345,11 +346,6 @@ public class Lwjgl3Window implements Disposable {
 
 	public long getWindowHandle () {
 		return windowHandle;
-	}
-
-	void windowHandleChanged (long windowHandle) {
-		this.windowHandle = windowHandle;
-		input.windowHandleChanged(windowHandle);
 	}
 
 	void update () {
