@@ -27,8 +27,8 @@ import com.badlogic.gdx.utils.Scaling;
 /** A checkbox is a button that contains an image indicating the checked or unchecked state and a label.
  * @author Nathan Sweet */
 public class CheckBox extends TextButton {
-	private Image image;
-	private Cell imageCell;
+	private final Image image;
+	private final Cell imageCell;
 	private CheckBoxStyle style;
 
 	public CheckBox (@Null String text, Skin skin) {
@@ -55,7 +55,7 @@ public class CheckBox extends TextButton {
 	}
 
 	protected Image newImage () {
-		return new Image((Drawable)null, Scaling.none);
+		return new Image(null, Scaling.none);
 	}
 
 	public void setStyle (ButtonStyle style) {

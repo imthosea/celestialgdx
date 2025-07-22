@@ -40,7 +40,7 @@ public class TextureAttribute extends Attribute {
 	public final static String ReflectionAlias = "reflectionTexture";
 	public final static long Reflection = register(ReflectionAlias);
 
-	protected static long Mask = Diffuse | Specular | Bump | Normal | Ambient | Emissive | Reflection;
+	protected static final long Mask = Diffuse | Specular | Bump | Normal | Ambient | Emissive | Reflection;
 
 	public final static boolean is (final long mask) {
 		return (mask & Mask) != 0;
@@ -115,7 +115,7 @@ public class TextureAttribute extends Attribute {
 	public TextureAttribute (final long type) {
 		super(type);
 		if (!is(type)) throw new GdxRuntimeException("Invalid type specified");
-		textureDescription = new TextureDescriptor<Texture>();
+		textureDescription = new TextureDescriptor<>();
 	}
 
 	public <T extends Texture> TextureAttribute (final long type, final TextureDescriptor<T> textureDescription) {

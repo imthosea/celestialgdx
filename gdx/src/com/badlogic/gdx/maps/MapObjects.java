@@ -16,19 +16,18 @@
 
 package com.badlogic.gdx.maps;
 
-import java.util.Iterator;
-
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
+
+import java.util.Iterator;
 
 /** @brief Collection of MapObject instances */
 public class MapObjects implements Iterable<MapObject> {
 
-	private Array<MapObject> objects;
+	private final Array<MapObject> objects;
 
 	/** Creates an empty set of MapObject instances */
 	public MapObjects () {
-		objects = new Array<MapObject>();
+		objects = new Array<>();
 	}
 
 	/** @param index
@@ -82,7 +81,7 @@ public class MapObjects implements Iterable<MapObject> {
 	/** @param type class of the objects we want to retrieve
 	 * @return array filled with all the objects in the collection matching type */
 	public <T extends MapObject> Array<T> getByType (Class<T> type) {
-		return getByType(type, new Array<T>());
+		return getByType(type, new Array<>());
 	}
 
 	/** @param type class of the objects we want to retrieve
@@ -92,7 +91,7 @@ public class MapObjects implements Iterable<MapObject> {
 		fill.clear();
 		for (int i = 0, n = objects.size; i < n; i++) {
 			MapObject object = objects.get(i);
-			if (ClassReflection.isInstance(type, object)) {
+			if (type.isInstance(object)) {
 				fill.add((T)object);
 			}
 		}

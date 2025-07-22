@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import java.io.BufferedReader;
-import java.util.Comparator;
-
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -35,6 +32,8 @@ import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.StreamUtils;
+
+import java.io.BufferedReader;
 
 /** Loads images from texture atlases created by TexturePacker.<br>
  * <br>
@@ -268,93 +267,67 @@ public class TextureAtlas implements Disposable {
 			final String[] entry = new String[5];
 
 			ObjectMap<String, Field<Page>> pageFields = new ObjectMap(15, 0.99f); // Size needed to avoid collisions.
-			pageFields.put("size", new Field<Page>() {
-				public void parse (Page page) {
-					page.width = Integer.parseInt(entry[1]);
-					page.height = Integer.parseInt(entry[2]);
-				}
+			pageFields.put("size", page -> {
+				page.width = Integer.parseInt(entry[1]);
+				page.height = Integer.parseInt(entry[2]);
 			});
-			pageFields.put("format", new Field<Page>() {
-				public void parse (Page page) {
-					page.format = Format.valueOf(entry[1]);
-				}
+			pageFields.put("format", page -> page.format = Format.valueOf(entry[1]));
+			pageFields.put("filter", page -> {
+				page.minFilter = TextureFilter.valueOf(entry[1]);
+				page.magFilter = TextureFilter.valueOf(entry[2]);
+				page.useMipMaps = page.minFilter.isMipMap();
 			});
-			pageFields.put("filter", new Field<Page>() {
-				public void parse (Page page) {
-					page.minFilter = TextureFilter.valueOf(entry[1]);
-					page.magFilter = TextureFilter.valueOf(entry[2]);
-					page.useMipMaps = page.minFilter.isMipMap();
-				}
+			pageFields.put("repeat", page -> {
+				if (entry[1].indexOf('x') != -1) page.uWrap = TextureWrap.Repeat;
+				if (entry[1].indexOf('y') != -1) page.vWrap = TextureWrap.Repeat;
 			});
-			pageFields.put("repeat", new Field<Page>() {
-				public void parse (Page page) {
-					if (entry[1].indexOf('x') != -1) page.uWrap = TextureWrap.Repeat;
-					if (entry[1].indexOf('y') != -1) page.vWrap = TextureWrap.Repeat;
-				}
-			});
-			pageFields.put("pma", new Field<Page>() {
-				public void parse (Page page) {
-					page.pma = entry[1].equals("true");
-				}
-			});
+			pageFields.put("pma", page -> page.pma = entry[1].equals("true"));
 
 			final boolean[] hasIndexes = {false};
 			ObjectMap<String, Field<Region>> regionFields = new ObjectMap(127, 0.99f); // Size needed to avoid collisions.
-			regionFields.put("xy", new Field<Region>() { // Deprecated, use bounds.
-				public void parse (Region region) {
-					region.left = Integer.parseInt(entry[1]);
-					region.top = Integer.parseInt(entry[2]);
-				}
+			// Deprecated, use bounds.
+			regionFields.put("xy", region -> {
+				region.left = Integer.parseInt(entry[1]);
+				region.top = Integer.parseInt(entry[2]);
 			});
-			regionFields.put("size", new Field<Region>() { // Deprecated, use bounds.
-				public void parse (Region region) {
-					region.width = Integer.parseInt(entry[1]);
-					region.height = Integer.parseInt(entry[2]);
-				}
+			// Deprecated, use bounds.
+			regionFields.put("size", region -> {
+				region.width = Integer.parseInt(entry[1]);
+				region.height = Integer.parseInt(entry[2]);
 			});
-			regionFields.put("bounds", new Field<Region>() {
-				public void parse (Region region) {
-					region.left = Integer.parseInt(entry[1]);
-					region.top = Integer.parseInt(entry[2]);
-					region.width = Integer.parseInt(entry[3]);
-					region.height = Integer.parseInt(entry[4]);
-				}
+			regionFields.put("bounds", region -> {
+				region.left = Integer.parseInt(entry[1]);
+				region.top = Integer.parseInt(entry[2]);
+				region.width = Integer.parseInt(entry[3]);
+				region.height = Integer.parseInt(entry[4]);
 			});
-			regionFields.put("offset", new Field<Region>() { // Deprecated, use offsets.
-				public void parse (Region region) {
-					region.offsetX = Integer.parseInt(entry[1]);
-					region.offsetY = Integer.parseInt(entry[2]);
-				}
+			// Deprecated, use offsets.
+			regionFields.put("offset", region -> {
+				region.offsetX = Integer.parseInt(entry[1]);
+				region.offsetY = Integer.parseInt(entry[2]);
 			});
-			regionFields.put("orig", new Field<Region>() { // Deprecated, use offsets.
-				public void parse (Region region) {
-					region.originalWidth = Integer.parseInt(entry[1]);
-					region.originalHeight = Integer.parseInt(entry[2]);
-				}
+			// Deprecated, use offsets.
+			regionFields.put("orig", region -> {
+				region.originalWidth = Integer.parseInt(entry[1]);
+				region.originalHeight = Integer.parseInt(entry[2]);
 			});
-			regionFields.put("offsets", new Field<Region>() {
-				public void parse (Region region) {
-					region.offsetX = Integer.parseInt(entry[1]);
-					region.offsetY = Integer.parseInt(entry[2]);
-					region.originalWidth = Integer.parseInt(entry[3]);
-					region.originalHeight = Integer.parseInt(entry[4]);
-				}
+			regionFields.put("offsets", region -> {
+				region.offsetX = Integer.parseInt(entry[1]);
+				region.offsetY = Integer.parseInt(entry[2]);
+				region.originalWidth = Integer.parseInt(entry[3]);
+				region.originalHeight = Integer.parseInt(entry[4]);
 			});
-			regionFields.put("rotate", new Field<Region>() {
-				public void parse (Region region) {
-					String value = entry[1];
-					if (value.equals("true"))
-						region.degrees = 90;
-					else if (!value.equals("false")) //
-						region.degrees = Integer.parseInt(value);
-					region.rotate = region.degrees == 90;
-				}
+			regionFields.put("rotate", region -> {
+				String value = entry[1];
+				if (value.equals("true"))
+					region.degrees = 90;
+				else if (!value.equals("false")) //
+					region.degrees = Integer.parseInt(value);
+				region.rotate = region.degrees == 90;
 			});
-			regionFields.put("index", new Field<Region>() {
-				public void parse (Region region) {
-					region.index = Integer.parseInt(entry[1]);
-					if (region.index != -1) hasIndexes[0] = true;
-				}
+			regionFields.put("index", region -> {
+				region.index = Integer.parseInt(entry[1]);
+				if (region.index != -1) hasIndexes[0] = true;
 			});
 
 			BufferedReader reader = packFile.reader(1024);
@@ -362,11 +335,11 @@ public class TextureAtlas implements Disposable {
 			try {
 				line = reader.readLine();
 				// Ignore empty lines before first entry.
-				while (line != null && line.trim().length() == 0)
+				while (line != null && line.trim().isEmpty())
 					line = reader.readLine();
 				// Header entries.
 				while (true) {
-					if (line == null || line.trim().length() == 0) break;
+					if (line == null || line.trim().isEmpty()) break;
 					if (readEntry(entry, line) == 0) break; // Silently ignore all header fields.
 					line = reader.readLine();
 				}
@@ -437,14 +410,12 @@ public class TextureAtlas implements Disposable {
 			}
 
 			if (hasIndexes[0]) {
-				regions.sort(new Comparator<Region>() {
-					public int compare (Region region1, Region region2) {
-						int i1 = region1.index;
-						if (i1 == -1) i1 = Integer.MAX_VALUE;
-						int i2 = region2.index;
-						if (i2 == -1) i2 = Integer.MAX_VALUE;
-						return i1 - i2;
-					}
+				regions.sort((region1, region2) -> {
+					int i1 = region1.index;
+					if (i1 == -1) i1 = Integer.MAX_VALUE;
+					int i2 = region2.index;
+					if (i2 == -1) i2 = Integer.MAX_VALUE;
+					return i1 - i2;
 				});
 			}
 		}
@@ -540,10 +511,10 @@ public class TextureAtlas implements Disposable {
 		public float offsetY;
 
 		/** The width of the image, after whitespace was removed for packing. */
-		public int packedWidth;
+		public final int packedWidth;
 
 		/** The height of the image, after whitespace was removed for packing. */
-		public int packedHeight;
+		public final int packedHeight;
 
 		/** The width of the image, before whitespace was removed and rotation was applied for packing. */
 		public int originalWidth;

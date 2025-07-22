@@ -16,13 +16,6 @@
 
 package com.badlogic.gdx.graphics.glutils;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -36,6 +29,13 @@ import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -56,12 +56,12 @@ import com.badlogic.gdx.utils.IntArray;
  * @author mzechner, realitix */
 public abstract class GLFrameBuffer<T extends GLTexture> implements Disposable {
 	/** the frame buffers **/
-	protected final static Map<Application, Array<GLFrameBuffer>> buffers = new HashMap<Application, Array<GLFrameBuffer>>();
+	protected final static Map<Application, Array<GLFrameBuffer>> buffers = new HashMap<>();
 
 	protected final static int GL_DEPTH24_STENCIL8_OES = 0x88F0;
 
 	/** the color buffer texture **/
-	protected Array<T> textureAttachments = new Array<T>();
+	protected final Array<T> textureAttachments = new Array<>();
 
 	/** the default framebuffer handle, a.k.a screen. */
 	protected static int defaultFramebufferHandle;
@@ -515,7 +515,7 @@ public abstract class GLFrameBuffer<T extends GLTexture> implements Disposable {
 
 	private static void addManagedFrameBuffer (Application app, GLFrameBuffer frameBuffer) {
 		Array<GLFrameBuffer> managedResources = buffers.get(app);
-		if (managedResources == null) managedResources = new Array<GLFrameBuffer>();
+		if (managedResources == null) managedResources = new Array<>();
 		managedResources.add(frameBuffer);
 		buffers.put(app, managedResources);
 	}
@@ -551,7 +551,9 @@ public abstract class GLFrameBuffer<T extends GLTexture> implements Disposable {
 	}
 
 	protected static class FrameBufferTextureAttachmentSpec {
-		int internalFormat, format, type;
+		final int internalFormat;
+		final int format;
+		final int type;
 		boolean isFloat, isGpuOnly;
 		boolean isDepth;
 		boolean isStencil;
@@ -568,7 +570,7 @@ public abstract class GLFrameBuffer<T extends GLTexture> implements Disposable {
 	}
 
 	protected static class FrameBufferRenderBufferAttachmentSpec {
-		int internalFormat;
+		final int internalFormat;
 
 		public FrameBufferRenderBufferAttachmentSpec (int internalFormat) {
 			this.internalFormat = internalFormat;
@@ -576,10 +578,12 @@ public abstract class GLFrameBuffer<T extends GLTexture> implements Disposable {
 	}
 
 	public static abstract class GLFrameBufferBuilder<U extends GLFrameBuffer<? extends GLTexture>> {
-		protected int width, height, samples;
+		protected final int width;
+		protected final int height;
+		protected final int samples;
 
-		protected Array<FrameBufferTextureAttachmentSpec> textureAttachmentSpecs = new Array<FrameBufferTextureAttachmentSpec>();
-		protected Array<FrameBufferRenderBufferAttachmentSpec> colorRenderBufferSpecs = new Array<FrameBufferRenderBufferAttachmentSpec>();
+		protected final Array<FrameBufferTextureAttachmentSpec> textureAttachmentSpecs = new Array<>();
+		protected final Array<FrameBufferRenderBufferAttachmentSpec> colorRenderBufferSpecs = new Array<>();
 
 		protected FrameBufferRenderBufferAttachmentSpec stencilRenderBufferSpec;
 		protected FrameBufferRenderBufferAttachmentSpec depthRenderBufferSpec;

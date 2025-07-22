@@ -113,8 +113,8 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardContr
 		AlignMode mode;
 	}
 
-	private RenderablePool renderablePool;
-	private Array<Renderable> renderables;
+	private final RenderablePool renderablePool;
+	private final Array<Renderable> renderables;
 	private float[] vertices;
 	private short[] indices;
 	private int currentVertexSize = 0;
@@ -135,7 +135,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardContr
 	public BillboardParticleBatch (AlignMode mode, boolean useGPU, int capacity, BlendingAttribute blendingAttribute,
 		DepthTestAttribute depthTestAttribute) {
 		super(BillboardControllerRenderData[]::new);
-		renderables = new Array<Renderable>();
+		renderables = new Array<>();
 		renderablePool = new RenderablePool();
 		this.blendingAttribute = blendingAttribute;
 		this.depthTestAttribute = depthTestAttribute;
@@ -662,7 +662,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardContr
 		SaveData data = resources.getSaveData("billboardBatch");
 		if (data != null) {
 			setTexture((Texture)manager.get(data.loadAsset()));
-			Config cfg = (Config)data.load("cfg");
+			Config cfg = data.load("cfg");
 			setUseGpu(cfg.useGPU);
 			setAlignMode(cfg.mode);
 		}

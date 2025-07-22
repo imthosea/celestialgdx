@@ -24,7 +24,6 @@ import com.badlogic.gdx.ApplicationListener;
  * 
  * @author badlogic */
 public interface Lwjgl3WindowListener {
-
 	/** Called after the GLFW window is created. Before this callback is received, it's unsafe to use any {@link Lwjgl3Window}
 	 * member functions which, for their part, involve calling GLFW functions.
 	 *
@@ -33,7 +32,7 @@ public interface Lwjgl3WindowListener {
 	 *
 	 * @param window the window instance
 	 *
-	 * @see Lwjgl3Application#newWindow(ApplicationListener, Lwjgl3WindowConfiguration) */
+	 */
 	void created (Lwjgl3Window window);
 
 	/** Called when the window is iconified (i.e. its minimize button was clicked), or when restored from the iconified state. When
@@ -46,13 +45,6 @@ public interface Lwjgl3WindowListener {
 	 *
 	 * @param isMaximized true if window is maximized, false if it leaves the maximized state */
 	void maximized (boolean isMaximized);
-
-	/** Called when the window lost focus to another window. The window's {@link ApplicationListener} will continue to be
-	 * called. */
-	void focusLost ();
-
-	/** Called when the window gained focus. */
-	void focusGained ();
 
 	/** Called when the user requested to close the window, e.g. clicking the close button or pressing the window closing keyboard
 	 * shortcut.

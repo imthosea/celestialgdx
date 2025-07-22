@@ -372,8 +372,7 @@ public class IntIntMap implements Iterable<IntIntMap.Entry> {
 
 	public boolean equals (Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof IntIntMap)) return false;
-		IntIntMap other = (IntIntMap)obj;
+		if (!(obj instanceof IntIntMap other)) return false;
 		if (other.size != size) return false;
 		if (other.hasZeroValue != hasZeroValue) return false;
 		if (hasZeroValue) {

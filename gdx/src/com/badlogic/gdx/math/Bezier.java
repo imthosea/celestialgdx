@@ -114,7 +114,7 @@ public class Bezier<T extends Vector<T>> implements Path<T> {
 		return out.set(p1).sub(p0).scl(dt2 * 3).add(tmp.set(p2).sub(p1).scl(dt * t * 6)).add(tmp.set(p3).sub(p2).scl(t2 * 3));
 	}
 
-	public Array<T> points = new Array<T>();
+	public final Array<T> points = new Array<>();
 	private T tmp;
 	private T tmp2;
 	private T tmp3;

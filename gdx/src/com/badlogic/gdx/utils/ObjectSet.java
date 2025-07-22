@@ -16,11 +16,11 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.math.MathUtils;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import com.badlogic.gdx.math.MathUtils;
 
 /** An unordered set where the keys are objects. Null keys are not allowed. No allocation is done except when growing the table
  * size.
@@ -163,8 +163,7 @@ public class ObjectSet<T> implements Iterable<T> {
 	public void addAll (ObjectSet<T> set) {
 		ensureCapacity(set.size);
 		T[] keyTable = set.keyTable;
-		for (int i = 0, n = keyTable.length; i < n; i++) {
-			T key = keyTable[i];
+		for (T key : keyTable) {
 			if (key != null) add(key);
 		}
 	}
@@ -250,8 +249,7 @@ public class ObjectSet<T> implements Iterable<T> {
 
 	public T first () {
 		T[] keyTable = this.keyTable;
-		for (int i = 0, n = keyTable.length; i < n; i++)
-			if (keyTable[i] != null) return keyTable[i];
+		for (T t : keyTable) if (t != null) return t;
 		throw new IllegalStateException("ObjectSet is empty.");
 	}
 
@@ -282,20 +280,17 @@ public class ObjectSet<T> implements Iterable<T> {
 	public int hashCode () {
 		int h = size;
 		T[] keyTable = this.keyTable;
-		for (int i = 0, n = keyTable.length; i < n; i++) {
-			T key = keyTable[i];
+		for (T key : keyTable) {
 			if (key != null) h += key.hashCode();
 		}
 		return h;
 	}
 
 	public boolean equals (Object obj) {
-		if (!(obj instanceof ObjectSet)) return false;
-		ObjectSet other = (ObjectSet)obj;
+		if (!(obj instanceof ObjectSet other)) return false;
 		if (other.size != size) return false;
 		T[] keyTable = this.keyTable;
-		for (int i = 0, n = keyTable.length; i < n; i++)
-			if (keyTable[i] != null && !other.contains(keyTable[i])) return false;
+		for (T t : keyTable) if (t != null && !other.contains(t)) return false;
 		return true;
 	}
 
@@ -346,7 +341,7 @@ public class ObjectSet<T> implements Iterable<T> {
 	}
 
 	static public <T> ObjectSet<T> with (T... array) {
-		ObjectSet<T> set = new ObjectSet<T>();
+		ObjectSet<T> set = new ObjectSet<>();
 		set.addAll(array);
 		return set;
 	}
@@ -434,7 +429,7 @@ public class ObjectSet<T> implements Iterable<T> {
 
 		/** Returns a new array containing the remaining values. */
 		public Array<K> toArray () {
-			return toArray(new Array<K>(true, set.size));
+			return toArray(new Array<>(true, set.size));
 		}
 	}
 }

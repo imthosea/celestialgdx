@@ -94,7 +94,7 @@ public class AtlasTmxMapLoader extends BaseTmxMapLoader<AtlasTmxMapLoader.AtlasT
 		}
 	}
 
-	protected Array<Texture> trackedTextures = new Array<Texture>();
+	protected final Array<Texture> trackedTextures = new Array<>();
 
 	protected AtlasResolver atlasResolver;
 
@@ -120,7 +120,7 @@ public class AtlasTmxMapLoader extends BaseTmxMapLoader<AtlasTmxMapLoader.AtlasT
 		this.atlasResolver = new AtlasResolver.DirectAtlasResolver(atlas);
 
 		TiledMap map = loadTiledMap(tmxFile, parameter, atlasResolver);
-		map.setOwnedResources(new Array<TextureAtlas>(new TextureAtlas[] {atlas}));
+		map.setOwnedResources(new Array<>(new TextureAtlas[] {atlas}));
 		setTextureFilters(parameter.textureMinFilter, parameter.textureMagFilter);
 		return map;
 	}
@@ -145,7 +145,7 @@ public class AtlasTmxMapLoader extends BaseTmxMapLoader<AtlasTmxMapLoader.AtlasT
 	@Override
 	protected Array<AssetDescriptor> getDependencyAssetDescriptors (FileHandle tmxFile,
 		TextureLoader.TextureParameter textureParameter) {
-		Array<AssetDescriptor> descriptors = new Array<AssetDescriptor>();
+		Array<AssetDescriptor> descriptors = new Array<>();
 
 		// Atlas dependencies
 		final FileHandle atlasFileHandle = getAtlasFileHandle(tmxFile);

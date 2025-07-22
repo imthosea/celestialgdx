@@ -20,7 +20,7 @@ package com.badlogic.gdx.utils;
  * {@link #flush()} method.
  * @author Xoppa */
 public abstract class FlushablePool<T> extends Pool<T> {
-	protected Array<T> obtained = new Array<T>();
+	protected final Array<T> obtained = new Array<>();
 
 	public FlushablePool () {
 		super();

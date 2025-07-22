@@ -66,7 +66,7 @@ public class ImageTextButton extends Button {
 	}
 
 	protected Image newImage () {
-		return new Image((Drawable)null, Scaling.fit);
+		return new Image(null, Scaling.fit);
 	}
 
 	protected Label newLabel (String text, LabelStyle style) {
@@ -74,14 +74,14 @@ public class ImageTextButton extends Button {
 	}
 
 	public void setStyle (ButtonStyle style) {
-		if (!(style instanceof ImageTextButtonStyle)) throw new IllegalArgumentException("style must be a ImageTextButtonStyle.");
-		this.style = (ImageTextButtonStyle)style;
+		if (!(style instanceof ImageTextButtonStyle textButtonStyle))
+			throw new IllegalArgumentException("style must be a ImageTextButtonStyle.");
+		this.style = textButtonStyle;
 		super.setStyle(style);
 
 		if (image != null) updateImage();
 
 		if (label != null) {
-			ImageTextButtonStyle textButtonStyle = (ImageTextButtonStyle)style;
 			LabelStyle labelStyle = label.getStyle();
 			labelStyle.font = textButtonStyle.font;
 			labelStyle.fontColor = getFontColor();

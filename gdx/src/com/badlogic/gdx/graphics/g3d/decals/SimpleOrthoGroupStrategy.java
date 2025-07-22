@@ -69,7 +69,7 @@ import com.badlogic.gdx.utils.Sort;
  * </p>
  */
 public class SimpleOrthoGroupStrategy implements GroupStrategy {
-	private Comparator comparator = new Comparator();
+	private final Comparator comparator = new Comparator();
 	private static final int GROUP_OPAQUE = 0;
 	private static final int GROUP_BLEND = 1;
 
@@ -109,7 +109,7 @@ public class SimpleOrthoGroupStrategy implements GroupStrategy {
 		Gdx.gl.glDisable(GL20.GL_TEXTURE_2D);
 	}
 
-	class Comparator implements java.util.Comparator<Decal> {
+	static class Comparator implements java.util.Comparator<Decal> {
 		@Override
 		public int compare (Decal a, Decal b) {
 			if (a.getZ() == b.getZ()) return 0;

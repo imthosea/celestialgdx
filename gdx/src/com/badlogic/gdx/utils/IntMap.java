@@ -365,8 +365,7 @@ public class IntMap<V> implements Iterable<IntMap.Entry<V>> {
 
 	public boolean equals (Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof IntMap)) return false;
-		IntMap other = (IntMap)obj;
+		if (!(obj instanceof IntMap other)) return false;
 		if (other.size != size) return false;
 		if (other.hasZeroValue != hasZeroValue) return false;
 		if (hasZeroValue) {
@@ -395,8 +394,7 @@ public class IntMap<V> implements Iterable<IntMap.Entry<V>> {
 	/** Uses == for comparison of each value. */
 	public boolean equalsIdentity (@Null Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof IntMap)) return false;
-		IntMap other = (IntMap)obj;
+		if (!(obj instanceof IntMap other)) return false;
 		if (other.size != size) return false;
 		if (other.hasZeroValue != hasZeroValue) return false;
 		if (hasZeroValue && zeroValue != other.zeroValue) return false;

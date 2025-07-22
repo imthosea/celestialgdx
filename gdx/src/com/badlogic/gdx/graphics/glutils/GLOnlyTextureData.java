@@ -34,9 +34,9 @@ public class GLOnlyTextureData implements TextureData {
 
 	/** properties of opengl texture */
 	int mipLevel = 0;
-	int internalFormat;
-	int format;
-	int type;
+	final int internalFormat;
+	final int format;
+	final int type;
 
 	/** @see "https://www.khronos.org/opengles/sdk/docs/man/xhtml/glTexImage2D.xml"
 	 * @param internalFormat Specifies the internal format of the texture. Must be one of the following symbolic constants:

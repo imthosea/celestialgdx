@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.scenes.scene2d.ui;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
-
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -44,6 +42,11 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+
 /** A select box (aka a drop-down list) allows a user to choose one of a number of values from a list. When inactive, the selected
  * value is displayed. When activated, it shows the list of values that may be selected.
  * <p>
@@ -58,9 +61,9 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 
 	SelectBoxStyle style;
 	final Array<T> items = new Array();
-	SelectBoxScrollPane<T> scrollPane;
+	final SelectBoxScrollPane<T> scrollPane;
 	private float prefWidth, prefHeight;
-	private ClickListener clickListener;
+	private final ClickListener clickListener;
 	boolean disabled;
 	private int alignment = Align.left;
 	boolean selectedPrefWidth;
@@ -424,7 +427,7 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 		int maxListCount;
 		private final Vector2 stagePosition = new Vector2();
 		final List<T> list;
-		private InputListener hideListener;
+		private final InputListener hideListener;
 		private Actor previousScrollFocus;
 
 		public SelectBoxScrollPane (final SelectBox<T> selectBox) {
@@ -493,7 +496,7 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 		/** Allows a subclass to customize the select box list. The default implementation returns a list that delegates
 		 * {@link List#toString(Object)} to {@link SelectBox#toString(Object)}. */
 		protected List<T> newList () {
-			return new List<T>(selectBox.style.listStyle) {
+			return new List<>(selectBox.style.listStyle) {
 				public String toString (T obj) {
 					return selectBox.toString(obj);
 				}
@@ -611,7 +614,7 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 	 * @author Nathan Sweet */
 	static public class SelectBoxStyle {
 		public BitmapFont font;
-		public Color fontColor = new Color(1, 1, 1, 1);
+		public final Color fontColor = new Color(1, 1, 1, 1);
 		public @Null Color overFontColor, disabledFontColor;
 		public @Null Drawable background;
 		public ScrollPaneStyle scrollStyle;

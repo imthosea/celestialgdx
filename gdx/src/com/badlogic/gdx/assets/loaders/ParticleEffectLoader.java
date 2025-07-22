@@ -49,7 +49,7 @@ public class ParticleEffectLoader extends SynchronousAssetLoader<ParticleEffect,
 		Array<AssetDescriptor> deps = null;
 		if (param != null && param.atlasFile != null) {
 			deps = new Array();
-			deps.add(new AssetDescriptor<TextureAtlas>(param.atlasFile, TextureAtlas.class));
+			deps.add(new AssetDescriptor<>(param.atlasFile, TextureAtlas.class));
 		}
 		return deps;
 	}

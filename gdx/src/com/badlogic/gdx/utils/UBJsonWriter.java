@@ -201,8 +201,8 @@ public class UBJsonWriter implements Closeable {
 		out.writeByte('i');
 		out.writeByte('#');
 		value(values.length);
-		for (int i = 0, n = values.length; i < n; i++) {
-			out.writeByte(values[i]);
+		for (byte value : values) {
+			out.writeByte(value);
 		}
 		pop(true);
 		return this;
@@ -217,8 +217,8 @@ public class UBJsonWriter implements Closeable {
 		out.writeByte('I');
 		out.writeByte('#');
 		value(values.length);
-		for (int i = 0, n = values.length; i < n; i++) {
-			out.writeShort(values[i]);
+		for (short value : values) {
+			out.writeShort(value);
 		}
 		pop(true);
 		return this;
@@ -233,8 +233,8 @@ public class UBJsonWriter implements Closeable {
 		out.writeByte('l');
 		out.writeByte('#');
 		value(values.length);
-		for (int i = 0, n = values.length; i < n; i++) {
-			out.writeInt(values[i]);
+		for (int value : values) {
+			out.writeInt(value);
 		}
 		pop(true);
 		return this;
@@ -249,8 +249,8 @@ public class UBJsonWriter implements Closeable {
 		out.writeByte('L');
 		out.writeByte('#');
 		value(values.length);
-		for (int i = 0, n = values.length; i < n; i++) {
-			out.writeLong(values[i]);
+		for (long value : values) {
+			out.writeLong(value);
 		}
 		pop(true);
 		return this;
@@ -265,8 +265,8 @@ public class UBJsonWriter implements Closeable {
 		out.writeByte('d');
 		out.writeByte('#');
 		value(values.length);
-		for (int i = 0, n = values.length; i < n; i++) {
-			out.writeFloat(values[i]);
+		for (float value : values) {
+			out.writeFloat(value);
 		}
 		pop(true);
 		return this;
@@ -282,8 +282,8 @@ public class UBJsonWriter implements Closeable {
 		out.writeByte('D');
 		out.writeByte('#');
 		value(values.length);
-		for (int i = 0, n = values.length; i < n; i++) {
-			out.writeDouble(values[i]);
+		for (double value : values) {
+			out.writeDouble(value);
 		}
 		pop(true);
 		return this;
@@ -293,8 +293,8 @@ public class UBJsonWriter implements Closeable {
 	 * @return this writer, for chaining */
 	public UBJsonWriter value (boolean[] values) throws IOException {
 		array();
-		for (int i = 0, n = values.length; i < n; i++) {
-			out.writeByte(values[i] ? 'T' : 'F');
+		for (boolean value : values) {
+			out.writeByte(value ? 'T' : 'F');
 		}
 		pop();
 		return this;
@@ -309,8 +309,8 @@ public class UBJsonWriter implements Closeable {
 		out.writeByte('C');
 		out.writeByte('#');
 		value(values.length);
-		for (int i = 0, n = values.length; i < n; i++) {
-			out.writeChar(values[i]);
+		for (char value : values) {
+			out.writeChar(value);
 		}
 		pop(true);
 		return this;
@@ -325,8 +325,8 @@ public class UBJsonWriter implements Closeable {
 		out.writeByte('S');
 		out.writeByte('#');
 		value(values.length);
-		for (int i = 0, n = values.length; i < n; i++) {
-			byte[] bytes = values[i].getBytes("UTF-8");
+		for (String value : values) {
+			byte[] bytes = value.getBytes("UTF-8");
 			if (bytes.length <= Byte.MAX_VALUE) {
 				out.writeByte('i');
 				out.writeByte(bytes.length);
@@ -389,8 +389,7 @@ public class UBJsonWriter implements Closeable {
 	public UBJsonWriter value (Object object) throws IOException {
 		if (object == null) {
 			return value();
-		} else if (object instanceof Number) {
-			Number number = (Number)object;
+		} else if (object instanceof Number number) {
 			if (object instanceof Byte) return value(number.byteValue());
 			if (object instanceof Short) return value(number.shortValue());
 			if (object instanceof Integer) return value(number.intValue());

@@ -54,7 +54,7 @@ public class ParticleShader extends BaseShader {
 		public String vertexShader = null;
 		/** The uber fragment shader to use, null to use the default fragment shader. */
 		public String fragmentShader = null;
-		public boolean ignoreUnimplemented = true;
+		public final boolean ignoreUnimplemented = true;
 		/** Set to 0 to disable culling */
 		public int defaultCullFace = -1;
 		/** Set to 0 to disable depth test */
@@ -100,7 +100,7 @@ public class ParticleShader extends BaseShader {
 		return defaultFragmentShader;
 	}
 
-	protected static long implementedFlags = BlendingAttribute.Type | TextureAttribute.Diffuse;
+	protected static final long implementedFlags = BlendingAttribute.Type | TextureAttribute.Diffuse;
 
 	static final Vector3 TMP_VECTOR3 = new Vector3();
 
@@ -187,8 +187,8 @@ public class ParticleShader extends BaseShader {
 
 	/** The renderable used to create this shader, invalid after the call to init */
 	private Renderable renderable;
-	private long materialMask;
-	private long vertexMask;
+	private final long materialMask;
+	private final long vertexMask;
 	protected final Config config;
 	/** Material attributes which are not required but always supported. */
 	private final static long optionalAttributes = IntAttribute.CullFace | DepthTestAttribute.Type;

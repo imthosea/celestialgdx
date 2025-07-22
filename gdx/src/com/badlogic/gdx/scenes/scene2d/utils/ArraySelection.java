@@ -1,14 +1,14 @@
 
 package com.badlogic.gdx.scenes.scene2d.utils;
 
-import java.util.Iterator;
-
 import com.badlogic.gdx.utils.Array;
+
+import java.util.Iterator;
 
 /** A selection that supports range selection by knowing about the array of items being selected.
  * @author Nathan Sweet */
 public class ArraySelection<T> extends Selection<T> {
-	private Array<T> array;
+	private final Array<T> array;
 	private boolean rangeSelect = true;
 	private T rangeStart;
 

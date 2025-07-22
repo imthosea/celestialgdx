@@ -17,8 +17,8 @@
 package com.badlogic.gdx.graphics.g3d.utils;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.MathUtils;
@@ -27,46 +27,46 @@ import com.badlogic.gdx.math.Vector3;
 
 public class CameraInputController extends GestureDetector {
 	/** The button for rotating the camera. */
-	public int rotateButton = Buttons.LEFT;
+	public final int rotateButton = Buttons.LEFT;
 	/** The angle to rotate when moved the full width or height of the screen. */
 	public float rotateAngle = 360f;
 	/** The button for translating the camera along the up/right plane */
-	public int translateButton = Buttons.RIGHT;
+	public final int translateButton = Buttons.RIGHT;
 	/** The units to translate the camera when moved the full width or height of the screen. */
-	public float translateUnits = 10f; // FIXME auto calculate this based on the target
+	public final float translateUnits = 10f; // FIXME auto calculate this based on the target
 	/** The button for translating the camera along the direction axis */
-	public int forwardButton = Buttons.MIDDLE;
+	public final int forwardButton = Buttons.MIDDLE;
 	/** The key which must be pressed to activate rotate, translate and forward or 0 to always activate. */
-	public int activateKey = 0;
+	public final int activateKey = 0;
 	/** Indicates if the activateKey is currently being pressed. */
 	protected boolean activatePressed;
 	/** Whether scrolling requires the activeKey to be pressed (false) or always allow scrolling (true). */
-	public boolean alwaysScroll = true;
+	public final boolean alwaysScroll = true;
 	/** The weight for each scrolled amount. */
-	public float scrollFactor = -0.1f;
+	public final float scrollFactor = -0.1f;
 	/** World units per screen size */
-	public float pinchZoomFactor = 10f;
+	public final float pinchZoomFactor = 10f;
 	/** Whether to update the camera after it has been changed. */
-	public boolean autoUpdate = true;
+	public final boolean autoUpdate = true;
 	/** The target to rotate around. */
-	public Vector3 target = new Vector3();
+	public final Vector3 target = new Vector3();
 	/** Whether to update the target on translation */
-	public boolean translateTarget = true;
+	public final boolean translateTarget = true;
 	/** Whether to update the target on forward */
-	public boolean forwardTarget = true;
+	public final boolean forwardTarget = true;
 	/** Whether to update the target on scroll */
-	public boolean scrollTarget = false;
-	public int forwardKey = Keys.W;
+	public final boolean scrollTarget = false;
+	public final int forwardKey = Keys.W;
 	protected boolean forwardPressed;
-	public int backwardKey = Keys.S;
+	public final int backwardKey = Keys.S;
 	protected boolean backwardPressed;
-	public int rotateRightKey = Keys.A;
+	public final int rotateRightKey = Keys.A;
 	protected boolean rotateRightPressed;
-	public int rotateLeftKey = Keys.D;
+	public final int rotateLeftKey = Keys.D;
 	protected boolean rotateLeftPressed;
 	protected boolean controlsInverted;
 	/** The camera. */
-	public Camera camera;
+	public final Camera camera;
 	/** The current (first) button being pressed. */
 	protected int button = -1;
 
@@ -110,7 +110,7 @@ public class CameraInputController extends GestureDetector {
 			float amount = newZoom - previousZoom;
 			previousZoom = newZoom;
 			float w = Gdx.graphics.getWidth(), h = Gdx.graphics.getHeight();
-			return controller.pinchZoom(amount / ((w > h) ? h : w));
+			return controller.pinchZoom(amount / (Math.min(w, h)));
 		}
 
 		@Override

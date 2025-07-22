@@ -55,7 +55,7 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 	protected final float[] vertices = new float[20];
 	protected boolean blending;
 
-	protected float unitScale;
+	protected final float unitScale;
 	protected final Rectangle viewBounds = new Rectangle();
 	protected final Rectangle cacheBounds = new Rectangle();
 
@@ -357,7 +357,7 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 		}
 	}
 
-	protected Rectangle imageBounds = new Rectangle();
+	protected final Rectangle imageBounds = new Rectangle();
 
 	@Override
 	public void renderImageLayer (TiledMapImageLayer layer) {

@@ -102,8 +102,7 @@ public class ActorGestureListener implements EventListener {
 	}
 
 	public boolean handle (Event e) {
-		if (!(e instanceof InputEvent)) return false;
-		InputEvent event = (InputEvent)e;
+		if (!(e instanceof InputEvent event)) return false;
 
 		switch (event.getType()) {
 		case touchDown:

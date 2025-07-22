@@ -37,9 +37,9 @@ public final class VertexAttribute {
 	/** the offset of this attribute in bytes, don't change this! **/
 	public int offset;
 	/** the alias for the attribute used in a {@link ShaderProgram} **/
-	public String alias;
+	public final String alias;
 	/** optional unit/index specifier, used for texture coordinates and bone weights **/
-	public int unit;
+	public final int unit;
 	private final int usageIndex;
 
 	/** Constructs a new VertexAttribute. The GL data type is automatically selected based on the usage.

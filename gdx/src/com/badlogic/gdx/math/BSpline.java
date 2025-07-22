@@ -193,7 +193,7 @@ public class BSpline<T extends Vector<T>> implements Path<T> {
 		// We use knots.size instead of storing another variable in each BSpline.
 		int knotCount = continuous ? controlPoints.length : controlPoints.length - 1;
 		if (knots == null)
-			knots = new Array<T>(knotCount);
+			knots = new Array<>(knotCount);
 		else {
 			knots.clear();
 			knots.ensureCapacity(knotCount);

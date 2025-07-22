@@ -166,8 +166,7 @@ public class IntSet {
 		ensureCapacity(set.size);
 		if (set.hasZeroValue) add(0);
 		int[] keyTable = set.keyTable;
-		for (int i = 0, n = keyTable.length; i < n; i++) {
-			int key = keyTable[i];
+		for (int key : keyTable) {
 			if (key != 0) add(key);
 		}
 	}
@@ -255,8 +254,7 @@ public class IntSet {
 	public int first () {
 		if (hasZeroValue) return 0;
 		int[] keyTable = this.keyTable;
-		for (int i = 0, n = keyTable.length; i < n; i++)
-			if (keyTable[i] != 0) return keyTable[i];
+		for (int j : keyTable) if (j != 0) return j;
 		throw new IllegalStateException("IntSet is empty.");
 	}
 
@@ -288,21 +286,18 @@ public class IntSet {
 	public int hashCode () {
 		int h = size;
 		int[] keyTable = this.keyTable;
-		for (int i = 0, n = keyTable.length; i < n; i++) {
-			int key = keyTable[i];
+		for (int key : keyTable) {
 			if (key != 0) h += key;
 		}
 		return h;
 	}
 
 	public boolean equals (Object obj) {
-		if (!(obj instanceof IntSet)) return false;
-		IntSet other = (IntSet)obj;
+		if (!(obj instanceof IntSet other)) return false;
 		if (other.size != size) return false;
 		if (other.hasZeroValue != hasZeroValue) return false;
 		int[] keyTable = this.keyTable;
-		for (int i = 0, n = keyTable.length; i < n; i++)
-			if (keyTable[i] != 0 && !other.contains(keyTable[i])) return false;
+		for (int j : keyTable) if (j != 0 && !other.contains(j)) return false;
 		return true;
 	}
 

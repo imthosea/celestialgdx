@@ -16,11 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -34,6 +29,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.OrderedMap;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Packs {@link Pixmap pixmaps} into one or more {@link Page pages} to generate an atlas of pixmap instances. Provides means to
  * directly convert the pixmap atlas to a {@link TextureAtlas}. The packer supports padding and border pixel duplication,
@@ -103,13 +103,14 @@ public class PixmapPacker implements Disposable {
 	Format pageFormat;
 	int padding;
 	boolean duplicateBorder;
-	boolean stripWhitespaceX, stripWhitespaceY;
+	final boolean stripWhitespaceX;
+	final boolean stripWhitespaceY;
 	int alphaThreshold;
-	Color transparentColor = new Color(0f, 0f, 0f, 0f);
+	final Color transparentColor = new Color(0f, 0f, 0f, 0f);
 	final Array<Page> pages = new Array();
-	PackStrategy packStrategy;
+	final PackStrategy packStrategy;
 
-	static Pattern indexPattern = Pattern.compile("(.+)_(\\d+)$");
+	static final Pattern indexPattern = Pattern.compile("(.+)_(\\d+)$");
 
 	/** Uses {@link GuillotineStrategy}.
 	 * @see PixmapPacker#PixmapPacker(int, int, Format, int, boolean, boolean, boolean, PackStrategy) */
@@ -463,8 +464,8 @@ public class PixmapPacker implements Disposable {
 	 * @author Nathan Sweet
 	 * @author Rob Rendell */
 	static public class Page {
-		OrderedMap<String, PixmapPackerRectangle> rects = new OrderedMap();
-		Pixmap image;
+		final OrderedMap<String, PixmapPackerRectangle> rects = new OrderedMap();
+		final Pixmap image;
 		Texture texture;
 		final Array<String> addedRects = new Array();
 		boolean dirty;
@@ -532,7 +533,7 @@ public class PixmapPacker implements Disposable {
 
 		public void sort (Array<Pixmap> pixmaps) {
 			if (comparator == null) {
-				comparator = new Comparator<Pixmap>() {
+				comparator = new Comparator<>() {
 					public int compare (Pixmap o1, Pixmap o2) {
 						return Math.max(o1.getWidth(), o1.getHeight()) - Math.max(o2.getWidth(), o2.getHeight());
 					}
@@ -616,7 +617,7 @@ public class PixmapPacker implements Disposable {
 		}
 
 		static class GuillotinePage extends Page {
-			Node root;
+			final Node root;
 
 			public GuillotinePage (PixmapPacker packer) {
 				super(packer);
@@ -636,7 +637,7 @@ public class PixmapPacker implements Disposable {
 
 		public void sort (Array<Pixmap> images) {
 			if (comparator == null) {
-				comparator = new Comparator<Pixmap>() {
+				comparator = new Comparator<>() {
 					public int compare (Pixmap o1, Pixmap o2) {
 						return o1.getHeight() - o2.getHeight();
 					}
@@ -696,7 +697,7 @@ public class PixmapPacker implements Disposable {
 		}
 
 		static class SkylinePage extends Page {
-			Array<Row> rows = new Array();
+			final Array<Row> rows = new Array();
 
 			public SkylinePage (PixmapPacker packer) {
 				super(packer);
@@ -812,7 +813,7 @@ public class PixmapPacker implements Disposable {
 		return pads;
 	}
 
-	private Color c = new Color();
+	private final Color c = new Color();
 
 	private int getSplitPoint (Pixmap raster, int startX, int startY, boolean startPoint, boolean xAxis) {
 		int[] rgba = new int[4];
@@ -872,9 +873,11 @@ public class PixmapPacker implements Disposable {
 		public Page page;
 		public int[] splits;
 		public int[] pads;
-		public int offsetX, offsetY;
-		public int originalWidth, originalHeight;
-		public Bounds bounds;
+		public final int offsetX;
+		public final int offsetY;
+		public final int originalWidth;
+		public final int originalHeight;
+		public final Bounds bounds;
 
 		PixmapPackerRectangle (int x, int y, int width, int height) {
 			bounds = new Bounds(x, y, width, height);

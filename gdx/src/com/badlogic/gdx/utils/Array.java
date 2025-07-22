@@ -16,13 +16,13 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.math.MathUtils;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.reflect.ArrayReflection;
+import java.util.Objects;
 
 /** A resizable, ordered or unordered array of objects. If unordered, this class avoids a memory copy when removing elements (the
  * last element is moved to the removed element's position).
@@ -77,7 +77,7 @@ public class Array<T> implements Iterable<T> {
 	 * @deprecated Use {@link Array#Array(boolean, int, ArraySupplier)} instead */
 	@Deprecated
 	public Array (boolean ordered, int capacity, Class arrayType) {
-		this(ordered, capacity, size -> (T[])ArrayReflection.newInstance(arrayType, size));
+		this(ordered, capacity, size -> (T[])java.lang.reflect.Array.newInstance(arrayType, size));
 	}
 
 	/** Creates an ordered array with {@link #items} of the specified type and a capacity of 16.
@@ -550,8 +550,8 @@ public class Array<T> implements Iterable<T> {
 	 * If {@link Collections#allocateIterators} is false, the same iterator instance is returned each time this method is called.
 	 * Use the {@link ArrayIterator} constructor for nested or multithreaded iteration. */
 	public ArrayIterator<T> iterator () {
-		if (Collections.allocateIterators) return new ArrayIterator<T>(this, true);
-		if (iterable == null) iterable = new ArrayIterable<T>(this);
+		if (Collections.allocateIterators) return new ArrayIterator<>(this, true);
+		if (iterable == null) iterable = new ArrayIterable<>(this);
 		return iterable.iterator();
 	}
 
@@ -560,9 +560,9 @@ public class Array<T> implements Iterable<T> {
 	 * If {@link Collections#allocateIterators} is false, the same iterable instance is returned each time this method is called.
 	 * Use the {@link Predicate.PredicateIterable} constructor for nested or multithreaded iteration. */
 	public Iterable<T> select (Predicate<T> predicate) {
-		if (Collections.allocateIterators) return new Predicate.PredicateIterable<T>(this, predicate);
+		if (Collections.allocateIterators) return new Predicate.PredicateIterable<>(this, predicate);
 		if (predicateIterable == null)
-			predicateIterable = new Predicate.PredicateIterable<T>(this, predicate);
+			predicateIterable = new Predicate.PredicateIterable<>(this, predicate);
 		else
 			predicateIterable.set(this, predicate);
 		return predicateIterable;
@@ -599,7 +599,7 @@ public class Array<T> implements Iterable<T> {
 	/** @deprecated Use {@link Array#toArray(ArraySupplier)} instead */
 	@Deprecated
 	public <V> V[] toArray (Class<V> type) {
-		V[] result = (V[])ArrayReflection.newInstance(type, size);
+		V[] result = (V[])java.lang.reflect.Array.newInstance(type, size);
 		System.arraycopy(items, 0, result, 0, size);
 		return result;
 	}
@@ -620,15 +620,14 @@ public class Array<T> implements Iterable<T> {
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof Array)) return false;
-		Array array = (Array)object;
+		if (!(object instanceof Array<?> array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;
 		Object[] items1 = this.items, items2 = array.items;
 		for (int i = 0; i < n; i++) {
 			Object o1 = items1[i], o2 = items2[i];
-			if (!(o1 == null ? o2 == null : o1.equals(o2))) return false;
+			if (!Objects.equals(o1, o2)) return false;
 		}
 		return true;
 	}
@@ -637,8 +636,7 @@ public class Array<T> implements Iterable<T> {
 	public boolean equalsIdentity (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof Array)) return false;
-		Array array = (Array)object;
+		if (!(object instanceof Array<?> array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;
@@ -772,12 +770,12 @@ public class Array<T> implements Iterable<T> {
 
 		/** @see Collections#allocateIterators */
 		public ArrayIterator<T> iterator () {
-			if (Collections.allocateIterators) return new ArrayIterator<T>(array, allowRemove);
+			if (Collections.allocateIterators) return new ArrayIterator<>(array, allowRemove);
 // lastAcquire.getBuffer().setLength(0);
 // new Throwable().printStackTrace(new java.io.PrintWriter(lastAcquire));
 			if (iterator1 == null) {
-				iterator1 = new ArrayIterator<T>(array, allowRemove);
-				iterator2 = new ArrayIterator<T>(array, allowRemove);
+				iterator1 = new ArrayIterator<>(array, allowRemove);
+				iterator2 = new ArrayIterator<>(array, allowRemove);
 // iterator1.iterable = this;
 // iterator2.iterable = this;
 			}

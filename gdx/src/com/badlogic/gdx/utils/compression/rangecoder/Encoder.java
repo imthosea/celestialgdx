@@ -17,6 +17,7 @@
 package com.badlogic.gdx.utils.compression.rangecoder;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Encoder {
 	static final int kTopMask = ~((1 << 24) - 1);
@@ -93,8 +94,7 @@ public class Encoder {
 	public static final int kNumBitPriceShiftBits = 6;
 
 	public static void InitBitModels (short[] probs) {
-		for (int i = 0; i < probs.length; i++)
-			probs[i] = (kBitModelTotal >>> 1);
+		Arrays.fill(probs, (short)(kBitModelTotal >>> 1));
 	}
 
 	public void Encode (short[] probs, int index, int symbol) throws IOException {
@@ -114,7 +114,7 @@ public class Encoder {
 		}
 	}
 
-	private static int[] ProbPrices = new int[kBitModelTotal >>> kNumMoveReducingBits];
+	private static final int[] ProbPrices = new int[kBitModelTotal >>> kNumMoveReducingBits];
 
 	static {
 		int kNumBits = (kNumBitModelTotalBits - kNumMoveReducingBits);

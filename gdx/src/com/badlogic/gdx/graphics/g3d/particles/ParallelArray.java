@@ -19,7 +19,6 @@ package com.badlogic.gdx.graphics.g3d.particles;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArraySupplier;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.reflect.ArrayReflection;
 
 import java.util.Arrays;
 
@@ -33,16 +32,16 @@ public class ParallelArray {
 	/** This class describes the content of a {@link Channel} */
 	public static class ChannelDescriptor {
 		public int id;
-		public Class<?> type;
-		public ArraySupplier<?> arraySupplier;
-		public int count;
+		public final Class<?> type;
+		public final ArraySupplier<?> arraySupplier;
+		public final int count;
 
 		@Deprecated
 		public ChannelDescriptor (int id, Class<?> type, int count) {
 			this.id = id;
 			this.type = type;
 			this.count = count;
-			this.arraySupplier = size -> ArrayReflection.newInstance(type, size);
+			this.arraySupplier = size -> java.lang.reflect.Array.newInstance(type, size);
 		}
 
 		public ChannelDescriptor (int id, ArraySupplier<?> arraySupplier, int count) {
@@ -54,10 +53,10 @@ public class ParallelArray {
 	}
 
 	/** This class represents a container of values for all the elements for a given property */
-	public abstract class Channel {
-		public int id;
+	public abstract static class Channel {
+		public final int id;
 		public Object data;
-		public int strideSize;
+		public final int strideSize;
 
 		public Channel (int id, Object data, int strideSize) {
 			this.id = id;
@@ -182,7 +181,7 @@ public class ParallelArray {
 	}
 
 	/** the channels added to the array */
-	Array<Channel> arrays;
+	final Array<Channel> arrays;
 	/** the maximum amount of elements that this array can hold */
 	public int capacity;
 	/** the current amount of defined elements, do not change manually unless you know what you are doing. */

@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.math;
 
-import java.io.Serializable;
-
 import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import java.io.Serializable;
 
 /** A 3x3 <a href="http://en.wikipedia.org/wiki/Row-major_order#Column-major_order">column major</a> matrix; useful for 2D
  * transforms.
@@ -35,8 +35,8 @@ public class Matrix3 implements Serializable {
 	public static final int M20 = 2;
 	public static final int M21 = 5;
 	public static final int M22 = 8;
-	public float[] val = new float[9];
-	private float[] tmp = new float[9];
+	public final float[] val = new float[9];
+	private final float[] tmp = new float[9];
 	{
 		tmp[M22] = 1;
 	}

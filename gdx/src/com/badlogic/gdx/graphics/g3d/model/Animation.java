@@ -30,5 +30,5 @@ public class Animation {
 	/** the duration in seconds **/
 	public float duration;
 	/** the animation curves for individual nodes **/
-	public Array<NodeAnimation> nodeAnimations = new Array<NodeAnimation>();
+	public final Array<NodeAnimation> nodeAnimations = new Array<>();
 }

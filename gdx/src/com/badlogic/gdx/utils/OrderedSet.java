@@ -163,8 +163,7 @@ public class OrderedSet<T> extends ObjectSet<T> {
 	}
 
 	public boolean equals (Object obj) {
-		if (!(obj instanceof ObjectSet)) return false;
-		ObjectSet other = (ObjectSet)obj;
+		if (!(obj instanceof ObjectSet other)) return false;
 		if (other.size != size) return false;
 		T[] items = this.items.items;
 		for (int i = 0, n = this.items.size; i < n; i++)
@@ -209,7 +208,7 @@ public class OrderedSet<T> extends ObjectSet<T> {
 	}
 
 	static public class OrderedSetIterator<K> extends ObjectSetIterator<K> {
-		private Array<K> items;
+		private final Array<K> items;
 
 		public OrderedSetIterator (OrderedSet<K> set) {
 			super(set);
@@ -249,7 +248,7 @@ public class OrderedSet<T> extends ObjectSet<T> {
 	}
 
 	static public <T> OrderedSet<T> with (T... array) {
-		OrderedSet<T> set = new OrderedSet<T>();
+		OrderedSet<T> set = new OrderedSet<>();
 		set.addAll(array);
 		return set;
 	}

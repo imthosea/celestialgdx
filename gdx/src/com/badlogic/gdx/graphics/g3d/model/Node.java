@@ -49,10 +49,10 @@ public class Node {
 	 * {@link #calculateWorldTransform()} **/
 	public final Matrix4 globalTransform = new Matrix4();
 
-	public Array<NodePart> parts = new Array<NodePart>(2);
+	public final Array<NodePart> parts = new Array<>(2);
 
 	protected Node parent;
-	private final Array<Node> children = new Array<Node>(2);
+	private final Array<Node> children = new Array<>(2);
 
 	/** Calculates the local transform based on the translation, scale and rotation
 	 * @return the local transform */

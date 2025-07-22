@@ -62,7 +62,7 @@ public class ModelBatch implements Disposable {
 	protected Camera camera;
 	protected final RenderablePool renderablesPool = new RenderablePool();
 	/** list of Renderables to be rendered in the current batch **/
-	protected final Array<Renderable> renderables = new Array<Renderable>();
+	protected final Array<Renderable> renderables = new Array<>();
 	/** the {@link RenderContext} **/
 	protected final RenderContext context;
 	private final boolean ownContext;

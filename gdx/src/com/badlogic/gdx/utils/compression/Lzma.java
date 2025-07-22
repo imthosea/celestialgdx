@@ -34,20 +34,20 @@ public class Lzma {
 		public int Command = -1;
 		public int NumBenchmarkPasses = 10;
 
-		public int DictionarySize = 1 << 23;
+		public final int DictionarySize = 1 << 23;
 		public boolean DictionarySizeIsDefined = false;
 
-		public int Lc = 3;
-		public int Lp = 0;
-		public int Pb = 2;
+		public final int Lc = 3;
+		public final int Lp = 0;
+		public final int Pb = 2;
 
-		public int Fb = 128;
+		public final int Fb = 128;
 		public boolean FbIsDefined = false;
 
-		public boolean Eos = false;
+		public final boolean Eos = false;
 
-		public int Algorithm = 2;
-		public int MatchFinder = 1;
+		public final int Algorithm = 2;
+		public final int MatchFinder = 1;
 
 		public String InFile;
 		public String OutFile;

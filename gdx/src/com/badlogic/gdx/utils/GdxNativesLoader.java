@@ -17,7 +17,7 @@
 package com.badlogic.gdx.utils;
 
 public class GdxNativesLoader {
-	static public boolean disableNativesLoading = false;
+	static public final boolean disableNativesLoading = false;
 
 	static private boolean nativesLoaded;
 

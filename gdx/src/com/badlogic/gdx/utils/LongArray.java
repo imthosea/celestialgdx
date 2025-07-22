@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.utils;
 
-import java.util.Arrays;
-
 import com.badlogic.gdx.math.MathUtils;
+
+import java.util.Arrays;
 
 /** A resizable, ordered or unordered long array. Avoids the boxing that occurs with ArrayList<Long>. If unordered, this class
  * avoids a memory copy when removing elements (the last element is moved to the removed element's position).
@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class LongArray {
 	public long[] items;
 	public int size;
-	public boolean ordered;
+	public final boolean ordered;
 
 	/** Creates an ordered array with a capacity of 16. */
 	public LongArray () {
@@ -416,7 +416,7 @@ public class LongArray {
 		int h = 1;
 		for (int i = 0, n = size; i < n; i++) {
 			long item = items[i];
-			h = h * 31 + (int)(item ^ (item >>> 32));
+			h = h * 31 + Long.hashCode(item);
 		}
 		return h;
 	}
@@ -424,8 +424,7 @@ public class LongArray {
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof LongArray)) return false;
-		LongArray array = (LongArray)object;
+		if (!(object instanceof LongArray array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;

@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Array;
  * @author Inferno */
 public class CumulativeDistribution<T> {
 	private static class CumulativeValue<T> {
-		public T value;
+		public final T value;
 		public float frequency;
 		public float interval;
 

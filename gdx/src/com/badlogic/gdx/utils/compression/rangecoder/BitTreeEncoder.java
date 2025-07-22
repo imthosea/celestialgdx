@@ -19,8 +19,8 @@ package com.badlogic.gdx.utils.compression.rangecoder;
 import java.io.IOException;
 
 public class BitTreeEncoder {
-	short[] Models;
-	int NumBitLevels;
+	final short[] Models;
+	final int NumBitLevels;
 
 	public BitTreeEncoder (int numBitLevels) {
 		NumBitLevels = numBitLevels;

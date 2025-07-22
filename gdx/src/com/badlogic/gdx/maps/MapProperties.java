@@ -16,20 +16,20 @@
 
 package com.badlogic.gdx.maps;
 
+import com.badlogic.gdx.utils.ObjectMap;
+
 import java.util.Iterator;
 import java.util.Objects;
-
-import com.badlogic.gdx.utils.ObjectMap;
 
 /** @brief Set of string indexed values representing map elements' properties, allowing to retrieve, modify and add properties to
  *        the set. */
 public class MapProperties {
 
-	private ObjectMap<String, Object> properties;
+	private final ObjectMap<String, Object> properties;
 
 	/** Creates an empty properties set */
 	public MapProperties () {
-		properties = new ObjectMap<String, Object>();
+		properties = new ObjectMap<>();
 	}
 
 	/** @param key property name
@@ -102,8 +102,7 @@ public class MapProperties {
 
 	@Override
 	public boolean equals (Object o) {
-		if (!(o instanceof MapProperties)) return false;
-		MapProperties that = (MapProperties)o;
+		if (!(o instanceof MapProperties that)) return false;
 		return Objects.equals(properties, that.properties);
 	}
 

@@ -16,12 +16,12 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import static com.badlogic.gdx.graphics.g2d.SpriteBatch.*;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+
+import static com.badlogic.gdx.graphics.g2d.SpriteBatch.*;
 
 /** Holds the geometry, color, and texture information for drawing 2D sprites using {@link Batch}. A Sprite has a position and a
  * size given as width and height. The position is relative to the origin of the coordinate system specified via
@@ -559,21 +559,21 @@ public class Sprite extends TextureRegion {
 		float maxx = vertices[X1];
 		float maxy = vertices[Y1];
 
-		minx = minx > vertices[X2] ? vertices[X2] : minx;
-		minx = minx > vertices[X3] ? vertices[X3] : minx;
-		minx = minx > vertices[X4] ? vertices[X4] : minx;
+		minx = Math.min(minx, vertices[X2]);
+		minx = Math.min(minx, vertices[X3]);
+		minx = Math.min(minx, vertices[X4]);
 
-		maxx = maxx < vertices[X2] ? vertices[X2] : maxx;
-		maxx = maxx < vertices[X3] ? vertices[X3] : maxx;
-		maxx = maxx < vertices[X4] ? vertices[X4] : maxx;
+		maxx = Math.max(maxx, vertices[X2]);
+		maxx = Math.max(maxx, vertices[X3]);
+		maxx = Math.max(maxx, vertices[X4]);
 
-		miny = miny > vertices[Y2] ? vertices[Y2] : miny;
-		miny = miny > vertices[Y3] ? vertices[Y3] : miny;
-		miny = miny > vertices[Y4] ? vertices[Y4] : miny;
+		miny = Math.min(miny, vertices[Y2]);
+		miny = Math.min(miny, vertices[Y3]);
+		miny = Math.min(miny, vertices[Y4]);
 
-		maxy = maxy < vertices[Y2] ? vertices[Y2] : maxy;
-		maxy = maxy < vertices[Y3] ? vertices[Y3] : maxy;
-		maxy = maxy < vertices[Y4] ? vertices[Y4] : maxy;
+		maxy = Math.max(maxy, vertices[Y2]);
+		maxy = Math.max(maxy, vertices[Y3]);
+		maxy = Math.max(maxy, vertices[Y4]);
 
 		if (bounds == null) bounds = new Rectangle();
 		bounds.x = minx;

@@ -50,6 +50,7 @@ public class DecalMaterial {
 	@Override
 	public boolean equals (Object o) {
 		if (o == null) return false;
+		if (this.getClass() != o.getClass()) return false;
 
 		DecalMaterial material = (DecalMaterial)o;
 

@@ -25,7 +25,7 @@ public class SphericalHarmonics {
 		0.546274f};
 
 	private final static float clamp (final float v) {
-		return v < 0f ? 0f : (v > 1f ? 1f : v);
+		return v < 0f ? 0f : (Math.min(v, 1f));
 	}
 
 	public final float data[];
@@ -40,8 +40,7 @@ public class SphericalHarmonics {
 	}
 
 	public SphericalHarmonics set (final float values[]) {
-		for (int i = 0; i < data.length; i++)
-			data[i] = values[i];
+		System.arraycopy(values, 0, data, 0, data.length);
 		return this;
 	}
 

@@ -31,9 +31,9 @@ import com.badlogic.gdx.utils.Disposable;
 /** @author Xoppa */
 public class DirectionalShadowLight extends DirectionalLight implements ShadowMap, Disposable {
 	protected FrameBuffer fbo;
-	protected Camera cam;
-	protected float halfDepth;
-	protected float halfHeight;
+	protected final Camera cam;
+	protected final float halfDepth;
+	protected final float halfHeight;
 	protected final Vector3 tmpV = new Vector3();
 	protected final TextureDescriptor textureDesc;
 

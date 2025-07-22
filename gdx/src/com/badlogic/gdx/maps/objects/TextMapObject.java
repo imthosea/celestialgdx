@@ -40,7 +40,7 @@ public class TextMapObject extends MapObject {
 	private String verticalAlign = "top";
 
 	// Rectangle shape representing the object's bounds
-	private Rectangle rectangle;
+	private final Rectangle rectangle;
 
 	/** Creates an empty text object with bounds starting in the lower left corner at (0, 0) with width=1 and height=1 */
 	public TextMapObject () {

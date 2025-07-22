@@ -16,10 +16,6 @@
 
 package com.badlogic.gdx.graphics.g3d.loader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -45,6 +41,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /** {@link ModelLoader} to load Wavefront OBJ files. Only intended for testing basic models/meshes and educational usage. The
  * Wavefront specification is NOT fully implemented, only a subset of the specification is supported. Especially the
  * {@link Material} ({@link Attributes}), e.g. the color or texture applied, might not or not correctly be loaded.
@@ -68,7 +68,7 @@ import com.badlogic.gdx.utils.FloatArray;
 public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 	/** Set to false to prevent a warning from being logged when this class is used. Do not change this value, unless you are
 	 * absolutely sure what you are doing. Consult the documentation for more information. */
-	public static boolean logWarning = false;
+	public static final boolean logWarning = false;
 
 	public static class ObjLoaderParameters extends ModelLoader.ModelParameters {
 		public boolean flipV;
@@ -84,7 +84,7 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 	final FloatArray verts = new FloatArray(300);
 	final FloatArray norms = new FloatArray(300);
 	final FloatArray uvs = new FloatArray(200);
-	final Array<Group> groups = new Array<Group>(10);
+	final Array<Group> groups = new Array<>(10);
 
 	public ObjLoader () {
 		this(null);
@@ -242,7 +242,7 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 				}
 			}
 
-			Array<VertexAttribute> attributes = new Array<VertexAttribute>();
+			Array<VertexAttribute> attributes = new Array<>();
 			attributes.add(new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE));
 			if (hasNorms) attributes.add(new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE));
 			if (hasUVs) attributes.add(new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
@@ -314,15 +314,15 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 	private static class Group {
 		final String name;
 		String materialName;
-		Array<Integer> faces;
+		final Array<Integer> faces;
 		int numFaces;
 		boolean hasNorms;
 		boolean hasUVs;
-		Material mat;
+		final Material mat;
 
 		Group (String name) {
 			this.name = name;
-			this.faces = new Array<Integer>(200);
+			this.faces = new Array<>(200);
 			this.numFaces = 0;
 			this.mat = new Material("");
 			this.materialName = "default";
@@ -331,7 +331,7 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 }
 
 class MtlLoader {
-	public Array<ModelMaterial> materials = new Array<ModelMaterial>();
+	public final Array<ModelMaterial> materials = new Array<>();
 
 	/** loads .mtl file */
 	public void load (FileHandle file) {
@@ -464,7 +464,7 @@ class MtlLoader {
 				ModelTexture tex = new ModelTexture();
 				tex.usage = usage;
 				tex.fileName = texFilename;
-				if (mat.textures == null) mat.textures = new Array<ModelTexture>(1);
+				if (mat.textures == null) mat.textures = new Array<>(1);
 				mat.textures.add(tex);
 			}
 		}

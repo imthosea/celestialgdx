@@ -16,14 +16,13 @@
 
 package com.badlogic.gdx.maps;
 
-import java.util.Iterator;
-
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
+
+import java.util.Iterator;
 
 /** Ordered list of {@link MapLayer} instances owned by a {@link Map} */
 public class MapLayers implements Iterable<MapLayer> {
-	private Array<MapLayer> layers = new Array<MapLayer>();
+	private final Array<MapLayer> layers = new Array<>();
 
 	/** @param index
 	 * @return the MapLayer at the specified index */
@@ -81,7 +80,7 @@ public class MapLayers implements Iterable<MapLayer> {
 	/** @param type
 	 * @return array with all the layers matching type */
 	public <T extends MapLayer> Array<T> getByType (Class<T> type) {
-		return getByType(type, new Array<T>());
+		return getByType(type, new Array<>());
 	}
 
 	/** @param type
@@ -91,7 +90,7 @@ public class MapLayers implements Iterable<MapLayer> {
 		fill.clear();
 		for (int i = 0, n = layers.size; i < n; i++) {
 			MapLayer layer = layers.get(i);
-			if (ClassReflection.isInstance(type, layer)) {
+			if (type.isInstance(layer)) {
 				fill.add((T)layer);
 			}
 		}

@@ -38,7 +38,7 @@ public class AnimatedTiledMapTile implements TiledMapTile {
 
 	private MapObjects objects;
 
-	private StaticTiledMapTile[] frameTiles;
+	private final StaticTiledMapTile[] frameTiles;
 
 	private int[] animationIntervals;
 	private int loopDuration;
@@ -120,8 +120,8 @@ public class AnimatedTiledMapTile implements TiledMapTile {
 			this.animationIntervals = intervals;
 
 			loopDuration = 0;
-			for (int i = 0; i < intervals.length; i++) {
-				loopDuration += intervals[i];
+			for (int interval : intervals) {
+				loopDuration += interval;
 			}
 
 		} else {

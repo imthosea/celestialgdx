@@ -16,12 +16,6 @@
 
 package com.badlogic.gdx.graphics;
 
-import java.nio.Buffer;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -45,6 +39,12 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -74,7 +74,7 @@ public class Mesh implements Disposable {
 	}
 
 	/** list of all meshes **/
-	static final Map<Application, Array<Mesh>> meshes = new HashMap<Application, Array<Mesh>>();
+	static final Map<Application, Array<Mesh>> meshes = new HashMap<>();
 
 	final VertexData vertices;
 	final IndexData indices;
@@ -977,7 +977,7 @@ public class Mesh implements Disposable {
 
 	private static void addManagedMesh (Application app, Mesh mesh) {
 		Array<Mesh> managedResources = meshes.get(app);
-		if (managedResources == null) managedResources = new Array<Mesh>();
+		if (managedResources == null) managedResources = new Array<>();
 		managedResources.add(mesh);
 		meshes.put(app, managedResources);
 	}
@@ -1002,8 +1002,8 @@ public class Mesh implements Disposable {
 		StringBuilder builder = new StringBuilder();
 		int i = 0;
 		builder.append("Managed meshes/app: { ");
-		for (Application app : meshes.keySet()) {
-			builder.append(meshes.get(app).size);
+		for (Array<Mesh> meshArray : meshes.values()) {
+			builder.append(meshArray.size);
 			builder.append(" ");
 		}
 		builder.append("}");
@@ -1189,9 +1189,9 @@ public class Mesh implements Disposable {
 		if (usage != null) {
 			int size = 0;
 			int as = 0;
-			for (int i = 0; i < usage.length; i++)
-				if (getVertexAttribute(usage[i]) != null) {
-					size += getVertexAttribute(usage[i]).numComponents;
+			for (int value : usage)
+				if (getVertexAttribute(value) != null) {
+					size += getVertexAttribute(value).numComponents;
 					as++;
 				}
 			if (size > 0) {
@@ -1199,8 +1199,8 @@ public class Mesh implements Disposable {
 				checks = new short[size];
 				int idx = -1;
 				int ai = -1;
-				for (int i = 0; i < usage.length; i++) {
-					VertexAttribute a = getVertexAttribute(usage[i]);
+				for (int k : usage) {
+					VertexAttribute a = getVertexAttribute(k);
 					if (a == null) continue;
 					for (int j = 0; j < a.numComponents; j++)
 						checks[++idx] = (short)(a.offset + j);
@@ -1231,8 +1231,11 @@ public class Mesh implements Disposable {
 						for (short j = 0; j < size && newIndex < 0; j++) {
 							final int idx2 = j * newVertexSize;
 							boolean found = true;
-							for (int k = 0; k < checks.length && found; k++) {
-								if (tmp[idx2 + k] != vertices[idx1 + checks[k]]) found = false;
+							for (int k = 0; k < checks.length; k++) {
+								if (tmp[idx2 + k] != vertices[idx1 + checks[k]]) {
+									found = false;
+									break;
+								}
 							}
 							if (found) newIndex = j;
 						}

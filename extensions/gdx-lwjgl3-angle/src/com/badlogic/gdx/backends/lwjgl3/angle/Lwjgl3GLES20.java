@@ -20,7 +20,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.lwjgl.opengles.GLES20;
 
-import java.nio.*;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 public class Lwjgl3GLES20 implements GL20 {
 	private ByteBuffer buffer = null;
@@ -265,8 +270,7 @@ public class Lwjgl3GLES20 implements GL20 {
 	}
 
 	public void glDrawElements (int mode, int count, int type, Buffer indices) {
-		if (indices instanceof ShortBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
-			ShortBuffer sb = (ShortBuffer)indices;
+		if (indices instanceof ShortBuffer sb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_SHORT) {
 			int position = sb.position();
 			int oldLimit = sb.limit();
 			sb.limit(position + count);
@@ -279,8 +283,7 @@ public class Lwjgl3GLES20 implements GL20 {
 			sb.limit(position + count);
 			GLES20.glDrawElements(mode, sb);
 			sb.limit(oldLimit);
-		} else if (indices instanceof ByteBuffer && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
-			ByteBuffer bb = (ByteBuffer)indices;
+		} else if (indices instanceof ByteBuffer bb && type == com.badlogic.gdx.graphics.GL20.GL_UNSIGNED_BYTE) {
 			int position = bb.position();
 			int oldLimit = bb.limit();
 			bb.limit(position + count);

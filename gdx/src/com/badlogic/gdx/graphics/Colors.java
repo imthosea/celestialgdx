@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.ObjectMap;
  * @author davebaol */
 public final class Colors {
 
-	private static final ObjectMap<String, Color> map = new ObjectMap<String, Color>();
+	private static final ObjectMap<String, Color> map = new ObjectMap<>();
 
 	static {
 		reset();

@@ -317,7 +317,7 @@ public class LongQueue {
 		for (int s = 0; s < size; s++) {
 			final long value = values[index];
 
-			hash += (int)(value ^ (value >>> 32)) * 31;
+			hash += Long.hashCode(value) * 31;
 
 			index++;
 			if (index == backingLength) index = 0;
@@ -328,9 +328,8 @@ public class LongQueue {
 
 	public boolean equals (Object o) {
 		if (this == o) return true;
-		if (o == null || !(o instanceof LongQueue)) return false;
+		if (!(o instanceof LongQueue q)) return false;
 
-		LongQueue q = (LongQueue)o;
 		final int size = this.size;
 
 		if (q.size != size) return false;

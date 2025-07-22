@@ -16,13 +16,12 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
-import com.badlogic.gdx.utils.reflect.ArrayReflection;
 
 /** An ordered or unordered map of objects. This implementation uses arrays to store the keys and values, which means
  * {@link #getKey(Object, boolean) gets} do a comparison for each key in the map. This is slower than a typical hash map
@@ -34,7 +33,7 @@ public class ArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	public K[] keys;
 	public V[] values;
 	public int size;
-	public boolean ordered;
+	public final boolean ordered;
 
 	private transient Entries entries1, entries2;
 	private transient Values values1, values2;
@@ -79,16 +78,16 @@ public class ArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	 *
 	 * @deprecated Use {@link ArrayMap#ArrayMap(boolean, int, ArraySupplier, ArraySupplier)} instead */
 	@Deprecated
-	public ArrayMap (boolean ordered, int capacity, Class keyArrayType, Class valueArrayType) {
-		this(ordered, capacity, size -> (K[])ArrayReflection.newInstance(keyArrayType, size),
-			size -> (V[])ArrayReflection.newInstance(valueArrayType, size));
+	public ArrayMap (boolean ordered, int capacity, Class<?> keyArrayType, Class<?> valueArrayType) {
+		this(ordered, capacity, size -> (K[])java.lang.reflect.Array.newInstance(keyArrayType, size),
+			size -> (V[])java.lang.reflect.Array.newInstance(valueArrayType, size));
 	}
 
 	/** Creates an ordered map with {@link #keys} and {@link #values} of the specified type and a capacity of 16.
 	 *
 	 * @deprecated Use {@link ArrayMap#ArrayMap(ArraySupplier, ArraySupplier)} instead */
 	@Deprecated
-	public ArrayMap (Class keyArrayType, Class valueArrayType) {
+	public ArrayMap (Class<?> keyArrayType, Class<?> valueArrayType) {
 		this(false, 16, keyArrayType, valueArrayType);
 	}
 
@@ -440,8 +439,7 @@ public class ArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	public boolean equals (Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof ArrayMap)) return false;
-		ArrayMap other = (ArrayMap)obj;
+		if (!(obj instanceof ArrayMap other)) return false;
 		if (other.size != size) return false;
 		K[] keys = this.keys;
 		V[] values = this.values;
@@ -460,8 +458,7 @@ public class ArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	/** Uses == for comparison of each value. */
 	public boolean equalsIdentity (Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof ArrayMap)) return false;
-		ArrayMap other = (ArrayMap)obj;
+		if (!(obj instanceof ArrayMap other)) return false;
 		if (other.size != size) return false;
 		K[] keys = this.keys;
 		V[] values = this.values;
@@ -564,7 +561,7 @@ public class ArrayMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	static public class Entries<K, V> implements Iterable<Entry<K, V>>, Iterator<Entry<K, V>> {
 		private final ArrayMap<K, V> map;
-		Entry<K, V> entry = new Entry();
+		final Entry<K, V> entry = new Entry();
 		int index;
 		boolean valid = true;
 

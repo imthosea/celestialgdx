@@ -28,9 +28,11 @@ public interface TextureProvider {
 	public Texture load (String fileName);
 
 	public static class FileTextureProvider implements TextureProvider {
-		private Texture.TextureFilter minFilter, magFilter;
-		private Texture.TextureWrap uWrap, vWrap;
-		private boolean useMipMaps;
+		private final Texture.TextureFilter minFilter;
+		private final Texture.TextureFilter magFilter;
+		private final Texture.TextureWrap uWrap;
+		private final Texture.TextureWrap vWrap;
+		private final boolean useMipMaps;
 
 		public FileTextureProvider () {
 			minFilter = magFilter = Texture.TextureFilter.Linear;

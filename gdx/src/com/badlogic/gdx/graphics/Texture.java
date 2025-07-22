@@ -16,12 +16,8 @@
 
 package com.badlogic.gdx.graphics;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetLoaderParameters.LoadedCallback;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
@@ -31,6 +27,9 @@ import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** A Texture wraps a standard OpenGL ES texture.
  * <p>
@@ -47,7 +46,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  * @author badlogicgames@gmail.com */
 public class Texture extends GLTexture {
 	private static AssetManager assetManager;
-	final static Map<Application, Array<Texture>> managedTextures = new HashMap<Application, Array<Texture>>();
+	final static Map<Application, Array<Texture>> managedTextures = new HashMap<>();
 
 	public enum TextureFilter {
 		/** Fetch the nearest texel that best maps to the pixel on screen. */
@@ -233,7 +232,7 @@ public class Texture extends GLTexture {
 
 	private static void addManagedTexture (Application app, Texture texture) {
 		Array<Texture> managedTextureArray = managedTextures.get(app);
-		if (managedTextureArray == null) managedTextureArray = new Array<Texture>();
+		if (managedTextureArray == null) managedTextureArray = new Array<>();
 		managedTextureArray.add(texture);
 		managedTextures.put(app, managedTextureArray);
 	}
@@ -261,7 +260,7 @@ public class Texture extends GLTexture {
 
 			// next we go through each texture and reload either directly or via the
 			// asset manager.
-			Array<Texture> textures = new Array<Texture>(managedTextureArray);
+			Array<Texture> textures = new Array<>(managedTextureArray);
 			for (Texture texture : textures) {
 				String fileName = assetManager.getAssetFileName(texture);
 				if (fileName == null) {
@@ -285,11 +284,8 @@ public class Texture extends GLTexture {
 					params.wrapV = texture.getVWrap();
 					params.genMipMaps = texture.data.useMipMaps(); // not sure about this?
 					params.texture = texture; // special parameter which will ensure that the references stay the same.
-					params.loadedCallback = new LoadedCallback() {
-						@Override
-						public void finishedLoading (AssetManager assetManager, String fileName, Class type) {
-							assetManager.setReferenceCount(fileName, refCount);
-						}
+					params.loadedCallback = (assetManager, fileName1, type) -> {
+						assetManager.setReferenceCount(fileName1, refCount);
 					};
 
 					// unload the texture, create a new gl handle then reload it.
@@ -314,8 +310,8 @@ public class Texture extends GLTexture {
 	public static String getManagedStatus () {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Managed textures/app: { ");
-		for (Application app : managedTextures.keySet()) {
-			builder.append(managedTextures.get(app).size);
+		for (Array<Texture> textures : managedTextures.values()) {
+			builder.append(textures.size);
 			builder.append(" ");
 		}
 		builder.append("}");

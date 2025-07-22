@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.scenes.scene2d.ui;
 
-import static com.badlogic.gdx.math.Interpolation.*;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
-
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
@@ -26,6 +23,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
+
+import static com.badlogic.gdx.math.Interpolation.fade;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 /** Keeps track of an application's tooltips.
  * @author Nathan Sweet */
@@ -35,22 +35,23 @@ public class TooltipManager {
 
 	/** Seconds from when an actor is hovered to when the tooltip is shown. Default is 2. Call {@link #hideAll()} after changing to
 	 * reset internal state. */
-	public float initialTime = 2;
+	public final float initialTime = 2;
 	/** Once a tooltip is shown, this is used instead of {@link #initialTime}. Default is 0. */
-	public float subsequentTime = 0;
+	public final float subsequentTime = 0;
 	/** Seconds to use {@link #subsequentTime}. Default is 1.5. */
-	public float resetTime = 1.5f;
+	public final float resetTime = 1.5f;
 	/** If false, tooltips will not be shown. Default is true. */
-	public boolean enabled = true;
+	public final boolean enabled = true;
 	/** If false, tooltips will be shown without animations. Default is true. */
-	public boolean animations = true;
+	public final boolean animations = true;
 	/** The maximum width of a {@link TextTooltip}. The label will wrap if needed. Default is Integer.MAX_VALUE. */
-	public float maxWidth = Integer.MAX_VALUE;
+	public final float maxWidth = Integer.MAX_VALUE;
 	/** The distance from the mouse position to offset the tooltip actor. Default is 15,19. */
-	public float offsetX = 15, offsetY = 19;
+	public final float offsetX = 15;
+	public final float offsetY = 19;
 	/** The distance from the tooltip actor position to the edge of the screen where the actor will be shown on the other side of
 	 * the mouse cursor. Default is 7. */
-	public float edgeDistance = 7;
+	public final float edgeDistance = 7;
 
 	final Array<Tooltip> shown = new Array();
 

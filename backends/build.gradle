@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-configure(subprojects) {
+subprojects {
 	apply plugin: "java"
 
 	if (JavaVersion.current().isJava9Compatible()) {
@@ -27,7 +27,6 @@ configure(subprojects) {
 
 	sourceSets.main.java.srcDirs = ["src"]
 	sourceSets.main.resources.srcDirs = ["res"]
-
 
 	dependencies {
 		api project(":gdx")

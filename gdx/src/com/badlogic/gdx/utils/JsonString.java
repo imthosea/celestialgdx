@@ -16,10 +16,10 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 /** Builder API for emitting JSON to a string.
  * @author Nathan Sweet */
@@ -78,8 +78,7 @@ public class JsonString {
 		if (quoteLongValues
 			&& (value instanceof Long || value instanceof Double || value instanceof BigDecimal || value instanceof BigInteger)) {
 			value = value.toString();
-		} else if (value instanceof Number) {
-			Number number = (Number)value;
+		} else if (value instanceof Number number) {
 			long longValue = number.longValue();
 			if (number.doubleValue() == longValue) value = longValue;
 		}

@@ -69,7 +69,7 @@ public class TmxMapLoader extends BaseTmxMapLoader<TmxMapLoader.Parameters> {
 
 		this.root = xml.parse(tmxFile);
 
-		ObjectMap<String, Texture> textures = new ObjectMap<String, Texture>();
+		ObjectMap<String, Texture> textures = new ObjectMap<>();
 
 		final Array<FileHandle> textureFiles = getDependencyFileHandles(tmxFile);
 		for (FileHandle textureFile : textureFiles) {
@@ -96,7 +96,7 @@ public class TmxMapLoader extends BaseTmxMapLoader<TmxMapLoader.Parameters> {
 	@Override
 	protected Array<AssetDescriptor> getDependencyAssetDescriptors (FileHandle tmxFile,
 		TextureLoader.TextureParameter textureParameter) {
-		Array<AssetDescriptor> descriptors = new Array<AssetDescriptor>();
+		Array<AssetDescriptor> descriptors = new Array<>();
 
 		final Array<FileHandle> fileHandles = getDependencyFileHandles(tmxFile);
 		for (FileHandle handle : fileHandles) {
@@ -107,7 +107,7 @@ public class TmxMapLoader extends BaseTmxMapLoader<TmxMapLoader.Parameters> {
 	}
 
 	protected Array<FileHandle> getDependencyFileHandles (FileHandle tmxFile) {
-		Array<FileHandle> fileHandles = new Array<FileHandle>();
+		Array<FileHandle> fileHandles = new Array<>();
 
 		// TileSet descriptors
 		for (Element tileset : root.getChildrenByNameRecursively("tileset")) {
@@ -129,7 +129,7 @@ public class TmxMapLoader extends BaseTmxMapLoader<TmxMapLoader.Parameters> {
 	}
 
 	protected Array<FileHandle> getTileSetDependencyFileHandle (FileHandle tmxFile, Element tileset) {
-		Array<FileHandle> fileHandles = new Array<FileHandle>();
+		Array<FileHandle> fileHandles = new Array<>();
 		return getTileSetDependencyFileHandle(fileHandles, tmxFile, tileset);
 	}
 

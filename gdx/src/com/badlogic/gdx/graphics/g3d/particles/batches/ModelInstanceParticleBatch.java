@@ -26,11 +26,11 @@ import com.badlogic.gdx.utils.Pool;
 /*** This class is used to render particles having a model instance channel.
  * @author Inferno */
 public class ModelInstanceParticleBatch implements ParticleBatch<ModelInstanceControllerRenderData> {
-	Array<ModelInstanceControllerRenderData> controllersRenderData;
+	final Array<ModelInstanceControllerRenderData> controllersRenderData;
 	int bufferedParticlesCount;
 
 	public ModelInstanceParticleBatch () {
-		controllersRenderData = new Array<ModelInstanceControllerRenderData>(false, 5);
+		controllersRenderData = new Array<>(false, 5);
 	}
 
 	@Override

@@ -19,13 +19,13 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 /** Lightweight XML parser. Supports a subset of XML features: elements, attributes, text, predefined entities, CDATA, mixed
  * content. Namespaces are parsed as part of the element or attribute name. Prologs and doctypes are ignored. Only 8-bit character
@@ -172,7 +172,7 @@ public class XmlReader {
 
 					if (_xml_trans_actions[_trans] != 0) {
 						_acts = _xml_trans_actions[_trans];
-						_nacts = (int)_xml_actions[_acts++];
+						_nacts = _xml_actions[_acts++];
 						while (_nacts-- > 0) {
 							switch (_xml_actions[_acts++]) {
 							case 0:
@@ -462,7 +462,7 @@ public class XmlReader {
 		private ObjectMap<String, String> attributes;
 		private Array<Element> children;
 		private String text;
-		private Element parent;
+		private final Element parent;
 
 		public Element (String name, Element parent) {
 			this.name = name;
@@ -632,7 +632,7 @@ public class XmlReader {
 		/** @param name the name of the children
 		 * @return the children with the given name or an empty {@link Array} */
 		public Array<Element> getChildrenByName (String name) {
-			Array<Element> result = new Array<Element>();
+			Array<Element> result = new Array<>();
 			if (children == null) return result;
 			for (int i = 0; i < children.size; i++) {
 				Element child = children.get(i);
@@ -644,7 +644,7 @@ public class XmlReader {
 		/** @param name the name of the children
 		 * @return the children with the given name or an empty {@link Array} */
 		public Array<Element> getChildrenByNameRecursively (String name) {
-			Array<Element> result = new Array<Element>();
+			Array<Element> result = new Array<>();
 			getChildrenByNameRecursively(name, result);
 			return result;
 		}

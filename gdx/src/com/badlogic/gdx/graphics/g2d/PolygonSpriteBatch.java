@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import static com.badlogic.gdx.graphics.g2d.Sprite.*;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -30,6 +28,9 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+
+import static com.badlogic.gdx.graphics.g2d.Sprite.SPRITE_SIZE;
+import static com.badlogic.gdx.graphics.g2d.Sprite.VERTEX_SIZE;
 
 /** A PolygonSpriteBatch is used to draw 2D polygons that reference a texture (region). The class will batch the drawing commands
  * and optimize them for processing by the GPU.
@@ -56,7 +57,7 @@ import com.badlogic.gdx.math.Matrix4;
  * @author Stefan Bachmann
  * @author Nathan Sweet */
 public class PolygonSpriteBatch implements PolygonBatch {
-	private Mesh mesh;
+	private final Mesh mesh;
 
 	private final float[] vertices;
 	private final short[] triangles;
@@ -222,8 +223,7 @@ public class PolygonSpriteBatch implements PolygonBatch {
 		int vertexIndex = this.vertexIndex;
 		final int startVertex = vertexIndex / VERTEX_SIZE;
 
-		for (int i = 0; i < regionTrianglesLength; i++)
-			triangles[triangleIndex++] = (short)(regionTriangles[i] + startVertex);
+		for (short regionTriangle : regionTriangles) triangles[triangleIndex++] = (short)(regionTriangle + startVertex);
 		this.triangleIndex = triangleIndex;
 
 		final float[] vertices = this.vertices;
@@ -261,8 +261,7 @@ public class PolygonSpriteBatch implements PolygonBatch {
 		int vertexIndex = this.vertexIndex;
 		final int startVertex = vertexIndex / VERTEX_SIZE;
 
-		for (int i = 0, n = regionTriangles.length; i < n; i++)
-			triangles[triangleIndex++] = (short)(regionTriangles[i] + startVertex);
+		for (short regionTriangle : regionTriangles) triangles[triangleIndex++] = (short)(regionTriangle + startVertex);
 		this.triangleIndex = triangleIndex;
 
 		final float[] vertices = this.vertices;
@@ -303,8 +302,7 @@ public class PolygonSpriteBatch implements PolygonBatch {
 		int vertexIndex = this.vertexIndex;
 		final int startVertex = vertexIndex / VERTEX_SIZE;
 
-		for (int i = 0; i < regionTrianglesLength; i++)
-			triangles[triangleIndex++] = (short)(regionTriangles[i] + startVertex);
+		for (short regionTriangle : regionTriangles) triangles[triangleIndex++] = (short)(regionTriangle + startVertex);
 		this.triangleIndex = triangleIndex;
 
 		final float[] vertices = this.vertices;

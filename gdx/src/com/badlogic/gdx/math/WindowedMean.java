@@ -16,13 +16,15 @@
 
 package com.badlogic.gdx.math;
 
+import java.util.Arrays;
+
 /** A simple class keeping track of the mean of a stream of values within a certain window. the WindowedMean will only return a
  * value in case enough data has been sampled. After enough data has been sampled the oldest sample will be replaced by the newest
  * in case a new sample is added.
  * 
  * @author badlogicgames@gmail.com */
 public final class WindowedMean {
-	float values[];
+	final float[] values;
 	int added_values = 0;
 	int last_value;
 	float mean = 0;
@@ -45,8 +47,7 @@ public final class WindowedMean {
 	public void clear () {
 		added_values = 0;
 		last_value = 0;
-		for (int i = 0; i < values.length; i++)
-			values[i] = 0;
+		Arrays.fill(values, 0);
 		dirty = true;
 	}
 
@@ -67,8 +68,7 @@ public final class WindowedMean {
 		if (hasEnoughData()) {
 			if (dirty) {
 				float mean = 0;
-				for (int i = 0; i < values.length; i++)
-					mean += values[i];
+				for (float value : values) mean += value;
 
 				this.mean = mean / values.length;
 				dirty = false;
@@ -94,8 +94,8 @@ public final class WindowedMean {
 
 		float mean = getMean();
 		float sum = 0;
-		for (int i = 0; i < values.length; i++) {
-			sum += (values[i] - mean) * (values[i] - mean);
+		for (float value : values) {
+			sum += (value - mean) * (value - mean);
 		}
 
 		return (float)Math.sqrt(sum / values.length);
@@ -103,15 +103,13 @@ public final class WindowedMean {
 
 	public float getLowest () {
 		float lowest = Float.MAX_VALUE;
-		for (int i = 0; i < values.length; i++)
-			lowest = Math.min(lowest, values[i]);
+		for (float value : values) lowest = Math.min(lowest, value);
 		return lowest;
 	}
 
 	public float getHighest () {
 		float lowest = Float.MIN_NORMAL;
-		for (int i = 0; i < values.length; i++)
-			lowest = Math.max(lowest, values[i]);
+		for (float value : values) lowest = Math.max(lowest, value);
 		return lowest;
 	}
 

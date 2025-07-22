@@ -23,8 +23,8 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 public class MapLayer {
 	private String name = "";
 	private float opacity = 1.0f;
-	private Color tintColor = new Color(Color.WHITE);
-	private Color tempColor = new Color(Color.WHITE);
+	private final Color tintColor = new Color(Color.WHITE);
+	private final Color tempColor = new Color(Color.WHITE);
 	private boolean visible = true;
 	private float offsetX;
 	private float offsetY;
@@ -34,8 +34,8 @@ public class MapLayer {
 	private float parallaxY = 1;
 	private boolean renderOffsetDirty = true;
 	private MapLayer parent;
-	private MapObjects objects = new MapObjects();
-	private MapProperties properties = new MapProperties();
+	private final MapObjects objects = new MapObjects();
+	private final MapProperties properties = new MapProperties();
 
 	/** @return layer's name */
 	public String getName () {

@@ -31,7 +31,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.Pools;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
 
 import static com.badlogic.gdx.utils.Align.bottom;
 import static com.badlogic.gdx.utils.Align.left;
@@ -59,9 +58,9 @@ import static com.badlogic.gdx.utils.Align.top;
 public class Actor {
 	private @Null Stage stage;
 	@Null Group parent;
-	private final DelayedRemovalArray<EventListener> listeners = new DelayedRemovalArray(0);
-	private final DelayedRemovalArray<EventListener> captureListeners = new DelayedRemovalArray(0);
-	private final Array<Action> actions = new Array(0);
+	private final DelayedRemovalArray<EventListener> listeners = new DelayedRemovalArray<>(0);
+	private final DelayedRemovalArray<EventListener> captureListeners = new DelayedRemovalArray<>(0);
+	private final Array<Action> actions = new Array<>(0);
 
 	private @Null String name;
 	private Touchable touchable = Touchable.enabled;
@@ -333,7 +332,7 @@ public class Actor {
 		if (type == null) throw new IllegalArgumentException("actor cannot be null.");
 		Actor actor = this;
 		do {
-			if (ClassReflection.isInstance(type, actor)) return (T)actor;
+			if (type.isInstance(actor)) return (T)actor;
 			actor = actor.parent;
 		} while (actor != null);
 		return null;

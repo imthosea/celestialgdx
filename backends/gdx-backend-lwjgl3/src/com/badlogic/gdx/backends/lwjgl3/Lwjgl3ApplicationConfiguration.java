@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,7 @@ import java.io.PrintStream;
 import java.nio.IntBuffer;
 
 public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
-	public static PrintStream errorStream = System.err;
+	public static final PrintStream errorStream = System.err;
 
 	public enum GLEmulation {
 		ANGLE_GLES20, GL20, GL30, GL31, GL32
@@ -99,20 +99,20 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	 * back to OpenGL ES 2.0 emulation through OpenGL 2.0. The default parameters for major and minor should be 3 and 2
 	 * respectively to be compatible with Mac OS X. Specifying major version 4 and minor version 2 will ensure that all OpenGL ES
 	 * 3.0 features are supported. Note however that Mac OS X does only support 3.2.
-	 * 
+	 *
 	 * @see <a href= "http://legacy.lwjgl.org/javadoc/org/lwjgl/opengl/ContextAttribs.html"> LWJGL OSX ContextAttribs note</a>
-	 * 
+	 *
 	 * @param glVersion which OpenGL ES emulation version to use
 	 * @param gles3MajorVersion OpenGL ES major version, use 3 as default
 	 * @param gles3MinorVersion OpenGL ES minor version, use 2 as default */
-	public void setOpenGLEmulation (Lwjgl3ApplicationConfiguration.GLEmulation glVersion, int gles3MajorVersion, int gles3MinorVersion) {
+	public void setOpenGLEmulation (GLEmulation glVersion, int gles3MajorVersion, int gles3MinorVersion) {
 		this.glEmulation = glVersion;
 		this.gles30ContextMajorVersion = gles3MajorVersion;
 		this.gles30ContextMinorVersion = gles3MinorVersion;
 	}
 
 	/** Sets the bit depth of the color, depth and stencil buffer as well as multi-sampling.
-	 * 
+	 *
 	 * @param r red bits (default 8)
 	 * @param g green bits (default 8)
 	 * @param b blue bits (default 8)
@@ -182,7 +182,7 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 		Lwjgl3Application.initializeGlfw();
 		GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 		return new Lwjgl3Graphics.Lwjgl3DisplayMode(GLFW.glfwGetPrimaryMonitor(), videoMode.width(), videoMode.height(),
-			videoMode.refreshRate(), videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
+				videoMode.refreshRate(), videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
 	}
 
 	/** @return the currently active {@link DisplayMode} of the given monitor */
@@ -190,7 +190,7 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 		Lwjgl3Application.initializeGlfw();
 		GLFWVidMode videoMode = GLFW.glfwGetVideoMode(((Lwjgl3Monitor)monitor).monitorHandle);
 		return new Lwjgl3Graphics.Lwjgl3DisplayMode(((Lwjgl3Monitor)monitor).monitorHandle, videoMode.width(), videoMode.height(),
-			videoMode.refreshRate(), videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
+				videoMode.refreshRate(), videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
 	}
 
 	/** @return the available {@link DisplayMode}s of the primary monitor */
@@ -201,7 +201,7 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 		for (int i = 0; i < result.length; i++) {
 			GLFWVidMode videoMode = videoModes.get(i);
 			result[i] = new Lwjgl3Graphics.Lwjgl3DisplayMode(GLFW.glfwGetPrimaryMonitor(), videoMode.width(), videoMode.height(),
-				videoMode.refreshRate(), videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
+					videoMode.refreshRate(), videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
 		}
 		return result;
 	}
@@ -214,7 +214,7 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 		for (int i = 0; i < result.length; i++) {
 			GLFWVidMode videoMode = videoModes.get(i);
 			result[i] = new Lwjgl3Graphics.Lwjgl3DisplayMode(((Lwjgl3Monitor)monitor).monitorHandle, videoMode.width(),
-				videoMode.height(), videoMode.refreshRate(), videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
+					videoMode.height(), videoMode.refreshRate(), videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
 		}
 		return result;
 	}

@@ -20,11 +20,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import java.util.Arrays;
+
 public class AmbientCubemap {
 	private static final int NUM_VALUES = 6 * 3;
 
 	private final static float clamp (final float v) {
-		return v < 0f ? 0f : (v > 1f ? 1f : v);
+		return v < 0f ? 0f : (Math.min(v, 1f));
 	}
 
 	public final float data[];
@@ -44,8 +46,7 @@ public class AmbientCubemap {
 	}
 
 	public AmbientCubemap set (final float values[]) {
-		for (int i = 0; i < data.length; i++)
-			data[i] = values[i];
+		System.arraycopy(values, 0, data, 0, data.length);
 		return this;
 	}
 
@@ -73,8 +74,7 @@ public class AmbientCubemap {
 	}
 
 	public AmbientCubemap clear () {
-		for (int i = 0; i < data.length; i++)
-			data[i] = 0f;
+		Arrays.fill(data, 0f);
 		return this;
 	}
 
@@ -141,10 +141,10 @@ public class AmbientCubemap {
 
 	@Override
 	public String toString () {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < data.length; i += 3) {
-			result += Float.toString(data[i]) + ", " + Float.toString(data[i + 1]) + ", " + Float.toString(data[i + 2]) + "\n";
+			result.append(data[i]).append(", ").append(data[i + 1]).append(", ").append(data[i + 2]).append("\n");
 		}
-		return result;
+		return result.toString();
 	}
 }

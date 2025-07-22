@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.g3d.particles;
 
-import java.io.IOException;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
@@ -30,7 +29,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
+
+import java.io.IOException;
 
 /** This class can save and load a {@link ParticleEffect}. It should be added as {@link AsynchronousAssetLoader} to the
  * {@link AssetManager} so it will be able to load the effects. It's important to note that the two classes
@@ -41,7 +41,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
  * @author inferno */
 public class ParticleEffectLoader
 	extends AsynchronousAssetLoader<ParticleEffect, ParticleEffectLoader.ParticleEffectLoadParameter> {
-	protected Array<ObjectMap.Entry<String, ResourceData<ParticleEffect>>> items = new Array<ObjectMap.Entry<String, ResourceData<ParticleEffect>>>();
+	protected final Array<ObjectMap.Entry<String, ResourceData<ParticleEffect>>> items = new Array<>();
 
 	public ParticleEffectLoader (FileHandleResolver resolver) {
 		super(resolver);
@@ -57,14 +57,14 @@ public class ParticleEffectLoader
 		ResourceData<ParticleEffect> data = json.fromJson(ResourceData.class, file);
 		Array<AssetData> assets = null;
 		synchronized (items) {
-			ObjectMap.Entry<String, ResourceData<ParticleEffect>> entry = new ObjectMap.Entry<String, ResourceData<ParticleEffect>>();
+			ObjectMap.Entry<String, ResourceData<ParticleEffect>> entry = new ObjectMap.Entry<>();
 			entry.key = fileName;
 			entry.value = data;
 			items.add(entry);
 			assets = data.getAssets();
 		}
 
-		Array<AssetDescriptor> descriptors = new Array<AssetDescriptor>();
+		Array<AssetDescriptor> descriptors = new Array<>();
 		for (AssetData<?> assetData : assets) {
 
 			// If the asset doesn't exist try to load it from loading effect directory
@@ -84,7 +84,7 @@ public class ParticleEffectLoader
 
 	/** Saves the effect to the given file contained in the passed in parameter. */
 	public void save (ParticleEffect effect, ParticleEffectSaveParameter parameter) throws IOException {
-		ResourceData<ParticleEffect> data = new ResourceData<ParticleEffect>(effect);
+		ResourceData<ParticleEffect> data = new ResourceData<>(effect);
 
 		// effect assets
 		effect.save(parameter.manager, data);
@@ -143,13 +143,13 @@ public class ParticleEffectLoader
 
 	private <T> T find (Array<?> array, Class<T> type) {
 		for (Object object : array) {
-			if (ClassReflection.isAssignableFrom(type, object.getClass())) return (T)object;
+			if (type.isAssignableFrom(object.getClass())) return (T)object;
 		}
 		return null;
 	}
 
 	public static class ParticleEffectLoadParameter extends AssetLoaderParameters<ParticleEffect> {
-		Array<ParticleBatch<?>> batches;
+		final Array<ParticleBatch<?>> batches;
 
 		public ParticleEffectLoadParameter (Array<ParticleBatch<?>> batches) {
 			this.batches = batches;
@@ -158,13 +158,13 @@ public class ParticleEffectLoader
 
 	public static class ParticleEffectSaveParameter extends AssetLoaderParameters<ParticleEffect> {
 		/** Optional parameters, but should be present to correctly load the settings */
-		Array<ParticleBatch<?>> batches;
+		final Array<ParticleBatch<?>> batches;
 
 		/** Required parameters */
-		FileHandle file;
-		AssetManager manager;
-		JsonWriter.OutputType jsonOutputType;
-		boolean prettyPrint;
+		final FileHandle file;
+		final AssetManager manager;
+		final JsonWriter.OutputType jsonOutputType;
+		final boolean prettyPrint;
 
 		public ParticleEffectSaveParameter (FileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches) {
 			this(file, manager, batches, JsonWriter.OutputType.minimal, false);

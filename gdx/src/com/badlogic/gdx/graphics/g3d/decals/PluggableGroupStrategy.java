@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.IntMap;
 /** This class in combination with the {@link GroupPlug GroupPlugs} allows you to build a modular {@link GroupStrategy} out of
  * routines you already implemented. */
 public abstract class PluggableGroupStrategy implements GroupStrategy {
-	private IntMap<GroupPlug> plugs = new IntMap<GroupPlug>();
+	private final IntMap<GroupPlug> plugs = new IntMap<>();
 
 	@Override
 	public void beforeGroup (int group, Array<Decal> contents) {

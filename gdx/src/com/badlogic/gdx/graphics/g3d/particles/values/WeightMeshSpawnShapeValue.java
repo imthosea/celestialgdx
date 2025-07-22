@@ -26,17 +26,17 @@ import com.badlogic.gdx.math.Vector3;
  * @author Inferno */
 public final class WeightMeshSpawnShapeValue extends MeshSpawnShapeValue {
 
-	private CumulativeDistribution<Triangle> distribution;
+	private final CumulativeDistribution<Triangle> distribution;
 
 	public WeightMeshSpawnShapeValue (WeightMeshSpawnShapeValue value) {
 		super(value);
-		distribution = new CumulativeDistribution<Triangle>();
+		distribution = new CumulativeDistribution<>();
 		load(value);
 	}
 
 	public WeightMeshSpawnShapeValue () {
 		super();
-		distribution = new CumulativeDistribution<Triangle>();
+		distribution = new CumulativeDistribution<>();
 	}
 
 	@Override

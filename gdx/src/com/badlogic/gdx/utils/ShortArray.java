@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.utils;
 
-import java.util.Arrays;
-
 import com.badlogic.gdx.math.MathUtils;
+
+import java.util.Arrays;
 
 /** A resizable, ordered or unordered short array. Avoids the boxing that occurs with ArrayList<Short>. If unordered, this class
  * avoids a memory copy when removing elements (the last element is moved to the removed element's position).
@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class ShortArray {
 	public short[] items;
 	public int size;
-	public boolean ordered;
+	public final boolean ordered;
 
 	/** Creates an ordered array with a capacity of 16. */
 	public ShortArray () {
@@ -427,8 +427,7 @@ public class ShortArray {
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof ShortArray)) return false;
-		ShortArray array = (ShortArray)object;
+		if (!(object instanceof ShortArray array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;

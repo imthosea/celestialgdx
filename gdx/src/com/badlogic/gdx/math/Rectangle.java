@@ -13,11 +13,11 @@
 
 package com.badlogic.gdx.math;
 
-import java.io.Serializable;
-
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.NumberUtils;
 import com.badlogic.gdx.utils.Scaling;
+
+import java.io.Serializable;
 
 /** Encapsulates a 2D rectangle defined by its corner point in the bottom left and its extents in x (width) and y (height).
  * @author badlogicgames@gmail.com */
@@ -283,8 +283,7 @@ public class Rectangle implements Serializable, Shape2D {
 		float maxX = x + width;
 		float minY = y;
 		float maxY = y + height;
-		for (int i = 0; i < vecs.length; ++i) {
-			Vector2 v = vecs[i];
+		for (Vector2 v : vecs) {
 			minX = Math.min(minX, v.x);
 			maxX = Math.max(maxX, v.x);
 			minY = Math.min(minY, v.y);

@@ -1,4 +1,4 @@
-configure(subprojects) {
+subprojects {
 	tasks.register('uberJar', Jar) {
         archiveClassifier = ''
         archiveVersion = ''

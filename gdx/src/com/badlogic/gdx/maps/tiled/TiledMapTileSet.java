@@ -16,18 +16,19 @@
 
 package com.badlogic.gdx.maps.tiled;
 
-import java.util.Iterator;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.utils.IntMap;
+
+import java.util.Iterator;
 
 /** @brief Set of {@link TiledMapTile} instances used to compose a TiledMapLayer */
 public class TiledMapTileSet implements Iterable<TiledMapTile> {
 
 	private String name;
 
-	private IntMap<TiledMapTile> tiles;
+	private final IntMap<TiledMapTile> tiles;
 
-	private MapProperties properties;
+	private final MapProperties properties;
 
 	/** @return tileset's name */
 	public String getName () {
@@ -46,7 +47,7 @@ public class TiledMapTileSet implements Iterable<TiledMapTile> {
 
 	/** Creates empty tileset */
 	public TiledMapTileSet () {
-		tiles = new IntMap<TiledMapTile>();
+		tiles = new IntMap<>();
 		properties = new MapProperties();
 	}
 

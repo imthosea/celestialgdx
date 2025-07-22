@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.graphics.g3d.decals;
 
-import java.util.Comparator;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,6 +24,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pool;
+
+import java.util.Comparator;
 
 /**
  * <p>
@@ -84,14 +84,14 @@ public class CameraGroupStrategy implements GroupStrategy, Disposable {
 	private static final int GROUP_OPAQUE = 0;
 	private static final int GROUP_BLEND = 1;
 
-	Pool<Array<Decal>> arrayPool = new Pool<Array<Decal>>(16) {
+	final Pool<Array<Decal>> arrayPool = new Pool<>(16) {
 		@Override
 		protected Array<Decal> newObject () {
 			return new Array();
 		}
 	};
-	Array<Array<Decal>> usedArrays = new Array<Array<Decal>>();
-	ObjectMap<DecalMaterial, Array<Decal>> materialGroups = new ObjectMap<DecalMaterial, Array<Decal>>();
+	final Array<Array<Decal>> usedArrays = new Array<>();
+	final ObjectMap<DecalMaterial, Array<Decal>> materialGroups = new ObjectMap<>();
 
 	Camera camera;
 	ShaderProgram shader;
@@ -99,7 +99,7 @@ public class CameraGroupStrategy implements GroupStrategy, Disposable {
 
 	public CameraGroupStrategy (Camera camera) {
 		this.camera = camera;
-		this.cameraSorter = new Comparator<Decal>() {
+		this.cameraSorter = new Comparator<>() {
 			@Override
 			public int compare (Decal o1, Decal o2) {
 				float dist1 = CameraGroupStrategy.this.camera.position.dst(o1.position);

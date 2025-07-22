@@ -55,8 +55,8 @@ public class SplitPane extends WidgetGroup implements Styleable<SplitPane.SplitP
 	boolean cursorOverHandle;
 	private final Rectangle tempScissors = new Rectangle();
 
-	Vector2 lastPoint = new Vector2();
-	Vector2 handlePosition = new Vector2();
+	final Vector2 lastPoint = new Vector2();
+	final Vector2 handlePosition = new Vector2();
 
 	/** @param firstWidget May be null.
 	 * @param secondWidget May be null. */

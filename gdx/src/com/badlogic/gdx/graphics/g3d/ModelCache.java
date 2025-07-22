@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.graphics.g3d;
 
-import java.util.Comparator;
-
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -29,6 +27,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.FlushablePool;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Pool;
+
+import java.util.Comparator;
 
 /** ModelCache tries to combine multiple render calls into a single render call by merging them where possible. Can be used for
  * multiple type of models (e.g. varying vertex attributes or materials), the ModelCache will combine where possible. Can be used
@@ -59,8 +59,8 @@ public class ModelCache implements Disposable, RenderableProvider {
 	 * @author Xoppa */
 	public static class SimpleMeshPool implements MeshPool {
 		// FIXME Make a better (preferable JNI) MeshPool implementation
-		private Array<Mesh> freeMeshes = new Array<Mesh>();
-		private Array<Mesh> usedMeshes = new Array<Mesh>();
+		private final Array<Mesh> freeMeshes = new Array<>();
+		private final Array<Mesh> usedMeshes = new Array<>();
 
 		@Override
 		public void flush () {
@@ -100,8 +100,8 @@ public class ModelCache implements Disposable, RenderableProvider {
 	/** A tight {@link MeshPool} implementation, which is typically used for static meshes (create once, use many).
 	 * @author Xoppa */
 	public static class TightMeshPool implements MeshPool {
-		private Array<Mesh> freeMeshes = new Array<Mesh>();
-		private Array<Mesh> usedMeshes = new Array<Mesh>();
+		private final Array<Mesh> freeMeshes = new Array<>();
+		private final Array<Mesh> usedMeshes = new Array<>();
 
 		@Override
 		public void flush () {
@@ -161,27 +161,27 @@ public class ModelCache implements Disposable, RenderableProvider {
 		}
 	}
 
-	private Array<Renderable> renderables = new Array<Renderable>();
-	private FlushablePool<Renderable> renderablesPool = new FlushablePool<Renderable>() {
+	private final Array<Renderable> renderables = new Array<>();
+	private final FlushablePool<Renderable> renderablesPool = new FlushablePool<>() {
 		@Override
 		protected Renderable newObject () {
 			return new Renderable();
 		}
 	};
-	private FlushablePool<MeshPart> meshPartPool = new FlushablePool<MeshPart>() {
+	private final FlushablePool<MeshPart> meshPartPool = new FlushablePool<>() {
 		@Override
 		protected MeshPart newObject () {
 			return new MeshPart();
 		}
 	};
 
-	private Array<Renderable> items = new Array<Renderable>();
-	private Array<Renderable> tmp = new Array<Renderable>();
+	private final Array<Renderable> items = new Array<>();
+	private final Array<Renderable> tmp = new Array<>();
 
-	private MeshBuilder meshBuilder;
+	private final MeshBuilder meshBuilder;
 	private boolean building;
-	private RenderableSorter sorter;
-	private MeshPool meshPool;
+	private final RenderableSorter sorter;
+	private final MeshPool meshPool;
 	private Camera camera;
 
 	/** Create a ModelCache using the default {@link Sorter} and the {@link SimpleMeshPool} implementation. This might not be the

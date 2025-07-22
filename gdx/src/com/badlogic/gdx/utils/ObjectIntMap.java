@@ -328,8 +328,7 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 
 	public boolean equals (Object obj) {
 		if (obj == this) return true;
-		if (!(obj instanceof ObjectIntMap)) return false;
-		ObjectIntMap other = (ObjectIntMap)obj;
+		if (!(obj instanceof ObjectIntMap other)) return false;
 		if (other.size != size) return false;
 		K[] keyTable = this.keyTable;
 		int[] valueTable = this.valueTable;
@@ -511,7 +510,7 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 	}
 
 	static public class Entries<K> extends MapIterator<K> implements Iterable<Entry<K>>, Iterator<Entry<K>> {
-		Entry<K> entry = new Entry<K>();
+		final Entry<K> entry = new Entry<>();
 
 		public Entries (ObjectIntMap<K> map) {
 			super(map);
@@ -603,7 +602,7 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 
 		/** Returns a new array containing the remaining keys. */
 		public Array<K> toArray () {
-			return toArray(new Array<K>(true, map.size));
+			return toArray(new Array<>(true, map.size));
 		}
 
 		/** Adds the remaining keys to the array. */

@@ -53,7 +53,7 @@ public class List<T> extends Widget implements Cullable, Styleable<List.ListStyl
 	float itemHeight;
 	private int alignment = Align.left;
 	int pressedIndex = -1, overIndex = -1;
-	private InputListener keyListener;
+	private final InputListener keyListener;
 	boolean typeToSelect;
 
 	public List (Skin skin) {
@@ -437,8 +437,8 @@ public class List<T> extends Widget implements Cullable, Styleable<List.ListStyl
 	 * @author Nathan Sweet */
 	static public class ListStyle {
 		public BitmapFont font;
-		public Color fontColorSelected = new Color(1, 1, 1, 1);
-		public Color fontColorUnselected = new Color(1, 1, 1, 1);
+		public final Color fontColorSelected = new Color(1, 1, 1, 1);
+		public final Color fontColorUnselected = new Color(1, 1, 1, 1);
 		public Drawable selection;
 		public @Null Drawable down, over, background;
 

@@ -103,9 +103,9 @@ public interface Predicate<T> {
 		 * called. Use the {@link Predicate.PredicateIterator} constructor for nested or multithreaded iteration. */
 		@Override
 		public Iterator<T> iterator () {
-			if (Collections.allocateIterators) return new PredicateIterator<T>(iterable.iterator(), predicate);
+			if (Collections.allocateIterators) return new PredicateIterator<>(iterable.iterator(), predicate);
 			if (iterator == null)
-				iterator = new PredicateIterator<T>(iterable.iterator(), predicate);
+				iterator = new PredicateIterator<>(iterable.iterator(), predicate);
 			else
 				iterator.set(iterable.iterator(), predicate);
 			return iterator;

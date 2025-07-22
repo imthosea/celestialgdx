@@ -22,7 +22,7 @@ public class PointLightsAttribute extends Attribute {
 
 	public PointLightsAttribute () {
 		super(Type);
-		lights = new Array<PointLight>(1);
+		lights = new Array<>(1);
 	}
 
 	public PointLightsAttribute (final PointLightsAttribute copyFrom) {

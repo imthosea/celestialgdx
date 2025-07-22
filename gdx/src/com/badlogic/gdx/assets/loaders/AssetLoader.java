@@ -28,7 +28,7 @@ import com.badlogic.gdx.utils.Array;
  * @param <P> the class of the loading parameters the loader supports. */
 public abstract class AssetLoader<T, P extends AssetLoaderParameters<T>> {
 	/** {@link FileHandleResolver} used to map from plain asset names to {@link FileHandle} instances **/
-	private FileHandleResolver resolver;
+	private final FileHandleResolver resolver;
 
 	/** Constructor, sets the {@link FileHandleResolver} to use to resolve the file associated with the asset name.
 	 * @param resolver */

@@ -26,7 +26,7 @@ public class DepthTestAttribute extends Attribute {
 	public final static String Alias = "depthStencil";
 	public final static long Type = register(Alias);
 
-	protected static long Mask = Type;
+	protected static final long Mask = Type;
 
 	public final static boolean is (final long mask) {
 		return (mask & Mask) != 0;

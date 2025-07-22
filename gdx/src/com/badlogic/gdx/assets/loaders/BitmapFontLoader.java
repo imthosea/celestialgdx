@@ -103,23 +103,23 @@ public class BitmapFontLoader extends AsynchronousAssetLoader<BitmapFont, Bitmap
 	 * @author mzechner */
 	static public class BitmapFontParameter extends AssetLoaderParameters<BitmapFont> {
 		/** Flips the font vertically if {@code true}. Defaults to {@code false}. **/
-		public boolean flip = false;
+		public final boolean flip = false;
 
 		/** Generates mipmaps for the font if {@code true}. Defaults to {@code false}. **/
-		public boolean genMipMaps = false;
+		public final boolean genMipMaps = false;
 
 		/** The {@link TextureFilter} to use when scaling down the {@link BitmapFont}. Defaults to {@link TextureFilter#Nearest}. */
-		public TextureFilter minFilter = TextureFilter.Nearest;
+		public final TextureFilter minFilter = TextureFilter.Nearest;
 
 		/** The {@link TextureFilter} to use when scaling up the {@link BitmapFont}. Defaults to {@link TextureFilter#Nearest}. */
-		public TextureFilter magFilter = TextureFilter.Nearest;
+		public final TextureFilter magFilter = TextureFilter.Nearest;
 
 		/** optional {@link BitmapFontData} to be used instead of loading the {@link Texture} directly. Use this if your font is
 		 * embedded in a {@link Skin}. **/
-		public BitmapFontData bitmapFontData = null;
+		public final BitmapFontData bitmapFontData = null;
 
 		/** The name of the {@link TextureAtlas} to load the {@link BitmapFont} itself from. Optional; if {@code null}, will look
 		 * for a separate image */
-		public String atlasName = null;
+		public final String atlasName = null;
 	}
 }

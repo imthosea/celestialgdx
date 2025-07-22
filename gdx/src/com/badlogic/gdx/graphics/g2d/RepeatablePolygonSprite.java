@@ -17,7 +17,11 @@
 package com.badlogic.gdx.graphics.g2d;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ShortArray;
 
@@ -32,10 +36,10 @@ public class RepeatablePolygonSprite {
 
 	private boolean dirty = true;
 
-	private Array<float[]> parts = new Array<float[]>();
+	private final Array<float[]> parts = new Array<>();
 
-	private Array<float[]> vertices = new Array<float[]>();
-	private Array<short[]> indices = new Array<short[]>();
+	private final Array<float[]> vertices = new Array<>();
+	private final Array<short[]> indices = new Array<>();
 
 	private int cols, rows;
 	private float gridWidth, gridHeight;
@@ -43,7 +47,7 @@ public class RepeatablePolygonSprite {
 	public float x = 0;
 	public float y = 0;
 	private Color color = Color.WHITE;
-	private Vector2 offset = new Vector2();
+	private final Vector2 offset = new Vector2();
 
 	/** Sets polygon with repeating texture region, the size of repeating grid is equal to region size
 	 * @param region - region to repeat

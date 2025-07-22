@@ -79,8 +79,7 @@ public class JsonWriter extends Writer {
 		if (quoteLongValues
 			&& (value instanceof Long || value instanceof Double || value instanceof BigDecimal || value instanceof BigInteger)) {
 			value = value.toString();
-		} else if (value instanceof Number) {
-			Number number = (Number)value;
+		} else if (value instanceof Number number) {
 			long longValue = number.longValue();
 			if (number.doubleValue() == longValue) value = longValue;
 		}
@@ -179,9 +178,9 @@ public class JsonWriter extends Writer {
 		 */
 		minimal;
 
-		static private Pattern javascriptPattern = Pattern.compile("^[a-zA-Z_$][a-zA-Z_$0-9]*$");
-		static private Pattern minimalNamePattern = Pattern.compile("^[^\":,}/ ][^:]*$");
-		static private Pattern minimalValuePattern = Pattern.compile("^[^\":,{\\[\\]/ ][^}\\],]*$");
+		static private final Pattern javascriptPattern = Pattern.compile("^[a-zA-Z_$][a-zA-Z_$0-9]*$");
+		static private final Pattern minimalNamePattern = Pattern.compile("^[^\":,}/ ][^:]*$");
+		static private final Pattern minimalValuePattern = Pattern.compile("^[^\":,{\\[\\]/ ][^}\\],]*$");
 
 		public String quoteValue (@Null Object value) {
 			if (value == null) return "null";

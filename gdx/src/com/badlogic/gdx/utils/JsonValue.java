@@ -16,13 +16,13 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 /** Container for a JSON object, array, string, double, long, boolean, or null.
  * <p>
@@ -312,7 +312,6 @@ public class JsonValue implements Iterable<JsonValue> {
 		case doubleValue:
 			return doubleValue != 0;
 		case longValue:
-			return longValue != 0;
 		case booleanValue:
 			return longValue != 0;
 		}

@@ -386,7 +386,7 @@ public final class MathUtils {
 
 	// ---
 
-	static public Random random = new RandomXS128();
+	static public final Random random = new RandomXS128();
 
 	/** Returns a random number between 0 (inclusive) and the specified value (inclusive). */
 	static public int random (int range) {
@@ -521,26 +521,22 @@ public final class MathUtils {
 
 	static public int clamp (int value, int min, int max) {
 		if (value < min) return min;
-		if (value > max) return max;
-		return value;
+		return Math.min(value, max);
 	}
 
 	static public long clamp (long value, long min, long max) {
 		if (value < min) return min;
-		if (value > max) return max;
-		return value;
+		return Math.min(value, max);
 	}
 
 	static public float clamp (float value, float min, float max) {
 		if (value < min) return min;
-		if (value > max) return max;
-		return value;
+		return Math.min(value, max);
 	}
 
 	static public double clamp (double value, double min, double max) {
 		if (value < min) return min;
-		if (value > max) return max;
-		return value;
+		return Math.min(value, max);
 	}
 
 	// ---

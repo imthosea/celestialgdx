@@ -43,18 +43,18 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 
 	public static class Parameters extends AssetLoaderParameters<TiledMap> {
 		/** generate mipmaps? **/
-		public boolean generateMipMaps = false;
+		public final boolean generateMipMaps = false;
 		/** The TextureFilter to use for minification **/
-		public Texture.TextureFilter textureMinFilter = Texture.TextureFilter.Nearest;
+		public final Texture.TextureFilter textureMinFilter = Texture.TextureFilter.Nearest;
 		/** The TextureFilter to use for magnification **/
-		public Texture.TextureFilter textureMagFilter = Texture.TextureFilter.Nearest;
+		public final Texture.TextureFilter textureMagFilter = Texture.TextureFilter.Nearest;
 		/** Whether to convert the objects' pixel position and size to the equivalent in tile space. **/
-		public boolean convertObjectToTileSpace = false;
+		public final boolean convertObjectToTileSpace = false;
 		/** Whether to flip all Y coordinates so that Y positive is up. All libGDX renderers require flipped Y coordinates, and thus
 		 * flipY set to true. This parameter is included for non-rendering related purposes of TMX files, or custom renderers. */
-		public boolean flipY = true;
+		public final boolean flipY = true;
 		/** Path to Tiled project file. Needed when using class properties. */
-		public String projectFilePath = null;
+		public final String projectFilePath = null;
 	}
 
 	/** Representation of a single Tiled class property. A property has:

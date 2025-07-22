@@ -96,11 +96,7 @@ public class InputEventQueue {
 				i += q[i];
 				break;
 			case KEY_DOWN:
-				i++;
-				break;
 			case KEY_UP:
-				i++;
-				break;
 			case KEY_TYPED:
 				i++;
 				break;

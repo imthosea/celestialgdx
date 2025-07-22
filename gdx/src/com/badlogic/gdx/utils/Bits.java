@@ -144,9 +144,8 @@ public class Bits {
 	/** @return true if this bitset contains no bits that are set to true */
 	public boolean isEmpty () {
 		long[] bits = this.bits;
-		int length = bits.length;
-		for (int i = 0; i < length; i++) {
-			if (bits[i] != 0L) {
+		for (long bit : bits) {
+			if (bit != 0L) {
 				return false;
 			}
 		}
@@ -197,7 +196,7 @@ public class Bits {
 		}
 		for (word++; word < bitsLength; word++) {
 			if (word == 0) {
-				return word << 6;
+				return 0;
 			}
 			bitsAtWord = bits[word];
 			for (int i = 0; i < 64; i++) {
@@ -319,7 +318,7 @@ public class Bits {
 		final int word = length() >>> 6;
 		int hash = 0;
 		for (int i = 0; word >= i; i++) {
-			hash = 127 * hash + (int)(bits[i] ^ (bits[i] >>> 32));
+			hash = 127 * hash + Long.hashCode(bits[i]);
 		}
 		return hash;
 	}

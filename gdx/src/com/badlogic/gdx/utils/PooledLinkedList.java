@@ -34,10 +34,10 @@ public class PooledLinkedList<T> {
 	private final Pool<Item<T>> pool;
 
 	public PooledLinkedList (int maxPoolSize) {
-		this.pool = new Pool<Item<T>>(16, maxPoolSize) {
+		this.pool = new Pool<>(16, maxPoolSize) {
 			@Override
 			protected Item<T> newObject () {
-				return new Item<T>();
+				return new Item<>();
 			}
 		};
 	}

@@ -34,21 +34,15 @@ public class GLVersion {
 
 	private final Type type;
 
-	private final String TAG = "GLVersion";
+	private static final String TAG = "GLVersion";
 
 	public GLVersion (Application.ApplicationType appType, String versionString, String vendorString, String rendererString) {
-		if (appType == Application.ApplicationType.Android)
-			this.type = Type.GLES;
-		else if (appType == Application.ApplicationType.iOS)
-			this.type = Type.GLES;
-		else if (appType == Application.ApplicationType.Desktop)
-			this.type = Type.OpenGL;
-		else if (appType == Application.ApplicationType.Applet)
-			this.type = Type.OpenGL;
-		else if (appType == Application.ApplicationType.WebGL)
-			this.type = Type.WebGL;
-		else
-			this.type = Type.NONE;
+		this.type = switch (appType) {
+			case Android, iOS -> Type.GLES;
+			case Desktop, Applet -> Type.OpenGL;
+			case WebGL -> Type.WebGL;
+			case null, default -> Type.NONE;
+		};
 
 		if (type == Type.GLES) {
 			// OpenGL<space>ES<space><version number><space><vendor-specific information>.

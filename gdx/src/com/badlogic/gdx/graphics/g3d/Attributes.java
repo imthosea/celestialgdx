@@ -16,14 +16,14 @@
 
 package com.badlogic.gdx.graphics.g3d;
 
+import com.badlogic.gdx.utils.Array;
+
 import java.util.Comparator;
 import java.util.Iterator;
 
-import com.badlogic.gdx.utils.Array;
-
 public class Attributes implements Iterable<Attribute>, Comparator<Attribute>, Comparable<Attributes> {
 	protected long mask;
-	protected final Array<Attribute> attributes = new Array<Attribute>();
+	protected final Array<Attribute> attributes = new Array<>();
 
 	protected boolean sorted = true;
 
@@ -185,7 +185,7 @@ public class Attributes implements Iterable<Attribute>, Comparator<Attribute>, C
 	/** Used for sorting attributes by type (not by value) */
 	@Override
 	public final int compare (final Attribute arg0, final Attribute arg1) {
-		return (int)(arg0.type - arg1.type);
+		return Long.compare(arg0.type, arg1.type);
 	}
 
 	/** Used for iterating through the attributes */
@@ -226,7 +226,7 @@ public class Attributes implements Iterable<Attribute>, Comparator<Attribute>, C
 		other.sort();
 		for (int i = 0; i < attributes.size; i++) {
 			final int c = attributes.get(i).compareTo(other.attributes.get(i));
-			if (c != 0) return c < 0 ? -1 : (c > 0 ? 1 : 0);
+			if (c != 0) return Integer.compare(c, 0);
 		}
 		return 0;
 	}

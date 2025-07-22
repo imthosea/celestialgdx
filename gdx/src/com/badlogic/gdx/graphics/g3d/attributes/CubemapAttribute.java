@@ -25,7 +25,7 @@ public class CubemapAttribute extends Attribute {
 	public final static String EnvironmentMapAlias = "environmentCubemap";
 	public final static long EnvironmentMap = register(EnvironmentMapAlias);
 
-	protected static long Mask = EnvironmentMap;
+	protected static final long Mask = EnvironmentMap;
 
 	public final static boolean is (final long mask) {
 		return (mask & Mask) != 0;
@@ -36,7 +36,7 @@ public class CubemapAttribute extends Attribute {
 	public CubemapAttribute (final long type) {
 		super(type);
 		if (!is(type)) throw new GdxRuntimeException("Invalid type specified");
-		textureDescription = new TextureDescriptor<Cubemap>();
+		textureDescription = new TextureDescriptor<>();
 	}
 
 	public <T extends Cubemap> CubemapAttribute (final long type, final TextureDescriptor<T> textureDescription) {

@@ -22,12 +22,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -40,6 +34,12 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Renders bitmap fonts. The font consists of 2 files: an image file or {@link TextureRegion} containing the glyphs and a file in
  * the AngleCode BMFont text format that describes where each glyph is on the image.
@@ -62,7 +62,7 @@ public class BitmapFont implements Disposable {
 	final BitmapFontData data;
 	Array<TextureRegion> regions;
 	private final BitmapFontCache cache;
-	private boolean flipped;
+	private final boolean flipped;
 	boolean integer;
 	private boolean ownsTexture;
 
@@ -452,7 +452,7 @@ public class BitmapFont implements Disposable {
 		public float down;
 		/** Multiplier for the line height of blank lines. down * blankLineHeight is used as the distance to move down for a blank
 		 * line. */
-		public float blankLineScale = 1;
+		public final float blankLineScale = 1;
 		public float scaleX = 1, scaleY = 1;
 		public boolean markupEnabled;
 		/** The amount to add to the glyph X position when drawing a cursor between glyphs. This field is not set by the BMFont
@@ -470,8 +470,8 @@ public class BitmapFont implements Disposable {
 
 		/** Additional characters besides whitespace where text is wrapped. Eg, a hypen (-). */
 		public char[] breakChars;
-		public char[] xChars = {'x', 'e', 'a', 'o', 'n', 's', 'r', 'c', 'u', 'm', 'v', 'w', 'z'};
-		public char[] capChars = {'M', 'N', 'B', 'D', 'C', 'E', 'F', 'K', 'A', 'G', 'H', 'I', 'J', 'L', 'O', 'P', 'Q', 'R', 'S',
+		public final char[] xChars = {'x', 'e', 'a', 'o', 'n', 's', 'r', 'c', 'u', 'm', 'v', 'w', 'z'};
+		public final char[] capChars = {'M', 'N', 'B', 'D', 'C', 'E', 'F', 'K', 'A', 'G', 'H', 'I', 'J', 'L', 'O', 'P', 'Q', 'R', 'S',
 			'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 		/** Creates an empty BitmapFontData for configuration before calling {@link #load(FileHandle, boolean)}, to subclass, or to
@@ -730,9 +730,8 @@ public class BitmapFont implements Disposable {
 			float v = region.v;
 			float regionWidth = region.getRegionWidth();
 			float regionHeight = region.getRegionHeight();
-			if (region instanceof AtlasRegion) {
+			if (region instanceof AtlasRegion atlasRegion) {
 				// Compensate for whitespace stripped from left and top edges.
-				AtlasRegion atlasRegion = (AtlasRegion)region;
 				offsetX = atlasRegion.offsetX;
 				offsetY = atlasRegion.originalHeight - atlasRegion.packedHeight - atlasRegion.offsetY;
 			}

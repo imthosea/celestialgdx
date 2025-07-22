@@ -28,7 +28,7 @@ import com.badlogic.gdx.utils.NumberUtils;
 public class Sphere implements Serializable {
 	private static final long serialVersionUID = -6487336868908521596L;
 	/** the radius of the sphere **/
-	public float radius;
+	public final float radius;
 	/** the center of the sphere **/
 	public final Vector3 center;
 

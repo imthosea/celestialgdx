@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.SnapshotArray;
  * processor returns true, which indicates that the event was handled.
  * @author Nathan Sweet */
 public class InputMultiplexer implements InputProcessor {
-	private SnapshotArray<InputProcessor> processors = new SnapshotArray(4);
+	private final SnapshotArray<InputProcessor> processors = new SnapshotArray(4);
 
 	public InputMultiplexer () {
 	}

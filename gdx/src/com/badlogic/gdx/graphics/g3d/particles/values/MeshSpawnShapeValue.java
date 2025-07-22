@@ -31,7 +31,15 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  * @author Inferno */
 public abstract class MeshSpawnShapeValue extends SpawnShapeValue {
 	public static class Triangle {
-		float x1, y1, z1, x2, y2, z2, x3, y3, z3;
+		final float x1;
+		final float y1;
+		final float z1;
+		final float x2;
+		final float y2;
+		final float z2;
+		final float x3;
+		final float y3;
+		final float z3;
 
 		public Triangle (float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) {
 			this.x1 = x1;
@@ -103,7 +111,7 @@ public abstract class MeshSpawnShapeValue extends SpawnShapeValue {
 		AssetDescriptor descriptor = saveData.loadAsset();
 		if (descriptor != null) {
 			Model model = (Model)manager.get(descriptor);
-			setMesh(model.meshes.get((Integer)saveData.load("index")), model);
+			setMesh(model.meshes.get(saveData.load("index")), model);
 		}
 	}
 

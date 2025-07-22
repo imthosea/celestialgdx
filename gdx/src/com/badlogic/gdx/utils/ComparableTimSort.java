@@ -98,7 +98,7 @@ class ComparableTimSort {
 
 			// If run is short, extend to min(minRun, nRemaining)
 			if (runLen < minRun) {
-				int force = nRemaining <= minRun ? nRemaining : minRun;
+				int force = Math.min(nRemaining, minRun);
 				binarySort(a, lo, lo + force, lo + runLen);
 				runLen = force;
 			}
@@ -177,7 +177,7 @@ class ComparableTimSort {
 
 			// If run is short, extend to min(minRun, nRemaining)
 			if (runLen < minRun) {
-				int force = nRemaining <= minRun ? nRemaining : minRun;
+				int force = Math.min(nRemaining, minRun);
 				binarySort(a, lo, lo + force, lo + runLen);
 				runLen = force;
 			}
@@ -640,7 +640,7 @@ class ComparableTimSort {
 			if (minGallop < 0) minGallop = 0;
 			minGallop += 2; // Penalize for leaving gallop mode
 		} // End of "outer" loop
-		this.minGallop = minGallop < 1 ? 1 : minGallop; // Write back to field
+		this.minGallop = Math.max(minGallop, 1); // Write back to field
 
 		if (len1 == 1) {
 			if (DEBUG) assert len2 > 0;
@@ -745,7 +745,7 @@ class ComparableTimSort {
 			if (minGallop < 0) minGallop = 0;
 			minGallop += 2; // Penalize for leaving gallop mode
 		} // End of "outer" loop
-		this.minGallop = minGallop < 1 ? 1 : minGallop; // Write back to field
+		this.minGallop = Math.max(minGallop, 1); // Write back to field
 
 		if (len2 == 1) {
 			if (DEBUG) assert len1 > 0;

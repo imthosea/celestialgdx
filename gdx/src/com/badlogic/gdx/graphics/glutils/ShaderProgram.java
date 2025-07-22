@@ -16,12 +16,6 @@
 
 package com.badlogic.gdx.graphics.glutils;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -38,6 +32,12 @@ import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectIntMap;
 import com.badlogic.gdx.utils.ObjectMap;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 /**
  * <p>
@@ -81,18 +81,18 @@ public class ShaderProgram implements Disposable {
 	public static final String BONEWEIGHT_ATTRIBUTE = "a_boneWeight";
 
 	/** flag indicating whether attributes & uniforms must be present at all times **/
-	public static boolean pedantic = true;
+	public static final boolean pedantic = true;
 
 	/** code that is always added to the vertex shader code, typically used to inject a #version line. Note that this is added
 	 * as-is, you should include a newline (`\n`) if needed. */
-	public static String prependVertexCode = "";
+	public static final String prependVertexCode = "";
 
 	/** code that is always added to every fragment shader code, typically used to inject a #version line. Note that this is added
 	 * as-is, you should include a newline (`\n`) if needed. */
-	public static String prependFragmentCode = "";
+	public static final String prependFragmentCode = "";
 
 	/** the list of currently available shaders **/
-	private final static ObjectMap<Application, Array<ShaderProgram>> shaders = new ObjectMap<Application, Array<ShaderProgram>>();
+	private final static ObjectMap<Application, Array<ShaderProgram>> shaders = new ObjectMap<>();
 
 	/** the log **/
 	private String log = "";
@@ -101,25 +101,25 @@ public class ShaderProgram implements Disposable {
 	private boolean isCompiled;
 
 	/** uniform lookup **/
-	private final ObjectIntMap<String> uniforms = new ObjectIntMap<String>();
+	private final ObjectIntMap<String> uniforms = new ObjectIntMap<>();
 
 	/** uniform types **/
-	private final ObjectIntMap<String> uniformTypes = new ObjectIntMap<String>();
+	private final ObjectIntMap<String> uniformTypes = new ObjectIntMap<>();
 
 	/** uniform sizes **/
-	private final ObjectIntMap<String> uniformSizes = new ObjectIntMap<String>();
+	private final ObjectIntMap<String> uniformSizes = new ObjectIntMap<>();
 
 	/** uniform names **/
 	private String[] uniformNames;
 
 	/** attribute lookup **/
-	private final ObjectIntMap<String> attributes = new ObjectIntMap<String>();
+	private final ObjectIntMap<String> attributes = new ObjectIntMap<>();
 
 	/** attribute types **/
-	private final ObjectIntMap<String> attributeTypes = new ObjectIntMap<String>();
+	private final ObjectIntMap<String> attributeTypes = new ObjectIntMap<>();
 
 	/** attribute sizes **/
-	private final ObjectIntMap<String> attributeSizes = new ObjectIntMap<String>();
+	private final ObjectIntMap<String> attributeSizes = new ObjectIntMap<>();
 
 	/** attribute names **/
 	private String[] attributeNames;
@@ -146,7 +146,7 @@ public class ShaderProgram implements Disposable {
 	private boolean invalidated;
 
 	/** reference count **/
-	private int refCount = 0;
+	private final int refCount = 0;
 
 	/** Constructs a new ShaderProgram and immediately compiles it.
 	 *
@@ -763,7 +763,7 @@ public class ShaderProgram implements Disposable {
 
 	private void addManagedShader (Application app, ShaderProgram shaderProgram) {
 		Array<ShaderProgram> managedResources = shaders.get(app);
-		if (managedResources == null) managedResources = new Array<ShaderProgram>();
+		if (managedResources == null) managedResources = new Array<>();
 		managedResources.add(shaderProgram);
 		shaders.put(app, managedResources);
 	}
@@ -816,8 +816,8 @@ public class ShaderProgram implements Disposable {
 		gl.glVertexAttrib4f(location, value1, value2, value3, value4);
 	}
 
-	IntBuffer params = BufferUtils.newIntBuffer(1);
-	IntBuffer type = BufferUtils.newIntBuffer(1);
+	final IntBuffer params = BufferUtils.newIntBuffer(1);
+	final IntBuffer type = BufferUtils.newIntBuffer(1);
 
 	private void fetchUniforms () {
 		((Buffer)params).clear();

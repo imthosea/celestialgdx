@@ -36,9 +36,10 @@ import com.badlogic.gdx.utils.Timer.Task;
 public class DragScrollListener extends DragListener {
 	static final Vector2 tmpCoords = new Vector2();
 
-	private ScrollPane scroll;
-	private Task scrollUp, scrollDown;
-	Interpolation interpolation = Interpolation.exp5In;
+	private final ScrollPane scroll;
+	private final Task scrollUp;
+	private final Task scrollDown;
+	final Interpolation interpolation = Interpolation.exp5In;
 	float minSpeed = 15, maxSpeed = 75, tickSecs = 0.05f;
 	long startTime, rampTime = 1750;
 	float padTop, padBottom;

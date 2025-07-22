@@ -63,7 +63,6 @@ public class ShapeCache implements Disposable, RenderableProvider {
 	private final Mesh mesh;
 
 	private boolean building;
-	private final String id = "id";
 	private final Renderable renderable = new Renderable();
 
 	/** Create a ShapeCache with default values */
@@ -102,7 +101,7 @@ public class ShapeCache implements Disposable, RenderableProvider {
 		building = true;
 
 		builder.begin(mesh.getVertexAttributes());
-		builder.part(id, primitiveType, renderable.meshPart);
+		builder.part("id", primitiveType, renderable.meshPart);
 		return builder;
 	}
 

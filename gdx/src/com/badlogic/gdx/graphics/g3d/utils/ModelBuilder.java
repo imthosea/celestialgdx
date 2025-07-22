@@ -44,9 +44,9 @@ public class ModelBuilder {
 	/** The node currently being build */
 	private Node node;
 	/** The mesh builders created between begin and end */
-	private Array<MeshBuilder> builders = new Array<MeshBuilder>();
+	private final Array<MeshBuilder> builders = new Array<>();
 
-	private Matrix4 tmpTransform = new Matrix4();
+	private final Matrix4 tmpTransform = new Matrix4();
 
 	private MeshBuilder getBuilder (final VertexAttributes attributes) {
 		for (final MeshBuilder mb : builders)

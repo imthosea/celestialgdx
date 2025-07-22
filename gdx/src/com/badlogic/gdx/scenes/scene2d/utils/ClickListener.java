@@ -31,7 +31,7 @@ import com.badlogic.gdx.utils.TimeUtils;
  * @author Nathan Sweet */
 public class ClickListener extends InputListener {
 	/** Time in seconds {@link #isVisualPressed()} reports true after a press resulting in a click is released. */
-	static public float visualPressedDuration = 0.1f;
+	static public final float visualPressedDuration = 0.1f;
 
 	private float tapSquareSize = 14, touchDownX = -1, touchDownY = -1;
 	private int pressedPointer = -1;

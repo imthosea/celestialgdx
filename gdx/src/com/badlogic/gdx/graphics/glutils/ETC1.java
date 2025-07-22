@@ -37,8 +37,8 @@ import com.badlogic.gdx.utils.StreamUtils;
  * @author mzechner */
 public class ETC1 {
 	/** The PKM header size in bytes **/
-	public static int PKM_HEADER_SIZE = 16;
-	public static int ETC1_RGB8_OES = 0x00008d64;
+	public static final int PKM_HEADER_SIZE = 16;
+	public static final int ETC1_RGB8_OES = 0x00008d64;
 
 	/** Class for storing ETC1 compressed image data.
 	 * @author mzechner */

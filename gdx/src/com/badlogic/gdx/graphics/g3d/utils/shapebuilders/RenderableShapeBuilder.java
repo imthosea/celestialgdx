@@ -54,7 +54,7 @@ public class RenderableShapeBuilder extends BaseShapeBuilder {
 	private static short[] indices;
 	private static float[] vertices;
 	private final static RenderablePool renderablesPool = new RenderablePool();
-	private final static Array<Renderable> renderables = new Array<Renderable>();
+	private final static Array<Renderable> renderables = new Array<>();
 	private static final int FLOAT_BYTES = 4;
 
 	/** Builds normal, tangent and binormal of a RenderableProvider with default colors (normal blue, tangent red, binormal green).
@@ -195,15 +195,13 @@ public class RenderableShapeBuilder extends BaseShapeBuilder {
 
 	private static short minVerticeInIndices () {
 		short min = (short)32767;
-		for (int i = 0; i < indices.length; i++)
-			if (indices[i] < min) min = indices[i];
+		for (short index : indices) if (index < min) min = index;
 		return min;
 	}
 
 	private static short maxVerticeInIndices () {
 		short max = (short)-32768;
-		for (int i = 0; i < indices.length; i++)
-			if (indices[i] > max) max = indices[i];
+		for (short index : indices) if (index > max) max = index;
 		return max;
 	}
 }

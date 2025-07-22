@@ -183,8 +183,7 @@ public class Slider extends ProgressBar {
 	protected float snap (float value) {
 		if (snapValues == null || snapValues.length == 0) return value;
 		float bestDiff = -1, bestValue = 0;
-		for (int i = 0; i < snapValues.length; i++) {
-			float snapValue = snapValues[i];
+		for (float snapValue : snapValues) {
 			float diff = Math.abs(value - snapValue);
 			if (diff <= threshold) {
 				if (bestDiff == -1 || diff < bestDiff) {

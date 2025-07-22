@@ -16,12 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import static com.badlogic.gdx.graphics.g2d.Sprite.SPRITE_SIZE;
-import static com.badlogic.gdx.graphics.g2d.Sprite.VERTEX_SIZE;
-
-import java.nio.Buffer;
-import java.nio.FloatBuffer;
-
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -37,6 +31,12 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
+
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
+
+import static com.badlogic.gdx.graphics.g2d.Sprite.SPRITE_SIZE;
+import static com.badlogic.gdx.graphics.g2d.Sprite.VERTEX_SIZE;
 
 /** Draws 2D images, optimized for geometry that does not change. Sprites and/or textures are cached and given an ID, which can
  * later be used for drawing. The size, color, and texture region for each cached image cannot be modified. This information is
@@ -73,7 +73,7 @@ public class SpriteCache implements Disposable {
 	private boolean drawing;
 	private final Matrix4 transformMatrix = new Matrix4();
 	private final Matrix4 projectionMatrix = new Matrix4();
-	private Array<Cache> caches = new Array();
+	private final Array<Cache> caches = new Array();
 
 	private final Matrix4 combinedMatrix = new Matrix4();
 	private final ShaderProgram shader;
@@ -183,7 +183,7 @@ public class SpriteCache implements Disposable {
 	public void beginCache (int cacheID) {
 		if (drawing) throw new IllegalStateException("end must be called before beginCache");
 		if (currentCache != null) throw new IllegalStateException("endCache must be called before begin.");
-		Buffer verticesBuffer = (Buffer)mesh.getVerticesBuffer(true);
+		Buffer verticesBuffer = mesh.getVerticesBuffer(true);
 		if (cacheID == caches.size - 1) {
 			Cache oldCache = caches.removeIndex(cacheID);
 			verticesBuffer.limit(oldCache.offset);

@@ -20,13 +20,13 @@
 
 package com.badlogic.gdx.utils;
 
+import com.badlogic.gdx.files.FileHandle;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
-
-import com.badlogic.gdx.files.FileHandle;
 
 /** Lightweight event-based JSON parser. All values are provided as strings to reduce work when many values are ignored.
  * @author Nathan Sweet */
@@ -178,7 +178,7 @@ public class JsonSkimmer {
 
 						if (_json_trans_actions[_trans] != 0) {
 							_acts = _json_trans_actions[_trans];
-							_nacts = (int)_json_actions[_acts++];
+							_nacts = _json_actions[_acts++];
 							while (_nacts-- > 0) {
 								switch (_json_actions[_acts++]) {
 								case 0:
@@ -337,7 +337,7 @@ public class JsonSkimmer {
 										}
 									}
 									p--;
-									while (Character.isSpace(data[p]))
+									while (Character.isWhitespace(data[p]))
 										p--;
 								}
 									break;
@@ -381,7 +381,7 @@ public class JsonSkimmer {
 					case 4:
 						if (p == eof) {
 							int __acts = _json_eof_actions[cs];
-							int __nacts = (int)_json_actions[__acts++];
+							int __nacts = _json_actions[__acts++];
 							while (__nacts-- > 0) {
 								switch (_json_actions[__acts++]) {
 								case 1:

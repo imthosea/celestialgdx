@@ -16,11 +16,11 @@
 
 package com.badlogic.gdx.utils;
 
-import com.badlogic.gdx.utils.reflect.ArrayReflection;
-
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /** A resizable, ordered array of objects with efficient add and remove at the beginning and end. Values in the backing array may
  * wrap back to the beginning, making add and remove at the beginning and end O(1) (unless the backing array needs to resize when
@@ -56,7 +56,7 @@ public class Queue<T> implements Iterable<T> {
 	 * @deprecated Use {@link Queue#Queue(int, ArraySupplier)} instead */
 	@Deprecated
 	public Queue (int initialSize, Class<T> type) {
-		this(initialSize, size -> (T[])ArrayReflection.newInstance(type, size));
+		this(initialSize, size -> (T[])Array.newInstance(type, size));
 	}
 
 	/** Creates a new Queue which can hold the specified number of values without needing to resize backing array. This creates
@@ -397,9 +397,8 @@ public class Queue<T> implements Iterable<T> {
 
 	public boolean equals (Object o) {
 		if (this == o) return true;
-		if (o == null || !(o instanceof Queue)) return false;
+		if (!(o instanceof Queue<?> q)) return false;
 
-		Queue<?> q = (Queue<?>)o;
 		final int size = this.size;
 
 		if (q.size != size) return false;
@@ -415,7 +414,7 @@ public class Queue<T> implements Iterable<T> {
 			T myValue = myValues[myIndex];
 			Object itsValue = itsValues[itsIndex];
 
-			if (!(myValue == null ? itsValue == null : myValue.equals(itsValue))) return false;
+			if (!(Objects.equals(myValue, itsValue))) return false;
 			myIndex++;
 			itsIndex++;
 			if (myIndex == myBackingLength) myIndex = 0;
@@ -427,9 +426,8 @@ public class Queue<T> implements Iterable<T> {
 	/** Uses == for comparison of each item. */
 	public boolean equalsIdentity (Object o) {
 		if (this == o) return true;
-		if (o == null || !(o instanceof Queue)) return false;
+		if (!(o instanceof Queue<?> q)) return false;
 
-		Queue<?> q = (Queue<?>)o;
 		final int size = this.size;
 
 		if (q.size != size) return false;
