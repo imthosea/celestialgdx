@@ -16,11 +16,8 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics.Lwjgl3Monitor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
@@ -54,9 +51,6 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	int idleFPS = 60;
 	int foregroundFPS = 0;
 
-	String preferencesDirectory = ".prefs/";
-	Files.FileType preferencesFileType = FileType.External;
-
 	HdpiMode hdpiMode = HdpiMode.Logical;
 
 	boolean debug = false;
@@ -83,8 +77,6 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 		transparentFramebuffer = config.transparentFramebuffer;
 		idleFPS = config.idleFPS;
 		foregroundFPS = config.foregroundFPS;
-		preferencesDirectory = config.preferencesDirectory;
-		preferencesFileType = config.preferencesFileType;
 		hdpiMode = config.hdpiMode;
 		debug = config.debug;
 		debugStream = config.debugStream;
@@ -145,13 +137,6 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	 * 0. */
 	public void setForegroundFPS (int fps) {
 		this.foregroundFPS = fps;
-	}
-
-	/** Sets the directory where {@link Preferences} will be stored, as well as the file type to be used to store them. Defaults to
-	 * "$USER_HOME/.prefs/" and {@link FileType#External}. */
-	public void setPreferencesConfig (String preferencesDirectory, Files.FileType preferencesFileType) {
-		this.preferencesDirectory = preferencesDirectory;
-		this.preferencesFileType = preferencesFileType;
 	}
 
 	/** Defines how HDPI monitors are handled. Operating systems may have a per-monitor HDPI scale setting. The operating system

@@ -165,11 +165,6 @@ public interface Application {
 	/** @return the Native heap memory use in bytes */
 	public long getNativeHeap ();
 
-	/** Returns the {@link Preferences} instance of this Application. It can be used to store application settings across runs.
-	 * @param name the name of the preferences, must be useable as a file name.
-	 * @return the preferences. */
-	public Preferences getPreferences (String name);
-
 	public Clipboard getClipboard ();
 
 	/** Posts a {@link Runnable} on the main loop thread.
