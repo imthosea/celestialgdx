@@ -420,8 +420,7 @@ public class IntArray {
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof IntArray)) return false;
-		IntArray array = (IntArray)object;
+		if (!(object instanceof IntArray array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;

@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.utils;
 
-import java.util.Arrays;
-
 import com.badlogic.gdx.math.MathUtils;
+
+import java.util.Arrays;
 
 /** A resizable, ordered or unordered float array. Avoids the boxing that occurs with ArrayList<Float>. If unordered, this class
  * avoids a memory copy when removing elements (the last element is moved to the removed element's position).
@@ -421,8 +421,7 @@ public class FloatArray {
 	public boolean equals (Object object) {
 		if (object == this) return true;
 		if (!ordered) return false;
-		if (!(object instanceof FloatArray)) return false;
-		FloatArray array = (FloatArray)object;
+		if (!(object instanceof FloatArray array)) return false;
 		if (!array.ordered) return false;
 		int n = size;
 		if (n != array.size) return false;
@@ -435,8 +434,7 @@ public class FloatArray {
 	/** Returns false if either array is unordered. */
 	public boolean equals (Object object, float epsilon) {
 		if (object == this) return true;
-		if (!(object instanceof FloatArray)) return false;
-		FloatArray array = (FloatArray)object;
+		if (!(object instanceof FloatArray array)) return false;
 		int n = size;
 		if (n != array.size) return false;
 		if (!ordered) return false;
