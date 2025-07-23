@@ -73,16 +73,10 @@ public class JsonReader implements BaseJsonReader {
 	}
 
 	public JsonValue parse (FileHandle file) {
-		Reader reader;
-		try {
-			reader = file.reader("UTF-8");
-		} catch (Exception ex) {
-			throw new SerializationException("Error reading file: " + file, ex);
-		}
-		try {
+		try(Reader reader = file.reader("UTF-8")) {
 			return parse(reader);
-		} catch (Exception ex) {
-			throw new SerializationException("Error parsing file: " + file, ex);
+		} catch (IOException e) {
+			throw new GdxIoException(e);
 		}
 	}
 

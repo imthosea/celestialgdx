@@ -12,11 +12,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.glutils.ETC1.ETC1Data;
 import com.badlogic.gdx.utils.BufferUtils;
+import com.badlogic.gdx.utils.GdxIoException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -93,7 +95,11 @@ public class KTXTextureData implements TextureData, CubemapData {
 				StreamUtils.closeQuietly(in);
 			}
 		} else {
-			compressedData = ByteBuffer.wrap(file.readBytes());
+			try {
+				compressedData = ByteBuffer.wrap(file.readBytes());
+			} catch (IOException e) {
+				throw new GdxIoException(e);
+			}
 		}
 		if (compressedData.get() != (byte)0x0AB) throw new GdxRuntimeException("Invalid KTX Header");
 		if (compressedData.get() != (byte)0x04B) throw new GdxRuntimeException("Invalid KTX Header");

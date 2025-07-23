@@ -17,6 +17,7 @@
 package com.badlogic.gdx.graphics.g2d.freetype;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.files.MappableFile;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Blending;
@@ -80,33 +81,30 @@ public class FreeType {
 		*/
 
 		public Face newFace(FileHandle fontFile, int faceIndex) {
-			ByteBuffer buffer = null;
+			if (fontFile instanceof MappableFile mappable) {
+				return newMemoryFace(mappable.map(), faceIndex);
+			}
+
+			InputStream input = fontFile.read();
 			try {
-				buffer = fontFile.map();
-			} catch (GdxRuntimeException ignored) {
-				// OK to ignore, some platforms do not support file mapping.
-			}
-			if (buffer == null) {
-				InputStream input = fontFile.read();
-				try {
-					int fileSize = (int)fontFile.length();
-					if (fileSize == 0) {
-						// Copy to a byte[] to get the size, then copy to the buffer.
-						byte[] data = StreamUtils.copyStreamToByteArray(input, 1024 * 16);
-						buffer = BufferUtils.newUnsafeByteBuffer(data.length);
-						BufferUtils.copy(data, 0, buffer, data.length);
-					} else {
-						// Trust the specified file size.
-						buffer = BufferUtils.newUnsafeByteBuffer(fileSize);
-						StreamUtils.copyStream(input, buffer);
-					}
-				} catch (IOException ex) {
-					throw new GdxRuntimeException(ex);
-				} finally {
-					StreamUtils.closeQuietly(input);
+				int fileSize = (int)fontFile.length();
+				ByteBuffer buffer;
+				if (fileSize == 0) {
+					// Copy to a byte[] to get the size, then copy to the buffer.
+					byte[] data = StreamUtils.copyStreamToByteArray(input, 1024 * 16);
+					buffer = BufferUtils.newUnsafeByteBuffer(data.length);
+					BufferUtils.copy(data, 0, buffer, data.length);
+				} else {
+					// Trust the specified file size.
+					buffer = BufferUtils.newUnsafeByteBuffer(fileSize);
+					StreamUtils.copyStream(input, buffer);
 				}
+				return newMemoryFace(buffer, faceIndex);
+			} catch (IOException ex) {
+				throw new GdxRuntimeException(ex);
+			} finally {
+				StreamUtils.closeQuietly(input);
 			}
-			return newMemoryFace(buffer, faceIndex);
 		}
 
 		public Face newMemoryFace(byte[] data, int dataSize, int faceIndex) {
@@ -154,9 +152,9 @@ public class FreeType {
 			else return (jlong)stroker;
 		*/
 	}
-	
-	public static class Face extends Pointer implements Disposable {
-		final Library library;
+
+	public static class Face extends FreeType.Pointer implements Disposable {
+		final FreeType.Library library;
 		
 		public Face (long address, Library library) {
 			super(address);

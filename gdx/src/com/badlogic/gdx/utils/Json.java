@@ -17,6 +17,7 @@
 package com.badlogic.gdx.utils;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.files.WriteableFileHandle;
 import com.badlogic.gdx.utils.IntSet.IntSetIterator;
 import com.badlogic.gdx.utils.JsonValue.PrettyPrintSettings;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
@@ -238,18 +239,18 @@ public class Json {
 		return buffer.toString();
 	}
 
-	public void toJson (@Null Object object, FileHandle file) {
+	public void toJson (@Null Object object, WriteableFileHandle file) {
 		toJson(object, object == null ? null : object.getClass(), null, file);
 	}
 
 	/** @param knownType May be null if the type is unknown. */
-	public void toJson (@Null Object object, @Null Class knownType, FileHandle file) {
+	public void toJson (@Null Object object, @Null Class knownType, WriteableFileHandle file) {
 		toJson(object, knownType, null, file);
 	}
 
 	/** @param knownType May be null if the type is unknown.
 	 * @param elementType May be null if the type is unknown. */
-	public void toJson (@Null Object object, @Null Class knownType, @Null Class<?> elementType, FileHandle file) {
+	public void toJson (@Null Object object, @Null Class knownType, @Null Class<?> elementType, WriteableFileHandle file) {
 		Writer writer = null;
 		try {
 			writer = file.writer(false, "UTF-8");

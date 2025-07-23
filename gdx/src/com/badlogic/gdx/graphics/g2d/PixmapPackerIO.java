@@ -1,7 +1,7 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.files.WriteableFileHandle;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker.Page;
@@ -49,7 +49,7 @@ public class PixmapPackerIO {
 	 * @param file the file to which the atlas descriptor will be written, images will be written as siblings
 	 * @param packer the PixmapPacker to be written
 	 * @throws IOException if the atlas file can not be written */
-	public void save (FileHandle file, PixmapPacker packer) throws IOException {
+	public void save (WriteableFileHandle file, PixmapPacker packer) throws IOException {
 		save(file, packer, new SaveParameters());
 	}
 
@@ -60,12 +60,12 @@ public class PixmapPackerIO {
 	 * @param packer the PixmapPacker to be written
 	 * @param parameters the SaveParameters specifying how to save the PixmapPacker
 	 * @throws IOException if the atlas file can not be written */
-	public void save (FileHandle file, PixmapPacker packer, SaveParameters parameters) throws IOException {
+	public void save (WriteableFileHandle file, PixmapPacker packer, SaveParameters parameters) throws IOException {
 		Writer writer = file.writer(false);
 		int index = 0;
 		for (Page page : packer.pages) {
 			if (page.rects.size > 0) {
-				FileHandle pageFile = file.sibling(file.nameWithoutExtension() + "_" + (++index) + parameters.format.getExtension());
+				WriteableFileHandle pageFile = file.sibling(file.nameWithoutExtension() + "_" + (++index) + parameters.format.getExtension());
 				switch (parameters.format) {
 				case CIM: {
 					PixmapIO.writeCIM(pageFile, page.image);

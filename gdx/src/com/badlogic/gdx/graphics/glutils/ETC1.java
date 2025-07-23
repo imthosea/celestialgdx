@@ -16,6 +16,17 @@
 
 package com.badlogic.gdx.graphics.glutils;
 
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.files.WriteableFileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.BufferUtils;
+import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxIoException;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.StreamUtils;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -23,15 +34,6 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.BufferUtils;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.StreamUtils;
 
 /** Class for encoding and decoding ETC1 compressed images. Also provides methods to add a PKM header.
  * @author mzechner */
@@ -74,7 +76,7 @@ public class ETC1 {
 				((Buffer)compressedData).position(0);
 				((Buffer)compressedData).limit(compressedData.capacity());
 			} catch (Exception e) {
-				throw new GdxRuntimeException("Couldn't load pkm file '" + pkmFile + "'", e);
+				throw new GdxIoException("Couldn't load pkm file '" + pkmFile + "'", e);
 			} finally {
 				StreamUtils.closeQuietly(in);
 			}
@@ -99,14 +101,12 @@ public class ETC1 {
 
 		/** Writes the ETC1Data with a PKM header to the given file.
 		 * @param file the file. */
-		public void write (FileHandle file) {
-			DataOutputStream write = null;
+		public void write (WriteableFileHandle file) {
 			byte[] buffer = new byte[10 * 1024];
 			int writtenBytes = 0;
 			((Buffer)compressedData).position(0);
 			((Buffer)compressedData).limit(compressedData.capacity());
-			try {
-				write = new DataOutputStream(new GZIPOutputStream(file.write(false)));
+			try(DataOutputStream write = new DataOutputStream(new GZIPOutputStream(file.write(false)))) {
 				write.writeInt(compressedData.capacity());
 				while (writtenBytes != compressedData.capacity()) {
 					int bytesToWrite = Math.min(compressedData.remaining(), buffer.length);
@@ -116,8 +116,6 @@ public class ETC1 {
 				}
 			} catch (Exception e) {
 				throw new GdxRuntimeException("Couldn't write PKM file to '" + file + "'", e);
-			} finally {
-				StreamUtils.closeQuietly(write);
 			}
 			((Buffer)compressedData).position(dataOffset);
 			((Buffer)compressedData).limit(compressedData.capacity());

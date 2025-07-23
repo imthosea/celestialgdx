@@ -23,6 +23,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.files.WriteableFileHandle;
 import com.badlogic.gdx.graphics.g3d.particles.ResourceData.AssetData;
 import com.badlogic.gdx.graphics.g3d.particles.batches.ParticleBatch;
 import com.badlogic.gdx.utils.Array;
@@ -161,16 +162,16 @@ public class ParticleEffectLoader
 		final Array<ParticleBatch<?>> batches;
 
 		/** Required parameters */
-		final FileHandle file;
+		final WriteableFileHandle file;
 		final AssetManager manager;
 		final JsonWriter.OutputType jsonOutputType;
 		final boolean prettyPrint;
 
-		public ParticleEffectSaveParameter (FileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches) {
+		public ParticleEffectSaveParameter (WriteableFileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches) {
 			this(file, manager, batches, JsonWriter.OutputType.minimal, false);
 		}
 
-		public ParticleEffectSaveParameter (FileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches,
+		public ParticleEffectSaveParameter (WriteableFileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches,
 			JsonWriter.OutputType jsonOutputType, boolean prettyPrint) {
 			this.batches = batches;
 			this.file = file;

@@ -48,7 +48,7 @@ public class UBJsonReader implements BaseJsonReader {
 	@Override
 	public JsonValue parse (FileHandle file) {
 		try {
-			return parse(file.read(8192));
+			return parse(file.read());
 		} catch (Exception ex) {
 			throw new SerializationException("Error parsing file: " + file, ex);
 		}
