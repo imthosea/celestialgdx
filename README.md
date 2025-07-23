@@ -120,6 +120,7 @@ configurations.all {
         substitute module("com.badlogicgames.gdx:$artifact") using module("me.thosea.celestialgdx:$artifact:$version") because "fork"
     }
     sub("gdx")
+    sub("gdx-freetype")
     sub("gdx-backend-lwjgl3")
     sub("gdx-lwjgl3-angle")
   }
