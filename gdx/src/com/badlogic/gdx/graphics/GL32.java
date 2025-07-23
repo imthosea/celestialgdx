@@ -17,6 +17,10 @@
 
 package com.badlogic.gdx.graphics;
 
+/**
+ * @deprecated celestialgdx - use GLFW class
+ * */
+@Deprecated
 public interface GL32 extends GL31 {
 
 	public static final int GL_CONTEXT_FLAG_DEBUG_BIT = 0x00000002;
