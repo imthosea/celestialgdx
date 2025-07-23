@@ -1,40 +1,130 @@
-![libGDX Logo](libgdx_logo.svg#gh-light-mode-only)
-![libGDX Logo](libgdx_logo_dark.svg#gh-dark-mode-only)
+## CelestialGDX
 
-[![GitHub Actions Build Status](https://img.shields.io/github/actions/workflow/status/libgdx/libgdx/build-publish.yml?branch=master&label=GitHub%20Actions)](https://github.com/libgdx/libgdx/actions?query=workflow%3A%22Build+and+Publish%22)
+An esoteric fork of LibGDX to cut down on stuff and improve performance.
 
-[![Latest Version](https://img.shields.io/nexus/r/com.badlogicgames.gdx/gdx?nexusVersion=2&server=https%3A%2F%2Foss.sonatype.org&label=Version)](https://search.maven.org/artifact/com.badlogicgames.gdx/gdx)
-[![Snapshots](https://img.shields.io/nexus/s/com.badlogicgames.gdx/gdx?server=https%3A%2F%2Foss.sonatype.org&label=Snapshots)](https://oss.sonatype.org/#nexus-search;gav~com.badlogicgames.gdx~gdx~~~~kw,versionexpand)
+**This fork is completely undocumented, untested outside of my specific usecase, breaks ABI in more ways than I can count, and doesn't follow the upstream code style. Please don't use it.**
 
-[![Discord Chat](https://img.shields.io/discord/348229412858101762?logo=discord)](https://libgdx.com/community/discord/)
+### Changes
+- Nuke everything except desktop LWJGL3 backend
+- Remove tests
+- ANGLE is now always included with the LWJGL module
+- LOTS of code cleanup
+- Update to Java 21
+- Lwjgl3Application addLifecycleListener/removeLifecycleListener is no longer thread safe
+- Many uses of reflection were removed
+- Made some fields in Lwjgl3Application public for ease of use
+- Lwjgl3Application's constructor has been changed to a supplier to allow final constants in the application class
+- InputProcessor.scrolled now takes doubles and is no longer flipped
+- FileHandle is now abstract and isn't bound to system files
+    - FileType has been removed. Gdx.files methods will still work (except the FileType one), but they now return instances of SystemFileHandle or ClasspathFileHandle
+    - WritableFileHandle is another abstraction that contains a write() method
+    - GdxRuntimeException has been replaced with throws IOException
+- Window icons now take Pixmaps instead of files
+- Default HdpiMode is now Pixels
 
-## Cross-platform Game Development Framework
-**[libGDX](https://libgdx.com) is a cross-platform Java game development framework based on OpenGL (ES), designed for Windows, Linux, macOS, Android, web browsers, and iOS.** It provides a robust and well-established environment for rapid prototyping and iterative development. Unlike other frameworks, libGDX does not impose a specific design or coding style, allowing you the freedom to create games according to your preferences.
+### Removed
+- FileHandle:
+    - file, type, listFiles, exists, isDirectory, lastModified
+    - all write-related methods
+- FileHandleStream
+- FileType
+- Box2D / Bullet
+- Multi-window support from LWJGL backend and subsequently a ton of syncrhonization code
+- Automated tests
+- Non-continous rendering (along with ApplicationListener/LifecycleListener's pause and resume)
+- glfw_async, on Mac, you must call with -XstartOnFirstThread
+- LwjglCanvas
+- The entire reflection util package
+- gdx-tools - use upstream
+- ReflectionPool
+- LWJGL initialBackgroundColor
+- Audio - use gdx-miniaudio instead
+- Netcode - use stdlib instead
+- Preferences - use your own solution
+- InputEventQueue
+- Keys.ANY_KEY
+- These methods in InputProcessor / Input:
+- touchDragged, getTextInput, vibrate, setKeyboardHeightObserver, isPeripheralAvailable, getRotation, getNativeOrientation has been removed, getNativeOrientation, getDeltaX, getDeltaY, resetPollingStates
+- FirstPersonCameraController / CameraController
+- TextInputWrapper
+- GestureDetector
+- ActorGestureListener
+- ScrollPane flickScroll
+- AtlasTmxMapLoader
 
-## Open Source, Feature Packed, and Fostering a Large Third-Party Ecosystem
-libGDX is released under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0.html), offering unrestricted usage in both commercial and non-commercial projects. While not mandatory, we appreciate any credit given to libGDX when you release a game or app using it. Check out our [showcase](https://libgdx.com/showcase/) for a selection of popular libGDX-powered games. With libGDX, you gain access to a comprehensive set of tools and features to develop multi-platform 2D and 3D games using Java.
+### Notes
+- For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
+- The Gdx class remains for compatibility, but please don't use them - mutable static constants are questionable for maintainability. Use the function constructor in Lwjgl3Application and get the window to initialize your constants
+- GDX GL classes are deprecated. Use GL classes from GLFW instead
 
-Moreover, libGDX boasts a vibrant third-party ecosystem, with numerous [tools](https://libgdx.com/dev/tools/) and libraries that streamline development tasks. Explore the [awesome-libgdx](https://github.com/rafaskb/awesome-libgdx#readme) repository for a curated list of libGDX-centered libraries, serving as an excellent starting point for newcomers in the libGDX community.
+### TODO maybe
+- rewrite Sync (fps cap) implementation
+- possibly remove 3D
+- remove use of deprecated code
+- remove reflection entirely
+- remove Json class (it is a MESS) in favor of Jankson
+- remove XML parser in favor of stdlib
+- unspaghetify TMX reader and TextureAtlas
+- remove more useless stdlib replication classes
 
-![](https://libgdx.com/assets/images/index_showcase/game0.png)
-###### An example game created with libGDX: [Pathway](https://store.steampowered.com/app/546430/Pathway/) by Robotality. Discover more captivating games in our [Showcase](https://libgdx.com/showcase/).
+This isn't a full code cleanup because I want to make my game. I'm only modifying stuff that affects me.
 
-## Getting Started with libGDX / Documentation
-Thanks to Gradle, you can easily set up libGDX without the need to download the framework itself. Your favorite build tool can handle everything for you. Additionally, we offer a convenient [setup tool](https://libgdx.com/dev/#how-to-get-started-with-libgdx) that automates project creation and downloads all the necessary components. Check out our **[website](https://libgdx.com/wiki/start/setup)** for instructions on getting started or refer to our comprehensive **[wiki](https://libgdx.com/wiki/)**.
+### Setup
+<details open>
+<summary>Gradle (Kotlin)</summary>
 
-- [Creating a libGDX Project](https://libgdx.com/wiki/start/setup)
-- [Building a Simple Game](https://libgdx.com/wiki/start/a-simple-game)
-- [Tutorials & Demos](https://libgdx.com/wiki/start/demos-and-tutorials)
+```kotlin
+maven {
+  name = "teamcelestial"
+  url = "https://maven.teamcelestial.org/public"
+}
+```
 
-We provide the libGDX [javadocs](https://javadoc.io/doc/com.badlogicgames.gdx) online for easy reference. Additionally, the javadocs are bundled with every libGDX distribution, ensuring smooth integration with your preferred IDE.
+```kotlin
+configurations.all { 
+  val version = "1.0.0-SNAPSHOT"
+  // if using version catalogue:
+  // val version = libs.versions.celestialgdx.get()
+    
+  resolutionStrategy.dependencySubstitution {
+    fun sub(artifact: String) = substitute(
+      module("com.badlogicgames.gdx:$artifact")
+    ).using(
+      module("me.thosea.celestialgdx:$artifact:$version")
+    ).because("fork")
 
-## Community & Contribution
-Stay up to date with the **latest libGDX news** by following our [blog](https://libgdx.com/news/). For engaging discussions and support, join our official [libGDX Discord](https://libgdx.com/community/discord/).
+    sub("gdx")
+    sub("gdx-freetype")
+    sub("gdx-backend-lwjgl3")
+    sub("gdx-lwjgl3-angle")
+  }
+}
+```
 
-### Reporting Issues
-Use the **[Issue Tracker](https://github.com/libgdx/libgdx/issues)** here on GitHub to report any issues you encounter. Before submitting, please read our [Getting Help](https://libgdx.com/wiki/articles/getting-help) guide, which walks you through the process of reporting an issue effectively.
+</details>
+<details>
+<summary>Gradle (Groovy)</summary>
 
-### Contributing to the Codebase
-libGDX benefits greatly from contributions made by our dedicated developer community. We appreciate any assistance in making libGDX even better. Check out the [CONTRIBUTING.md](https://github.com/libgdx/libgdx/blob/master/.github/CONTRIBUTING.md) file for details on how to contribute. Note that contributing involves working directly with libGDX's source code, a process that regular users do not typically undertake. Refer to the [Working with the Source](https://libgdx.com/dev/from-source/) article for guidance.
+```groovy
+maven {
+  name "teamcelestial"
+  url "https://maven.teamcelestial.org/public"
+}
+```
 
-You can also support our infrastructure (build server, web server, test devices) by contributing financially through our [Patreon](https://patreon.com/libgdx)!
+```groovy
+configurations.all {
+  val version = "1.0.0-SNAPSHOT"
+  resolutionStrategy.dependencySubstitution {
+    def sub = { String artifact ->
+        substitute module("com.badlogicgames.gdx:$artifact") using module("me.thosea.celestialgdx:$artifact:$version") because "fork"
+    }
+    sub("gdx")
+    sub("gdx-backend-lwjgl3")
+    sub("gdx-lwjgl3-angle")
+  }
+}
+```
+
+</details>
+Currently, the version is 1.0.0-SNAPSHOT.
