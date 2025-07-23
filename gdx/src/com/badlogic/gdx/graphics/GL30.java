@@ -21,7 +21,10 @@ package com.badlogic.gdx.graphics;
 
 import java.nio.Buffer;
 
-/** OpenGL ES 3.0 */
+/** OpenGL ES 3.0
+ * @deprecated celestialgdx - use GLFW class
+ * */
+@Deprecated
 public interface GL30 extends GL20 {
 	public final int GL_READ_BUFFER = 0x0C02;
 	public final int GL_UNPACK_ROW_LENGTH = 0x0CF2;

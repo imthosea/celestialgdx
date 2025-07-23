@@ -17,6 +17,10 @@
 
 package com.badlogic.gdx.graphics;
 
+/**
+ * @deprecated celestialgdx - use GLFW class
+ * */
+@Deprecated
 public interface GL31 extends GL30 {
 
 	public static final int GL_VERTEX_SHADER_BIT = 0x00000001;
