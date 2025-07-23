@@ -51,7 +51,7 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	int idleFPS = 60;
 	int foregroundFPS = 0;
 
-	HdpiMode hdpiMode = HdpiMode.Logical;
+	HdpiMode hdpiMode = HdpiMode.Pixels;
 
 	boolean debug = false;
 	PrintStream debugStream = System.err;
