@@ -16,10 +16,12 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import java.io.File;
-
 import com.badlogic.gdx.Files;
+import com.badlogic.gdx.backends.lwjgl3.file.ClasspathFileHandle;
+import com.badlogic.gdx.backends.lwjgl3.file.SystemFileHandle;
 import com.badlogic.gdx.files.FileHandle;
+
+import java.io.File;
 
 /** @author mzechner
  * @author Nathan Sweet */
@@ -28,33 +30,28 @@ public final class Lwjgl3Files implements Files {
 	static public final String localPath = new File("").getAbsolutePath() + File.separator;
 
 	@Override
-	public FileHandle getFileHandle (String fileName, FileType type) {
-		return new Lwjgl3FileHandle(fileName, type);
-	}
-
-	@Override
 	public FileHandle classpath (String path) {
-		return new Lwjgl3FileHandle(path, FileType.Classpath);
+		return new ClasspathFileHandle(path);
 	}
 
 	@Override
 	public FileHandle internal (String path) {
-		return new Lwjgl3FileHandle(path, FileType.Internal);
+		return new SystemFileHandle(path);
 	}
 
 	@Override
 	public FileHandle external (String path) {
-		return new Lwjgl3FileHandle(path, FileType.External);
+		return new SystemFileHandle(externalPath + path);
 	}
 
 	@Override
 	public FileHandle absolute (String path) {
-		return new Lwjgl3FileHandle(path, FileType.Absolute);
+		return new SystemFileHandle(localPath + path);
 	}
 
 	@Override
 	public FileHandle local (String path) {
-		return new Lwjgl3FileHandle(path, FileType.Local);
+		return new SystemFileHandle(path);
 	}
 
 	@Override

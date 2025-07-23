@@ -33,10 +33,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.StreamUtils;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -154,21 +152,7 @@ public class BitmapFont implements Disposable {
 		this.integer = integer;
 
 		if (pageRegions == null || pageRegions.size == 0) {
-			if (data.imagePaths == null)
-				throw new IllegalArgumentException("If no regions are specified, the font data must have an images path.");
-
-			// Load each path.
-			int n = data.imagePaths.length;
-			regions = new Array(n);
-			for (int i = 0; i < n; i++) {
-				FileHandle file;
-				if (data.fontFile == null)
-					file = Gdx.files.internal(data.imagePaths[i]);
-				else
-					file = Gdx.files.getFileHandle(data.imagePaths[i], data.fontFile.type());
-				regions.add(new TextureRegion(new Texture(file, false)));
-			}
-			ownsTexture = true;
+			throw new IllegalArgumentException("If no regions are specified, the font data must have an images path.");
 		} else {
 			regions = pageRegions;
 			ownsTexture = false;
@@ -490,8 +474,7 @@ public class BitmapFont implements Disposable {
 
 			name = fontFile.nameWithoutExtension();
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fontFile.read()), 512);
-			try {
+			try(BufferedReader reader = fontFile.reader(512)) {
 				String line = reader.readLine(); // info
 				if (line == null) throw new GdxRuntimeException("File is empty.");
 
@@ -715,8 +698,6 @@ public class BitmapFont implements Disposable {
 
 			} catch (Exception ex) {
 				throw new GdxRuntimeException("Error loading font file: " + fontFile, ex);
-			} finally {
-				StreamUtils.closeQuietly(reader);
 			}
 		}
 

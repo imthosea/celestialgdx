@@ -18,7 +18,6 @@ package com.badlogic.gdx.backends.lwjgl3;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.utils.Array;
@@ -264,21 +263,6 @@ public class Lwjgl3Window implements Disposable {
 	 */
 	public void setIcon (Pixmap... image) {
 		setIcon(windowHandle, image);
-	}
-
-	static void setIcon (long windowHandle, String[] imagePaths, Files.FileType imageFileType) {
-		if (SharedLibraryLoader.os == Os.MacOsX) return;
-
-		Pixmap[] pixmaps = new Pixmap[imagePaths.length];
-		for (int i = 0; i < imagePaths.length; i++) {
-			pixmaps[i] = new Pixmap(Gdx.files.getFileHandle(imagePaths[i], imageFileType));
-		}
-
-		setIcon(windowHandle, pixmaps);
-
-		for (Pixmap pixmap : pixmaps) {
-			pixmap.dispose();
-		}
 	}
 
 	static void setIcon (long windowHandle, Pixmap[] images) {

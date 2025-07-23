@@ -145,9 +145,6 @@ public class ShaderProgram implements Disposable {
 	/** whether this shader was invalidated **/
 	private boolean invalidated;
 
-	/** reference count **/
-	private final int refCount = 0;
-
 	/** Constructs a new ShaderProgram and immediately compiles it.
 	 *
 	 * @param vertexShader the vertex shader
@@ -156,9 +153,6 @@ public class ShaderProgram implements Disposable {
 	public ShaderProgram (String vertexShader, String fragmentShader) {
 		if (vertexShader == null) throw new IllegalArgumentException("vertex shader must not be null");
 		if (fragmentShader == null) throw new IllegalArgumentException("fragment shader must not be null");
-
-		if (prependVertexCode != null && !prependVertexCode.isEmpty()) vertexShader = prependVertexCode + vertexShader;
-		if (prependFragmentCode != null && !prependFragmentCode.isEmpty()) fragmentShader = prependFragmentCode + fragmentShader;
 
 		this.vertexShaderSource = vertexShader;
 		this.fragmentShaderSource = fragmentShader;

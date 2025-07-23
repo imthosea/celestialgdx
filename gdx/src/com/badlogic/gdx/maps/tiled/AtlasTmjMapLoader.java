@@ -32,6 +32,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.JsonValue;
 
+import java.io.IOException;
+
 /** A TiledMap Loader which loads tiles from a TextureAtlas instead of separate images.
  *
  * It requires a map-level property called 'atlas' with its value being the relative path to the TextureAtlas. The atlas must have
@@ -106,11 +108,11 @@ public class AtlasTmjMapLoader extends BaseTmjMapLoader<AtlasTmjMapLoader.AtlasT
 		super(resolver);
 	}
 
-	public TiledMap load (String fileName) {
+	public TiledMap load (String fileName) throws IOException {
 		return load(fileName, new AtlasTiledMapLoaderParameters());
 	}
 
-	public TiledMap load (String fileName, AtlasTiledMapLoaderParameters parameter) {
+	public TiledMap load (String fileName, AtlasTiledMapLoaderParameters parameter) throws IOException {
 		FileHandle tmjFile = resolve(fileName);
 
 		this.root = json.parse(tmjFile);
@@ -246,7 +248,9 @@ public class AtlasTmjMapLoader extends BaseTmjMapLoader<AtlasTmjMapLoader.AtlasT
 	private static String parseRegionName (String name) {
 		if (name.contains("atlas_imagelayer")) {
 			// Extract the name of region from path
-			return new FileHandle(name).name();
+			int index = name.lastIndexOf('/');
+			if (index == -1 || index == name.length() - 1) return name;
+			return name.substring(index);
 		} else {
 			return name;
 		}

@@ -245,7 +245,9 @@ public class AtlasTmxMapLoader extends BaseTmxMapLoader<AtlasTmxMapLoader.AtlasT
 	private static String parseRegionName (String name) {
 		if (name.contains("atlas_imagelayer")) {
 			// Extract the name of region from path
-			return new FileHandle(name).name();
+			int index = name.lastIndexOf('/');
+			if (index == -1 || index == name.length() - 1) return name;
+			return name.substring(index);
 		} else {
 			return name;
 		}

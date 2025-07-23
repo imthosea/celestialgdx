@@ -27,8 +27,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegionLoader.PolygonRegionParameters;
 import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxIoException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.StreamUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -114,8 +114,7 @@ public class PolygonRegionLoader extends SynchronousAssetLoader<PolygonRegion, P
 	 * http://www.codeandweb.com/physicseditor/
 	 * @param file file handle to the shape definition file */
 	public PolygonRegion load (TextureRegion textureRegion, FileHandle file) {
-		BufferedReader reader = file.reader(256);
-		try {
+		try(BufferedReader reader = file.reader(256)) {
 			while (true) {
 				String line = reader.readLine();
 				if (line == null) break;
@@ -130,9 +129,7 @@ public class PolygonRegionLoader extends SynchronousAssetLoader<PolygonRegion, P
 				}
 			}
 		} catch (IOException ex) {
-			throw new GdxRuntimeException("Error reading polygon shape file: " + file, ex);
-		} finally {
-			StreamUtils.closeQuietly(reader);
+			throw new GdxIoException("Error reading polygon shape file: " + file, ex);
 		}
 		throw new GdxRuntimeException("Polygon shape not found: " + file);
 	}

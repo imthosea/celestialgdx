@@ -405,8 +405,8 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 				GLFW.glfwMaximizeWindow(windowHandle);
 			}
 		}
-		if (config.windowIconPaths != null) {
-			Lwjgl3Window.setIcon(windowHandle, config.windowIconPaths, config.windowIconFileType);
+		if (config.pixmaps != null) {
+			Lwjgl3Window.setIcon(windowHandle, config.pixmaps);
 		}
 		GLFW.glfwMakeContextCurrent(windowHandle);
 		GLFW.glfwSwapInterval(config.vSyncEnabled ? 1 : 0);

@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -31,7 +30,6 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.badlogic.gdx.utils.StreamUtils;
 
 import java.io.BufferedReader;
 
@@ -330,9 +328,8 @@ public class TextureAtlas implements Disposable {
 				if (region.index != -1) hasIndexes[0] = true;
 			});
 
-			BufferedReader reader = packFile.reader(1024);
 			String line = null;
-			try {
+			try (BufferedReader reader = packFile.reader(1024)) {
 				line = reader.readLine();
 				// Ignore empty lines before first entry.
 				while (line != null && line.trim().isEmpty())
@@ -405,8 +402,6 @@ public class TextureAtlas implements Disposable {
 			} catch (Exception ex) {
 				throw new GdxRuntimeException(
 					"Error reading texture atlas file: " + packFile + (line == null ? "" : "\nLine: " + line), ex);
-			} finally {
-				StreamUtils.closeQuietly(reader);
 			}
 
 			if (hasIndexes[0]) {
