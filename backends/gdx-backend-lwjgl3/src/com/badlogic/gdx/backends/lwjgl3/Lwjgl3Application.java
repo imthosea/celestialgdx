@@ -31,7 +31,6 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Clipboard;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.lwjgl.glfw.GLFW;
@@ -51,7 +50,6 @@ import org.lwjgl.system.Callback;
 import java.io.PrintStream;
 import java.nio.IntBuffer;
 import java.util.function.Function;
-import java.util.prefs.Preferences;
 
 public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	public final Lwjgl3ApplicationConfiguration config;
@@ -59,7 +57,6 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	public final Lwjgl3Files files;
 	public final Lwjgl3Clipboard clipboard;
 
-	private final ObjectMap<String, Preferences> preferences = new ObjectMap<>();
 	private int logLevel = LOG_INFO;
 	private ApplicationLogger applicationLogger;
 
@@ -115,6 +112,10 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 
 		this.config = config = Lwjgl3ApplicationConfiguration.copy(config);
 		if (config.title == null) config.title = "game";
+
+		if(Gdx.app != null) {
+			throw new IllegalStateException("Cannot make multiple Lwjgl3Applications");
+		}
 
 		Gdx.app = this;
 		Gdx.files = this.files = createFiles();
