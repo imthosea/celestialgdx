@@ -14,6 +14,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - Many uses of reflection were removed
 - Made some fields in Lwjgl3Application public for ease of use
 - Lwjgl3Application's constructor has been changed to a supplier to allow final constants in the application class
+- Lwjgl3Application can no longer be constructed multiple times
 - InputProcessor.scrolled now takes doubles and is no longer flipped
 - FileHandle is now abstract and isn't bound to system files
     - FileType has been removed. Gdx.files methods will still work (except the FileType one), but they now return instances of SystemFileHandle or ClasspathFileHandle
