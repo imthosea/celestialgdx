@@ -754,47 +754,47 @@ public class FreeTypeFontGenerator implements Disposable {
 		/** If true, font smoothing is disabled. */
 		public boolean mono;
 		/** Strength of hinting */
-		public final Hinting hinting = Hinting.AutoMedium;
+		public Hinting hinting = Hinting.AutoMedium;
 		/** Foreground color (required for non-black borders) */
-		public final Color color = Color.WHITE;
+		public Color color = Color.WHITE;
 		/** Glyph gamma. Values > 1 reduce antialiasing. */
-		public final float gamma = 1.8f;
+		public float gamma = 1.8f;
 		/** Number of times to render the glyph. Useful with a shadow or border, so it doesn't show through the glyph. */
-		public final int renderCount = 2;
+		public int renderCount = 2;
 		/** Border width in pixels, 0 to disable */
-		public final float borderWidth = 0;
+		public float borderWidth = 0;
 		/** Border color; only used if borderWidth > 0 */
-		public final Color borderColor = Color.BLACK;
+		public Color borderColor = Color.BLACK;
 		/** true for straight (mitered), false for rounded borders */
-		public final boolean borderStraight = false;
+		public boolean borderStraight = false;
 		/** Values < 1 increase the border size. */
-		public final float borderGamma = 1.8f;
+		public float borderGamma = 1.8f;
 		/** Offset of text shadow on X axis in pixels, 0 to disable */
-		public final int shadowOffsetX = 0;
+		public int shadowOffsetX = 0;
 		/** Offset of text shadow on Y axis in pixels, 0 to disable */
-		public final int shadowOffsetY = 0;
+		public int shadowOffsetY = 0;
 		/** Shadow color; only used if shadowOffset > 0. If alpha component is 0, no shadow is drawn but characters are still offset
 		 * by shadowOffset. */
-		public final Color shadowColor = new Color(0, 0, 0, 0.75f);
+		public Color shadowColor = new Color(0, 0, 0, 0.75f);
 		/** Pixels to add to glyph spacing when text is rendered. Can be negative. */
 		public int spaceX, spaceY;
 		/** Pixels to add to the glyph in the texture. Cannot be negative. */
 		public int padTop, padLeft, padBottom, padRight;
 		/** The characters the font should contain. If '\0' is not included then {@link BitmapFontData#missingGlyph} is not set. */
-		public final String characters = DEFAULT_CHARS;
+		public String characters = DEFAULT_CHARS;
 		/** Whether the font should include kerning */
 		public boolean kerning = true;
 		/** The optional PixmapPacker to use for packing multiple fonts into a single texture.
 		 * @see FreeTypeFontParameter */
-		public final PixmapPacker packer = null;
+		public PixmapPacker packer = null;
 		/** Whether to flip the font vertically */
-		public final boolean flip = false;
+		public boolean flip = false;
 		/** Whether to generate mip maps for the resulting texture */
-		public final boolean genMipMaps = false;
+		public boolean genMipMaps = false;
 		/** Minification filter */
-		public final TextureFilter minFilter = TextureFilter.Nearest;
+		public TextureFilter minFilter = TextureFilter.Nearest;
 		/** Magnification filter */
-		public final TextureFilter magFilter = TextureFilter.Nearest;
+		public TextureFilter magFilter = TextureFilter.Nearest;
 		/** When true, glyphs are rendered on the fly to the font's glyph page textures as they are needed. The
 		 * FreeTypeFontGenerator must not be disposed until the font is no longer needed. The FreeTypeBitmapFontData must be
 		 * disposed (separately from the generator) when the font is no longer needed. The FreeTypeFontParameter should not be
