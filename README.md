@@ -66,6 +66,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - remove XML parser in favor of stdlib
 - unspaghetify TMX reader and TextureAtlas
 - remove more useless stdlib replication classes
+- make TextureRegion and its subclasses immutable
 
 This isn't a full code cleanup because I want to make my game. I'm only modifying stuff that affects me.
 
