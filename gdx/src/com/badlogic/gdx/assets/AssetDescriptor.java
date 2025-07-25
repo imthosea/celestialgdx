@@ -24,7 +24,7 @@ import com.badlogic.gdx.files.FileHandle;
 public class AssetDescriptor<T> {
 	public final String fileName;
 	public final Class<T> type;
-	public final AssetLoaderParameters params;
+	public final AssetLoaderParameters<T> params;
 	/** The resolved file. May be null if the fileName has not been resolved yet. */
 	public FileHandle file;
 
@@ -54,8 +54,10 @@ public class AssetDescriptor<T> {
 	@Override
 	public String toString () {
 		StringBuilder sb = new StringBuilder();
+		sb.append("AssetDescriptor[");
+		sb.append("file=");
 		sb.append(fileName);
-		sb.append(", ");
+		sb.append(", type=");
 		sb.append(type.getName());
 		return sb.toString();
 	}

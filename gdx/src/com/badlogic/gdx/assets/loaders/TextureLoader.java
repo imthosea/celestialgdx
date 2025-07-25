@@ -33,13 +33,8 @@ import com.badlogic.gdx.utils.Array;
  * various Texture constructors, e.g. filtering, whether to generate mipmaps and so on.
  * @author mzechner */
 public class TextureLoader extends AsynchronousAssetLoader<Texture, TextureLoader.TextureParameter> {
-	static public class TextureLoaderInfo {
-		String filename;
-		TextureData data;
-		Texture texture;
-	};
-
-	TextureLoaderInfo info = new TextureLoaderInfo();
+	private TextureData data;
+	private Texture texture;
 
 	public TextureLoader (FileHandleResolver resolver) {
 		super(resolver);
@@ -47,34 +42,31 @@ public class TextureLoader extends AsynchronousAssetLoader<Texture, TextureLoade
 
 	@Override
 	public void loadAsync (AssetManager manager, String fileName, FileHandle file, TextureParameter parameter) {
-		info.filename = fileName;
 		if (parameter == null || parameter.textureData == null) {
 			Format format = null;
 			boolean genMipMaps = false;
-			info.texture = null;
+			this.texture = null;
 
 			if (parameter != null) {
 				format = parameter.format;
 				genMipMaps = parameter.genMipMaps;
-				info.texture = parameter.texture;
+				this.texture = parameter.texture;
 			}
 
-			info.data = TextureData.Factory.loadFromFile(file, format, genMipMaps);
+			this.data = TextureData.Factory.loadFromFile(file, format, genMipMaps);
 		} else {
-			info.data = parameter.textureData;
-			info.texture = parameter.texture;
+			this.data = parameter.textureData;
+			this.texture = parameter.texture;
 		}
-		if (!info.data.isPrepared()) info.data.prepare();
+		if (!data.isPrepared()) data.prepare();
 	}
 
 	@Override
 	public Texture loadSync (AssetManager manager, String fileName, FileHandle file, TextureParameter parameter) {
-		if (info == null) return null;
-		Texture texture = info.texture;
 		if (texture != null) {
-			texture.load(info.data);
+			texture.load(this.data);
 		} else {
-			texture = new Texture(info.data);
+			this.texture = new Texture(this.data);
 		}
 		if (parameter != null) {
 			texture.setFilter(parameter.minFilter, parameter.magFilter);

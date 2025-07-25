@@ -22,6 +22,9 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
     - GdxRuntimeException has been replaced with throws IOException
 - Window icons now take Pixmaps instead of files
 - Default HdpiMode is now Pixels
+- AssetManager is no longer backed by nested maps
+- AssetManager now gets the loader by class; per-file-extension loaders cannot be set anymore. This may change
+- TEMP: 3D model loading by AssetManager will not work
 
 ### Removed
 - FileHandle:

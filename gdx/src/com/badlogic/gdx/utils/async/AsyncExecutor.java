@@ -16,14 +16,12 @@
 
 package com.badlogic.gdx.utils.async;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /** Allows asynchronous execution of {@link AsyncTask} instances on a separate thread. Needs to be disposed via a call to
  * {@link #dispose()} when no longer used, in which case the executor waits for running tasks to finish. Scheduled but not yet
@@ -41,13 +39,10 @@ public class AsyncExecutor implements Disposable {
 	 * @param maxConcurrent
 	 * @param name The name of the threads. */
 	public AsyncExecutor (int maxConcurrent, final String name) {
-		executor = Executors.newFixedThreadPool(maxConcurrent, new ThreadFactory() {
-			@Override
-			public Thread newThread (Runnable r) {
-				Thread thread = new Thread(r, name);
-				thread.setDaemon(true);
-				return thread;
-			}
+		executor = Executors.newFixedThreadPool(maxConcurrent, action -> {
+			Thread thread = new Thread(action, name);
+			thread.setDaemon(true);
+			return thread;
 		});
 	}
 
@@ -58,12 +53,7 @@ public class AsyncExecutor implements Disposable {
 		if (executor.isShutdown()) {
 			throw new GdxRuntimeException("Cannot run tasks on an executor that has been shutdown (disposed)");
 		}
-		return new AsyncResult(executor.submit(new Callable<T>() {
-			@Override
-			public T call () throws Exception {
-				return task.call();
-			}
-		}));
+		return new AsyncResult<>(executor.submit(task::call));
 	}
 
 	/** Waits for running {@link AsyncTask} instances to finish, then destroys any resources like threads. Can not be used after
