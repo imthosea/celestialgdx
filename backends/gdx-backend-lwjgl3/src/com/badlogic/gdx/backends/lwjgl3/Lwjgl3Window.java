@@ -25,13 +25,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWDropCallback;
-import org.lwjgl.glfw.GLFWImage;
-import org.lwjgl.glfw.GLFWWindowCloseCallback;
-import org.lwjgl.glfw.GLFWWindowFocusCallback;
-import org.lwjgl.glfw.GLFWWindowIconifyCallback;
-import org.lwjgl.glfw.GLFWWindowMaximizeCallback;
+import org.lwjgl.glfw.*;
 
 import java.nio.IntBuffer;
 import java.util.function.Function;
@@ -125,6 +119,12 @@ public class Lwjgl3Window implements Disposable {
 		this.windowHandle = windowHandle;
 		this.input = application.createInput(this);
 		this.graphics = new Lwjgl3Graphics(this);
+
+		Gdx.input = input;
+		Gdx.graphics = graphics;
+		Gdx.gl = Gdx.gl20 = graphics.gl20;
+		Gdx.gl30 = Gdx.gl31 = Gdx.gl32 = graphics.getGL32();
+
 		this.listener = listener.apply(this);
 
 		GLFW.glfwSetWindowFocusCallback(windowHandle, focusCallback);
