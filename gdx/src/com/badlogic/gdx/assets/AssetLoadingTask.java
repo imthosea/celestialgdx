@@ -48,7 +48,7 @@ class AssetLoadingTask implements AsyncTask<Void> {
 
 	volatile boolean cancel;
 
-	public AssetLoadingTask (AssetManager manager, AssetDescriptor assetDesc, AssetLoader loader, AsyncExecutor threadPool) {
+	public AssetLoadingTask (AssetManager manager, AssetDescriptor<?> assetDesc, AssetLoader<?, ?> loader, AsyncExecutor threadPool) {
 		this.manager = manager;
 		this.assetDesc = assetDesc;
 		this.loader = loader;
@@ -138,8 +138,8 @@ class AssetLoadingTask implements AsyncTask<Void> {
 
 	/** Called when this task is the task that is currently being processed and it is unloaded. */
 	public void unload () {
-		if (loader instanceof AsynchronousAssetLoader)
-			((AsynchronousAssetLoader)loader).unloadAsync(manager, assetDesc.fileName, resolve(loader, assetDesc), assetDesc.params);
+		if (loader instanceof AsynchronousAssetLoader async)
+			async.unloadAsync(manager, assetDesc.fileName, resolve(loader, assetDesc), assetDesc.params);
 	}
 
 	private FileHandle resolve (AssetLoader loader, AssetDescriptor assetDesc) {

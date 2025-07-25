@@ -16,14 +16,14 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import java.util.Locale;
-
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.I18NBundle;
+
+import java.util.Locale;
 
 /** {@link AssetLoader} for {@link I18NBundle} instances. The I18NBundle is loaded asynchronously.
  * <p>
