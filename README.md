@@ -71,6 +71,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - unspaghetify TMX reader and TextureAtlas
 - remove more useless stdlib replication classes
 - make TextureRegion and its subclasses immutable
+- make AssetManager concurrent and maybe use virtual threads for it
 
 This isn't a full code cleanup because I want to make my game. I'm only modifying stuff that affects me.
 
