@@ -66,7 +66,6 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 		@Override
 		public void invoke (long windowHandle, final int width, final int height) {
 			updateFramebufferInfo();
-			window.makeCurrent();
 			gl32.glViewport(0, 0, backBufferWidth, backBufferHeight);
 			window.getListener().resize(getWidth(), getHeight());
 			update();
