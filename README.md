@@ -34,6 +34,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
     - all write-related methods
 - FileHandleStream
 - FileType
+- Lwjgl3Window doesn't handle sync callbacks anymore, post to Lwjgl3Application instead
 - Box2D / Bullet
 - Multi-window support from LWJGL backend and subsequently a ton of syncrhonization code
 - Automated tests
