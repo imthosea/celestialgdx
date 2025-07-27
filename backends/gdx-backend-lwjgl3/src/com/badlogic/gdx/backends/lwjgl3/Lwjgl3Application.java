@@ -126,8 +126,8 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 
 	protected void loop () {
 		while (running && !window.shouldClose()) {
-			window.update();
 			GLFW.glfwPollEvents();
+			window.update();
 
 			if (hasRunnables) {
 				executedRunnables.clear();
