@@ -26,6 +26,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - AssetManager now gets the loader by class; per-file-extension loaders cannot be set anymore. This may change
 - TEMP: 3D model loading by AssetManager will not work
 - GLFW events are now polled before rendering
+- ApplicationListener.resize is no longer called on frame 1
 
 ### Removed
 - FileHandle:
@@ -37,6 +38,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - Multi-window support from LWJGL backend and subsequently a ton of syncrhonization code
 - Automated tests
 - Non-continous rendering (along with ApplicationListener/LifecycleListener's pause and resume)
+- ApplicationListener.create - do stuff in your constructor instead
 - glfw_async, on Mac, you must call with -XstartOnFirstThread
 - LwjglCanvas
 - The entire reflection util package
