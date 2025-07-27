@@ -16,11 +16,9 @@
 
 package com.badlogic.gdx.backends.lwjgl3;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
@@ -36,11 +34,8 @@ public class Lwjgl3Window implements Disposable {
 	public final Lwjgl3Input input;
 
 	private final ApplicationListener listener;
-	Lwjgl3WindowListener windowListener;
+	private Lwjgl3WindowListener windowListener;
 	private final Lwjgl3ApplicationConfiguration config;
-	private final Array<Runnable> runnables = new Array<>();
-	private volatile boolean hasRunnables;
-	private final Array<Runnable> executedRunnables = new Array<>();
 	private final IntBuffer tmpBuffer;
 	private final IntBuffer tmpBuffer2;
 	private boolean iconified = false;
@@ -49,7 +44,7 @@ public class Lwjgl3Window implements Disposable {
 	private final GLFWWindowFocusCallback focusCallback = new GLFWWindowFocusCallback() {
 		@Override
 		public void invoke (long windowHandle, final boolean focused) {
-			postRunnable(() -> {
+			Gdx.app.postRunnable(() -> {
 				Lwjgl3Window.this.focused = focused;
 			});
 		}
@@ -58,7 +53,7 @@ public class Lwjgl3Window implements Disposable {
 	private final GLFWWindowIconifyCallback iconifyCallback = new GLFWWindowIconifyCallback() {
 		@Override
 		public void invoke (long windowHandle, final boolean iconified) {
-			postRunnable(() -> {
+			Gdx.app.postRunnable(() -> {
 				if (windowListener != null) {
 					windowListener.iconified(iconified);
 				}
@@ -70,7 +65,7 @@ public class Lwjgl3Window implements Disposable {
 	private final GLFWWindowMaximizeCallback maximizeCallback = new GLFWWindowMaximizeCallback() {
 		@Override
 		public void invoke (long windowHandle, final boolean maximized) {
-			postRunnable(() -> {
+			Gdx.app.postRunnable(() -> {
 				if (windowListener != null) {
 					windowListener.maximized(maximized);
 				}
@@ -82,7 +77,7 @@ public class Lwjgl3Window implements Disposable {
 	private final GLFWWindowCloseCallback closeCallback = new GLFWWindowCloseCallback() {
 		@Override
 		public void invoke (final long windowHandle) {
-			postRunnable(() -> {
+			Gdx.app.postRunnable(() -> {
 				if (windowListener != null) {
 					if (!windowListener.closeRequested()) {
 						GLFW.glfwSetWindowShouldClose(windowHandle, false);
@@ -99,7 +94,7 @@ public class Lwjgl3Window implements Disposable {
 			for (int i = 0; i < count; i++) {
 				files[i] = getName(names, i);
 			}
-			postRunnable(() -> {
+			Gdx.app.postRunnable(() -> {
 				if (windowListener != null) {
 					windowListener.filesDropped(files);
 				}
@@ -155,17 +150,6 @@ public class Lwjgl3Window implements Disposable {
 
 	public void setWindowListener (Lwjgl3WindowListener listener) {
 		this.windowListener = listener;
-	}
-
-	/**
-	 * Post a {@link Runnable} to this window's event queue. Use this if you access statics like {@link Gdx#graphics} in your
-	 * runnable instead of {@link Application#postRunnable(Runnable)}.
-	 */
-	public void postRunnable (Runnable runnable) {
-		synchronized (runnables) {
-			runnables.add(runnable);
-		}
-		hasRunnables = true;
 	}
 
 	/**
@@ -332,17 +316,6 @@ public class Lwjgl3Window implements Disposable {
 	}
 
 	void update () {
-		if (hasRunnables) {
-			executedRunnables.clear();
-			synchronized (runnables) {
-				executedRunnables.addAll(runnables);
-				runnables.clear();
-			}
-			for (Runnable runnable : executedRunnables) {
-				runnable.run();
-			}
-		}
-
 		graphics.update();
 		listener.render();
 		GLFW.glfwSwapBuffers(windowHandle);
@@ -350,11 +323,11 @@ public class Lwjgl3Window implements Disposable {
 		if (!iconified) input.prepareNext();
 	}
 
-	boolean shouldClose () {
+	public boolean shouldClose () {
 		return GLFW.glfwWindowShouldClose(windowHandle);
 	}
 
-	Lwjgl3ApplicationConfiguration getConfig () {
+	public Lwjgl3ApplicationConfiguration getConfig () {
 		return config;
 	}
 
