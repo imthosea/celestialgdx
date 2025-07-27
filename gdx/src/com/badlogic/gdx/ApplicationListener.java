@@ -30,12 +30,8 @@ package com.badlogic.gdx;
  * 
  * @author mzechner */
 public interface ApplicationListener {
-	/** Called when the {@link Application} is first created. */
-	public void create ();
-
-	/** Called when the {@link Application} is resized. This can happen at any point during a non-paused state but will never
-	 * happen before a call to {@link #create()}.
-	 * 
+	/** Called when the {@link Application} is resized. This can happen at any point.
+	 *
 	 * @param width the new width in pixels
 	 * @param height the new height in pixels */
 	public void resize (int width, int height);
@@ -43,6 +39,6 @@ public interface ApplicationListener {
 	/** Called when the {@link Application} should render itself. */
 	public void render ();
 
-	/** Called when the {@link Application} is destroyed. Preceded by a call to {@link #pause()}. */
+	/** Called when the {@link Application} is destroyed. */
 	public void dispose ();
 }

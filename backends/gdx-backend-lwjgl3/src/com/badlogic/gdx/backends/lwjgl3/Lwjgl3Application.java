@@ -87,7 +87,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		this(listener, new Lwjgl3ApplicationConfiguration());
 	}
 
-	public Lwjgl3Application (Function<Lwjgl3Window, ApplicationListener> listener, Lwjgl3ApplicationConfiguration config) {
+	public Lwjgl3Application (Function<Lwjgl3Window, ApplicationListener> listenerCreator, Lwjgl3ApplicationConfiguration config) {
 		if (config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20) loadANGLE();
 		initializeGlfw();
 		setApplicationLogger(new Lwjgl3ApplicationLogger());
@@ -106,7 +106,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		this.sync = new Sync();
 
 		long windowHandle = createGlfwWindow(config);
-		this.window = new Lwjgl3Window(windowHandle, listener, config, this);
+		this.window = new Lwjgl3Window(windowHandle, listenerCreator, config, this);
 
 		if (config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20) postLoadANGLE();
 		try {

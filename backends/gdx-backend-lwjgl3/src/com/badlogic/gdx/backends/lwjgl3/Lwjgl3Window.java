@@ -36,7 +36,6 @@ public class Lwjgl3Window implements Disposable {
 	public final Lwjgl3Input input;
 
 	private final ApplicationListener listener;
-	private boolean listenerInitialized = false;
 	Lwjgl3WindowListener windowListener;
 	private final Lwjgl3ApplicationConfiguration config;
 	private final Array<Runnable> runnables = new Array<>();
@@ -333,9 +332,6 @@ public class Lwjgl3Window implements Disposable {
 	}
 
 	void update () {
-		if (!listenerInitialized) {
-			initializeListener();
-		}
 		if (hasRunnables) {
 			executedRunnables.clear();
 			synchronized (runnables) {
@@ -360,18 +356,6 @@ public class Lwjgl3Window implements Disposable {
 
 	Lwjgl3ApplicationConfiguration getConfig () {
 		return config;
-	}
-
-	boolean isListenerInitialized () {
-		return listenerInitialized;
-	}
-
-	void initializeListener () {
-		if (!listenerInitialized) {
-			listener.create();
-			listener.resize(graphics.getWidth(), graphics.getHeight());
-			listenerInitialized = true;
-		}
 	}
 
 	void makeCurrent () {

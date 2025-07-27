@@ -20,10 +20,6 @@ package com.badlogic.gdx;
  * @author mzechner */
 public abstract class ApplicationAdapter implements ApplicationListener {
 	@Override
-	public void create () {
-	}
-
-	@Override
 	public void resize (int width, int height) {
 	}
 
