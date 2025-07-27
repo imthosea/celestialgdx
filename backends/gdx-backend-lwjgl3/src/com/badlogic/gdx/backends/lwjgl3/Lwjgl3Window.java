@@ -33,11 +33,11 @@ import java.util.function.Function;
 public class Lwjgl3Window implements Disposable {
 	public final long windowHandle;
 	public final Lwjgl3Graphics graphics;
+	public final Lwjgl3Input input;
 
 	private final ApplicationListener listener;
 	private boolean listenerInitialized = false;
 	Lwjgl3WindowListener windowListener;
-	private final Lwjgl3Input input;
 	private final Lwjgl3ApplicationConfiguration config;
 	private final Array<Runnable> runnables = new Array<>();
 	private volatile boolean hasRunnables;
