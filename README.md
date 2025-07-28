@@ -49,10 +49,10 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - Audio - use gdx-miniaudio instead
 - Netcode - use stdlib instead
 - Preferences - use your own solution
-- InputEventQueue
+- InputEventQueue - it calls InputProcessor instantly now
 - Keys.ANY_KEY
 - These methods in InputProcessor / Input:
-- touchDragged, getTextInput, vibrate, setKeyboardHeightObserver, isPeripheralAvailable, getRotation, getNativeOrientation has been removed, getNativeOrientation, getDeltaX, getDeltaY, resetPollingStates
+    - touchDragged, getTextInput, vibrate, setKeyboardHeightObserver, isPeripheralAvailable, getRotation, getNativeOrientation, getDeltaX, getDeltaY, resetPollingStates
 - FirstPersonCameraController / CameraController
 - TextInputWrapper
 - GestureDetector
