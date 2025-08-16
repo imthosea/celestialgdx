@@ -16,11 +16,9 @@
 
 package com.badlogic.gdx.maps;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.objects.CircleMapObject;
 import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.utils.Disposable;
 
 /** A generic level map implementation.
  * </p>
@@ -43,14 +41,9 @@ import com.badlogic.gdx.utils.Disposable;
  * </p>
  * 
  * Maps must be disposed through a call to {@link #dispose()} when no longer used. */
-public class Map implements Disposable {
+public class Map {
 	private final MapLayers layers = new MapLayers();
 	private final MapProperties properties = new MapProperties();
-
-	/** Creates empty map */
-	public Map () {
-
-	}
 
 	/** @return the map's layers */
 	public MapLayers getLayers () {
@@ -60,10 +53,5 @@ public class Map implements Disposable {
 	/** @return the map's properties */
 	public MapProperties getProperties () {
 		return properties;
-	}
-
-	/** Disposes all resources like {@link Texture} instances that the map may own. */
-	@Override
-	public void dispose () {
 	}
 }

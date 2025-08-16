@@ -14,13 +14,10 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.maps.tiled;
+package com.badlogic.gdx.maps.tiled.loader;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
+import com.badlogic.gdx.assets.AssetLoadingContext;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -28,33 +25,34 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.ImageResolver;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Null;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.*;
 
-import java.util.StringTokenizer;
-
-public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters> extends AsynchronousAssetLoader<TiledMap, P> {
+public abstract class BaseTiledMapLoadHandler<P extends BaseTiledMapLoadHandler.Parameters> {
 
 	public static class Parameters extends AssetLoaderParameters<TiledMap> {
+		/**
+		 * celestialgdx - override how images are resolved
+		 */
+		public ImageResolver resolver = ImageResolver.BY_RELATIVE_FILE;
+
 		/** generate mipmaps? **/
-		public final boolean generateMipMaps = false;
+		public boolean generateMipMaps = false;
 		/** The TextureFilter to use for minification **/
-		public final Texture.TextureFilter textureMinFilter = Texture.TextureFilter.Nearest;
+		public Texture.TextureFilter textureMinFilter = Texture.TextureFilter.Nearest;
 		/** The TextureFilter to use for magnification **/
-		public final Texture.TextureFilter textureMagFilter = Texture.TextureFilter.Nearest;
+		public Texture.TextureFilter textureMagFilter = Texture.TextureFilter.Nearest;
 		/** Whether to convert the objects' pixel position and size to the equivalent in tile space. **/
-		public final boolean convertObjectToTileSpace = false;
+		public boolean convertObjectToTileSpace = false;
 		/** Whether to flip all Y coordinates so that Y positive is up. All libGDX renderers require flipped Y coordinates, and thus
 		 * flipY set to true. This parameter is included for non-rendering related purposes of TMX files, or custom renderers. */
-		public final boolean flipY = true;
+		public boolean flipY = true;
 		/** Path to Tiled project file. Needed when using class properties. */
-		public final String projectFilePath = null;
+		public String projectFilePath = null;
 	}
 
 	/** Representation of a single Tiled class property. A property has:
@@ -65,65 +63,74 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 	 * <li>a {@code defaultValue}</li>
 	 * </ul>
 	 */
-	protected static class ProjectClassMember {
-		public String name;
-		public String type;
-		public String propertyType;
-		public JsonValue defaultValue;
-
-		@Override
-		public String toString () {
-			return "ProjectClassMember{" //
-				+ "name='" + name + "'" //
-				+ ", type='" + type + "'" //
-				+ ", propertyType='" + propertyType + "'" //
-				+ ", defaultValue=" + defaultValue + "}";
-		}
-	}
+	protected record ProjectClassMember(
+			String type,
+			String name,
+			String propertyType,
+			JsonValue defaultValue
+	) {}
 
 	protected static final int FLAG_FLIP_HORIZONTALLY = 0x80000000;
 	protected static final int FLAG_FLIP_VERTICALLY = 0x40000000;
 	protected static final int FLAG_FLIP_DIAGONALLY = 0x20000000;
 	protected static final int MASK_CLEAR = 0xE0000000;
 
-	protected boolean convertObjectToTileSpace;
-	protected boolean flipY = true;
+	protected final ImageResolver imageResolver;
+	protected final FileHandle file;
+	protected final P parameter;
+
+	protected final boolean convertObjectToTileSpace;
+	protected final boolean flipY;
 
 	protected int mapTileWidth;
 	protected int mapTileHeight;
 	protected int mapWidthInPixels;
 	protected int mapHeightInPixels;
 
-	protected TiledMap map;
-	protected IntMap<MapObject> idToObject;
-	protected Array<Runnable> runOnEndOfLoadTiled;
+	protected final TiledMap map = new TiledMap();
+	protected final IntMap<MapObject> idToObject = new IntMap<>();
+	protected final Array<Runnable> runAfterParse = new Array<>();
+	protected final Array<MapLoader.TilesetPhaseHandler> tilesetHandlers = new Array<>();
+
 	/** Optional Tiled project class information. Key is the classname and value is an array of class members (=class
 	 * properties) */
 	protected ObjectMap<String, Array<ProjectClassMember>> projectClassInfo;
 
-	public BaseTiledMapLoader (FileHandleResolver resolver) {
-		super(resolver);
+	protected BaseTiledMapLoadHandler (FileHandle file, char[] fileData,
+									   @Null char[] projectFileData,
+									   P parameter) {
+		this.file = file;
+		this.parameter = parameter;
+
+		if (parameter != null) {
+			this.imageResolver = parameter.resolver;
+			this.convertObjectToTileSpace = parameter.convertObjectToTileSpace;
+			this.flipY = parameter.flipY;
+			if (projectFileData != null) {
+				loadProjectFile(new JsonReader().parse(projectFileData, 0, projectFileData.length));
+			}
+		} else {
+			this.convertObjectToTileSpace = false;
+			this.flipY = true;
+			this.imageResolver = ImageResolver.BY_RELATIVE_FILE;
+		}
+
+		this.parseMap();
 	}
 
-	/** Meant to be called within getDependencies() of a child class */
-	protected abstract Array<AssetDescriptor> getDependencyAssetDescriptors (FileHandle mapFile,
-		TextureLoader.TextureParameter textureParameter);
+	/** Loads the map data, given the root element.<br>
+	 * celestialgdx - this is called on a work thread
+	 */
+	protected abstract void parseMap ();
 
-	/** Loads the map data, given the root element
-	 *
-	 * @param mapFile the Filehandle of the map file, .tmx or .tmj supported
-	 * @param parameter
-	 * @param imageResolver
-	 * @return the {@link TiledMap} */
-	protected abstract TiledMap loadTiledMap (FileHandle mapFile, P parameter, ImageResolver imageResolver);
+	/**
+	 * celestialgdx - this is called on a virtual thread, use {@link #imageResolver}
+	 * to suspend the thread when needed. called after {@link #parseMap}
+	 */
+	protected abstract void loadTilesets (AssetLoadingContext<TiledMap> ctx);
 
-	/** Gets a map of the object ids to the {@link MapObject} instances. Returns null if
-	 * {@link #loadTiledMap(FileHandle, Parameters, ImageResolver)} has not been called yet.
-	 *
-	 * @return the map of the ids to {@link MapObject}, or null if {@link #loadTiledMap(FileHandle, Parameters, ImageResolver)}
-	 *         method has not been called yet. */
-	public @Null IntMap<MapObject> getIdToObject () {
-		return idToObject;
+	public TiledMap result () {
+		return map;
 	}
 
 	protected Object castProperty (String name, String value, String type) {
@@ -145,7 +152,7 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 	}
 
 	protected TiledMapTileLayer.Cell createTileLayerCell (boolean flipHorizontally, boolean flipVertically,
-		boolean flipDiagonally) {
+														  boolean flipDiagonally) {
 		TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
 		if (flipDiagonally) {
 			if (flipHorizontally && flipVertically) {
@@ -170,22 +177,8 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 		return b & 0xFF;
 	}
 
-	protected static FileHandle getRelativeFileHandle (FileHandle file, String path) {
-		StringTokenizer tokenizer = new StringTokenizer(path, "\\/");
-		FileHandle result = file.parent();
-		while (tokenizer.hasMoreElements()) {
-			String token = tokenizer.nextToken();
-			if (token.equals(".."))
-				result = result.parent();
-			else {
-				result = result.child(token);
-			}
-		}
-		return result;
-	}
-
-	protected void addStaticTiledMapTile (TiledMapTileSet tileSet, TextureRegion textureRegion, int tileId, float offsetX,
-		float offsetY) {
+	protected void addStaticTiledMapTile (TiledMapTileSet tileSet, TextureRegion textureRegion,
+										  int tileId, float offsetX, float offsetY) {
 		TiledMapTile tile = new StaticTiledMapTile(textureRegion);
 		tile.setId(tileId);
 		tile.setOffsetX(offsetX);
@@ -196,18 +189,11 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 	protected void loadObjectProperty (final MapProperties properties, final String name, String value) {
 		// Wait until the end of [loadTiledMap] to fetch the object
 		try {
-			// Value should be the id of the object being pointed to
 			final int id = Integer.parseInt(value);
-			// Create [Runnable] to fetch object and add it to props
-			Runnable fetch = new Runnable() {
-				@Override
-				public void run () {
-					MapObject object = idToObject.get(id);
-					properties.put(name, object);
-				}
-			};
-			// [Runnable] should not run until the end of [loadTiledMap]
-			runOnEndOfLoadTiled.add(fetch);
+			runAfterParse.add(() -> {
+				MapObject object = idToObject.get(id);
+				properties.put(name, object);
+			});
 		} catch (Exception exception) {
 			throw new GdxRuntimeException("Error parsing property [\" + name + \"] of type \"object\" with value: [" + value + "]",
 				exception);
@@ -221,14 +207,8 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 
 	/** Parses the given Tiled project file for class property information. A class can have multiple members. Refer to
 	 * {@link ProjectClassMember}. */
-	protected void loadProjectFile (String projectFilePath) {
+	protected void loadProjectFile (JsonValue projectRoot) {
 		projectClassInfo = new ObjectMap<>();
-		if (projectFilePath == null || projectFilePath.trim().isEmpty()) {
-			return;
-		}
-
-		FileHandle projectFile = resolve(projectFilePath);
-		JsonValue projectRoot = new JsonReader().parse(projectFile);
 		JsonValue propertyTypes = projectRoot.get("propertyTypes");
 		if (propertyTypes == null) {
 			// no custom property types in project -> nothing to parse
@@ -248,11 +228,12 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 			Array<ProjectClassMember> projectClassMembers = new Array<>();
 			projectClassInfo.put(className, projectClassMembers);
 			for (JsonValue member : members) {
-				BaseTmjMapLoader.ProjectClassMember projectClassMember = new BaseTmjMapLoader.ProjectClassMember();
-				projectClassMember.name = member.getString("name");
-				projectClassMember.type = member.getString("type");
-				projectClassMember.propertyType = member.getString("propertyType", null);
-				projectClassMember.defaultValue = member.get("value");
+				var projectClassMember = new BaseTiledMapLoadHandler.ProjectClassMember(
+						member.getString("name"),
+						member.getString("type"),
+						member.getString("propertyType", null),
+						member.get("value")
+				);
 				projectClassMembers.add(projectClassMember);
 			}
 		}
@@ -286,6 +267,7 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 				if (classProp == null) {
 					classProp = projectClassMember.defaultValue;
 				}
+
 				MapProperties nestedClassProperties = new MapProperties();
 				String nestedClassName = projectClassMember.propertyType;
 				nestedClassProperties.put("type", nestedClassName);
@@ -316,11 +298,11 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 	}
 
 	protected void loadMapPropertiesClassDefaults (String className, MapProperties mapProperties) {
-		if (className == null || !projectClassInfo.containsKey(className)) {
-			return;
-		}
+		if (className == null) return;
 
 		Array<ProjectClassMember> classMembers = projectClassInfo.get(className);
+		if (projectClassInfo == null) return;
+
 		for (ProjectClassMember classMember : classMembers) {
 			String propName = classMember.name;
 			if (mapProperties.containsKey(propName)) {
@@ -338,5 +320,4 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 			}
 		}
 	}
-
 }

@@ -30,8 +30,7 @@ public class TiledMapImageLayer extends MapLayer {
 	private boolean repeatY;
 	private final boolean supportsTransparency;
 
-	public TiledMapImageLayer (TextureRegion region, float x, float y, boolean repeatX, boolean repeatY) {
-		this.region = region;
+	public TiledMapImageLayer (float x, float y, boolean repeatX, boolean repeatY) {
 		this.x = x;
 		this.y = y;
 		this.repeatX = repeatX;

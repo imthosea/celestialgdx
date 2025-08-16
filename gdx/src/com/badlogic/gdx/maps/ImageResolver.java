@@ -16,55 +16,49 @@
 
 package com.badlogic.gdx.maps;
 
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.AssetLoadingContext;
+import com.badlogic.gdx.assets.loaders.TextureLoader;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.maps.tiled.loader.BaseTiledMapLoadHandler;
 
-/** Resolves an image by a string, wrapper around a Map or AssetManager to load maps either directly or via AssetManager.
- * @author mzechner */
+import java.util.StringTokenizer;
+
+@FunctionalInterface
 public interface ImageResolver {
-	/** @param name
-	 * @return the Texture for the given image name or null. */
-	public TextureRegion getImage (String name);
+	/**
+	 * @return the Texture for the given image name or null.
+	 */
+	TextureRegion getImage (AssetLoadingContext<?> ctx, FileHandle projectFile, String name);
 
-	public static class DirectImageResolver implements ImageResolver {
-		private final ObjectMap<String, Texture> images;
+	// this is moved here so i don't have to use it in omocha - thosea
 
-		public DirectImageResolver (ObjectMap<String, Texture> images) {
-			this.images = images;
+	ImageResolver BY_RELATIVE_FILE = (ctx, projectFile, name) -> {
+		FileHandle file = getRelativeFileHandle(projectFile, name);
+		TextureLoader.TextureParameter textParam;
+		if(ctx.desc.params instanceof BaseTiledMapLoadHandler.Parameters param) {
+			textParam = new TextureLoader.TextureParameter();
+			textParam.genMipMaps = param.generateMipMaps;
+			textParam.minFilter = param.textureMinFilter;
+			textParam.magFilter = param.textureMagFilter;
+		} else {
+			textParam = null;
 		}
+		return new TextureRegion(ctx.dependOn(file.path(), Texture.class, textParam));
+	};
 
-		@Override
-		public TextureRegion getImage (String name) {
-			return new TextureRegion(images.get(name));
+	static FileHandle getRelativeFileHandle (FileHandle file, String path) {
+		StringTokenizer tokenizer = new StringTokenizer(path, "\\/");
+		FileHandle result = file.parent();
+		while (tokenizer.hasMoreElements()) {
+			String token = tokenizer.nextToken();
+			if (token.equals(".."))
+				result = result.parent();
+			else {
+				result = result.child(token);
+			}
 		}
-	}
-
-	public static class AssetManagerImageResolver implements ImageResolver {
-		private final AssetManager assetManager;
-
-		public AssetManagerImageResolver (AssetManager assetManager) {
-			this.assetManager = assetManager;
-		}
-
-		@Override
-		public TextureRegion getImage (String name) {
-			return new TextureRegion(assetManager.get(name, Texture.class));
-		}
-	}
-
-	public static class TextureAtlasImageResolver implements ImageResolver {
-		private final TextureAtlas atlas;
-
-		public TextureAtlasImageResolver (TextureAtlas atlas) {
-			this.atlas = atlas;
-		}
-
-		@Override
-		public TextureRegion getImage (String name) {
-			return atlas.findRegion(name);
-		}
+		return result;
 	}
 }

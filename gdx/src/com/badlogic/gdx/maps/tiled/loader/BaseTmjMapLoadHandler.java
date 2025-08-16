@@ -14,73 +14,24 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.maps.tiled;
+package com.badlogic.gdx.maps.tiled.loader;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.*;
-import com.badlogic.gdx.maps.objects.*;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
-import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Polyline;
-import com.badlogic.gdx.utils.*;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
-
-public abstract class BaseTmjMapLoader<P extends BaseTiledMapLoader.Parameters> extends BaseTiledMapLoader<P> {
+// TODO celestialgdx - someday fix this
+/*
+public abstract class BaseTmjMapLoadHandler<P extends BaseTiledMapLoadHandler.Parameters> extends BaseTiledMapLoadHandler<P> {
 
 	protected final JsonReader json = new JsonReader();
-	protected JsonValue root;
+	protected final JsonValue root;
 
-	public BaseTmjMapLoader (FileHandleResolver resolver) {
-		super(resolver);
+	protected BaseTmjMapLoadHandler (FileHandle file, char[] fileData,
+	                             @Null char[] projectFileData,
+	                             P parameter) {
+		super(file, fileData, projectFileData, parameter);
+		this.root = json.parse(fileData, 0, fileData.length);
 	}
 
 	@Override
-	public Array<AssetDescriptor> getDependencies (String fileName, FileHandle tmjFile, P parameter) {
-		this.root = json.parse(tmjFile);
-
-		TextureLoader.TextureParameter textureParameter = new TextureLoader.TextureParameter();
-		if (parameter != null) {
-			textureParameter.genMipMaps = parameter.generateMipMaps;
-			textureParameter.minFilter = parameter.textureMinFilter;
-			textureParameter.magFilter = parameter.textureMagFilter;
-		}
-
-		return getDependencyAssetDescriptors(tmjFile, textureParameter);
-	}
-
-	/** Loads the map data, given the JSON root element
-	 *
-	 * @param tmjFile the Filehandle of the tmj file
-	 * @param parameter
-	 * @param imageResolver
-	 * @return the {@link TiledMap} */
-	protected TiledMap loadTiledMap (FileHandle tmjFile, P parameter, ImageResolver imageResolver) {
-		this.map = new TiledMap();
-		this.idToObject = new IntMap<>();
-		this.runOnEndOfLoadTiled = new Array<>();
-
-		if (parameter != null) {
-			this.convertObjectToTileSpace = parameter.convertObjectToTileSpace;
-			this.flipY = parameter.flipY;
-			loadProjectFile(parameter.projectFilePath);
-		} else {
-			this.convertObjectToTileSpace = false;
-			this.flipY = true;
-		}
+	protected void parseMap () {
 		String mapOrientation = root.getString("orientation", null);
 		int mapWidth = root.getInt("width", 0);
 		int mapHeight = root.getInt("height", 0);
@@ -130,9 +81,9 @@ public abstract class BaseTmjMapLoader<P extends BaseTiledMapLoader.Parameters> 
 
 		JsonValue tileSets = root.get("tilesets");
 		for (JsonValue element : tileSets) {
-			loadTileSet(element, tmjFile, imageResolver);
-
+			loadTileSet(element);
 		}
+
 		JsonValue layers = root.get("layers");
 
 		for (JsonValue element : layers) {
@@ -157,12 +108,9 @@ public abstract class BaseTmjMapLoader<P extends BaseTiledMapLoader.Parameters> 
 			}
 		}
 
-		for (Runnable runnable : runOnEndOfLoadTiled) {
+		for (Runnable runnable : runAfterParse) {
 			runnable.run();
 		}
-		runOnEndOfLoadTiled = null;
-
-		return map;
 	}
 
 	protected void loadLayer (TiledMap map, MapLayers parentLayers, JsonValue element, FileHandle tmjFile,
@@ -185,29 +133,27 @@ public abstract class BaseTmjMapLoader<P extends BaseTiledMapLoader.Parameters> 
 	}
 
 	protected void loadLayerGroup (TiledMap map, MapLayers parentLayers, JsonValue element, FileHandle tmjFile,
-		ImageResolver imageResolver) {
-		if (element.getString("type", "").equals("group")) {
-			MapGroupLayer groupLayer = new MapGroupLayer();
-			loadBasicLayerInfo(groupLayer, element);
+	                               ImageResolver imageResolver) {
+		MapGroupLayer groupLayer = new MapGroupLayer();
+		loadBasicLayerInfo(groupLayer, element);
 
-			JsonValue properties = element.get("properties");
-			if (properties != null) {
-				loadProperties(groupLayer.getProperties(), properties);
-			}
-
-			JsonValue layers = element.get("layers");
-			if (layers != null) {
-				for (JsonValue child : layers) {
-					loadLayer(map, groupLayer.getLayers(), child, tmjFile, imageResolver);
-				}
-			}
-
-			for (MapLayer layer : groupLayer.getLayers()) {
-				layer.setParent(groupLayer);
-			}
-
-			parentLayers.add(groupLayer);
+		JsonValue properties = element.get("properties");
+		if (properties != null) {
+			loadProperties(groupLayer.getProperties(), properties);
 		}
+
+		JsonValue layers = element.get("layers");
+		if (layers != null) {
+			for (JsonValue child : layers) {
+				loadLayer(map, groupLayer.getLayers(), child, tmjFile, imageResolver);
+			}
+		}
+
+		for (MapLayer layer : groupLayer.getLayers()) {
+			layer.setParent(groupLayer);
+		}
+
+		parentLayers.add(groupLayer);
 	}
 
 	protected void loadTileLayer (TiledMap map, MapLayers parentLayers, JsonValue element) {
@@ -671,3 +617,4 @@ public abstract class BaseTmjMapLoader<P extends BaseTiledMapLoader.Parameters> 
 	}
 
 }
+ */

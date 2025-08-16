@@ -1,0 +1,196 @@
+/*******************************************************************************
+ * Copyright 2011 See AUTHORS file.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
+package com.badlogic.gdx.assets;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.AssetLoader;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.TimeUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
+/** Responsible for loading an asset through an {@link AssetLoader} based on an {@link AssetDescriptor}.
+ * */
+public class AssetLoadingContext<T> {
+	public final AssetManager manager;
+	public final AssetDescriptor<T> desc;
+	public final AssetLoader<T, ?> loader;
+	public final long startTime;
+
+	private final CompletableFuture<T> future;
+
+	private final List<String> dependencies = new ArrayList<>(); // synchronized
+	private final AtomicInteger refCount = new AtomicInteger(1);
+
+	private volatile boolean active = true;
+
+	public AssetLoadingContext (AssetManager manager, AssetDescriptor<T> desc, AssetLoader<T, ?> loader) {
+		this.manager = manager;
+		this.desc = desc;
+		this.loader = loader;
+		this.future = new CompletableFuture<>();
+		this.startTime = manager.log.getLevel() == Logger.DEBUG ? TimeUtils.nanoTime() : 0;
+	}
+
+	void schedule () {
+		Thread.startVirtualThread(() -> {
+			if (!active) return; // cancelled
+
+			try {
+				T result = loader.load(desc.fileName, cast(desc.params), this);
+				requireActive();
+				complete(result);
+			} catch (TaskCancelledException e) {
+				future.completeExceptionally(e);
+			} catch (Exception e) {
+				manager.log.error("Error loading " + desc.fileName, e);
+				future.completeExceptionally(e);
+
+				if (manager.listener != null)
+					manager.listener.error(desc, e);
+			} finally {
+				active = false;
+			}
+		});
+	}
+
+	private void complete (T result) {
+		List<String> dependencies;
+		synchronized (this.dependencies) {
+			if (this.dependencies.isEmpty()) {
+				dependencies = null;
+			} else {
+				// clone to avoid post modifications
+				dependencies = List.of(this.dependencies.toArray(new String[0]));
+			}
+		}
+
+		requireActive();
+
+		var asset = new AssetManager.Asset(desc.fileName, desc.type, result, refCount);
+		manager.assets.put(desc.fileName, asset);
+		manager.assetDependencies.put(desc.fileName, dependencies);
+
+		future.complete(result);
+
+		if (desc.params != null && desc.params.loadedCallback != null)
+			desc.params.loadedCallback.finishedLoading(manager, desc.fileName, desc.type);
+	}
+
+	public <D> D dependOn (AssetDescriptor<D> desc) {
+		requireActive();
+		manager.load(desc);
+		synchronized (dependencies) {
+			dependencies.add(desc.fileName);
+		}
+		return manager.finishLoadingAsset(desc);
+	}
+
+	public <D> D dependOn (String path, Class<D> type) {
+		return dependOn(new AssetDescriptor<>(path, type));
+	}
+
+	public <D> D dependOn (FileHandle file, Class<D> type) {
+		return dependOn(new AssetDescriptor<>(file, type));
+	}
+
+	public <D, P> D dependOn (String path, Class<D> type, AssetLoaderParameters<P> parameter) {
+		return dependOn(cast(new AssetDescriptor<>(path, type, (AssetLoaderParameters<D>) parameter)));
+	}
+
+	public <T> T awaitMainThread (Supplier<T> supplier) {
+		requireActive();
+		CompletableFuture<T> future = new CompletableFuture<>();
+		Gdx.app.postRunnable(() -> {
+			try {
+				future.complete(supplier.get());
+			} catch (Exception e) {
+				manager.log.error("Error performing sync task for " + desc.fileName, e);
+				future.completeExceptionally(e);
+			}
+		});
+		return future.join();
+	}
+
+	// TODO celestialgdx use this more
+	// or remove it if it doesn't actually improve performance
+	public <T> T awaitWork (Callable<T> supplier) {
+		requireActive();
+		try {
+			return manager.workExecutor.submit(supplier).get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new RuntimeException("Error performing work task", e);
+		}
+	}
+
+	public void awaitWork (Runnable work) {
+		requireActive();
+		try {
+			manager.workExecutor.submit(work).get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new RuntimeException("Error performing work task", e);
+		}
+	}
+
+	private static <T> T cast (Object obj) {
+		return (T) obj;
+	}
+
+	// package-private to avoid accidental calls
+	T awaitResult () {
+		try {
+			return future.get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	public void cancel () {
+		requireActive();
+		this.active = false;
+	}
+
+	public Logger logger () {
+		return manager.getLogger();
+	}
+
+	void incrementRefCount () {
+		if (!active) {
+			manager.load(desc);
+			return;
+		}
+		refCount.incrementAndGet();
+	}
+
+	private void requireActive () {
+		if (!active) throw new TaskCancelledException();
+	}
+
+	public static class TaskCancelledException extends RuntimeException {
+		public TaskCancelledException () {
+			super("This task was cancelled");
+		}
+	}
+}
