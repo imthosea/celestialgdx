@@ -490,7 +490,7 @@ public class AssetManager implements Disposable {
 		}
 	}
 
-	/** @return the dependencies of an asset or null if the asset has no dependencies. */
+	/** @return the dependencies of an asset or an empty list if the asset has no dependencies. */
 	public List<String> getDependencies (String fileName) {
 		return assetDependencies.get(fileName);
 	}

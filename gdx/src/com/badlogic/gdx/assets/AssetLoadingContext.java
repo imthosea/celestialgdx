@@ -83,7 +83,7 @@ public class AssetLoadingContext<T> {
 		List<String> dependencies;
 		synchronized (this.dependencies) {
 			if (this.dependencies.isEmpty()) {
-				dependencies = null;
+				dependencies = Collections.emptyList();
 			} else {
 				// clone to avoid post modifications
 				dependencies = List.of(this.dependencies.toArray(new String[0]));
