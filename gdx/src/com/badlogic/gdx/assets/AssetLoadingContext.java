@@ -26,9 +26,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -106,7 +104,9 @@ public class AssetLoadingContext<T> {
 		requireActive();
 		manager.load(desc);
 		synchronized (dependencies) {
-			dependencies.add(desc.fileName);
+			if (!dependencies.contains(desc.fileName)) {
+				dependencies.add(desc.fileName);
+			}
 		}
 		return manager.finishLoadingAsset(desc);
 	}
@@ -178,6 +178,21 @@ public class AssetLoadingContext<T> {
 
 	// package-private to avoid accidental calls
 	T awaitResult () {
+		if (Gdx.app.isGameThread()) {
+			// since many tasks require awaitMainThread,
+			// we must poll events in between
+			while (true) {
+				try {
+					return future.get(10L, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException | ExecutionException e) {
+					throw new GdxRuntimeException(e);
+				} catch (TimeoutException e) {
+					Gdx.app.pollRunnables();
+					// and then try again
+				}
+			}
+		}
+
 		try {
 			return future.get();
 		} catch (InterruptedException | ExecutionException e) {
