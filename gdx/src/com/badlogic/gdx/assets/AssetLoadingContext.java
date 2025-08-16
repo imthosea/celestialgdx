@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -43,6 +44,8 @@ public class AssetLoadingContext<T> {
 
 	private final List<String> dependencies = new ArrayList<>(); // synchronized
 	private final AtomicInteger refCount = new AtomicInteger(1);
+
+	private final List<String> createdDependencies = Collections.synchronizedList(new ArrayList<>());
 
 	private volatile boolean active = true;
 
@@ -120,6 +123,21 @@ public class AssetLoadingContext<T> {
 		return dependOn(cast(new AssetDescriptor<>(path, type, (AssetLoaderParameters<D>) parameter)));
 	}
 
+	public <D> void createDependency (String path, Class<D> type, D object) {
+		requireActive();
+
+		if (manager.assets.containsKey(path)) {
+			throw new IllegalStateException("Tried to replace asset " + path);
+		}
+
+		// it's us..we're the dependency
+		var asset = new AssetManager.Asset(path, type, object, new AtomicInteger(1));
+		manager.assets.put(path, asset);
+		manager.assetDependencies.put(path, List.of(desc.fileName));
+
+		createdDependencies.add(path);
+	}
+
 	public <T> T awaitMainThread (Supplier<T> supplier) {
 		requireActive();
 		CompletableFuture<T> future = new CompletableFuture<>();
@@ -170,6 +188,8 @@ public class AssetLoadingContext<T> {
 	public void cancel () {
 		requireActive();
 		this.active = false;
+
+		createdDependencies.forEach(manager::unload);
 	}
 
 	public Logger logger () {
