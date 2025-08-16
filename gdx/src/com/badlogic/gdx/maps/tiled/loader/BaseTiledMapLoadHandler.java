@@ -114,8 +114,6 @@ public abstract class BaseTiledMapLoadHandler<P extends BaseTiledMapLoadHandler.
 			this.flipY = true;
 			this.imageResolver = ImageResolver.BY_RELATIVE_FILE;
 		}
-
-		this.parseMap();
 	}
 
 	/** Loads the map data, given the root element.<br>
