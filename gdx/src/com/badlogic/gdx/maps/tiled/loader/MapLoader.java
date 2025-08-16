@@ -23,7 +23,7 @@ public class MapLoader<P extends BaseTiledMapLoadHandler.Parameters> extends Ass
 		FileHandle file = resolve(path);
 		char[] data = file.readString().toCharArray();
 		char[] projectFileData;
-		if (parameter.projectFilePath == null) {
+		if (parameter == null || parameter.projectFilePath == null) {
 			projectFileData = null;
 		} else {
 			projectFileData = resolve(parameter.projectFilePath).readString().toCharArray();
