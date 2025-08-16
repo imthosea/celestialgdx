@@ -178,6 +178,17 @@ public interface Application {
 	 * @param runnable the runnable. */
 	public void postRunnable (Runnable runnable);
 
+	/**
+	 * celestialgdx - returns true if you are running on the thread that created the application
+	 */
+	public boolean isGameThread();
+
+	/**
+	 * celestialgdx - polls runnables from {@link #postRunnable(Runnable)}<br>
+	 * called at the start of every frame
+	 */
+	public void pollRunnables();
+
 	/** Schedule an exit from the application. On android, this will cause a call to pause() and dispose() some time in the future,
 	 * it will not immediately finish your application. On iOS this should be avoided in production as it breaks Apples
 	 * guidelines */

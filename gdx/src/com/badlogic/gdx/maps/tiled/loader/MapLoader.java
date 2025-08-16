@@ -30,7 +30,9 @@ public class MapLoader<P extends BaseTiledMapLoadHandler.Parameters> extends Ass
 		}
 
 		var handler = ctx.awaitWork(() -> {
-			return handlerSupplier.parse(file, data,  projectFileData, parameter);
+			var result = handlerSupplier.create(file, data,  projectFileData, parameter);
+			result.parseMap();
+			return result;
 		});
 		handler.loadTilesets(ctx);
 		return handler.result();
@@ -38,9 +40,9 @@ public class MapLoader<P extends BaseTiledMapLoadHandler.Parameters> extends Ass
 
 	@FunctionalInterface
 	public interface LoadHandlerSupplier<P extends BaseTiledMapLoadHandler.Parameters> {
-		BaseTiledMapLoadHandler<P> parse (FileHandle file, char[] fileData,
-										  @Null char[] projectFileData,
-										  P parameter);
+		BaseTiledMapLoadHandler<P> create (FileHandle file, char[] fileData,
+		                                   @Null char[] projectFileData,
+		                                   P parameter);
 	}
 
 	// celestialgdx - this is a hack and should be removed

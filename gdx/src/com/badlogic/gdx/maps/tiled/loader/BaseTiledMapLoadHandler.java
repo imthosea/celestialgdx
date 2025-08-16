@@ -297,9 +297,9 @@ public abstract class BaseTiledMapLoadHandler<P extends BaseTiledMapLoadHandler.
 
 	protected void loadMapPropertiesClassDefaults (String className, MapProperties mapProperties) {
 		if (className == null) return;
+		if (projectClassInfo == null) return;
 
 		Array<ProjectClassMember> classMembers = projectClassInfo.get(className);
-		if (projectClassInfo == null) return;
 
 		for (ProjectClassMember classMember : classMembers) {
 			String propName = classMember.name;

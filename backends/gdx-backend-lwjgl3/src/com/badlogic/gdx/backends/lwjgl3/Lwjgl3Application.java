@@ -42,6 +42,8 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	private int logLevel = LOG_INFO;
 	private ApplicationLogger applicationLogger;
 
+	private final Thread gameThread;
+
 	private volatile boolean running = true;
 	private volatile boolean hasRunnables;
 
@@ -93,6 +95,8 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		setApplicationLogger(new Lwjgl3ApplicationLogger());
 
 		this.config = config = Lwjgl3ApplicationConfiguration.copy(config);
+		this.gameThread = Thread.currentThread();
+
 		if (config.title == null) config.title = "game";
 
 		if(Gdx.app != null) {
@@ -129,16 +133,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 			GLFW.glfwPollEvents();
 			window.update();
 
-			if (hasRunnables) {
-				executedRunnables.clear();
-				synchronized (runnables) {
-					executedRunnables.addAll(runnables);
-					runnables.clear();
-				}
-				for (Runnable runnable : executedRunnables) {
-					runnable.run();
-				}
-			}
+			pollRunnables();
 
 			int targetFramerate = window.getConfig().foregroundFPS;
 			if (targetFramerate > 0) {
@@ -259,6 +254,25 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 			runnables.add(runnable);
 		}
 		hasRunnables = true;
+	}
+
+	@Override
+	public boolean isGameThread () {
+		return Thread.currentThread() == this.gameThread;
+	}
+
+	@Override
+	public void pollRunnables () {
+		if (!hasRunnables) return;
+		executedRunnables.clear();
+		synchronized (runnables) {
+			executedRunnables.addAll(runnables);
+			runnables.clear();
+		}
+		for (Runnable runnable : executedRunnables) {
+			runnable.run();
+		}
+		hasRunnables = false;
 	}
 
 	@Override
