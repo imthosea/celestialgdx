@@ -14,56 +14,28 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.maps.tiled;
+package com.badlogic.gdx.maps.tiled.loader;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.ImageResolver;
-import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
+// TODO celestialgdx - someday fix this
+/*
+public class TmjMapLoadHandler extends BaseTmjMapLoadHandler<BaseTmjMapLoadHandler.Parameters> {
 
-/** @brief synchronous loader for TMJ maps created with the Tiled tool */
-public class TmjMapLoader extends BaseTmjMapLoader<BaseTmjMapLoader.Parameters> {
-
-	public static class Parameters extends BaseTmjMapLoader.Parameters {
+	public static class Parameters extends BaseTmjMapLoadHandler.Parameters {
 	}
 
-	public TmjMapLoader () {
+	public TmjMapLoadHandler () {
 		super(new InternalFileHandleResolver());
 	}
 
-	/** Creates loader
-	 *
-	 * @param resolver */
-	public TmjMapLoader (FileHandleResolver resolver) {
+	public TmjMapLoadHandler (FileHandleResolver resolver) {
 		super(resolver);
 	}
 
-	/** Loads the {@link TiledMap} from the given file. The file is resolved via the {@link FileHandleResolver} set in the
-	 * constructor of this class. By default it will resolve to an internal file. The map will be loaded for a y-up coordinate
-	 * system.
-	 *
-	 * @param fileName the filename
-	 * @return the TiledMap */
 	public TiledMap load (String fileName) {
-		return load(fileName, new TmjMapLoader.Parameters());
+		return load(fileName, new TmjMapLoadHandler.Parameters());
 	}
 
-	/** Loads the {@link TiledMap} from the given file. The file is resolved via the {@link FileHandleResolver} set in the
-	 * constructor of this class. By default it will resolve to an internal file.
-	 *
-	 * @param fileName the filename
-	 * @param parameter specifies whether to use y-up, generate mip maps etc.
-	 * @return the TiledMap */
-	public TiledMap load (String fileName, TmjMapLoader.Parameters parameter) {
+	public TiledMap load (String fileName, TmjMapLoadHandler.Parameters parameter) {
 		FileHandle tmjFile = resolve(fileName);
 
 		this.root = json.parse(tmjFile);
@@ -83,12 +55,12 @@ public class TmjMapLoader extends BaseTmjMapLoader<BaseTmjMapLoader.Parameters> 
 	}
 
 	@Override
-	public void loadAsync (AssetManager manager, String fileName, FileHandle tmjFile, BaseTmjMapLoader.Parameters parameter) {
+	public void loadAsync (AssetManager manager, String fileName, FileHandle tmjFile, BaseTmjMapLoadHandler.Parameters parameter) {
 		this.map = loadTiledMap(tmjFile, parameter, new ImageResolver.AssetManagerImageResolver(manager));
 	}
 
 	@Override
-	public TiledMap loadSync (AssetManager manager, String fileName, FileHandle file, BaseTmjMapLoader.Parameters parameter) {
+	public TiledMap loadSync (AssetManager manager, String fileName, FileHandle file, BaseTmjMapLoadHandler.Parameters parameter) {
 		return map;
 	}
 
@@ -144,7 +116,7 @@ public class TmjMapLoader extends BaseTmjMapLoader<BaseTmjMapLoader.Parameters> 
 		return getTileSetDependencyFileHandle(fileHandles, tmjFile, tileSet);
 	}
 
-	protected Array<FileHandle> getTileSetDependencyFileHandle (Array<FileHandle> fileHandles, FileHandle tmjFile,
+	protected Array<FileHandle> getTileSetDependencyFileHandle (Array<String> paths, FileHandle tmjFile,
 		JsonValue tileSet) {
 		String source = tileSet.getString("source", null);
 		if (source != null) {
@@ -153,14 +125,14 @@ public class TmjMapLoader extends BaseTmjMapLoader<BaseTmjMapLoader.Parameters> 
 			if (tileSet.has("image")) {
 				String imageSource = tileSet.getString("image");
 				FileHandle image = getRelativeFileHandle(tsxFile, imageSource);
-				fileHandles.add(image);
+				paths.add(image);
 			} else {
 				JsonValue tiles = tileSet.get("tiles");
 				if (tiles != null) {
 					for (JsonValue tile : tiles) {
 						String imageSource = tile.getString("image");
 						FileHandle image = getRelativeFileHandle(tsxFile, imageSource);
-						fileHandles.add(image);
+						paths.add(image);
 					}
 				}
 			}
@@ -168,25 +140,25 @@ public class TmjMapLoader extends BaseTmjMapLoader<BaseTmjMapLoader.Parameters> 
 			if (tileSet.has("image")) {
 				String imageSource = tileSet.getString("image");
 				FileHandle image = getRelativeFileHandle(tmjFile, imageSource);
-				fileHandles.add(image);
+				paths.add(image);
 			} else {
 				JsonValue tiles = tileSet.get("tiles");
 				if (tiles != null) {
 					for (JsonValue tile : tiles) {
 						String imageSource = tile.getString("image");
 						FileHandle image = getRelativeFileHandle(tmjFile, imageSource);
-						fileHandles.add(image);
+						paths.add(image);
 					}
 				}
 			}
 		}
-		return fileHandles;
+		return paths;
 	}
 
 	@Override
 	protected void addStaticTiles (FileHandle tmjFile, ImageResolver imageResolver, TiledMapTileSet tileSet, JsonValue element,
-		JsonValue tiles, String name, int firstgid, int tilewidth, int tileheight, int spacing, int margin, String source,
-		int offsetX, int offsetY, String imageSource, int imageWidth, int imageHeight, FileHandle image) {
+								   JsonValue tiles, String name, int firstgid, int tilewidth, int tileheight, int spacing, int margin, String source,
+								   int offsetX, int offsetY, String imageSource, int imageWidth, int imageHeight, FileHandle image) {
 
 		MapProperties props = tileSet.getProperties();
 		if (image != null) {
@@ -232,3 +204,4 @@ public class TmjMapLoader extends BaseTmjMapLoader<BaseTmjMapLoader.Parameters> 
 		}
 	}
 }
+ */

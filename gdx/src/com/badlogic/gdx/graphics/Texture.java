@@ -16,20 +16,12 @@
 
 package com.badlogic.gdx.graphics;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.AssetLoader;
-import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /** A Texture wraps a standard OpenGL ES texture.
  * <p>
@@ -45,9 +37,6 @@ import java.util.Map;
  * A Texture must be disposed when it is no longer used
  * @author badlogicgames@gmail.com */
 public class Texture extends GLTexture {
-	private static AssetManager assetManager;
-	final static Map<Application, Array<Texture>> managedTextures = new HashMap<>();
-
 	public enum TextureFilter {
 		/** Fetch the nearest texel that best maps to the pixel on screen. */
 		Nearest(GL20.GL_NEAREST),
@@ -148,7 +137,6 @@ public class Texture extends GLTexture {
 	protected Texture (int glTarget, int glHandle, TextureData data) {
 		super(glTarget, glHandle);
 		load(data);
-		if (data.isManaged()) addManagedTexture(Gdx.app, this);
 	}
 
 	public void load (TextureData data) {
@@ -222,104 +210,10 @@ public class Texture extends GLTexture {
 		// removal from the asset manager.
 		if (glHandle == 0) return;
 		delete();
-		if (data.isManaged()) if (managedTextures.get(Gdx.app) != null) managedTextures.get(Gdx.app).removeValue(this, true);
 	}
 
 	public String toString () {
 		if (data instanceof FileTextureData) return data.toString();
 		return super.toString();
-	}
-
-	private static void addManagedTexture (Application app, Texture texture) {
-		Array<Texture> managedTextureArray = managedTextures.get(app);
-		if (managedTextureArray == null) managedTextureArray = new Array<>();
-		managedTextureArray.add(texture);
-		managedTextures.put(app, managedTextureArray);
-	}
-
-	/** Clears all managed textures. This is an internal method. Do not use it! */
-	public static void clearAllTextures (Application app) {
-		managedTextures.remove(app);
-	}
-
-	/** Invalidate all managed textures. This is an internal method. Do not use it! */
-	public static void invalidateAllTextures (Application app) {
-		Array<Texture> managedTextureArray = managedTextures.get(app);
-		if (managedTextureArray == null) return;
-
-		if (assetManager == null) {
-			for (int i = 0; i < managedTextureArray.size; i++) {
-				Texture texture = managedTextureArray.get(i);
-				texture.reload();
-			}
-		} else {
-			// first we have to make sure the AssetManager isn't loading anything anymore,
-			// otherwise the ref counting trick below wouldn't work (when a texture is
-			// currently on the task stack of the manager.)
-			assetManager.finishLoading();
-
-			// next we go through each texture and reload either directly or via the
-			// asset manager.
-			Array<Texture> textures = new Array<>(managedTextureArray);
-			for (Texture texture : textures) {
-				String fileName = assetManager.getAssetFileName(texture);
-				if (fileName == null) {
-					texture.reload();
-				} else {
-					// get the ref count of the texture, then set it to 0 so we
-					// can actually remove it from the assetmanager. Also set the
-					// handle to zero, otherwise we might accidentially dispose
-					// already reloaded textures.
-					final int refCount = assetManager.getReferenceCount(fileName);
-					assetManager.setReferenceCount(fileName, 0);
-					texture.glHandle = 0;
-
-					// create the parameters, passing the reference to the texture as
-					// well as a callback that sets the ref count.
-					TextureParameter params = new TextureParameter();
-					params.textureData = texture.getTextureData();
-					params.minFilter = texture.getMinFilter();
-					params.magFilter = texture.getMagFilter();
-					params.wrapU = texture.getUWrap();
-					params.wrapV = texture.getVWrap();
-					params.genMipMaps = texture.data.useMipMaps(); // not sure about this?
-					params.texture = texture; // special parameter which will ensure that the references stay the same.
-					params.loadedCallback = (assetManager, fileName1, type) -> {
-						assetManager.setReferenceCount(fileName1, refCount);
-					};
-
-					// unload the texture, create a new gl handle then reload it.
-					assetManager.unload(fileName);
-					texture.glHandle = Gdx.gl.glGenTexture();
-					assetManager.load(fileName, Texture.class, params);
-				}
-			}
-			managedTextureArray.clear();
-			managedTextureArray.addAll(textures);
-		}
-	}
-
-	/** Sets the {@link AssetManager}. When the context is lost, textures managed by the asset manager are reloaded by the manager
-	 * on a separate thread (provided that a suitable {@link AssetLoader} is registered with the manager). Textures not managed by
-	 * the AssetManager are reloaded via the usual means on the rendering thread.
-	 * @param manager the asset manager. */
-	public static void setAssetManager (AssetManager manager) {
-		Texture.assetManager = manager;
-	}
-
-	public static String getManagedStatus () {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Managed textures/app: { ");
-		for (Array<Texture> textures : managedTextures.values()) {
-			builder.append(textures.size);
-			builder.append(" ");
-		}
-		builder.append("}");
-		return builder.toString();
-	}
-
-	/** @return the number of managed textures currently loaded */
-	public static int getNumManagedTextures () {
-		return managedTextures.get(Gdx.app).size;
 	}
 }

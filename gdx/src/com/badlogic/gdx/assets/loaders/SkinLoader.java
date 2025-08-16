@@ -16,15 +16,13 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.AssetLoadingContext;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 
@@ -35,27 +33,16 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
  * meaning that they can be referenced from inside the json file itself. This is useful for dynamic resources such as a BitmapFont
  * generated through FreeTypeFontGenerator.
  * @author Nathan Sweet */
-public class SkinLoader extends AsynchronousAssetLoader<Skin, SkinLoader.SkinParameter> {
+public class SkinLoader extends AssetLoader<Skin, SkinLoader.SkinParameter> {
 	public SkinLoader (FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	@Override
-	public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, SkinParameter parameter) {
-		Array<AssetDescriptor> deps = new Array();
-		if (parameter == null || parameter.textureAtlasPath == null)
-			deps.add(new AssetDescriptor(file.pathWithoutExtension() + ".atlas", TextureAtlas.class));
-		else if (parameter.textureAtlasPath != null) deps.add(new AssetDescriptor(parameter.textureAtlasPath, TextureAtlas.class));
-		return deps;
-	}
-
-	@Override
-	public void loadAsync (AssetManager manager, String fileName, FileHandle file, SkinParameter parameter) {
-	}
-
-	@Override
-	public Skin loadSync (AssetManager manager, String fileName, FileHandle file, SkinParameter parameter) {
+	public Skin load (String path, SkinParameter parameter, AssetLoadingContext<Skin> ctx) throws Exception {
+		FileHandle file = resolve(path);
 		String textureAtlasPath = file.pathWithoutExtension() + ".atlas";
+
 		ObjectMap<String, Object> resources = null;
 		if (parameter != null) {
 			if (parameter.textureAtlasPath != null) {
@@ -65,7 +52,8 @@ public class SkinLoader extends AsynchronousAssetLoader<Skin, SkinLoader.SkinPar
 				resources = parameter.resources;
 			}
 		}
-		TextureAtlas atlas = manager.get(textureAtlasPath, TextureAtlas.class);
+
+		TextureAtlas atlas = ctx.dependOn(textureAtlasPath, TextureAtlas.class);
 		Skin skin = newSkin(atlas);
 		if (resources != null) {
 			for (Entry<String, Object> entry : resources.entries()) {

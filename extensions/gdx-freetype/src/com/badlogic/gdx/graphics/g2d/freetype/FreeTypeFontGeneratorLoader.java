@@ -16,13 +16,12 @@
 
 package com.badlogic.gdx.graphics.g2d.freetype;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.badlogic.gdx.assets.AssetLoadingContext;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Array;
 
 /** Makes {@link FreeTypeFontGenerator} managable via {@link AssetManager}.
  * <p>
@@ -32,27 +31,20 @@ import com.badlogic.gdx.utils.Array;
  * </p>
  * @author Daniel Holderbaum */
 public class FreeTypeFontGeneratorLoader
-	extends SynchronousAssetLoader<FreeTypeFontGenerator, FreeTypeFontGeneratorLoader.FreeTypeFontGeneratorParameters> {
+	extends AssetLoader<FreeTypeFontGenerator, FreeTypeFontGeneratorLoader.FreeTypeFontGeneratorParameters> {
 
 	public FreeTypeFontGeneratorLoader (FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	@Override
-	public FreeTypeFontGenerator load (AssetManager assetManager, String fileName, FileHandle file,
-		FreeTypeFontGeneratorParameters parameter) {
-		FreeTypeFontGenerator generator = null;
+	public FreeTypeFontGenerator load (String path, FreeTypeFontGeneratorParameters parameter, AssetLoadingContext<FreeTypeFontGenerator> ctx) throws Exception {
+		FileHandle file = resolve(path);
 		if (file.extension().equals("gen")) {
-			generator = new FreeTypeFontGenerator(file.sibling(file.nameWithoutExtension()));
+			return new FreeTypeFontGenerator(file.sibling(file.nameWithoutExtension()));
 		} else {
-			generator = new FreeTypeFontGenerator(file);
+			return new FreeTypeFontGenerator(file);
 		}
-		return generator;
-	}
-
-	@Override
-	public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, FreeTypeFontGeneratorParameters parameter) {
-		return null;
 	}
 
 	static public class FreeTypeFontGeneratorParameters extends AssetLoaderParameters<FreeTypeFontGenerator> {

@@ -16,6 +16,7 @@
 
 package com.badlogic.gdx.assets;
 
+@FunctionalInterface
 public interface AssetErrorListener {
 	public void error (AssetDescriptor asset, Throwable throwable);
 }

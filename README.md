@@ -25,20 +25,31 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - AssetManager is no longer backed by nested maps
 - AssetManager now gets the loader by class; per-file-extension loaders cannot be set anymore. This may change
 - TEMP: 3D model loading by AssetManager will not work
+- TEMP: TMJ map loading was removed work because I went insane
 - GLFW events are now polled before rendering
 - ApplicationListener.resize is no longer called on frame 1
+- AssetManager loads assets in parallel now
+    - Each asset is loaded on a virtual thread
+    - Obtain a dependency by AssetLoadingContext.dependOn
+    - If you need to do something on the main thread, use AssetLoadingContext.awaitMainThread
+    - If you need to do CPU-bound work, use AssetLoadingContext.awaitWork to submit to a separate thread executor (and avoid blocking the carrier threads)
+    - All asset loaders need to be rewritten for this!
+- Tiled map loaders now use one MapLoader with a different load handler for each type
+- Tiled maps no longer "own" resources (and thus aren't Disposable anymore), they are handled by asset dependencies now
 
 ### Removed
+- SynchronousLoader / AsynchronousLoader
 - FileHandle:
     - file, type, listFiles, exists, isDirectory, lastModified
     - all write-related methods
 - FileHandleStream
+- "Managed" resources, since Application is now singleton
 - FileType
 - Lwjgl3Window doesn't handle sync callbacks anymore, post to Lwjgl3Application instead
 - Box2D / Bullet
 - Multi-window support from LWJGL backend and subsequently a ton of syncrhonization code
 - Automated tests
-- Non-continous rendering (along with ApplicationListener/LifecycleListener's pause and resume)
+- Non-continuous rendering (along with ApplicationListener/LifecycleListener's pause and resume)
 - ApplicationListener.create - do stuff in your constructor instead
 - glfw_async, on Mac, you must call with -XstartOnFirstThread
 - LwjglCanvas
@@ -58,7 +69,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - GestureDetector
 - ActorGestureListener
 - ScrollPane flickScroll
-- AtlasTmxMapLoader
+- AtlasTmxMapLoader / AtlasTmjMapLoadHandler. Use a custom ImageResolver instead
 
 ### Notes
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
@@ -72,10 +83,10 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - remove reflection entirely
 - remove Json class (it is a MESS) in favor of Jankson
 - remove XML parser in favor of stdlib
-- unspaghetify TMX reader and TextureAtlas
+- unspaghetify TextureAtlas
 - remove more useless stdlib replication classes
 - make TextureRegion and its subclasses immutable
-- make AssetManager concurrent and maybe use virtual threads for it
+- rid of tmx map parser entirely and use the official library instead (https://github.com/mapeditor/tiled/tree/master/util/java/libtiled-java)
 
 This isn't a full code cleanup because I want to make my game. I'm only modifying stuff that affects me.
 
@@ -85,29 +96,29 @@ This isn't a full code cleanup because I want to make my game. I'm only modifyin
 
 ```kotlin
 maven {
-  name = "teamcelestial"
-  url = "https://maven.teamcelestial.org/public"
+    name = "teamcelestial"
+    url = "https://maven.teamcelestial.org/public"
 }
 ```
 
 ```kotlin
-configurations.all { 
-  val version = "1.0.0-SNAPSHOT"
-  // if using version catalogue:
-  // val version = libs.versions.celestialgdx.get()
-    
-  resolutionStrategy.dependencySubstitution {
-    fun sub(artifact: String) = substitute(
-      module("com.badlogicgames.gdx:$artifact")
-    ).using(
-      module("me.thosea.celestialgdx:$artifact:$version")
-    ).because("fork")
+configurations.all {
+    val version = "1.0.0-SNAPSHOT"
+    // if using version catalogue:
+    // val version = libs.versions.celestialgdx.get()
 
-    sub("gdx")
-    sub("gdx-freetype")
-    sub("gdx-backend-lwjgl3")
-    sub("gdx-lwjgl3-angle")
-  }
+    resolutionStrategy.dependencySubstitution {
+        fun sub(artifact: String) = substitute(
+            module("com.badlogicgames.gdx:$artifact")
+        ).using(
+            module("me.thosea.celestialgdx:$artifact:$version")
+        ).because("fork")
+
+        sub("gdx")
+        sub("gdx-freetype")
+        sub("gdx-backend-lwjgl3")
+        sub("gdx-lwjgl3-angle")
+    }
 }
 ```
 
@@ -117,23 +128,23 @@ configurations.all {
 
 ```groovy
 maven {
-  name "teamcelestial"
-  url "https://maven.teamcelestial.org/public"
+    name "teamcelestial"
+    url "https://maven.teamcelestial.org/public"
 }
 ```
 
 ```groovy
 configurations.all {
-  val version = "1.0.0-SNAPSHOT"
-  resolutionStrategy.dependencySubstitution {
-    def sub = { String artifact ->
-        substitute module("com.badlogicgames.gdx:$artifact") using module("me.thosea.celestialgdx:$artifact:$version") because "fork"
+    val version = "1.0.0-SNAPSHOT"
+    resolutionStrategy.dependencySubstitution {
+        def sub = { String artifact ->
+            substitute module("com.badlogicgames.gdx:$artifact") using module("me.thosea.celestialgdx:$artifact:$version") because "fork"
+        }
+        sub("gdx")
+        sub("gdx-freetype")
+        sub("gdx-backend-lwjgl3")
+        sub("gdx-lwjgl3-angle")
     }
-    sub("gdx")
-    sub("gdx-freetype")
-    sub("gdx-backend-lwjgl3")
-    sub("gdx-lwjgl3-angle")
-  }
 }
 ```
 

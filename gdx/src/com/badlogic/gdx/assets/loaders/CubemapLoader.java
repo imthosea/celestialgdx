@@ -16,10 +16,9 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.badlogic.gdx.assets.AssetLoadingContext;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.CubemapData;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -27,68 +26,46 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.glutils.KTXTextureData;
-import com.badlogic.gdx.utils.Array;
 
 /** {@link AssetLoader} for {@link Cubemap} instances. The pixel data is loaded asynchronously. The texture is then created on the
  * rendering thread, synchronously. Passing a {@link CubemapParameter} to
  * {@link AssetManager#load(String, Class, AssetLoaderParameters)} allows one to specify parameters as can be passed to the
  * various Cubemap constructors, e.g. filtering and so on.
  * @author mzechner, Vincent Bousquet */
-public class CubemapLoader extends AsynchronousAssetLoader<Cubemap, CubemapLoader.CubemapParameter> {
-	static public class CubemapLoaderInfo {
-		String filename;
-		CubemapData data;
-		Cubemap cubemap;
-	};
-
-	CubemapLoaderInfo info = new CubemapLoaderInfo();
-
+public class CubemapLoader extends AssetLoader<Cubemap, CubemapLoader.CubemapParameter> {
 	public CubemapLoader (FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	@Override
-	public void loadAsync (AssetManager manager, String fileName, FileHandle file, CubemapParameter parameter) {
-		info.filename = fileName;
+	public Cubemap load (String path, CubemapParameter parameter, AssetLoadingContext<Cubemap> ctx) throws Exception {
+		CubemapData data;
+		final Cubemap cubemap;
+
 		if (parameter == null || parameter.cubemapData == null) {
-			Format format = null;
-			boolean genMipMaps = false;
-			info.cubemap = null;
+			data = new KTXTextureData(resolve(path), false);
+			cubemap = null;
+		} else {
+			data = parameter.cubemapData;
+			cubemap = parameter.cubemap;
+		}
 
+		if (!data.isPrepared()) data.prepare();
+
+		return ctx.awaitMainThread(() -> {
+			Cubemap map;
+			if (cubemap != null) {
+				map = cubemap;
+				map.load(data);
+			} else {
+				map = new Cubemap(data);
+			}
 			if (parameter != null) {
-				format = parameter.format;
-				info.cubemap = parameter.cubemap;
+				map.setFilter(parameter.minFilter, parameter.magFilter);
+				map.setWrap(parameter.wrapU, parameter.wrapV);
 			}
-
-			if (fileName.contains(".ktx") || fileName.contains(".zktx")) {
-				info.data = new KTXTextureData(file, genMipMaps);
-			}
-		} else {
-			info.data = parameter.cubemapData;
-			info.cubemap = parameter.cubemap;
-		}
-		if (!info.data.isPrepared()) info.data.prepare();
-	}
-
-	@Override
-	public Cubemap loadSync (AssetManager manager, String fileName, FileHandle file, CubemapParameter parameter) {
-		if (info == null) return null;
-		Cubemap cubemap = info.cubemap;
-		if (cubemap != null) {
-			cubemap.load(info.data);
-		} else {
-			cubemap = new Cubemap(info.data);
-		}
-		if (parameter != null) {
-			cubemap.setFilter(parameter.minFilter, parameter.magFilter);
-			cubemap.setWrap(parameter.wrapU, parameter.wrapV);
-		}
-		return cubemap;
-	}
-
-	@Override
-	public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, CubemapParameter parameter) {
-		return null;
+			return map;
+		});
 	}
 
 	static public class CubemapParameter extends AssetLoaderParameters<Cubemap> {

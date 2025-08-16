@@ -16,11 +16,10 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.badlogic.gdx.assets.AssetLoadingContext;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.I18NBundle;
 
 import java.util.Locale;
@@ -42,17 +41,14 @@ import java.util.Locale;
  * <li>If you want to load the English bundle without replacing the Italian bundle you should use another asset manager.
  * </ul>
  * @author davebaol */
-public class I18NBundleLoader extends AsynchronousAssetLoader<I18NBundle, I18NBundleLoader.I18NBundleParameter> {
+public class I18NBundleLoader extends AssetLoader<I18NBundle, I18NBundleLoader.I18NBundleParameter> {
 
 	public I18NBundleLoader (FileHandleResolver resolver) {
 		super(resolver);
 	}
 
-	I18NBundle bundle;
-
 	@Override
-	public void loadAsync (AssetManager manager, String fileName, FileHandle file, I18NBundleParameter parameter) {
-		this.bundle = null;
+	public I18NBundle load (String path, I18NBundleParameter parameter, AssetLoadingContext<I18NBundle> ctx) throws Exception {
 		Locale locale;
 		String encoding;
 		if (parameter == null) {
@@ -62,23 +58,13 @@ public class I18NBundleLoader extends AsynchronousAssetLoader<I18NBundle, I18NBu
 			locale = parameter.locale == null ? Locale.getDefault() : parameter.locale;
 			encoding = parameter.encoding;
 		}
+
+		FileHandle file = resolve(path);
 		if (encoding == null) {
-			this.bundle = I18NBundle.createBundle(file, locale);
+			return I18NBundle.createBundle(file, locale);
 		} else {
-			this.bundle = I18NBundle.createBundle(file, locale, encoding);
+			return I18NBundle.createBundle(file, locale, encoding);
 		}
-	}
-
-	@Override
-	public I18NBundle loadSync (AssetManager manager, String fileName, FileHandle file, I18NBundleParameter parameter) {
-		I18NBundle bundle = this.bundle;
-		this.bundle = null;
-		return bundle;
-	}
-
-	@Override
-	public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, I18NBundleParameter parameter) {
-		return null;
 	}
 
 	static public class I18NBundleParameter extends AssetLoaderParameters<I18NBundle> {

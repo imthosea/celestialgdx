@@ -16,12 +16,10 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.AssetLoadingContext;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.utils.Array;
 
 /** {@link AssetLoader} for {@link ShaderProgram} instances loaded from text files. If the file suffix is ".vert", it is assumed
  * to be a vertex shader, and a fragment shader is found using the same file name with a ".frag" suffix. And vice versa if the
@@ -33,13 +31,12 @@ import com.badlogic.gdx.utils.Array;
  * The above default behavior for finding the files can be overridden by explicitly setting the file names in a
  * {@link ShaderProgramParameter}. The parameter can also be used to prepend code to the programs.
  * @author cypherdare */
-public class ShaderProgramLoader extends AsynchronousAssetLoader<ShaderProgram, ShaderProgramLoader.ShaderProgramParameter> {
-
-	private String vertexFileSuffix = ".vert";
-	private String fragmentFileSuffix = ".frag";
+public class ShaderProgramLoader extends AssetLoader<ShaderProgram, ShaderProgramLoader.ShaderProgramParameter> {
+	private final String vertexFileSuffix;
+	private final String fragmentFileSuffix;
 
 	public ShaderProgramLoader (FileHandleResolver resolver) {
-		super(resolver);
+		this(resolver, ".vert", ".frag");
 	}
 
 	public ShaderProgramLoader (FileHandleResolver resolver, String vertexFileSuffix, String fragmentFileSuffix) {
@@ -49,29 +46,21 @@ public class ShaderProgramLoader extends AsynchronousAssetLoader<ShaderProgram, 
 	}
 
 	@Override
-	public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, ShaderProgramParameter parameter) {
-		return null;
-	}
-
-	@Override
-	public void loadAsync (AssetManager manager, String fileName, FileHandle file, ShaderProgramParameter parameter) {
-	}
-
-	@Override
-	public ShaderProgram loadSync (AssetManager manager, String fileName, FileHandle file, ShaderProgramParameter parameter) {
+	public ShaderProgram load (String path, ShaderProgramParameter parameter, AssetLoadingContext<ShaderProgram> ctx) throws Exception {
 		String vertFileName = null, fragFileName = null;
 		if (parameter != null) {
 			if (parameter.vertexFile != null) vertFileName = parameter.vertexFile;
 			if (parameter.fragmentFile != null) fragFileName = parameter.fragmentFile;
 		}
-		if (vertFileName == null && fileName.endsWith(fragmentFileSuffix)) {
-			vertFileName = fileName.substring(0, fileName.length() - fragmentFileSuffix.length()) + vertexFileSuffix;
+		if (vertFileName == null && path.endsWith(fragmentFileSuffix)) {
+			vertFileName = path.substring(0, path.length() - fragmentFileSuffix.length()) + vertexFileSuffix;
 		}
-		if (fragFileName == null && fileName.endsWith(vertexFileSuffix)) {
-			fragFileName = fileName.substring(0, fileName.length() - vertexFileSuffix.length()) + fragmentFileSuffix;
+		if (fragFileName == null && path.endsWith(vertexFileSuffix)) {
+			fragFileName = path.substring(0, path.length() - vertexFileSuffix.length()) + fragmentFileSuffix;
 		}
-		FileHandle vertexFile = vertFileName == null ? file : resolve(vertFileName);
-		FileHandle fragmentFile = fragFileName == null ? file : resolve(fragFileName);
+
+		FileHandle vertexFile = vertFileName == null ? resolve(path) : resolve(vertFileName);
+		FileHandle fragmentFile = fragFileName == null ? resolve(path) : resolve(fragFileName);
 		String vertexCode = vertexFile.readString();
 		String fragmentCode = vertexFile.equals(fragmentFile) ? vertexCode : fragmentFile.readString();
 		if (parameter != null) {
@@ -81,7 +70,7 @@ public class ShaderProgramLoader extends AsynchronousAssetLoader<ShaderProgram, 
 
 		ShaderProgram shaderProgram = new ShaderProgram(vertexCode, fragmentCode);
 		if ((parameter == null || parameter.logOnCompileFailure) && !shaderProgram.isCompiled()) {
-			manager.getLogger().error("ShaderProgram " + fileName + " failed to compile:\n" + shaderProgram.getLog());
+			ctx.logger().error("ShaderProgram " + path + " failed to compile:\n" + shaderProgram.getLog());
 		}
 
 		return shaderProgram;
