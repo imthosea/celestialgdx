@@ -17,6 +17,7 @@
 package com.badlogic.gdx.maps.tiled.loader;
 
 import com.badlogic.gdx.assets.AssetLoadingContext;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -51,11 +52,15 @@ public class TmxMapLoadHandler<P extends BaseTiledMapLoadHandler.Parameters> ext
 	protected final XmlReader xml = new XmlReader();
 	protected final Element root;
 
-	protected TmxMapLoadHandler (FileHandle file, char[] fileData,
+	public TmxMapLoadHandler (FileHandle file, char[] fileData,
 	                             @Null char[] projectFileData,
 	                             P parameter) {
 		super(file, fileData, projectFileData, parameter);
 		this.root = xml.parse(fileData, 0, fileData.length);
+	}
+
+	public static MapLoader<BaseTiledMapLoadHandler.Parameters> createLoader(FileHandleResolver resolver) {
+		return new MapLoader<>(resolver, TmxMapLoadHandler::new);
 	}
 
 	/**
