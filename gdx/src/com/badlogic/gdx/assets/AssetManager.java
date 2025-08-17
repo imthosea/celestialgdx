@@ -65,7 +65,7 @@ public class AssetManager implements Disposable {
 	final Map<String, List<String>> assetDependencies = new ConcurrentHashMap<>();
 
 	private final Map<Class<?>, AssetLoader<?, ?>> loaders = new ConcurrentHashMap<>();
-	private final Map<String, AssetLoadingContext<?>> tasks = new ConcurrentHashMap<>();
+	final Map<String, AssetLoadingContext<?>> tasks = new ConcurrentHashMap<>();
 
 	final ExecutorService workExecutor = Executors.newFixedThreadPool(2);
 	volatile AssetErrorListener listener;
