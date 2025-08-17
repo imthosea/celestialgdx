@@ -31,7 +31,6 @@ import org.lwjgl.system.Callback;
 
 import java.io.PrintStream;
 import java.nio.IntBuffer;
-import java.util.function.Function;
 
 public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	public final Lwjgl3ApplicationConfiguration config;
@@ -85,11 +84,11 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		}
 	}
 
-	public Lwjgl3Application (Function<Lwjgl3Window, ApplicationListener> listener) {
-		this(listener, new Lwjgl3ApplicationConfiguration());
+	protected Lwjgl3Application (ApplicationCreator creator) {
+		this(creator, new Lwjgl3ApplicationConfiguration());
 	}
 
-	public Lwjgl3Application (Function<Lwjgl3Window, ApplicationListener> listenerCreator, Lwjgl3ApplicationConfiguration config) {
+	public Lwjgl3Application (ApplicationCreator creator, Lwjgl3ApplicationConfiguration config) {
 		if (config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20) loadANGLE();
 		initializeGlfw();
 		setApplicationLogger(new Lwjgl3ApplicationLogger());
@@ -110,7 +109,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		this.sync = new Sync();
 
 		long windowHandle = createGlfwWindow(config);
-		this.window = new Lwjgl3Window(windowHandle, listenerCreator, config, this);
+		this.window = new Lwjgl3Window(windowHandle, creator, config, this);
 
 		if (config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20) postLoadANGLE();
 		try {
@@ -507,6 +506,10 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		}
 
 		return false;
+	}
+
+	public static void create (ApplicationCreator creator, Lwjgl3ApplicationConfiguration config) {
+		new Lwjgl3Application(creator, config);
 	}
 
 }

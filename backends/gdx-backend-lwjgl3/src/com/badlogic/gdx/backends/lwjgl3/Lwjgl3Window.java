@@ -26,7 +26,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 
 import java.nio.IntBuffer;
-import java.util.function.Function;
 
 public class Lwjgl3Window implements Disposable {
 	public final long windowHandle;
@@ -102,9 +101,10 @@ public class Lwjgl3Window implements Disposable {
 		}
 	};
 
-	Lwjgl3Window (long windowHandle, Function<Lwjgl3Window, ApplicationListener> listener,
+	Lwjgl3Window (long windowHandle,
+	              ApplicationCreator listener,
 	              Lwjgl3ApplicationConfiguration config,
-	              Lwjgl3ApplicationBase application) {
+	              Lwjgl3Application application) {
 		this.windowListener = config.windowListener;
 		this.config = config;
 		this.tmpBuffer = BufferUtils.createIntBuffer(1);
@@ -119,7 +119,7 @@ public class Lwjgl3Window implements Disposable {
 		Gdx.gl = Gdx.gl20 = graphics.gl20;
 		Gdx.gl30 = Gdx.gl31 = Gdx.gl32 = graphics.getGL32();
 
-		this.listener = listener.apply(this);
+		this.listener = listener.create(application, this);
 
 		GLFW.glfwSetWindowFocusCallback(windowHandle, focusCallback);
 		GLFW.glfwSetWindowIconifyCallback(windowHandle, iconifyCallback);
