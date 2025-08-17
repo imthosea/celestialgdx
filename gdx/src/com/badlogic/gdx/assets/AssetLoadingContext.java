@@ -73,6 +73,7 @@ public class AssetLoadingContext<T> {
 					manager.listener.error(desc, e);
 			} finally {
 				active = false;
+				manager.tasks.remove(desc.fileName, this);
 			}
 		});
 	}
