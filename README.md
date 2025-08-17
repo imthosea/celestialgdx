@@ -36,6 +36,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
     - All asset loaders need to be rewritten for this!
 - Tiled map loaders now use one MapLoader with a different load handler for each type
 - Tiled maps no longer "own" resources (and thus aren't Disposable anymore), they are handled by asset dependencies now
+- AssetManager's default log level is now ERROR instead of NONE
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader

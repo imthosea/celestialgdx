@@ -76,7 +76,7 @@ public class AssetManager implements Disposable {
 
 	private final FileHandleResolver resolver;
 
-	public final Logger log = new Logger("AssetManager", Application.LOG_NONE);
+	public final Logger log = new Logger("AssetManager", Application.LOG_ERROR);
 
 	/** Creates a new AssetManager with all default loaders. */
 	public AssetManager () {
