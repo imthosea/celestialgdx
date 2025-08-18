@@ -365,7 +365,7 @@ public class AssetManager implements Disposable {
 			}
 			try {
 				ctx.awaitResult();
-			} catch (AssetLoadingContext.TaskCancelledException ignored) {
+			} catch (AssetLoadingContext.TaskNotActiveException ignored) {
 			}
 		}
 	}
