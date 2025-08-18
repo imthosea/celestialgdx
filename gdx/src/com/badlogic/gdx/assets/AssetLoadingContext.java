@@ -21,7 +21,6 @@ import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Logger;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,9 +35,9 @@ public class AssetLoadingContext<T> {
 	public final AssetManager manager;
 	public final AssetDescriptor<T> desc;
 	public final AssetLoader<T, ?> loader;
-	public final long startTime;
 
 	private final CompletableFuture<T> future;
+//	private final long startTime;
 
 	private final List<String> dependencies = new ArrayList<>(); // synchronized
 	private final AtomicInteger refCount = new AtomicInteger(1);
@@ -52,30 +51,33 @@ public class AssetLoadingContext<T> {
 		this.desc = desc;
 		this.loader = loader;
 		this.future = new CompletableFuture<>();
-		this.startTime = manager.log.getLevel() == Logger.DEBUG ? TimeUtils.nanoTime() : 0;
+
+		// TODO celestialgdx: do we keep this?
+		//		this.startTime = manager.log.getLevel() == Logger.DEBUG ? TimeUtils.nanoTime() : 0;
 	}
 
 	void schedule () {
-		Thread.startVirtualThread(() -> {
-			if (!active) return; // cancelled
+		Thread.startVirtualThread(this::load);
+	}
 
-			try {
-				T result = loader.load(desc.fileName, cast(desc.params), this);
-				requireActive();
-				complete(result);
-			} catch (TaskCancelledException e) {
-				future.completeExceptionally(e);
-			} catch (Exception e) {
-				manager.log.error("Error loading " + desc.fileName, e);
-				future.completeExceptionally(e);
+	private void load () {
+		try {
+			requireActive();
+			T result = loader.load(desc.fileName, cast(desc.params), this);
+			requireActive();
+			complete(result);
+		} catch (TaskNotActiveException e) {
+			future.completeExceptionally(e);
+		} catch (Exception e) {
+			manager.log.error("Error loading " + desc.fileName, e);
+			future.completeExceptionally(e);
 
-				if (manager.listener != null)
-					manager.listener.error(desc, e);
-			} finally {
-				active = false;
-				manager.tasks.remove(desc.fileName, this);
-			}
-		});
+			if (manager.listener != null)
+				manager.listener.error(desc, e);
+		} finally {
+			active = false;
+			manager.tasks.remove(desc.fileName, this);
+		}
 	}
 
 	private void complete (T result) {
@@ -95,6 +97,8 @@ public class AssetLoadingContext<T> {
 		manager.assets.put(desc.fileName, asset);
 		manager.assetDependencies.put(desc.fileName, dependencies);
 
+		active = false;
+
 		future.complete(result);
 
 		if (desc.params != null && desc.params.loadedCallback != null)
@@ -109,7 +113,9 @@ public class AssetLoadingContext<T> {
 				dependencies.add(desc.fileName);
 			}
 		}
-		return manager.finishLoadingAsset(desc);
+		D result = manager.finishLoadingAsset(desc);
+		requireActive();
+		return result;
 	}
 
 	public <D> D dependOn (String path, Class<D> type) {
@@ -150,7 +156,9 @@ public class AssetLoadingContext<T> {
 				future.completeExceptionally(e);
 			}
 		});
-		return future.join();
+		T result = future.join();
+		requireActive();
+		return result;
 	}
 
 	// TODO celestialgdx use this more
@@ -161,6 +169,8 @@ public class AssetLoadingContext<T> {
 			return manager.workExecutor.submit(supplier).get();
 		} catch (InterruptedException | ExecutionException e) {
 			throw new RuntimeException("Error performing work task", e);
+		} finally {
+			requireActive();
 		}
 	}
 
@@ -170,6 +180,8 @@ public class AssetLoadingContext<T> {
 			manager.workExecutor.submit(work).get();
 		} catch (InterruptedException | ExecutionException e) {
 			throw new RuntimeException("Error performing work task", e);
+		} finally {
+			requireActive();
 		}
 	}
 
@@ -202,9 +214,11 @@ public class AssetLoadingContext<T> {
 	}
 
 	public void cancel () {
-		requireActive();
+		if (!active) {
+			manager.unload(desc.fileName);
+			return;
+		}
 		this.active = false;
-
 		createdDependencies.forEach(manager::unload);
 	}
 
@@ -221,12 +235,12 @@ public class AssetLoadingContext<T> {
 	}
 
 	private void requireActive () {
-		if (!active) throw new TaskCancelledException();
+		if (!active) throw new TaskNotActiveException();
 	}
 
-	public static class TaskCancelledException extends RuntimeException {
-		public TaskCancelledException () {
-			super("This task was cancelled");
+	public static class TaskNotActiveException extends RuntimeException {
+		public TaskNotActiveException () {
+			super("This task either finished or was cancelled");
 		}
 	}
 }
