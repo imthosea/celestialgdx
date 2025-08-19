@@ -529,16 +529,11 @@ public class PixmapPacker implements Disposable {
 	 * @author Nathan Sweet
 	 * @author Rob Rendell */
 	static public class GuillotineStrategy implements PackStrategy {
-		Comparator<Pixmap> comparator;
+		static final Comparator<Pixmap> comparator = Comparator.comparingInt(o -> {
+			return Math.max(o.getWidth(), o.getHeight());
+		});
 
 		public void sort (Array<Pixmap> pixmaps) {
-			if (comparator == null) {
-				comparator = new Comparator<>() {
-					public int compare (Pixmap o1, Pixmap o2) {
-						return Math.max(o1.getWidth(), o1.getHeight()) - Math.max(o2.getWidth(), o2.getHeight());
-					}
-				};
-			}
 			pixmaps.sort(comparator);
 		}
 
