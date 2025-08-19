@@ -39,6 +39,9 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - Tiled map loaders now use one MapLoader with a different load handler for each type
 - Tiled maps no longer "own" resources (and thus aren't Disposable anymore), they are handled by asset dependencies now
 - AssetManager's default log level is now ERROR instead of NONE
+- The default SpriteBatch shader is no longer LOWP and no longer uses deprecated GLSL features
+  - Also it only works on GLES 3, don't use GL 2
+- The layout attribute a_texCoord0 was renamed to a_texCoord
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader
@@ -73,6 +76,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - ActorGestureListener
 - ScrollPane flickScroll
 - AtlasTmxMapLoader / AtlasTmjMapLoadHandler. Use a custom ImageResolver instead
+- SpriteBatch.maxSpritesInBatch
 
 ### Notes
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead

@@ -17,12 +17,8 @@
 package com.badlogic.gdx.graphics.g2d;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Mesh.VertexDataType;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Affine2;
@@ -79,9 +75,6 @@ public class SpriteBatch implements Batch {
 	/** Number of rendering calls, ever. Will not be reset unless set manually. **/
 	public int totalRenderCalls = 0;
 
-	/** The maximum number of sprites rendered in one batch so far. **/
-	public int maxSpritesInBatch = 0;
-
 	/** Constructs a new SpriteBatch with a size of 1000, one buffer, and the default shader.
 	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram) */
 	public SpriteBatch () {
@@ -117,7 +110,7 @@ public class SpriteBatch implements Batch {
 		mesh = new Mesh(currentDataType, false, size * 4, size * 6,
 			new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
 			new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-			new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+			new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE));
 
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -149,35 +142,43 @@ public class SpriteBatch implements Batch {
 		}
 	}
 
-	/** Returns a new instance of the default shader used by SpriteBatch for GL2 when no shader is specified. */
+
 	static public ShaderProgram createDefaultShader () {
-		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-			+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-			+ "uniform mat4 u_projTrans;\n" //
-			+ "varying vec4 v_color;\n" //
-			+ "varying vec2 v_texCoords;\n" //
-			+ "\n" //
-			+ "void main()\n" //
-			+ "{\n" //
-			+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-			+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
-			+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-			+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-			+ "}\n";
-		String fragmentShader = "#ifdef GL_ES\n" //
-			+ "#define LOWP lowp\n" //
-			+ "precision mediump float;\n" //
-			+ "#else\n" //
-			+ "#define LOWP \n" //
-			+ "#endif\n" //
-			+ "varying LOWP vec4 v_color;\n" //
-			+ "varying vec2 v_texCoords;\n" //
-			+ "uniform sampler2D u_texture;\n" //
-			+ "void main()\n"//
-			+ "{\n" //
-			+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
-			+ "}";
+		// TODO celestialgdx - replace uniforms and make the position 2d
+		String vertexShader = """
+				#version 320 es
+				precision mediump float;
+
+				layout (location = 0) in vec4 a_position;
+				layout (location = 1) in vec4 a_color;
+				layout (location = 2) in vec2 a_texCoord;
+
+				uniform mat4 u_projTrans;
+				out vec4 v_color;
+				out vec2 v_texCoords;
+
+				void main()
+				{
+				   v_color = a_color;
+				   v_texCoords = a_texCoord;
+				   gl_Position =  u_projTrans * a_position;
+				}
+				""";
+		String fragmentShader = """
+				#version 320 es
+				precision mediump float;
+				
+				out vec4 FragColor;
+				
+				in vec4 v_color;
+				in vec2 v_texCoords;
+
+				uniform sampler2D u_texture;
+
+				void main()
+				{
+				  FragColor = v_color * texture(u_texture, v_texCoords);
+				}""";
 
 		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
 		if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
@@ -969,11 +970,9 @@ public class SpriteBatch implements Batch {
 		renderCalls++;
 		totalRenderCalls++;
 		int spritesInBatch = idx / 20;
-		if (spritesInBatch > maxSpritesInBatch) maxSpritesInBatch = spritesInBatch;
 		int count = spritesInBatch * 6;
 
 		lastTexture.bind();
-		Mesh mesh = this.mesh;
 		mesh.setVertices(vertices, 0, idx);
 
 		// Only upload indices for the vertex array type
