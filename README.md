@@ -94,6 +94,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve performance.
 - remove more useless stdlib replication classes
 - make TextureRegion and its subclasses immutable
 - rid of tmx map parser entirely and use the official library instead (https://github.com/mapeditor/tiled/tree/master/util/java/libtiled-java)
+- try CachedThreadPool instead of virtual threads for asset loader
 
 This isn't a full code cleanup because I want to make my game. I'm only modifying stuff that affects me.
 
