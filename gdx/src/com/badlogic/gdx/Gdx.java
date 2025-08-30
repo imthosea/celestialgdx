@@ -21,13 +21,15 @@ import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.GL31;
 import com.badlogic.gdx.graphics.GL32;
 
-/** Environment class holding references to the {@link Application}, {@link Graphics}, {@link Audio}, {@link Files} and
+/**
+ * Environment class holding references to the {@link Application}, {@link Graphics}, {@link Audio}, {@link Files} and
  * {@link Input} instances. The references are held in public static fields which allows static access to all sub systems. Do not
  * use Graphics in a thread that is not the rendering thread.
  * <p>
  * This is normally a design faux pas but in this case is better than the alternatives.
+ * @author mzechner
  * @deprecated celestialgdx - mutable static constants aren't good for maintainability, kept for compat
- * @author mzechner */
+ */
 @Deprecated
 public class Gdx {
 	public static Application app;

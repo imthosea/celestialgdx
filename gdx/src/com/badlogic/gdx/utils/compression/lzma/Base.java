@@ -6,29 +6,29 @@ public class Base {
 	public static final int kNumRepDistances = 4;
 	public static final int kNumStates = 12;
 
-	public static final int StateInit () {
+	public static final int StateInit() {
 		return 0;
 	}
 
-	public static final int StateUpdateChar (int index) {
-		if (index < 4) return 0;
-		if (index < 10) return index - 3;
+	public static final int StateUpdateChar(int index) {
+		if(index < 4) return 0;
+		if(index < 10) return index - 3;
 		return index - 6;
 	}
 
-	public static final int StateUpdateMatch (int index) {
+	public static final int StateUpdateMatch(int index) {
 		return (index < 7 ? 7 : 10);
 	}
 
-	public static final int StateUpdateRep (int index) {
+	public static final int StateUpdateRep(int index) {
 		return (index < 7 ? 8 : 11);
 	}
 
-	public static final int StateUpdateShortRep (int index) {
+	public static final int StateUpdateShortRep(int index) {
 		return (index < 7 ? 9 : 11);
 	}
 
-	public static final boolean StateIsCharState (int index) {
+	public static final boolean StateIsCharState(int index) {
 		return index < 7;
 	}
 
@@ -42,9 +42,9 @@ public class Base {
 
 	public static final int kMatchMinLen = 2;
 
-	public static final int GetLenToPosState (int len) {
+	public static final int GetLenToPosState(int len) {
 		len -= kMatchMinLen;
-		if (len < kNumLenToPosStates) return len;
+		if(len < kNumLenToPosStates) return len;
 		return kNumLenToPosStates - 1;
 	}
 

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2013 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,27 +16,6 @@
 
 package com.badlogic.gdx.maps.tiled.renderers;
 
-import static com.badlogic.gdx.graphics.g2d.Batch.C1;
-import static com.badlogic.gdx.graphics.g2d.Batch.C2;
-import static com.badlogic.gdx.graphics.g2d.Batch.C3;
-import static com.badlogic.gdx.graphics.g2d.Batch.C4;
-import static com.badlogic.gdx.graphics.g2d.Batch.U1;
-import static com.badlogic.gdx.graphics.g2d.Batch.U2;
-import static com.badlogic.gdx.graphics.g2d.Batch.U3;
-import static com.badlogic.gdx.graphics.g2d.Batch.U4;
-import static com.badlogic.gdx.graphics.g2d.Batch.V1;
-import static com.badlogic.gdx.graphics.g2d.Batch.V2;
-import static com.badlogic.gdx.graphics.g2d.Batch.V3;
-import static com.badlogic.gdx.graphics.g2d.Batch.V4;
-import static com.badlogic.gdx.graphics.g2d.Batch.X1;
-import static com.badlogic.gdx.graphics.g2d.Batch.X2;
-import static com.badlogic.gdx.graphics.g2d.Batch.X3;
-import static com.badlogic.gdx.graphics.g2d.Batch.X4;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y1;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -45,26 +24,28 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
+import static com.badlogic.gdx.graphics.g2d.Batch.*;
+
 public class OrthogonalTiledMapRenderer extends BatchTiledMapRenderer {
 
-	public OrthogonalTiledMapRenderer (TiledMap map) {
+	public OrthogonalTiledMapRenderer(TiledMap map) {
 		super(map);
 	}
 
-	public OrthogonalTiledMapRenderer (TiledMap map, Batch batch) {
+	public OrthogonalTiledMapRenderer(TiledMap map, Batch batch) {
 		super(map, batch);
 	}
 
-	public OrthogonalTiledMapRenderer (TiledMap map, float unitScale) {
+	public OrthogonalTiledMapRenderer(TiledMap map, float unitScale) {
 		super(map, unitScale);
 	}
 
-	public OrthogonalTiledMapRenderer (TiledMap map, float unitScale, Batch batch) {
+	public OrthogonalTiledMapRenderer(TiledMap map, float unitScale, Batch batch) {
 		super(map, unitScale, batch);
 	}
 
 	@Override
-	public void renderTileLayer (TiledMapTileLayer layer) {
+	public void renderTileLayer(TiledMapTileLayer layer) {
 		final Color batchColor = batch.getColor();
 		final float color = getTileLayerColor(layer, batchColor);
 
@@ -78,29 +59,29 @@ public class OrthogonalTiledMapRenderer extends BatchTiledMapRenderer {
 		// offset in tiled is y down, so we flip it
 		final float layerOffsetY = -layer.getRenderOffsetY() * unitScale - viewBounds.y * (layer.getParallaxY() - 1);
 
-		final int col1 = Math.max(0, (int)((viewBounds.x - layerOffsetX) / layerTileWidth));
+		final int col1 = Math.max(0, (int) ((viewBounds.x - layerOffsetX) / layerTileWidth));
 		final int col2 = Math.min(layerWidth,
-			(int)((viewBounds.x + viewBounds.width + layerTileWidth - layerOffsetX) / layerTileWidth));
+				(int) ((viewBounds.x + viewBounds.width + layerTileWidth - layerOffsetX) / layerTileWidth));
 
-		final int row1 = Math.max(0, (int)((viewBounds.y - layerOffsetY) / layerTileHeight));
+		final int row1 = Math.max(0, (int) ((viewBounds.y - layerOffsetY) / layerTileHeight));
 		final int row2 = Math.min(layerHeight,
-			(int)((viewBounds.y + viewBounds.height + layerTileHeight - layerOffsetY) / layerTileHeight));
+				(int) ((viewBounds.y + viewBounds.height + layerTileHeight - layerOffsetY) / layerTileHeight));
 
 		float y = row2 * layerTileHeight + layerOffsetY;
 		float xStart = col1 * layerTileWidth + layerOffsetX;
 		final float[] vertices = this.vertices;
 
-		for (int row = row2; row >= row1; row--) {
+		for(int row = row2; row >= row1; row--) {
 			float x = xStart;
-			for (int col = col1; col < col2; col++) {
+			for(int col = col1; col < col2; col++) {
 				final TiledMapTileLayer.Cell cell = layer.getCell(col, row);
-				if (cell == null) {
+				if(cell == null) {
 					x += layerTileWidth;
 					continue;
 				}
 				final TiledMapTile tile = cell.getTile();
 
-				if (tile != null) {
+				if(tile != null) {
 					final boolean flipX = cell.getFlipHorizontally();
 					final boolean flipY = cell.getFlipVertically();
 					final int rotations = cell.getRotation();
@@ -141,7 +122,7 @@ public class OrthogonalTiledMapRenderer extends BatchTiledMapRenderer {
 					vertices[U4] = u2;
 					vertices[V4] = v1;
 
-					if (flipX) {
+					if(flipX) {
 						float temp = vertices[U1];
 						vertices[U1] = vertices[U3];
 						vertices[U3] = temp;
@@ -149,7 +130,7 @@ public class OrthogonalTiledMapRenderer extends BatchTiledMapRenderer {
 						vertices[U2] = vertices[U4];
 						vertices[U4] = temp;
 					}
-					if (flipY) {
+					if(flipY) {
 						float temp = vertices[V1];
 						vertices[V1] = vertices[V3];
 						vertices[V3] = temp;
@@ -157,51 +138,51 @@ public class OrthogonalTiledMapRenderer extends BatchTiledMapRenderer {
 						vertices[V2] = vertices[V4];
 						vertices[V4] = temp;
 					}
-					if (rotations != 0) {
-						switch (rotations) {
-						case Cell.ROTATE_90: {
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V2];
-							vertices[V2] = vertices[V3];
-							vertices[V3] = vertices[V4];
-							vertices[V4] = tempV;
+					if(rotations != 0) {
+						switch(rotations) {
+							case Cell.ROTATE_90: {
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V2];
+								vertices[V2] = vertices[V3];
+								vertices[V3] = vertices[V4];
+								vertices[V4] = tempV;
 
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U2];
-							vertices[U2] = vertices[U3];
-							vertices[U3] = vertices[U4];
-							vertices[U4] = tempU;
-							break;
-						}
-						case Cell.ROTATE_180: {
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U3];
-							vertices[U3] = tempU;
-							tempU = vertices[U2];
-							vertices[U2] = vertices[U4];
-							vertices[U4] = tempU;
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V3];
-							vertices[V3] = tempV;
-							tempV = vertices[V2];
-							vertices[V2] = vertices[V4];
-							vertices[V4] = tempV;
-							break;
-						}
-						case Cell.ROTATE_270: {
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V4];
-							vertices[V4] = vertices[V3];
-							vertices[V3] = vertices[V2];
-							vertices[V2] = tempV;
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U2];
+								vertices[U2] = vertices[U3];
+								vertices[U3] = vertices[U4];
+								vertices[U4] = tempU;
+								break;
+							}
+							case Cell.ROTATE_180: {
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U3];
+								vertices[U3] = tempU;
+								tempU = vertices[U2];
+								vertices[U2] = vertices[U4];
+								vertices[U4] = tempU;
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V3];
+								vertices[V3] = tempV;
+								tempV = vertices[V2];
+								vertices[V2] = vertices[V4];
+								vertices[V4] = tempV;
+								break;
+							}
+							case Cell.ROTATE_270: {
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V4];
+								vertices[V4] = vertices[V3];
+								vertices[V3] = vertices[V2];
+								vertices[V2] = tempV;
 
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U4];
-							vertices[U4] = vertices[U3];
-							vertices[U3] = vertices[U2];
-							vertices[U2] = tempU;
-							break;
-						}
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U4];
+								vertices[U4] = vertices[U3];
+								vertices[U3] = vertices[U2];
+								vertices[U2] = tempU;
+								break;
+							}
 						}
 					}
 					batch.draw(region.getTexture(), vertices, 0, NUM_VERTICES);

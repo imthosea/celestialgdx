@@ -35,85 +35,85 @@ import java.util.EnumSet;
 public final class SystemFileHandle extends WriteableFileHandle implements MappableFile {
 	public final Path path;
 
-	public SystemFileHandle (Path path) {
+	public SystemFileHandle(Path path) {
 		super(path.toAbsolutePath().toString().replace('\\', '/'), path.getFileName().toString());
 		this.path = path;
 	}
 
-	public SystemFileHandle (String path) {
+	public SystemFileHandle(String path) {
 		this(Path.of(path));
 	}
 
 	@Override
-	public boolean exists () {
+	public boolean exists() {
 		return Files.exists(path);
 	}
 	@Override
-	public SystemFileHandle parent () {
+	public SystemFileHandle parent() {
 		return new SystemFileHandle(path.getParent());
 	}
 	@Override
-	public SystemFileHandle sibling (String name) {
+	public SystemFileHandle sibling(String name) {
 		return new SystemFileHandle(path.resolveSibling(name));
 	}
 	@Override
-	public SystemFileHandle child (String name) {
+	public SystemFileHandle child(String name) {
 		return new SystemFileHandle(path.resolve(name));
 	}
 
 	@Override
-	public InputStream read () throws GdxIoException {
+	public InputStream read() throws GdxIoException {
 		try {
 			return Files.newInputStream(path);
-		} catch (IOException e) {
+		} catch(IOException e) {
 			throw new GdxIoException(e);
 		}
 	}
 
 	@Override
-	public long length () throws GdxIoException {
+	public long length() throws GdxIoException {
 		try {
 			return Files.size(path);
-		} catch (IOException e) {
+		} catch(IOException e) {
 			throw new GdxIoException(e);
 		}
 	}
 
 	@Override
-	public String readString (String charset) {
+	public String readString(String charset) {
 		try {
 			return Files.readString(path);
-		} catch (IOException e) {
+		} catch(IOException e) {
 			throw new GdxIoException(e);
 		}
 	}
 
 	@Override
-	public byte[] readBytes () throws IOException {
+	public byte[] readBytes() throws IOException {
 		return Files.readAllBytes(path);
 	}
 
 	@Override
-	public OutputStream write (boolean append) {
+	public OutputStream write(boolean append) {
 		try {
 			Files.createDirectories(path.getParent());
-			if (append) {
+			if(append) {
 				return Files.newOutputStream(path, StandardOpenOption.APPEND);
 			} else {
 				return Files.newOutputStream(path);
 			}
-		} catch (IOException e) {
+		} catch(IOException e) {
 			throw new GdxIoException(e);
 		}
 	}
 
 	@Override
-	public ByteBuffer map () {
+	public ByteBuffer map() {
 		try(var channel = (FileChannel) Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
 			ByteBuffer map = channel.map(MapMode.READ_ONLY, 0, channel.size());
 			map.order(ByteOrder.nativeOrder());
 			return map;
-		} catch (Exception ex) {
+		} catch(Exception ex) {
 			throw new GdxIoException("Error memory mapping file: " + path.toAbsolutePath(), ex);
 		}
 	}

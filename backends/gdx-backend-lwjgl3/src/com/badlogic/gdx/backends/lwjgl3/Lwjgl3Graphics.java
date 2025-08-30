@@ -19,8 +19,13 @@ package com.badlogic.gdx.backends.lwjgl3;
 import com.badlogic.gdx.AbstractGraphics;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.backends.lwjgl3.angle.Lwjgl3GLES20;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.GL31;
+import com.badlogic.gdx.graphics.GL32;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.badlogic.gdx.math.GridPoint2;
@@ -64,7 +69,7 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 
 	final GLFWFramebufferSizeCallback resizeCallback = new GLFWFramebufferSizeCallback() {
 		@Override
-		public void invoke (long windowHandle, final int width, final int height) {
+		public void invoke(long windowHandle, final int width, final int height) {
 			updateFramebufferInfo();
 			gl32.glViewport(0, 0, backBufferWidth, backBufferHeight);
 			window.getListener().resize(getWidth(), getHeight());
@@ -74,20 +79,20 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 		}
 	};
 
-	public Lwjgl3Graphics (Lwjgl3Window window) {
+	public Lwjgl3Graphics(Lwjgl3Window window) {
 		this.window = window;
-		if (window.getConfig().glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL32) {
+		if(window.getConfig().glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL32) {
 			this.gl20 = this.gl30 = this.gl31 = this.gl32 = new Lwjgl3GL32();
-		} else if (window.getConfig().glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL31) {
+		} else if(window.getConfig().glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL31) {
 			this.gl20 = this.gl30 = this.gl31 = new Lwjgl3GL31();
-		} else if (window.getConfig().glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL30) {
+		} else if(window.getConfig().glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL30) {
 			this.gl20 = this.gl30 = new Lwjgl3GL30();
 		} else {
 			try {
 				this.gl20 = window.getConfig().glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL20
 						? new Lwjgl3GL20()
 						: new Lwjgl3GLES20();
-			} catch (Throwable t) {
+			} catch(Throwable t) {
 				throw new GdxRuntimeException("Couldn't instantiate GLES20.", t);
 			}
 			this.gl30 = null;
@@ -97,12 +102,12 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 		GLFW.glfwSetFramebufferSizeCallback(window.getWindowHandle(), resizeCallback);
 	}
 
-	private void initiateGL () {
+	private void initiateGL() {
 		String versionString = gl20.glGetString(GL11.GL_VERSION);
 		String vendorString = gl20.glGetString(GL11.GL_VENDOR);
 		String rendererString = gl20.glGetString(GL11.GL_RENDERER);
 		glVersion = new GLVersion(Application.ApplicationType.Desktop, versionString, vendorString, rendererString);
-		if (supportsCubeMapSeamless()) {
+		if(supportsCubeMapSeamless()) {
 			enableCubeMapSeamless(true);
 		}
 	}
@@ -110,7 +115,7 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	/**
 	 * @return whether cubemap seamless feature is supported.
 	 */
-	public boolean supportsCubeMapSeamless () {
+	public boolean supportsCubeMapSeamless() {
 		return glVersion.isVersionEqualToOrHigher(3, 2) || supportsExtension("GL_ARB_seamless_cube_map");
 	}
 
@@ -119,8 +124,8 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	 * supported. (see {@link #supportsCubeMapSeamless()})
 	 * @param enable
 	 */
-	public void enableCubeMapSeamless (boolean enable) {
-		if (enable) {
+	public void enableCubeMapSeamless(boolean enable) {
+		if(enable) {
 			gl20.glEnable(org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		} else {
 			gl20.glDisable(org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -145,15 +150,15 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 
 	void update() {
 		long time = System.nanoTime();
-		if (lastFrameTime == -1) lastFrameTime = time;
-		if (resetDeltaTime) {
+		if(lastFrameTime == -1) lastFrameTime = time;
+		if(resetDeltaTime) {
 			resetDeltaTime = false;
 			deltaTime = 0;
 		} else
 			deltaTime = (time - lastFrameTime) / 1000000000.0f;
 		lastFrameTime = time;
 
-		if (time - frameCounterStart >= 1000000000) {
+		if(time - frameCounterStart >= 1000000000) {
 			fps = frames;
 			frames = 0;
 			frameCounterStart = time;
@@ -163,63 +168,63 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public boolean isGL30Available () {
+	public boolean isGL30Available() {
 		return gl30 != null;
 	}
 
 	@Override
-	public boolean isGL31Available () {
+	public boolean isGL31Available() {
 		return gl31 != null;
 	}
 
 	@Override
-	public boolean isGL32Available () {
+	public boolean isGL32Available() {
 		return gl32 != null;
 	}
 
 	@Override
-	public GL20 getGL20 () {
+	public GL20 getGL20() {
 		return gl20;
 	}
 
 	@Override
-	public GL30 getGL30 () {
+	public GL30 getGL30() {
 		return gl30;
 	}
 
 	@Override
-	public GL31 getGL31 () {
+	public GL31 getGL31() {
 		return gl31;
 	}
 
 	@Override
-	public GL32 getGL32 () {
+	public GL32 getGL32() {
 		return gl32;
 	}
 
 	@Override
-	public void setGL20 (GL20 gl20) {
+	public void setGL20(GL20 gl20) {
 		this.gl20 = gl20;
 	}
 
 	@Override
-	public void setGL30 (GL30 gl30) {
+	public void setGL30(GL30 gl30) {
 		this.gl30 = gl30;
 	}
 
 	@Override
-	public void setGL31 (GL31 gl31) {
+	public void setGL31(GL31 gl31) {
 		this.gl31 = gl31;
 	}
 
 	@Override
-	public void setGL32 (GL32 gl32) {
+	public void setGL32(GL32 gl32) {
 		this.gl32 = gl32;
 	}
 
 	@Override
-	public int getWidth () {
-		if (window.getConfig().hdpiMode == HdpiMode.Pixels) {
+	public int getWidth() {
+		if(window.getConfig().hdpiMode == HdpiMode.Pixels) {
 			return backBufferWidth;
 		} else {
 			return logicalWidth;
@@ -227,8 +232,8 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public int getHeight () {
-		if (window.getConfig().hdpiMode == HdpiMode.Pixels) {
+	public int getHeight() {
+		if(window.getConfig().hdpiMode == HdpiMode.Pixels) {
 			return backBufferHeight;
 		} else {
 			return logicalHeight;
@@ -236,78 +241,78 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public int getBackBufferWidth () {
+	public int getBackBufferWidth() {
 		return backBufferWidth;
 	}
 
 	@Override
-	public int getBackBufferHeight () {
+	public int getBackBufferHeight() {
 		return backBufferHeight;
 	}
 
-	public int getLogicalWidth () {
+	public int getLogicalWidth() {
 		return logicalWidth;
 	}
 
-	public int getLogicalHeight () {
+	public int getLogicalHeight() {
 		return logicalHeight;
 	}
 
 	@Override
-	public long getFrameId () {
+	public long getFrameId() {
 		return frameId;
 	}
 
 	@Override
-	public float getDeltaTime () {
+	public float getDeltaTime() {
 		return deltaTime;
 	}
 
-	public void resetDeltaTime () {
+	public void resetDeltaTime() {
 		resetDeltaTime = true;
 	}
 
 	@Override
-	public int getFramesPerSecond () {
+	public int getFramesPerSecond() {
 		return fps;
 	}
 
 	@Override
-	public GraphicsType getType () {
+	public GraphicsType getType() {
 		return GraphicsType.LWJGL3;
 	}
 
 	@Override
-	public GLVersion getGLVersion () {
+	public GLVersion getGLVersion() {
 		return glVersion;
 	}
 
 	@Override
-	public float getPpiX () {
+	public float getPpiX() {
 		return getPpcX() * 2.54f;
 	}
 
 	@Override
-	public float getPpiY () {
+	public float getPpiY() {
 		return getPpcY() * 2.54f;
 	}
 
 	@Override
-	public float getPpcX () {
-		Lwjgl3Monitor monitor = (Lwjgl3Monitor)getMonitor();
+	public float getPpcX() {
+		Lwjgl3Monitor monitor = (Lwjgl3Monitor) getMonitor();
 		GLFW.glfwGetMonitorPhysicalSize(monitor.monitorHandle, tmpBuffer, tmpBuffer2);
 		int sizeX = tmpBuffer.get(0);
 		DisplayMode mode = getDisplayMode();
-		return mode.width / (float)sizeX * 10;
+		return mode.width / (float) sizeX * 10;
 	}
 
 	@Override
-	public float getPpcY () {
-		Lwjgl3Monitor monitor = (Lwjgl3Monitor)getMonitor();
+	public float getPpcY() {
+		Lwjgl3Monitor monitor = (Lwjgl3Monitor) getMonitor();
 		GLFW.glfwGetMonitorPhysicalSize(monitor.monitorHandle, tmpBuffer, tmpBuffer2);
 		int sizeY = tmpBuffer2.get(0);
 		DisplayMode mode = getDisplayMode();
-		return mode.height / (float)sizeY * 10;
+		return mode.height / (float) sizeY * 10;
 	}
 
 	@Override
@@ -334,14 +339,14 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 		int overlap;
 		int bestOverlap = 0;
 
-		for (Monitor monitor : monitors) {
+		for(Monitor monitor : monitors) {
 			DisplayMode mode = getDisplayMode(monitor);
 
 			overlap = Math.max(0,
 					Math.min(windowX + windowWidth, monitor.virtualX + mode.width) - Math.max(windowX, monitor.virtualX))
 					* Math.max(0, Math.min(windowY + windowHeight, monitor.virtualY + mode.height) - Math.max(windowY, monitor.virtualY));
 
-			if (bestOverlap < overlap) {
+			if(bestOverlap < overlap) {
 				bestOverlap = overlap;
 				result = monitor;
 			}
@@ -350,61 +355,61 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public Monitor[] getMonitors () {
+	public Monitor[] getMonitors() {
 		PointerBuffer glfwMonitors = GLFW.glfwGetMonitors();
 		Monitor[] monitors = new Monitor[glfwMonitors.limit()];
-		for (int i = 0; i < glfwMonitors.limit();i++) {
+		for(int i = 0; i < glfwMonitors.limit(); i++) {
 			monitors[i] = Lwjgl3ApplicationConfiguration.toLwjgl3Monitor(glfwMonitors.get(i));
 		}
 		return monitors;
 	}
 
 	@Override
-	public DisplayMode[] getDisplayModes () {
+	public DisplayMode[] getDisplayModes() {
 		return Lwjgl3ApplicationConfiguration.getDisplayModes(getMonitor());
 	}
 
 	@Override
-	public DisplayMode[] getDisplayModes (Monitor monitor) {
+	public DisplayMode[] getDisplayModes(Monitor monitor) {
 		return Lwjgl3ApplicationConfiguration.getDisplayModes(monitor);
 	}
 
 	@Override
-	public DisplayMode getDisplayMode () {
+	public DisplayMode getDisplayMode() {
 		return Lwjgl3ApplicationConfiguration.getDisplayMode(getMonitor());
 	}
 
 	@Override
-	public DisplayMode getDisplayMode (Monitor monitor) {
+	public DisplayMode getDisplayMode(Monitor monitor) {
 		return Lwjgl3ApplicationConfiguration.getDisplayMode(monitor);
 	}
 
 	@Override
-	public int getSafeInsetLeft () {
+	public int getSafeInsetLeft() {
 		return 0;
 	}
 
 	@Override
-	public int getSafeInsetTop () {
+	public int getSafeInsetTop() {
 		return 0;
 	}
 
 	@Override
-	public int getSafeInsetBottom () {
+	public int getSafeInsetBottom() {
 		return 0;
 	}
 
 	@Override
-	public int getSafeInsetRight () {
+	public int getSafeInsetRight() {
 		return 0;
 	}
 
 	@Override
-	public boolean setFullscreenMode (DisplayMode displayMode) {
-		Lwjgl3DisplayMode newMode = (Lwjgl3DisplayMode)displayMode;
-		if (isFullscreen()) {
-			Lwjgl3DisplayMode currentMode = (Lwjgl3DisplayMode)getDisplayMode();
-			if (currentMode.getMonitor() == newMode.getMonitor() && currentMode.refreshRate == newMode.refreshRate) {
+	public boolean setFullscreenMode(DisplayMode displayMode) {
+		Lwjgl3DisplayMode newMode = (Lwjgl3DisplayMode) displayMode;
+		if(isFullscreen()) {
+			Lwjgl3DisplayMode currentMode = (Lwjgl3DisplayMode) getDisplayMode();
+			if(currentMode.getMonitor() == newMode.getMonitor() && currentMode.refreshRate == newMode.refreshRate) {
 				// same monitor and refresh rate
 				GLFW.glfwSetWindowSize(window.getWindowHandle(), newMode.width, newMode.height);
 			} else {
@@ -427,7 +432,7 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 		return true;
 	}
 
-	private void storeCurrentWindowPositionAndDisplayMode () {
+	private void storeCurrentWindowPositionAndDisplayMode() {
 		windowPosXBeforeFullscreen = window.getPositionX();
 		windowPosYBeforeFullscreen = window.getPositionY();
 		windowWidthBeforeFullscreen = logicalWidth;
@@ -436,25 +441,25 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public boolean setWindowedMode (int width, int height) {
-		if (!isFullscreen()) {
+	public boolean setWindowedMode(int width, int height) {
+		if(!isFullscreen()) {
 			GridPoint2 newPos = null;
 			boolean centerWindow = false;
-			if (width != logicalWidth || height != logicalHeight) {
+			if(width != logicalWidth || height != logicalHeight) {
 				centerWindow = true; // recenter the window since its size changed
-				newPos = Lwjgl3ApplicationConfiguration.calculateCenteredWindowPosition((Lwjgl3Monitor)getMonitor(), width, height);
+				newPos = Lwjgl3ApplicationConfiguration.calculateCenteredWindowPosition((Lwjgl3Monitor) getMonitor(), width, height);
 			}
 			GLFW.glfwSetWindowSize(window.getWindowHandle(), width, height);
-			if (centerWindow) {
+			if(centerWindow) {
 				window.setPosition(newPos.x, newPos.y); // on macOS the centering has to happen _after_ the new window size was set
 			}
 		} else { // if we were in fullscreen mode, we should consider restoring a previous display mode
-			if (displayModeBeforeFullscreen == null) {
+			if(displayModeBeforeFullscreen == null) {
 				storeCurrentWindowPositionAndDisplayMode();
 			}
-			if (width != windowWidthBeforeFullscreen || height != windowHeightBeforeFullscreen) { // center the window since its size
+			if(width != windowWidthBeforeFullscreen || height != windowHeightBeforeFullscreen) { // center the window since its size
 				// changed
-				GridPoint2 newPos = Lwjgl3ApplicationConfiguration.calculateCenteredWindowPosition((Lwjgl3Monitor)getMonitor(), width,
+				GridPoint2 newPos = Lwjgl3ApplicationConfiguration.calculateCenteredWindowPosition((Lwjgl3Monitor) getMonitor(), width,
 						height);
 				GLFW.glfwSetWindowMonitor(window.getWindowHandle(), 0, newPos.x, newPos.y, width, height,
 						displayModeBeforeFullscreen.refreshRate);
@@ -468,27 +473,27 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public void setTitle (String title) {
-		if (title == null) {
+	public void setTitle(String title) {
+		if(title == null) {
 			title = "";
 		}
 		GLFW.glfwSetWindowTitle(window.getWindowHandle(), title);
 	}
 
 	@Override
-	public void setUndecorated (boolean undecorated) {
+	public void setUndecorated(boolean undecorated) {
 		getWindow().getConfig().setDecorated(!undecorated);
 		GLFW.glfwSetWindowAttrib(window.getWindowHandle(), GLFW.GLFW_DECORATED, undecorated ? GLFW.GLFW_FALSE : GLFW.GLFW_TRUE);
 	}
 
 	@Override
-	public void setResizable (boolean resizable) {
+	public void setResizable(boolean resizable) {
 		getWindow().getConfig().setResizable(resizable);
 		GLFW.glfwSetWindowAttrib(window.getWindowHandle(), GLFW.GLFW_RESIZABLE, resizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
 	}
 
 	@Override
-	public void setVSync (boolean vsync) {
+	public void setVSync(boolean vsync) {
 		getWindow().getConfig().vSyncEnabled = vsync;
 		GLFW.glfwSwapInterval(vsync ? 1 : 0);
 	}
@@ -499,7 +504,7 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	 * @param fps fps
 	 */
 	@Override
-	public void setForegroundFPS (int fps) {
+	public void setForegroundFPS(int fps) {
 		getWindow().getConfig().foregroundFPS = fps;
 	}
 
@@ -509,7 +514,7 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public boolean supportsExtension (String extension) {
+	public boolean supportsExtension(String extension) {
 		return GLFW.glfwExtensionSupported(extension);
 	}
 
@@ -519,34 +524,34 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	}
 
 	@Override
-	public Cursor newCursor (Pixmap pixmap, int xHotspot, int yHotspot) {
+	public Cursor newCursor(Pixmap pixmap, int xHotspot, int yHotspot) {
 		return new Lwjgl3Cursor(getWindow(), pixmap, xHotspot, yHotspot);
 	}
 
 	@Override
-	public void setCursor (Cursor cursor) {
-		GLFW.glfwSetCursor(getWindow().getWindowHandle(), ((Lwjgl3Cursor)cursor).glfwCursor);
+	public void setCursor(Cursor cursor) {
+		GLFW.glfwSetCursor(getWindow().getWindowHandle(), ((Lwjgl3Cursor) cursor).glfwCursor);
 	}
 
 	@Override
-	public void setSystemCursor (SystemCursor systemCursor) {
+	public void setSystemCursor(SystemCursor systemCursor) {
 		Lwjgl3Cursor.setSystemCursor(getWindow().getWindowHandle(), systemCursor);
 	}
 
 	@Override
-	public void dispose () {
+	public void dispose() {
 		this.resizeCallback.free();
 	}
 
 	public static class Lwjgl3DisplayMode extends DisplayMode {
 		final long monitorHandle;
 
-		Lwjgl3DisplayMode (long monitor, int width, int height, int refreshRate, int bitsPerPixel) {
+		Lwjgl3DisplayMode(long monitor, int width, int height, int refreshRate, int bitsPerPixel) {
 			super(width, height, refreshRate, bitsPerPixel);
 			this.monitorHandle = monitor;
 		}
 
-		public long getMonitor () {
+		public long getMonitor() {
 			return monitorHandle;
 		}
 	}
@@ -554,12 +559,12 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	public static class Lwjgl3Monitor extends Monitor {
 		final long monitorHandle;
 
-		Lwjgl3Monitor (long monitor, int virtualX, int virtualY, String name) {
+		Lwjgl3Monitor(long monitor, int virtualX, int virtualY, String name) {
 			super(virtualX, virtualY, name);
 			this.monitorHandle = monitor;
 		}
 
-		public long getMonitorHandle () {
+		public long getMonitorHandle() {
 			return monitorHandle;
 		}
 	}

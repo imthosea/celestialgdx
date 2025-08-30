@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.math;
 
 import java.util.ArrayList;
@@ -25,9 +24,9 @@ public class BezierTest {
 	}
 
 	@Parameters(name = "imported type {0} use setter {1}")
-	public static Collection<Object[]> parameters () {
+	public static Collection<Object[]> parameters() {
 		Collection<Object[]> parameters = new ArrayList<Object[]>();
-		for (ImportType type : ImportType.values()) {
+		for(ImportType type : ImportType.values()) {
 			parameters.add(new Object[] {type, true});
 			parameters.add(new Object[] {type, false});
 		}
@@ -42,24 +41,24 @@ public class BezierTest {
 	private Bezier<Vector2> bezier;
 
 	@Before
-	public void setup () {
+	public void setup() {
 		bezier = null;
 	}
 
-	protected Vector2[] create (Vector2[] points) {
-		if (useSetter) {
+	protected Vector2[] create(Vector2[] points) {
+		if(useSetter) {
 			bezier = new Bezier<Vector2>();
-			if (type == ImportType.LibGDXArrays) {
+			if(type == ImportType.LibGDXArrays) {
 				bezier.set(new Array<Vector2>(points), 0, points.length);
-			} else if (type == ImportType.JavaArrays) {
+			} else if(type == ImportType.JavaArrays) {
 				bezier.set(points, 0, points.length);
 			} else {
 				bezier.set(points);
 			}
 		} else {
-			if (type == ImportType.LibGDXArrays) {
+			if(type == ImportType.LibGDXArrays) {
 				bezier = new Bezier<Vector2>(new Array<Vector2>(points), 0, points.length);
-			} else if (type == ImportType.JavaArrays) {
+			} else if(type == ImportType.JavaArrays) {
 				bezier = new Bezier<Vector2>(points, 0, points.length);
 			} else {
 				bezier = new Bezier<Vector2>(points);
@@ -70,7 +69,7 @@ public class BezierTest {
 	}
 
 	@Test
-	public void testLinear2D () {
+	public void testLinear2D() {
 		Vector2[] points = create(new Vector2[] {new Vector2(0, 0), new Vector2(1, 1)});
 
 		float len = bezier.approxLength(2);

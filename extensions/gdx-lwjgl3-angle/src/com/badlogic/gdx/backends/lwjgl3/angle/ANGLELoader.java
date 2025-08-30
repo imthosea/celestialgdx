@@ -39,41 +39,41 @@ public class ANGLELoader {
 	private static File gles;
 	private static File lastWorkingDir;
 
-	public static String crc (InputStream input) {
-		if (input == null) throw new IllegalArgumentException("input cannot be null.");
+	public static String crc(InputStream input) {
+		if(input == null) throw new IllegalArgumentException("input cannot be null.");
 		CRC32 crc = new CRC32();
 		byte[] buffer = new byte[4096];
 		try {
-			while (true) {
+			while(true) {
 				int length = input.read(buffer);
-				if (length == -1) break;
+				if(length == -1) break;
 				crc.update(buffer, 0, length);
 			}
-		} catch (Exception ignored) {
+		} catch(Exception ignored) {
 		}
 		return Long.toString(crc.getValue(), 16);
 	}
 
-	private static File extractFile (String sourcePath, File outFile) {
+	private static File extractFile(String sourcePath, File outFile) {
 		try {
-			if (!outFile.getParentFile().exists() && !outFile.getParentFile().mkdirs()) throw new GdxRuntimeException(
+			if(!outFile.getParentFile().exists() && !outFile.getParentFile().mkdirs()) throw new GdxRuntimeException(
 					"Couldn't create ANGLE native library output directory " + outFile.getParentFile().getAbsolutePath());
-			if (outFile.exists()) {
+			if(outFile.exists()) {
 				return outFile;
 			}
 
-			try (
+			try(
 					var out = new FileOutputStream(outFile);
 					var in = ANGLELoader.class.getResourceAsStream("/" + sourcePath)
 			) {
 				byte[] buffer = new byte[4096];
-				while (true) {
+				while(true) {
 					int length = in.read(buffer);
-					if (length == -1) return outFile;
+					if(length == -1) return outFile;
 					out.write(buffer, 0, length);
 				}
 			}
-		} catch (Throwable t) {
+		} catch(Throwable t) {
 			throw new GdxRuntimeException("Couldn't load ANGLE shared library " + sourcePath, t);
 		}
 	}
@@ -82,32 +82,32 @@ public class ANGLELoader {
 	 * Returns a path to a file that can be written. Tries multiple locations and verifies writing succeeds.
 	 * @return null if a writable path could not be found.
 	 */
-	private static File getExtractedFile (String dirName, String fileName) {
+	private static File getExtractedFile(String dirName, String fileName) {
 		// Temp directory with username in path.
 		File idealFile = new File(
 				System.getProperty("java.io.tmpdir") + "/libgdx" + System.getProperty("user.name") + "/" + dirName, fileName);
-		if (canWrite(idealFile)) return idealFile;
+		if(canWrite(idealFile)) return idealFile;
 
 		// System provided temp directory.
 		try {
 			File file = File.createTempFile(dirName, null);
-			if (file.delete()) {
+			if(file.delete()) {
 				file = new File(file, fileName);
-				if (canWrite(file)) return file;
+				if(canWrite(file)) return file;
 			}
-		} catch (IOException ignored) {
+		} catch(IOException ignored) {
 		}
 
 		// User home.
 		File file = new File(System.getProperty("user.home") + "/.libgdx/" + dirName, fileName);
-		if (canWrite(file)) return file;
+		if(canWrite(file)) return file;
 
 		// Relative directory.
 		file = new File(".temp/" + dirName, fileName);
-		if (canWrite(file)) return file;
+		if(canWrite(file)) return file;
 
 		// We are running in the OS X sandbox.
-		if (System.getenv("APP_SANDBOX_CONTAINER_ID") != null) return idealFile;
+		if(System.getenv("APP_SANDBOX_CONTAINER_ID") != null) return idealFile;
 
 		return null;
 	}
@@ -115,42 +115,42 @@ public class ANGLELoader {
 	/**
 	 * Returns true if the parent directories of the file can be created and the file can be written.
 	 */
-	private static boolean canWrite (File file) {
+	private static boolean canWrite(File file) {
 		File parent = file.getParentFile();
 		File testFile;
-		if (file.exists()) {
-			if (!file.canWrite() || !canExecute(file)) return false;
+		if(file.exists()) {
+			if(!file.canWrite() || !canExecute(file)) return false;
 			// Don't overwrite existing file just to check if we can write to directory.
 			testFile = new File(parent, UUID.randomUUID().toString());
 		} else {
 			parent.mkdirs();
-			if (!parent.isDirectory()) return false;
+			if(!parent.isDirectory()) return false;
 			testFile = file;
 		}
 		try {
 			new FileOutputStream(testFile).close();
-			if (!canExecute(testFile)) return false;
+			if(!canExecute(testFile)) return false;
 			return true;
-		} catch (Throwable ex) {
+		} catch(Throwable ex) {
 			return false;
 		} finally {
 			testFile.delete();
 		}
 	}
 
-	private static boolean canExecute (File file) {
-		if (file.canExecute()) return true;
+	private static boolean canExecute(File file) {
+		if(file.canExecute()) return true;
 		return file.setExecutable(true, false);
 	}
 
 	public static void load() {
 		String osDir = null;
 		String ext = null;
-		if (isWindows) {
+		if(isWindows) {
 			osDir = is64Bit ? "windows64" : "windows32";
 			ext = ".dll";
 		}
-		if (isLinux) {
+		if(isLinux) {
 			osDir = "linux64";
 			ext = ".so";
 		}
@@ -162,16 +162,16 @@ public class ANGLELoader {
 		String eglSource = osDir + "/libEGL" + ext;
 		String glesSource = osDir + "/libGLESv2" + ext;
 		String crc = "";
-		try (
+		try(
 				var egl = ANGLELoader.class.getResourceAsStream("/" + eglSource);
 				var gles = ANGLELoader.class.getResourceAsStream("/" + glesSource)
 		) {
 			crc = crc(egl) + crc(gles);
-		} catch (Exception ignored) {}
+		} catch(Exception ignored) {}
 		egl = getExtractedFile(crc, new File(eglSource).getName());
 		gles = getExtractedFile(crc, new File(glesSource).getName());
 
-		if (!isMac) {
+		if(!isMac) {
 			extractFile(eglSource, egl);
 			System.load(egl.getAbsolutePath());
 			extractFile(glesSource, gles);

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,44 +31,46 @@ import com.badlogic.gdx.utils.JsonWriter;
 
 import java.io.IOException;
 
-/** This class can save and load a {@link ParticleEffect}. It should be added as {@link AsynchronousAssetLoader} to the
+/**
+ * This class can save and load a {@link ParticleEffect}. It should be added as {@link AsynchronousAssetLoader} to the
  * {@link AssetManager} so it will be able to load the effects. It's important to note that the two classes
  * {@link ParticleEffectLoadParameter} and {@link ParticleEffectSaveParameter} should be passed in whenever possible, because when
  * present the batches settings will be loaded automatically. When the load and save parameters are absent, once the effect will
  * be created, one will have to set the required batches manually otherwise the {@link ParticleController} instances contained
  * inside the effect will not be able to render themselves.
- * @author inferno */
+ * @author inferno
+ */
 public class ParticleEffectLoader
 		extends AssetLoader<ParticleEffect, ParticleEffectLoader.ParticleEffectLoadParameter> {
-	public ParticleEffectLoader (FileHandleResolver resolver) {
+	public ParticleEffectLoader(FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	/** Saves the effect to the given file contained in the passed in parameter. */
-	public void save (ParticleEffect effect, ParticleEffectSaveParameter parameter) throws IOException {
+	public void save(ParticleEffect effect, ParticleEffectSaveParameter parameter) throws IOException {
 		ResourceData<ParticleEffect> data = new ResourceData<>(effect);
 
 		// effect assets
 		effect.save(parameter.manager, data);
 
 		// Batches configurations
-		if (parameter.batches != null) {
-			for (ParticleBatch<?> batch : parameter.batches) {
+		if(parameter.batches != null) {
+			for(ParticleBatch<?> batch : parameter.batches) {
 				boolean save = false;
-				for (ParticleController controller : effect.getControllers()) {
-					if (controller.renderer.isCompatible(batch)) {
+				for(ParticleController controller : effect.getControllers()) {
+					if(controller.renderer.isCompatible(batch)) {
 						save = true;
 						break;
 					}
 				}
 
-				if (save) batch.save(parameter.manager, data);
+				if(save) batch.save(parameter.manager, data);
 			}
 		}
 
 		// save
 		Json json = new Json(parameter.jsonOutputType);
-		if (parameter.prettyPrint) {
+		if(parameter.prettyPrint) {
 			String prettyJson = json.prettyPrint(data);
 			parameter.file.writeString(prettyJson, false);
 		} else {
@@ -77,19 +79,19 @@ public class ParticleEffectLoader
 	}
 
 	@Override
-	public ParticleEffect load (String path, ParticleEffectLoadParameter parameter, AssetLoadingContext<ParticleEffect> ctx) throws Exception {
+	public ParticleEffect load(String path, ParticleEffectLoadParameter parameter, AssetLoadingContext<ParticleEffect> ctx) throws Exception {
 		FileHandle file = resolve(path);
 		Json json = new Json();
 
 		ResourceData<ParticleEffect> data = json.fromJson(ResourceData.class, file);
 
-		for (AssetData<?> assetData : data.getAssets()) {
+		for(AssetData<?> assetData : data.getAssets()) {
 			// If the asset doesn't exist try to load it from loading effect directory
-			if (!resolve(assetData.filename).exists()) {
+			if(!resolve(assetData.filename).exists()) {
 				assetData.filename = file.parent().child(assetData.filename).path();
 			}
 
-			if (assetData.type == ParticleEffect.class) {
+			if(assetData.type == ParticleEffect.class) {
 				ctx.dependOn(assetData.filename, assetData.type, parameter);
 			} else {
 				ctx.dependOn(assetData.filename, assetData.type);
@@ -97,9 +99,9 @@ public class ParticleEffectLoader
 		}
 
 		data.resource.load(ctx.manager, data);
-		if (parameter != null) {
-			if (parameter.batches != null) {
-				for (ParticleBatch<?> batch : parameter.batches) {
+		if(parameter != null) {
+			if(parameter.batches != null) {
+				for(ParticleBatch<?> batch : parameter.batches) {
 					batch.load(ctx.manager, data);
 				}
 			}
@@ -111,7 +113,7 @@ public class ParticleEffectLoader
 	public static class ParticleEffectLoadParameter extends AssetLoaderParameters<ParticleEffect> {
 		final Array<ParticleBatch<?>> batches;
 
-		public ParticleEffectLoadParameter (Array<ParticleBatch<?>> batches) {
+		public ParticleEffectLoadParameter(Array<ParticleBatch<?>> batches) {
 			this.batches = batches;
 		}
 	}
@@ -126,12 +128,12 @@ public class ParticleEffectLoader
 		final JsonWriter.OutputType jsonOutputType;
 		final boolean prettyPrint;
 
-		public ParticleEffectSaveParameter (WriteableFileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches) {
+		public ParticleEffectSaveParameter(WriteableFileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches) {
 			this(file, manager, batches, JsonWriter.OutputType.minimal, false);
 		}
 
-		public ParticleEffectSaveParameter (WriteableFileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches,
-			JsonWriter.OutputType jsonOutputType, boolean prettyPrint) {
+		public ParticleEffectSaveParameter(WriteableFileHandle file, AssetManager manager, Array<ParticleBatch<?>> batches,
+		                                   JsonWriter.OutputType jsonOutputType, boolean prettyPrint) {
 			this.batches = batches;
 			this.file = file;
 			this.manager = manager;

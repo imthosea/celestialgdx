@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ public interface ImageResolver {
 	/**
 	 * @return the Texture for the given image name or null.
 	 */
-	TextureRegion getImage (AssetLoadingContext<?> ctx, FileHandle projectFile, String name);
+	TextureRegion getImage(AssetLoadingContext<?> ctx, FileHandle projectFile, String name);
 
 	// this is moved here so i don't have to use it in omocha - thosea
 
@@ -48,12 +48,12 @@ public interface ImageResolver {
 		return new TextureRegion(ctx.dependOn(file.path(), Texture.class, textParam));
 	};
 
-	static FileHandle getRelativeFileHandle (FileHandle file, String path) {
+	static FileHandle getRelativeFileHandle(FileHandle file, String path) {
 		StringTokenizer tokenizer = new StringTokenizer(path, "\\/");
 		FileHandle result = file.parent();
-		while (tokenizer.hasMoreElements()) {
+		while(tokenizer.hasMoreElements()) {
 			String token = tokenizer.nextToken();
-			if (token.equals(".."))
+			if(token.equals(".."))
 				result = result.parent();
 			else {
 				result = result.child(token);

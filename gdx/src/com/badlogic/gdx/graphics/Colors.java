@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,10 +18,11 @@ package com.badlogic.gdx.graphics;
 
 import com.badlogic.gdx.utils.ObjectMap;
 
-/** A general purpose class containing named colors that can be changed at will. For example, the markup language defined by the
+/**
+ * A general purpose class containing named colors that can be changed at will. For example, the markup language defined by the
  * {@code BitmapFontCache} class uses this class to retrieve colors and the user can define his own colors.
- * 
- * @author davebaol */
+ * @author davebaol
+ */
 public final class Colors {
 
 	private static final ObjectMap<String, Color> map = new ObjectMap<>();
@@ -31,33 +32,35 @@ public final class Colors {
 	}
 
 	/** Returns the color map. */
-	public static ObjectMap<String, Color> getColors () {
+	public static ObjectMap<String, Color> getColors() {
 		return map;
 	}
 
-	/** Convenience method to lookup a color by {@code name}. The invocation of this method is equivalent to the expression
+	/**
+	 * Convenience method to lookup a color by {@code name}. The invocation of this method is equivalent to the expression
 	 * {@code Colors.getColors().get(name)}
-	 * 
 	 * @param name the name of the color
 	 * @return the color to which the specified {@code name} is mapped, or {@code null} if there was no mapping for {@code name}
-	 *         . */
-	public static Color get (String name) {
+	 * .
+	 */
+	public static Color get(String name) {
 		return map.get(name);
 	}
 
-	/** Convenience method to add a {@code color} with its {@code name}. The invocation of this method is equivalent to the
+	/**
+	 * Convenience method to add a {@code color} with its {@code name}. The invocation of this method is equivalent to the
 	 * expression {@code Colors.getColors().put(name, color)}
-	 * 
 	 * @param name the name of the color
 	 * @param color the color
 	 * @return the previous {@code color} associated with {@code name}, or {@code null} if there was no mapping for {@code name}
-	 *         . */
-	public static Color put (String name, Color color) {
+	 * .
+	 */
+	public static Color put(String name, Color color) {
 		return map.put(name, color);
 	}
 
 	/** Resets the color map to the predefined colors. */
-	public static void reset () {
+	public static void reset() {
 		map.clear();
 		map.put("CLEAR", Color.CLEAR);
 		map.put("CLEAR_WHITE", Color.CLEAR_WHITE);
@@ -103,7 +106,7 @@ public final class Colors {
 		map.put("MAROON", Color.MAROON);
 	}
 
-	private Colors () {
+	private Colors() {
 	}
 
 }

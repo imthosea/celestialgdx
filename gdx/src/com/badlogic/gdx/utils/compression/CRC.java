@@ -6,10 +6,10 @@ public class CRC {
 	static public final int[] Table = new int[256];
 
 	static {
-		for (int i = 0; i < 256; i++) {
+		for(int i = 0; i < 256; i++) {
 			int r = i;
-			for (int j = 0; j < 8; j++)
-				if ((r & 1) != 0)
+			for(int j = 0; j < 8; j++)
+				if((r & 1) != 0)
 					r = (r >>> 1) ^ 0xEDB88320;
 				else
 					r >>>= 1;
@@ -19,25 +19,25 @@ public class CRC {
 
 	int _value = -1;
 
-	public void Init () {
+	public void Init() {
 		_value = -1;
 	}
 
-	public void Update (byte[] data, int offset, int size) {
-		for (int i = 0; i < size; i++)
+	public void Update(byte[] data, int offset, int size) {
+		for(int i = 0; i < size; i++)
 			_value = Table[(_value ^ data[offset + i]) & 0xFF] ^ (_value >>> 8);
 	}
 
-	public void Update (byte[] data) {
+	public void Update(byte[] data) {
 		int size = data.length;
-		for (byte datum : data) _value = Table[(_value ^ datum) & 0xFF] ^ (_value >>> 8);
+		for(byte datum : data) _value = Table[(_value ^ datum) & 0xFF] ^ (_value >>> 8);
 	}
 
-	public void UpdateByte (int b) {
+	public void UpdateByte(int b) {
 		_value = Table[(_value ^ b) & 0xFF] ^ (_value >>> 8);
 	}
 
-	public int GetDigest () {
+	public int GetDigest() {
 		return _value ^ (-1);
 	}
 }

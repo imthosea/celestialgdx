@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,8 +16,10 @@
 
 package com.badlogic.gdx.utils;
 
-/** Provides bit flag constants for alignment.
- * @author Nathan Sweet */
+/**
+ * Provides bit flag constants for alignment.
+ * @author Nathan Sweet
+ */
 public class Align {
 	static public final int center = 1 << 0;
 	static public final int top = 1 << 1;
@@ -30,41 +32,41 @@ public class Align {
 	static public final int bottomLeft = bottom | left;
 	static public final int bottomRight = bottom | right;
 
-	static public final boolean isLeft (int align) {
+	static public final boolean isLeft(int align) {
 		return (align & left) != 0;
 	}
 
-	static public final boolean isRight (int align) {
+	static public final boolean isRight(int align) {
 		return (align & right) != 0;
 	}
 
-	static public final boolean isTop (int align) {
+	static public final boolean isTop(int align) {
 		return (align & top) != 0;
 	}
 
-	static public final boolean isBottom (int align) {
+	static public final boolean isBottom(int align) {
 		return (align & bottom) != 0;
 	}
 
-	static public final boolean isCenterVertical (int align) {
+	static public final boolean isCenterVertical(int align) {
 		return (align & top) == 0 && (align & bottom) == 0;
 	}
 
-	static public final boolean isCenterHorizontal (int align) {
+	static public final boolean isCenterHorizontal(int align) {
 		return (align & left) == 0 && (align & right) == 0;
 	}
 
-	static public String toString (int align) {
+	static public String toString(int align) {
 		StringBuilder buffer = new StringBuilder(13);
-		if ((align & top) != 0)
+		if((align & top) != 0)
 			buffer.append("top,");
-		else if ((align & bottom) != 0)
+		else if((align & bottom) != 0)
 			buffer.append("bottom,");
 		else
 			buffer.append("center,");
-		if ((align & left) != 0)
+		if((align & left) != 0)
 			buffer.append("left");
-		else if ((align & right) != 0)
+		else if((align & right) != 0)
 			buffer.append("right");
 		else
 			buffer.append("center");

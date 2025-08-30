@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,9 +24,11 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import java.nio.IntBuffer;
 
-/** Class that you assign a range of texture units and binds textures for you within that range. It does some basic usage tracking
+/**
+ * Class that you assign a range of texture units and binds textures for you within that range. It does some basic usage tracking
  * to avoid unnecessary bind calls.
- * @author xoppa */
+ * @author xoppa
+ */
 public final class DefaultTextureBinder implements TextureBinder {
 	public final static int ROUNDROBIN = 0;
 	public final static int LRU = 1;
@@ -49,19 +51,19 @@ public final class DefaultTextureBinder implements TextureBinder {
 	private int bindCount = 0; // TODO remove debug code
 
 	/** Uses all available texture units and reuse weight of 3 */
-	public DefaultTextureBinder (final int method) {
+	public DefaultTextureBinder(final int method) {
 		this(method, 0);
 	}
 
 	/** Uses all remaining texture units and reuse weight of 3 */
-	public DefaultTextureBinder (final int method, final int offset) {
+	public DefaultTextureBinder(final int method, final int offset) {
 		this(method, offset, -1);
 	}
 
-	public DefaultTextureBinder (final int method, final int offset, int count) {
+	public DefaultTextureBinder(final int method, final int offset, int count) {
 		final int max = Math.min(getMaxTextureUnits(), MAX_GLES_UNITS);
-		if (count < 0) count = max - offset;
-		if (offset < 0 || count < 0 || (offset + count) > max) throw new GdxRuntimeException("Illegal arguments");
+		if(count < 0) count = max - offset;
+		if(offset < 0 || count < 0 || (offset + count) > max) throw new GdxRuntimeException("Illegal arguments");
 		this.method = method;
 		this.offset = offset;
 		this.count = count;
@@ -69,22 +71,22 @@ public final class DefaultTextureBinder implements TextureBinder {
 		this.unitsLRU = (method == LRU) ? new int[count] : null;
 	}
 
-	private static int getMaxTextureUnits () {
+	private static int getMaxTextureUnits() {
 		IntBuffer buffer = BufferUtils.newIntBuffer(16);
 		Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, buffer);
 		return buffer.get(0);
 	}
 
 	@Override
-	public void begin () {
-		for (int i = 0; i < count; i++) {
+	public void begin() {
+		for(int i = 0; i < count; i++) {
 			textures[i] = null;
-			if (unitsLRU != null) unitsLRU[i] = i;
+			if(unitsLRU != null) unitsLRU[i] = i;
 		}
 	}
 
 	@Override
-	public void end () {
+	public void end() {
 		/*
 		 * No need to unbind and textures are set to null in begin() for(int i = 0; i < count; i++) { if (textures[i] != null) {
 		 * Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + offset + i); Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, 0); textures[i] = null; }
@@ -94,37 +96,37 @@ public final class DefaultTextureBinder implements TextureBinder {
 	}
 
 	@Override
-	public final int bind (final TextureDescriptor textureDesc) {
+	public final int bind(final TextureDescriptor textureDesc) {
 		return bindTexture(textureDesc, false);
 	}
 
 	private final TextureDescriptor tempDesc = new TextureDescriptor();
 
 	@Override
-	public final int bind (final GLTexture texture) {
+	public final int bind(final GLTexture texture) {
 		tempDesc.set(texture, null, null, null, null);
 		return bindTexture(tempDesc, false);
 	}
 
-	private final int bindTexture (final TextureDescriptor textureDesc, final boolean rebind) {
+	private final int bindTexture(final TextureDescriptor textureDesc, final boolean rebind) {
 		final int idx, result;
 		final GLTexture texture = textureDesc.texture;
 		reused = false;
 
-		switch (method) {
-		case ROUNDROBIN:
-			result = offset + (idx = bindTextureRoundRobin(texture));
-			break;
-		case LRU:
-			result = offset + (idx = bindTextureLRU(texture));
-			break;
-		default:
-			return -1;
+		switch(method) {
+			case ROUNDROBIN:
+				result = offset + (idx = bindTextureRoundRobin(texture));
+				break;
+			case LRU:
+				result = offset + (idx = bindTextureLRU(texture));
+				break;
+			default:
+				return -1;
 		}
 
-		if (reused) {
+		if(reused) {
 			reuseCount++;
-			if (rebind)
+			if(rebind)
 				texture.bind(result);
 			else
 				Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0 + result);
@@ -137,10 +139,10 @@ public final class DefaultTextureBinder implements TextureBinder {
 
 	private int currentTexture = 0;
 
-	private final int bindTextureRoundRobin (final GLTexture texture) {
-		for (int i = 0; i < count; i++) {
+	private final int bindTextureRoundRobin(final GLTexture texture) {
+		for(int i = 0; i < count; i++) {
 			final int idx = (currentTexture + i) % count;
-			if (textures[idx] == texture) {
+			if(textures[idx] == texture) {
 				reused = true;
 				return idx;
 			}
@@ -151,26 +153,26 @@ public final class DefaultTextureBinder implements TextureBinder {
 		return currentTexture;
 	}
 
-	private final int bindTextureLRU (final GLTexture texture) {
+	private final int bindTextureLRU(final GLTexture texture) {
 		int i;
-		for (i = 0; i < count; i++) {
+		for(i = 0; i < count; i++) {
 			final int idx = unitsLRU[i];
-			if (textures[idx] == texture) {
+			if(textures[idx] == texture) {
 				reused = true;
 				break;
 			}
-			if (textures[idx] == null) {
+			if(textures[idx] == null) {
 				break;
 			}
 		}
-		if (i >= count) i = count - 1;
+		if(i >= count) i = count - 1;
 		final int idx = unitsLRU[i];
-		while (i > 0) {
+		while(i > 0) {
 			unitsLRU[i] = unitsLRU[i - 1];
 			i--;
 		}
 		unitsLRU[0] = idx;
-		if (!reused) {
+		if(!reused) {
 			textures[idx] = texture;
 			texture.bind(offset + idx);
 		}
@@ -178,17 +180,17 @@ public final class DefaultTextureBinder implements TextureBinder {
 	}
 
 	@Override
-	public final int getBindCount () {
+	public final int getBindCount() {
 		return bindCount;
 	}
 
 	@Override
-	public final int getReuseCount () {
+	public final int getReuseCount() {
 		return reuseCount;
 	}
 
 	@Override
-	public final void resetCounts () {
+	public final void resetCounts() {
 		bindCount = reuseCount = 0;
 	}
 }

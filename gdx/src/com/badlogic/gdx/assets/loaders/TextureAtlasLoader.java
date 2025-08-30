@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,28 +26,30 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Page;
 
-/** {@link AssetLoader} to load {@link TextureAtlas} instances. Passing a {@link TextureAtlasParameter} to
+/**
+ * {@link AssetLoader} to load {@link TextureAtlas} instances. Passing a {@link TextureAtlasParameter} to
  * {@link AssetManager#load(String, Class, AssetLoaderParameters)} allows to specify whether the atlas regions should be flipped
  * on the y-axis or not.
- * @author mzechner */
+ * @author mzechner
+ */
 public class TextureAtlasLoader extends AssetLoader<TextureAtlas, TextureAtlasLoader.TextureAtlasParameter> {
-	public TextureAtlasLoader (FileHandleResolver resolver) {
+	public TextureAtlasLoader(FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	@Override
-	public TextureAtlas load (String path, TextureAtlasParameter parameter, AssetLoadingContext<TextureAtlas> ctx) throws Exception {
+	public TextureAtlas load(String path, TextureAtlasParameter parameter, AssetLoadingContext<TextureAtlas> ctx) throws Exception {
 		TextureAtlasData data;
 		FileHandle file = resolve(path);
 		FileHandle imgDir = file.parent();
 
-		if (parameter != null) {
+		if(parameter != null) {
 			data = new TextureAtlasData(file, imgDir, parameter.flip);
 		} else {
 			data = new TextureAtlasData(file, imgDir, false);
 		}
 
-		for (Page page : data.getPages()) {
+		for(Page page : data.getPages()) {
 			TextureParameter params = new TextureParameter();
 			params.format = page.format;
 			params.genMipMaps = page.useMipMaps;
@@ -63,10 +65,10 @@ public class TextureAtlasLoader extends AssetLoader<TextureAtlas, TextureAtlasLo
 		/** whether to flip the texture atlas vertically **/
 		public boolean flip = false;
 
-		public TextureAtlasParameter () {
+		public TextureAtlasParameter() {
 		}
 
-		public TextureAtlasParameter (boolean flip) {
+		public TextureAtlasParameter(boolean flip) {
 			this.flip = flip;
 		}
 	}

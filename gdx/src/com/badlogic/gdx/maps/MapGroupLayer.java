@@ -22,14 +22,14 @@ public class MapGroupLayer extends MapLayer {
 	private final MapLayers layers = new MapLayers();
 
 	/** @return the {@link MapLayers} owned by this group */
-	public MapLayers getLayers () {
+	public MapLayers getLayers() {
 		return layers;
 	}
 
 	@Override
-	public void invalidateRenderOffset () {
+	public void invalidateRenderOffset() {
 		super.invalidateRenderOffset();
-		for (int i = 0; i < layers.size(); i++) {
+		for(int i = 0; i < layers.size(); i++) {
 			MapLayer child = layers.get(i);
 			child.invalidateRenderOffset();
 		}

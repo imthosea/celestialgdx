@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.graphics;
 
 import com.badlogic.gdx.Graphics;

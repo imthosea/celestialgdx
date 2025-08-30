@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,14 +22,16 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/** Instances of this class specify the vertex attributes of a mesh. VertexAttributes are used by {@link Mesh} instances to define
+/**
+ * Instances of this class specify the vertex attributes of a mesh. VertexAttributes are used by {@link Mesh} instances to define
  * its vertex structure. Vertex attributes have an order. The order is specified by the order they are added to this class.
- * 
- * @author mzechner, Xoppa */
+ * @author mzechner, Xoppa
+ */
 public final class VertexAttributes implements Iterable<VertexAttribute>, Comparable<VertexAttributes> {
-	/** The usage of a vertex attribute.
-	 * 
-	 * @author mzechner */
+	/**
+	 * The usage of a vertex attribute.
+	 * @author mzechner
+	 */
 	public static final class Usage {
 		public static final int Position = 1;
 		public static final int ColorUnpacked = 2;
@@ -60,8 +62,8 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 	private ReadonlyIterable<VertexAttribute> iterable;
 
 	/** Constructor, sets the vertex attributes in a specific order */
-	public VertexAttributes (VertexAttribute... attributes) {
-		if (attributes.length == 0) throw new IllegalArgumentException("attributes must be >= 1");
+	public VertexAttributes(VertexAttribute... attributes) {
+		if(attributes.length == 0) throw new IllegalArgumentException("attributes must be >= 1");
 
 		VertexAttribute[] list = new VertexAttribute[attributes.length];
 		System.arraycopy(attributes, 0, list, 0, attributes.length);
@@ -70,32 +72,38 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 		vertexSize = calculateOffsets();
 	}
 
-	/** Returns the offset for the first VertexAttribute with the specified usage.
-	 * @param usage The usage of the VertexAttribute. */
-	public int getOffset (int usage, int defaultIfNotFound) {
+	/**
+	 * Returns the offset for the first VertexAttribute with the specified usage.
+	 * @param usage The usage of the VertexAttribute.
+	 */
+	public int getOffset(int usage, int defaultIfNotFound) {
 		VertexAttribute vertexAttribute = findByUsage(usage);
-		if (vertexAttribute == null) return defaultIfNotFound;
+		if(vertexAttribute == null) return defaultIfNotFound;
 		return vertexAttribute.offset / 4;
 	}
 
-	/** Returns the offset for the first VertexAttribute with the specified usage.
-	 * @param usage The usage of the VertexAttribute. */
-	public int getOffset (int usage) {
+	/**
+	 * Returns the offset for the first VertexAttribute with the specified usage.
+	 * @param usage The usage of the VertexAttribute.
+	 */
+	public int getOffset(int usage) {
 		return getOffset(usage, 0);
 	}
 
-	/** Returns the first VertexAttribute for the given usage.
-	 * @param usage The usage of the VertexAttribute to find. */
-	public VertexAttribute findByUsage (int usage) {
+	/**
+	 * Returns the first VertexAttribute for the given usage.
+	 * @param usage The usage of the VertexAttribute to find.
+	 */
+	public VertexAttribute findByUsage(int usage) {
 		int len = size();
-		for (int i = 0; i < len; i++)
-			if (get(i).usage == usage) return get(i);
+		for(int i = 0; i < len; i++)
+			if(get(i).usage == usage) return get(i);
 		return null;
 	}
 
-	private int calculateOffsets () {
+	private int calculateOffsets() {
 		int count = 0;
-		for (VertexAttribute attribute : attributes) {
+		for(VertexAttribute attribute : attributes) {
 			attribute.offset = count;
 			count += attribute.getSizeInBytes();
 		}
@@ -104,20 +112,22 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 	}
 
 	/** @return the number of attributes */
-	public int size () {
+	public int size() {
 		return attributes.length;
 	}
 
-	/** @param index the index
-	 * @return the VertexAttribute at the given index */
-	public VertexAttribute get (int index) {
+	/**
+	 * @param index the index
+	 * @return the VertexAttribute at the given index
+	 */
+	public VertexAttribute get(int index) {
 		return attributes[index];
 	}
 
-	public String toString () {
+	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("[");
-		for (VertexAttribute attribute : attributes) {
+		for(VertexAttribute attribute : attributes) {
 			builder.append("(");
 			builder.append(attribute.alias);
 			builder.append(", ");
@@ -134,30 +144,32 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 	}
 
 	@Override
-	public boolean equals (final Object obj) {
-		if (obj == this) return true;
-		if (!(obj instanceof VertexAttributes other)) return false;
-		if (this.attributes.length != other.attributes.length) return false;
-		for (int i = 0; i < attributes.length; i++) {
-			if (!attributes[i].equals(other.attributes[i])) return false;
+	public boolean equals(final Object obj) {
+		if(obj == this) return true;
+		if(!(obj instanceof VertexAttributes other)) return false;
+		if(this.attributes.length != other.attributes.length) return false;
+		for(int i = 0; i < attributes.length; i++) {
+			if(!attributes[i].equals(other.attributes[i])) return false;
 		}
 		return true;
 	}
 
 	@Override
-	public int hashCode () {
+	public int hashCode() {
 		long result = 61L * attributes.length;
-		for (VertexAttribute attribute : attributes) result = result * 61 + attribute.hashCode();
-		return (int)(result ^ (result >> 32));
+		for(VertexAttribute attribute : attributes) result = result * 61 + attribute.hashCode();
+		return (int) (result ^ (result >> 32));
 	}
 
-	/** Calculates a mask based on the contained {@link VertexAttribute} instances. The mask is a bit-wise or of each attributes
+	/**
+	 * Calculates a mask based on the contained {@link VertexAttribute} instances. The mask is a bit-wise or of each attributes
 	 * {@link VertexAttribute#usage}.
-	 * @return the mask */
-	public long getMask () {
-		if (mask == -1) {
+	 * @return the mask
+	 */
+	public long getMask() {
+		if(mask == -1) {
 			long result = 0;
-			for (VertexAttribute attribute : attributes) {
+			for(VertexAttribute attribute : attributes) {
 				result |= attribute.usage;
 			}
 			mask = result;
@@ -165,18 +177,20 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 		return mask;
 	}
 
-	/** Calculates the mask based on {@link VertexAttributes#getMask()} and packs the attributes count into the last 32 bits.
-	 * @return the mask with attributes count packed into the last 32 bits. */
-	public long getMaskWithSizePacked () {
-		return getMask() | ((long)attributes.length << 32);
+	/**
+	 * Calculates the mask based on {@link VertexAttributes#getMask()} and packs the attributes count into the last 32 bits.
+	 * @return the mask with attributes count packed into the last 32 bits.
+	 */
+	public long getMaskWithSizePacked() {
+		return getMask() | ((long) attributes.length << 32);
 	}
 
 	/** @return Number of bone weights based on {@link VertexAttribute#unit} */
-	public int getBoneWeights () {
-		if (boneWeightUnits < 0) {
+	public int getBoneWeights() {
+		if(boneWeightUnits < 0) {
 			boneWeightUnits = 0;
-			for (VertexAttribute a : attributes) {
-				if (a.usage == Usage.BoneWeight) {
+			for(VertexAttribute a : attributes) {
+				if(a.usage == Usage.BoneWeight) {
 					boneWeightUnits = Math.max(boneWeightUnits, a.unit + 1);
 				}
 			}
@@ -185,11 +199,11 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 	}
 
 	/** @return Number of texture coordinates based on {@link VertexAttribute#unit} */
-	public int getTextureCoordinates () {
-		if (textureCoordinates < 0) {
+	public int getTextureCoordinates() {
+		if(textureCoordinates < 0) {
 			textureCoordinates = 0;
-			for (VertexAttribute a : attributes) {
-				if (a.usage == Usage.TextureCoordinates) {
+			for(VertexAttribute a : attributes) {
+				if(a.usage == Usage.TextureCoordinates) {
 					textureCoordinates = Math.max(textureCoordinates, a.unit + 1);
 				}
 			}
@@ -198,27 +212,27 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 	}
 
 	@Override
-	public int compareTo (VertexAttributes o) {
-		if (attributes.length != o.attributes.length) return attributes.length - o.attributes.length;
+	public int compareTo(VertexAttributes o) {
+		if(attributes.length != o.attributes.length) return attributes.length - o.attributes.length;
 		final long m1 = getMask();
 		final long m2 = o.getMask();
-		if (m1 != m2) return m1 < m2 ? -1 : 1;
-		for (int i = attributes.length - 1; i >= 0; --i) {
+		if(m1 != m2) return m1 < m2 ? -1 : 1;
+		for(int i = attributes.length - 1; i >= 0; --i) {
 			final VertexAttribute va0 = attributes[i];
 			final VertexAttribute va1 = o.attributes[i];
-			if (va0.usage != va1.usage) return va0.usage - va1.usage;
-			if (va0.unit != va1.unit) return va0.unit - va1.unit;
-			if (va0.numComponents != va1.numComponents) return va0.numComponents - va1.numComponents;
-			if (va0.normalized != va1.normalized) return va0.normalized ? 1 : -1;
-			if (va0.type != va1.type) return va0.type - va1.type;
+			if(va0.usage != va1.usage) return va0.usage - va1.usage;
+			if(va0.unit != va1.unit) return va0.unit - va1.unit;
+			if(va0.numComponents != va1.numComponents) return va0.numComponents - va1.numComponents;
+			if(va0.normalized != va1.normalized) return va0.normalized ? 1 : -1;
+			if(va0.type != va1.type) return va0.type - va1.type;
 		}
 		return 0;
 	}
 
 	/** @see Collections#allocateIterators */
 	@Override
-	public Iterator<VertexAttribute> iterator () {
-		if (iterable == null) iterable = new ReadonlyIterable<>(attributes);
+	public Iterator<VertexAttribute> iterator() {
+		if(iterable == null) iterable = new ReadonlyIterable<>(attributes);
 		return iterable.iterator();
 	}
 
@@ -227,34 +241,34 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 		int index;
 		boolean valid = true;
 
-		public ReadonlyIterator (T[] array) {
+		public ReadonlyIterator(T[] array) {
 			this.array = array;
 		}
 
 		@Override
-		public boolean hasNext () {
-			if (!valid) throw new GdxRuntimeException("#iterator() cannot be used nested.");
+		public boolean hasNext() {
+			if(!valid) throw new GdxRuntimeException("#iterator() cannot be used nested.");
 			return index < array.length;
 		}
 
 		@Override
-		public T next () {
-			if (index >= array.length) throw new NoSuchElementException(String.valueOf(index));
-			if (!valid) throw new GdxRuntimeException("#iterator() cannot be used nested.");
+		public T next() {
+			if(index >= array.length) throw new NoSuchElementException(String.valueOf(index));
+			if(!valid) throw new GdxRuntimeException("#iterator() cannot be used nested.");
 			return array[index++];
 		}
 
 		@Override
-		public void remove () {
+		public void remove() {
 			throw new GdxRuntimeException("Remove not allowed.");
 		}
 
-		public void reset () {
+		public void reset() {
 			index = 0;
 		}
 
 		@Override
-		public Iterator<T> iterator () {
+		public Iterator<T> iterator() {
 			return this;
 		}
 	}
@@ -263,18 +277,18 @@ public final class VertexAttributes implements Iterable<VertexAttribute>, Compar
 		private final T[] array;
 		private ReadonlyIterator<T> iterator1, iterator2;
 
-		public ReadonlyIterable (T[] array) {
+		public ReadonlyIterable(T[] array) {
 			this.array = array;
 		}
 
 		@Override
-		public Iterator<T> iterator () {
-			if (Collections.allocateIterators) return new ReadonlyIterator<>(array);
-			if (iterator1 == null) {
+		public Iterator<T> iterator() {
+			if(Collections.allocateIterators) return new ReadonlyIterator<>(array);
+			if(iterator1 == null) {
 				iterator1 = new ReadonlyIterator<>(array);
 				iterator2 = new ReadonlyIterator<>(array);
 			}
-			if (!iterator1.valid) {
+			if(!iterator1.valid) {
 				iterator1.index = 0;
 				iterator1.valid = true;
 				iterator2.valid = false;

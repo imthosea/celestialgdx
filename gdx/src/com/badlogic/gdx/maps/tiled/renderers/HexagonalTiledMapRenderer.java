@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2013 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,36 +33,38 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 	private boolean staggerAxisX = true;
 	/** true for even StaggerIndex, false for odd */
 	private boolean staggerIndexEven = false;
-	/** the parameter defining the shape of the hexagon from tiled. more specifically it represents the length of the sides that
+	/**
+	 * the parameter defining the shape of the hexagon from tiled. more specifically it represents the length of the sides that
 	 * are parallel to the stagger axis. e.g. with respect to the stagger axis a value of 0 results in a rhombus shape, while a
 	 * value equal to the tile length/height represents a square shape and a value of 0.5 represents a regular hexagon if tile
-	 * length equals tile height */
+	 * length equals tile height
+	 */
 	private float hexSideLength = 0f;
 
-	public HexagonalTiledMapRenderer (TiledMap map) {
+	public HexagonalTiledMapRenderer(TiledMap map) {
 		super(map);
 		init(map);
 	}
 
-	public HexagonalTiledMapRenderer (TiledMap map, float unitScale) {
+	public HexagonalTiledMapRenderer(TiledMap map, float unitScale) {
 		super(map, unitScale);
 		init(map);
 	}
 
-	public HexagonalTiledMapRenderer (TiledMap map, Batch batch) {
+	public HexagonalTiledMapRenderer(TiledMap map, Batch batch) {
 		super(map, batch);
 		init(map);
 	}
 
-	public HexagonalTiledMapRenderer (TiledMap map, float unitScale, Batch batch) {
+	public HexagonalTiledMapRenderer(TiledMap map, float unitScale, Batch batch) {
 		super(map, unitScale, batch);
 		init(map);
 	}
 
-	private void init (TiledMap map) {
+	private void init(TiledMap map) {
 		String axis = map.getProperties().get("staggeraxis", String.class);
-		if (axis != null) {
-			if (axis.equals("x")) {
+		if(axis != null) {
+			if(axis.equals("x")) {
 				staggerAxisX = true;
 			} else {
 				staggerAxisX = false;
@@ -70,8 +72,8 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 		}
 
 		String index = map.getProperties().get("staggerindex", String.class);
-		if (index != null) {
-			if (index.equals("even")) {
+		if(index != null) {
+			if(index.equals("even")) {
 				staggerIndexEven = true;
 			} else {
 				staggerIndexEven = false;
@@ -80,26 +82,27 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 
 		// due to y-axis being different we need to change stagger index in even map height situations as else it would render
 		// differently.
-		if (!staggerAxisX && map.getProperties().get("height", Integer.class) % 2 == 0) staggerIndexEven = !staggerIndexEven;
+		if(!staggerAxisX && map.getProperties().get("height", Integer.class) % 2 == 0)
+			staggerIndexEven = !staggerIndexEven;
 
 		Integer length = map.getProperties().get("hexsidelength", Integer.class);
-		if (length != null) {
+		if(length != null) {
 			hexSideLength = length;
 		} else {
-			if (staggerAxisX) {
+			if(staggerAxisX) {
 				length = map.getProperties().get("tilewidth", Integer.class);
-				if (length != null) {
+				if(length != null) {
 					hexSideLength = 0.5f * length;
 				} else {
-					TiledMapTileLayer tmtl = (TiledMapTileLayer)map.getLayers().get(0);
+					TiledMapTileLayer tmtl = (TiledMapTileLayer) map.getLayers().get(0);
 					hexSideLength = 0.5f * tmtl.getTileWidth();
 				}
 			} else {
 				length = map.getProperties().get("tileheight", Integer.class);
-				if (length != null) {
+				if(length != null) {
 					hexSideLength = 0.5f * length;
 				} else {
-					TiledMapTileLayer tmtl = (TiledMapTileLayer)map.getLayers().get(0);
+					TiledMapTileLayer tmtl = (TiledMapTileLayer) map.getLayers().get(0);
 					hexSideLength = 0.5f * tmtl.getTileHeight();
 				}
 			}
@@ -107,7 +110,7 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 	}
 
 	@Override
-	public void renderTileLayer (TiledMapTileLayer layer) {
+	public void renderTileLayer(TiledMapTileLayer layer) {
 		final Color batchColor = batch.getColor();
 		final float color = getTileLayerColor(layer, batchColor);
 
@@ -123,31 +126,31 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 
 		final float layerHexLength = hexSideLength * unitScale;
 
-		if (staggerAxisX) {
+		if(staggerAxisX) {
 			final float tileWidthLowerCorner = (layerTileWidth - layerHexLength) / 2;
 			final float tileWidthUpperCorner = (layerTileWidth + layerHexLength) / 2;
 			final float layerTileHeight50 = layerTileHeight * 0.50f;
 
-			final int row1 = Math.max(0, (int)((viewBounds.y - layerTileHeight50 - layerOffsetX) / layerTileHeight));
+			final int row1 = Math.max(0, (int) ((viewBounds.y - layerTileHeight50 - layerOffsetX) / layerTileHeight));
 			final int row2 = Math.min(layerHeight,
-				(int)((viewBounds.y + viewBounds.height + layerTileHeight - layerOffsetX) / layerTileHeight));
+					(int) ((viewBounds.y + viewBounds.height + layerTileHeight - layerOffsetX) / layerTileHeight));
 
-			final int col1 = Math.max(0, (int)(((viewBounds.x - tileWidthLowerCorner - layerOffsetY) / tileWidthUpperCorner)));
+			final int col1 = Math.max(0, (int) (((viewBounds.x - tileWidthLowerCorner - layerOffsetY) / tileWidthUpperCorner)));
 			final int col2 = Math.min(layerWidth,
-				(int)((viewBounds.x + viewBounds.width + tileWidthUpperCorner - layerOffsetY) / tileWidthUpperCorner));
+					(int) ((viewBounds.x + viewBounds.width + tileWidthUpperCorner - layerOffsetY) / tileWidthUpperCorner));
 
 			// depending on the stagger index either draw all even before the odd or vice versa
 			final int colA = (staggerIndexEven == (col1 % 2 == 0)) ? col1 + 1 : col1;
 			final int colB = (staggerIndexEven == (col1 % 2 == 0)) ? col1 : col1 + 1;
 
-			for (int row = row2 - 1; row >= row1; row--) {
-				for (int col = colA; col < col2; col += 2) {
+			for(int row = row2 - 1; row >= row1; row--) {
+				for(int col = colA; col < col2; col += 2) {
 					renderCell(layer.getCell(col, row), tileWidthUpperCorner * col + layerOffsetX,
-						layerTileHeight50 + (layerTileHeight * row) + layerOffsetY, color);
+							layerTileHeight50 + (layerTileHeight * row) + layerOffsetY, color);
 				}
-				for (int col = colB; col < col2; col += 2) {
+				for(int col = colB; col < col2; col += 2) {
 					renderCell(layer.getCell(col, row), tileWidthUpperCorner * col + layerOffsetX,
-						layerTileHeight * row + layerOffsetY, color);
+							layerTileHeight * row + layerOffsetY, color);
 				}
 			}
 		} else {
@@ -155,35 +158,35 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 			final float tileHeightUpperCorner = (layerTileHeight + layerHexLength) / 2;
 			final float layerTileWidth50 = layerTileWidth * 0.50f;
 
-			final int row1 = Math.max(0, (int)(((viewBounds.y - tileHeightLowerCorner - layerOffsetX) / tileHeightUpperCorner)));
+			final int row1 = Math.max(0, (int) (((viewBounds.y - tileHeightLowerCorner - layerOffsetX) / tileHeightUpperCorner)));
 			final int row2 = Math.min(layerHeight,
-				(int)((viewBounds.y + viewBounds.height + tileHeightUpperCorner - layerOffsetX) / tileHeightUpperCorner));
+					(int) ((viewBounds.y + viewBounds.height + tileHeightUpperCorner - layerOffsetX) / tileHeightUpperCorner));
 
-			final int col1 = Math.max(0, (int)(((viewBounds.x - layerTileWidth50 - layerOffsetY) / layerTileWidth)));
+			final int col1 = Math.max(0, (int) (((viewBounds.x - layerTileWidth50 - layerOffsetY) / layerTileWidth)));
 			final int col2 = Math.min(layerWidth,
-				(int)((viewBounds.x + viewBounds.width + layerTileWidth - layerOffsetY) / layerTileWidth));
+					(int) ((viewBounds.x + viewBounds.width + layerTileWidth - layerOffsetY) / layerTileWidth));
 
 			float shiftX = 0;
-			for (int row = row2 - 1; row >= row1; row--) {
+			for(int row = row2 - 1; row >= row1; row--) {
 				// depending on the stagger index either shift for even or uneven indexes
-				if ((row % 2 == 0) == staggerIndexEven)
+				if((row % 2 == 0) == staggerIndexEven)
 					shiftX = layerTileWidth50;
 				else
 					shiftX = 0;
-				for (int col = col1; col < col2; col++) {
+				for(int col = col1; col < col2; col++) {
 					renderCell(layer.getCell(col, row), layerTileWidth * col + shiftX + layerOffsetX,
-						tileHeightUpperCorner * row + layerOffsetY, color);
+							tileHeightUpperCorner * row + layerOffsetY, color);
 				}
 			}
 		}
 	}
 
 	/** render a single cell */
-	private void renderCell (final TiledMapTileLayer.Cell cell, final float x, final float y, final float color) {
-		if (cell != null) {
+	private void renderCell(final TiledMapTileLayer.Cell cell, final float x, final float y, final float color) {
+		if(cell != null) {
 			final TiledMapTile tile = cell.getTile();
-			if (tile != null) {
-				if (tile instanceof AnimatedTiledMapTile) return;
+			if(tile != null) {
+				if(tile instanceof AnimatedTiledMapTile) return;
 
 				final boolean flipX = cell.getFlipHorizontally();
 				final boolean flipY = cell.getFlipVertically();
@@ -225,7 +228,7 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 				vertices[U4] = u2;
 				vertices[V4] = v1;
 
-				if (flipX) {
+				if(flipX) {
 					float temp = vertices[U1];
 					vertices[U1] = vertices[U3];
 					vertices[U3] = temp;
@@ -233,7 +236,7 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 					vertices[U2] = vertices[U4];
 					vertices[U4] = temp;
 				}
-				if (flipY) {
+				if(flipY) {
 					float temp = vertices[V1];
 					vertices[V1] = vertices[V3];
 					vertices[V3] = temp;
@@ -241,7 +244,7 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 					vertices[V2] = vertices[V4];
 					vertices[V4] = temp;
 				}
-				if (rotations == 2) {
+				if(rotations == 2) {
 					float tempU = vertices[U1];
 					vertices[U1] = vertices[U3];
 					vertices[U3] = tempU;
@@ -261,7 +264,7 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 	}
 
 	@Override
-	public void renderImageLayer (TiledMapImageLayer layer) {
+	public void renderImageLayer(TiledMapImageLayer layer) {
 		final Color batchColor = batch.getColor();
 
 		final float color = getImageLayerColor(layer, batchColor);
@@ -270,7 +273,7 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 
 		TextureRegion region = layer.getTextureRegion();
 
-		if (region == null) {
+		if(region == null) {
 			return;
 		}
 
@@ -286,7 +289,7 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 		float layerTileHeight = tileHeight * unitScale;
 		float halfTileHeight = layerTileHeight * 0.5f;
 
-		if (staggerAxisX) {
+		if(staggerAxisX) {
 			/** If X axis staggered, must offset imagelayer y position by adding half of tileHeight to match position */
 			imageLayerYOffset = halfTileHeight;
 		} else {
@@ -305,8 +308,8 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 
 		imageBounds.set(x1, y1, x2 - x1, y2 - y1);
 
-		if (!layer.isRepeatX() && !layer.isRepeatY()) {
-			if (viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
+		if(!layer.isRepeatX() && !layer.isRepeatY()) {
+			if(viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
 				final float u1 = region.getU();
 				final float v1 = region.getV2();
 				final float u2 = region.getU2();
@@ -341,8 +344,8 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 		} else {
 
 			// Determine number of times to repeat image across X and Y, + 4 for padding to avoid pop in/out
-			int repeatX = layer.isRepeatX() ? (int)Math.ceil((viewBounds.width / imageBounds.width) + 4) : 0;
-			int repeatY = layer.isRepeatY() ? (int)Math.ceil((viewBounds.height / imageBounds.height) + 4) : 0;
+			int repeatX = layer.isRepeatX() ? (int) Math.ceil((viewBounds.width / imageBounds.width) + 4) : 0;
+			int repeatY = layer.isRepeatY() ? (int) Math.ceil((viewBounds.height / imageBounds.height) + 4) : 0;
 
 			// Calculate the offset of the first image to align with the camera
 			float startX = viewBounds.x;
@@ -350,8 +353,8 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 			startX = startX - (startX % imageBounds.width);
 			startY = startY - (startY % imageBounds.height);
 
-			for (int i = 0; i <= repeatX; i++) {
-				for (int j = 0; j <= repeatY; j++) {
+			for(int i = 0; i <= repeatX; i++) {
+				for(int j = 0; j <= repeatY; j++) {
 					float rx1 = x1;
 					float ry1 = y1;
 					float rx2 = x2;
@@ -360,19 +363,19 @@ public class HexagonalTiledMapRenderer extends BatchTiledMapRenderer {
 					// Use (i -2)/(j-2) to begin placing our repeating images outside the camera.
 					// In case the image is offset, we must negate this using + (x1% imageBounds.width)
 					// It's a way to get the remainder of how many images would fit between its starting position and 0
-					if (layer.isRepeatX()) {
+					if(layer.isRepeatX()) {
 						rx1 = startX + ((i - 2) * imageBounds.width) + (x1 % imageBounds.width);
 						rx2 = rx1 + imageBounds.width;
 					}
 
-					if (layer.isRepeatY()) {
+					if(layer.isRepeatY()) {
 						ry1 = startY + ((j - 2) * imageBounds.height) + (y1 % imageBounds.height);
 						ry2 = ry1 + imageBounds.height;
 					}
 
 					repeatedImageBounds.set(rx1, ry1, rx2 - rx1, ry2 - ry1);
 
-					if (viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
+					if(viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
 						final float ru1 = region.getU();
 						final float rv1 = region.getV2();
 						final float ru2 = region.getU2();

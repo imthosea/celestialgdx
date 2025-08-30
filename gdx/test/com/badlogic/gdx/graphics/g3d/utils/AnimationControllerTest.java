@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.graphics.g3d.utils;
 
 import org.junit.Assert;
@@ -14,7 +13,7 @@ import com.badlogic.gdx.utils.Array;
 public class AnimationControllerTest {
 
 	@Test
-	public void testGetFirstKeyframeIndexAtTimeNominal () {
+	public void testGetFirstKeyframeIndexAtTimeNominal() {
 
 		Array<NodeKeyframe<String>> keyFrames = new Array<NodeKeyframe<String>>();
 
@@ -33,7 +32,7 @@ public class AnimationControllerTest {
 	}
 
 	@Test
-	public void testGetFirstKeyframeIndexAtTimeSingleKey () {
+	public void testGetFirstKeyframeIndexAtTimeSingleKey() {
 
 		Array<NodeKeyframe<String>> keyFrames = new Array<NodeKeyframe<String>>();
 
@@ -45,21 +44,21 @@ public class AnimationControllerTest {
 	}
 
 	@Test
-	public void testGetFirstKeyframeIndexAtTimeEmpty () {
+	public void testGetFirstKeyframeIndexAtTimeEmpty() {
 
 		Array<NodeKeyframe<String>> keyFrames = new Array<NodeKeyframe<String>>();
 
 		Assert.assertEquals(0, BaseAnimationController.getFirstKeyframeIndexAtTime(keyFrames, 3f));
 	}
 
-	private static void assertSameAnimation (Animation expected, AnimationDesc actual) {
-		if (!expected.id.equals(actual.animation.id)) {
+	private static void assertSameAnimation(Animation expected, AnimationDesc actual) {
+		if(!expected.id.equals(actual.animation.id)) {
 			Assert.fail("expected: " + expected.id + ", actual: " + actual.animation.id);
 		}
 	}
 
 	@Test
-	public void testEndUpActionAtDurationTime () {
+	public void testEndUpActionAtDurationTime() {
 
 		Animation loop = new Animation();
 		loop.id = "loop";
@@ -92,7 +91,7 @@ public class AnimationControllerTest {
 	}
 
 	@Test
-	public void testEndUpActionAtDurationTimeReverse () {
+	public void testEndUpActionAtDurationTimeReverse() {
 
 		Animation loop = new Animation();
 		loop.id = "loop";

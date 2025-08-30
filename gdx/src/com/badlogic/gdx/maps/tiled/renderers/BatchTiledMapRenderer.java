@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2013 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,27 +15,6 @@
  ******************************************************************************/
 
 package com.badlogic.gdx.maps.tiled.renderers;
-
-import static com.badlogic.gdx.graphics.g2d.Batch.C1;
-import static com.badlogic.gdx.graphics.g2d.Batch.C2;
-import static com.badlogic.gdx.graphics.g2d.Batch.C3;
-import static com.badlogic.gdx.graphics.g2d.Batch.C4;
-import static com.badlogic.gdx.graphics.g2d.Batch.U1;
-import static com.badlogic.gdx.graphics.g2d.Batch.U2;
-import static com.badlogic.gdx.graphics.g2d.Batch.U3;
-import static com.badlogic.gdx.graphics.g2d.Batch.U4;
-import static com.badlogic.gdx.graphics.g2d.Batch.V1;
-import static com.badlogic.gdx.graphics.g2d.Batch.V2;
-import static com.badlogic.gdx.graphics.g2d.Batch.V3;
-import static com.badlogic.gdx.graphics.g2d.Batch.V4;
-import static com.badlogic.gdx.graphics.g2d.Batch.X1;
-import static com.badlogic.gdx.graphics.g2d.Batch.X2;
-import static com.badlogic.gdx.graphics.g2d.Batch.X3;
-import static com.badlogic.gdx.graphics.g2d.Batch.X4;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y1;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -46,11 +25,16 @@ import com.badlogic.gdx.maps.MapGroupLayer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.tiled.*;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapImageLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
+
+import static com.badlogic.gdx.graphics.g2d.Batch.*;
 
 public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposable {
 	static protected final int NUM_VERTICES = 20;
@@ -69,31 +53,31 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 
 	protected final float[] vertices = new float[NUM_VERTICES];
 
-	public TiledMap getMap () {
+	public TiledMap getMap() {
 		return map;
 	}
 
-	public void setMap (TiledMap map) {
+	public void setMap(TiledMap map) {
 		this.map = map;
 	}
 
-	public float getUnitScale () {
+	public float getUnitScale() {
 		return unitScale;
 	}
 
-	public Batch getBatch () {
+	public Batch getBatch() {
 		return batch;
 	}
 
-	public Rectangle getViewBounds () {
+	public Rectangle getViewBounds() {
 		return viewBounds;
 	}
 
-	public BatchTiledMapRenderer (TiledMap map) {
+	public BatchTiledMapRenderer(TiledMap map) {
 		this(map, 1.0f);
 	}
 
-	public BatchTiledMapRenderer (TiledMap map, float unitScale) {
+	public BatchTiledMapRenderer(TiledMap map, float unitScale) {
 		this.map = map;
 		this.unitScale = unitScale;
 		this.viewBounds = new Rectangle();
@@ -101,11 +85,11 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 		this.ownsBatch = true;
 	}
 
-	public BatchTiledMapRenderer (TiledMap map, Batch batch) {
+	public BatchTiledMapRenderer(TiledMap map, Batch batch) {
 		this(map, 1.0f, batch);
 	}
 
-	public BatchTiledMapRenderer (TiledMap map, float unitScale, Batch batch) {
+	public BatchTiledMapRenderer(TiledMap map, float unitScale, Batch batch) {
 		this.map = map;
 		this.unitScale = unitScale;
 		this.viewBounds = new Rectangle();
@@ -114,7 +98,7 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 	}
 
 	@Override
-	public void setView (OrthographicCamera camera) {
+	public void setView(OrthographicCamera camera) {
 		batch.setProjectionMatrix(camera.combined);
 		float width = camera.viewportWidth * camera.zoom;
 		float height = camera.viewportHeight * camera.zoom;
@@ -124,44 +108,44 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 	}
 
 	@Override
-	public void setView (Matrix4 projection, float x, float y, float width, float height) {
+	public void setView(Matrix4 projection, float x, float y, float width, float height) {
 		batch.setProjectionMatrix(projection);
 		viewBounds.set(x, y, width, height);
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		beginRender();
-		for (MapLayer layer : map.getLayers()) {
+		for(MapLayer layer : map.getLayers()) {
 			renderMapLayer(layer);
 		}
 		endRender();
 	}
 
 	@Override
-	public void render (int[] layers) {
+	public void render(int[] layers) {
 		beginRender();
-		for (int layerIdx : layers) {
+		for(int layerIdx : layers) {
 			MapLayer layer = map.getLayers().get(layerIdx);
 			renderMapLayer(layer);
 		}
 		endRender();
 	}
 
-	public void renderMapLayer (MapLayer layer) {
-		if (!layer.isVisible()) return;
-		if (layer instanceof MapGroupLayer) {
-			MapLayers childLayers = ((MapGroupLayer)layer).getLayers();
-			for (int i = 0; i < childLayers.size(); i++) {
+	public void renderMapLayer(MapLayer layer) {
+		if(!layer.isVisible()) return;
+		if(layer instanceof MapGroupLayer) {
+			MapLayers childLayers = ((MapGroupLayer) layer).getLayers();
+			for(int i = 0; i < childLayers.size(); i++) {
 				MapLayer childLayer = childLayers.get(i);
-				if (!childLayer.isVisible()) continue;
+				if(!childLayer.isVisible()) continue;
 				renderMapLayer(childLayer);
 			}
 		} else {
-			if (layer instanceof TiledMapTileLayer) {
-				renderTileLayer((TiledMapTileLayer)layer);
-			} else if (layer instanceof TiledMapImageLayer) {
-				renderImageLayer((TiledMapImageLayer)layer);
+			if(layer instanceof TiledMapTileLayer) {
+				renderTileLayer((TiledMapTileLayer) layer);
+			} else if(layer instanceof TiledMapImageLayer) {
+				renderImageLayer((TiledMapImageLayer) layer);
 			} else {
 				renderObjects(layer);
 			}
@@ -169,19 +153,19 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 	}
 
 	@Override
-	public void renderObjects (MapLayer layer) {
-		for (MapObject object : layer.getObjects()) {
+	public void renderObjects(MapLayer layer) {
+		for(MapObject object : layer.getObjects()) {
 			renderObject(object);
 		}
 	}
 
 	@Override
-	public void renderObject (MapObject object) {
+	public void renderObject(MapObject object) {
 
 	}
 
 	@Override
-	public void renderImageLayer (TiledMapImageLayer layer) {
+	public void renderImageLayer(TiledMapImageLayer layer) {
 		final Color batchColor = batch.getColor();
 
 		final float color = getImageLayerColor(layer, batchColor);
@@ -190,7 +174,7 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 
 		TextureRegion region = layer.getTextureRegion();
 
-		if (region == null) {
+		if(region == null) {
 			return;
 		}
 
@@ -203,8 +187,8 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 
 		imageBounds.set(x1, y1, x2 - x1, y2 - y1);
 
-		if (!layer.isRepeatX() && !layer.isRepeatY()) {
-			if (viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
+		if(!layer.isRepeatX() && !layer.isRepeatY()) {
+			if(viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
 				final float u1 = region.getU();
 				final float v1 = region.getV2();
 				final float u2 = region.getU2();
@@ -239,8 +223,8 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 		} else {
 
 			// Determine number of times to repeat image across X and Y, + 4 for padding to avoid pop in/out
-			int repeatX = layer.isRepeatX() ? (int)Math.ceil((viewBounds.width / imageBounds.width) + 4) : 0;
-			int repeatY = layer.isRepeatY() ? (int)Math.ceil((viewBounds.height / imageBounds.height) + 4) : 0;
+			int repeatX = layer.isRepeatX() ? (int) Math.ceil((viewBounds.width / imageBounds.width) + 4) : 0;
+			int repeatY = layer.isRepeatY() ? (int) Math.ceil((viewBounds.height / imageBounds.height) + 4) : 0;
 
 			// Calculate the offset of the first image to align with the camera
 			float startX = viewBounds.x;
@@ -248,8 +232,8 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 			startX = startX - (startX % imageBounds.width);
 			startY = startY - (startY % imageBounds.height);
 
-			for (int i = 0; i <= repeatX; i++) {
-				for (int j = 0; j <= repeatY; j++) {
+			for(int i = 0; i <= repeatX; i++) {
+				for(int j = 0; j <= repeatY; j++) {
 					float rx1 = x1;
 					float ry1 = y1;
 					float rx2 = x2;
@@ -258,19 +242,19 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 					// Use (i -2)/(j-2) to begin placing our repeating images outside the camera.
 					// In case the image is offset, we must negate this using + (x1% imageBounds.width)
 					// It's a way to get the remainder of how many images would fit between its starting position and 0
-					if (layer.isRepeatX()) {
+					if(layer.isRepeatX()) {
 						rx1 = startX + ((i - 2) * imageBounds.width) + (x1 % imageBounds.width);
 						rx2 = rx1 + imageBounds.width;
 					}
 
-					if (layer.isRepeatY()) {
+					if(layer.isRepeatY()) {
 						ry1 = startY + ((j - 2) * imageBounds.height) + (y1 % imageBounds.height);
 						ry2 = ry1 + imageBounds.height;
 					}
 
 					repeatedImageBounds.set(rx1, ry1, rx2 - rx1, ry2 - ry1);
 
-					if (viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
+					if(viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
 						final float ru1 = region.getU();
 						final float rv1 = region.getV2();
 						final float ru2 = region.getU2();
@@ -307,13 +291,14 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 		}
 	}
 
-	/** Calculates the float color for rendering an image layer, taking into account the layer's tint color, opacity, and whether
+	/**
+	 * Calculates the float color for rendering an image layer, taking into account the layer's tint color, opacity, and whether
 	 * the image format supports transparency then multiplying is against the batchColor
-	 *
 	 * @param layer The layer to render.
 	 * @param batchColor The current color of the batch.
-	 * @return The float color value to use for rendering. */
-	protected float getImageLayerColor (TiledMapImageLayer layer, Color batchColor) {
+	 * @return The float color value to use for rendering.
+	 */
+	protected float getImageLayerColor(TiledMapImageLayer layer, Color batchColor) {
 
 		final Color combinedTint = layer.getCombinedTintColor();
 
@@ -329,34 +314,35 @@ public abstract class BatchTiledMapRenderer implements TiledMapRenderer, Disposa
 		// For image layer rendering multiply all by alpha
 		// except for opacity when image layer does not support transparency
 		return Color.toFloatBits(batchColor.r * (combinedTint.r * alphaMultiplier),
-			batchColor.g * (combinedTint.g * alphaMultiplier), batchColor.b * (combinedTint.b * alphaMultiplier),
-			batchColor.a * (layer.getOpacity() * opacityMultiplier));
+				batchColor.g * (combinedTint.g * alphaMultiplier), batchColor.b * (combinedTint.b * alphaMultiplier),
+				batchColor.a * (layer.getOpacity() * opacityMultiplier));
 	}
 
-	/** Calculates the float color for rendering a tile layer, taking into account the layer's tint color and opacity, then
+	/**
+	 * Calculates the float color for rendering a tile layer, taking into account the layer's tint color and opacity, then
 	 * multiplying is against the batchColor
-	 *
 	 * @param layer
-	 * @param batchColor */
-	protected float getTileLayerColor (TiledMapTileLayer layer, Color batchColor) {
+	 * @param batchColor
+	 */
+	protected float getTileLayerColor(TiledMapTileLayer layer, Color batchColor) {
 		return Color.toFloatBits(batchColor.r * layer.getCombinedTintColor().r, batchColor.g * layer.getCombinedTintColor().g,
-			batchColor.b * layer.getCombinedTintColor().b, batchColor.a * layer.getCombinedTintColor().a * layer.getOpacity());
+				batchColor.b * layer.getCombinedTintColor().b, batchColor.a * layer.getCombinedTintColor().a * layer.getOpacity());
 	}
 
 	/** Called before the rendering of all layers starts. */
-	protected void beginRender () {
+	protected void beginRender() {
 		AnimatedTiledMapTile.updateAnimationBaseTime();
 		batch.begin();
 	}
 
 	/** Called after the rendering of all layers ended. */
-	protected void endRender () {
+	protected void endRender() {
 		batch.end();
 	}
 
 	@Override
-	public void dispose () {
-		if (ownsBatch) {
+	public void dispose() {
+		if(ownsBatch) {
 			batch.dispose();
 		}
 	}

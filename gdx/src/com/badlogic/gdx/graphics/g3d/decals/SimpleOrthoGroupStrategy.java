@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -74,13 +74,13 @@ public class SimpleOrthoGroupStrategy implements GroupStrategy {
 	private static final int GROUP_BLEND = 1;
 
 	@Override
-	public int decideGroup (Decal decal) {
+	public int decideGroup(Decal decal) {
 		return decal.getMaterial().isOpaque() ? GROUP_OPAQUE : GROUP_BLEND;
 	}
 
 	@Override
-	public void beforeGroup (int group, Array<Decal> contents) {
-		if (group == GROUP_BLEND) {
+	public void beforeGroup(int group, Array<Decal> contents) {
+		if(group == GROUP_BLEND) {
 			Sort.instance().sort(contents, comparator);
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			// no need for writing into the z buffer if transparent decals are the last thing to be rendered
@@ -92,33 +92,33 @@ public class SimpleOrthoGroupStrategy implements GroupStrategy {
 	}
 
 	@Override
-	public void afterGroup (int group) {
-		if (group == GROUP_BLEND) {
+	public void afterGroup(int group) {
+		if(group == GROUP_BLEND) {
 			Gdx.gl.glDepthMask(true);
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 		}
 	}
 
 	@Override
-	public void beforeGroups () {
+	public void beforeGroups() {
 		Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 	}
 
 	@Override
-	public void afterGroups () {
+	public void afterGroups() {
 		Gdx.gl.glDisable(GL20.GL_TEXTURE_2D);
 	}
 
 	static class Comparator implements java.util.Comparator<Decal> {
 		@Override
-		public int compare (Decal a, Decal b) {
-			if (a.getZ() == b.getZ()) return 0;
+		public int compare(Decal a, Decal b) {
+			if(a.getZ() == b.getZ()) return 0;
 			return a.getZ() - b.getZ() < 0 ? -1 : 1;
 		}
 	}
 
 	@Override
-	public ShaderProgram getGroupShader (int group) {
+	public ShaderProgram getGroupShader(int group) {
 		return null;
 	}
 }

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,63 +42,63 @@ public class TextureAttribute extends Attribute {
 
 	protected static final long Mask = Diffuse | Specular | Bump | Normal | Ambient | Emissive | Reflection;
 
-	public final static boolean is (final long mask) {
+	public final static boolean is(final long mask) {
 		return (mask & Mask) != 0;
 	}
 
-	public static TextureAttribute createDiffuse (final Texture texture) {
+	public static TextureAttribute createDiffuse(final Texture texture) {
 		return new TextureAttribute(Diffuse, texture);
 	}
 
-	public static TextureAttribute createDiffuse (final TextureRegion region) {
+	public static TextureAttribute createDiffuse(final TextureRegion region) {
 		return new TextureAttribute(Diffuse, region);
 	}
 
-	public static TextureAttribute createSpecular (final Texture texture) {
+	public static TextureAttribute createSpecular(final Texture texture) {
 		return new TextureAttribute(Specular, texture);
 	}
 
-	public static TextureAttribute createSpecular (final TextureRegion region) {
+	public static TextureAttribute createSpecular(final TextureRegion region) {
 		return new TextureAttribute(Specular, region);
 	}
 
-	public static TextureAttribute createNormal (final Texture texture) {
+	public static TextureAttribute createNormal(final Texture texture) {
 		return new TextureAttribute(Normal, texture);
 	}
 
-	public static TextureAttribute createNormal (final TextureRegion region) {
+	public static TextureAttribute createNormal(final TextureRegion region) {
 		return new TextureAttribute(Normal, region);
 	}
 
-	public static TextureAttribute createBump (final Texture texture) {
+	public static TextureAttribute createBump(final Texture texture) {
 		return new TextureAttribute(Bump, texture);
 	}
 
-	public static TextureAttribute createBump (final TextureRegion region) {
+	public static TextureAttribute createBump(final TextureRegion region) {
 		return new TextureAttribute(Bump, region);
 	}
 
-	public static TextureAttribute createAmbient (final Texture texture) {
+	public static TextureAttribute createAmbient(final Texture texture) {
 		return new TextureAttribute(Ambient, texture);
 	}
 
-	public static TextureAttribute createAmbient (final TextureRegion region) {
+	public static TextureAttribute createAmbient(final TextureRegion region) {
 		return new TextureAttribute(Ambient, region);
 	}
 
-	public static TextureAttribute createEmissive (final Texture texture) {
+	public static TextureAttribute createEmissive(final Texture texture) {
 		return new TextureAttribute(Emissive, texture);
 	}
 
-	public static TextureAttribute createEmissive (final TextureRegion region) {
+	public static TextureAttribute createEmissive(final TextureRegion region) {
 		return new TextureAttribute(Emissive, region);
 	}
 
-	public static TextureAttribute createReflection (final Texture texture) {
+	public static TextureAttribute createReflection(final Texture texture) {
 		return new TextureAttribute(Reflection, texture);
 	}
 
-	public static TextureAttribute createReflection (final TextureRegion region) {
+	public static TextureAttribute createReflection(final TextureRegion region) {
 		return new TextureAttribute(Reflection, region);
 	}
 
@@ -107,24 +107,26 @@ public class TextureAttribute extends Attribute {
 	public float offsetV = 0;
 	public float scaleU = 1;
 	public float scaleV = 1;
-	/** The index of the texture coordinate vertex attribute to use for this TextureAttribute. Whether this value is used, depends
+	/**
+	 * The index of the texture coordinate vertex attribute to use for this TextureAttribute. Whether this value is used, depends
 	 * on the shader and {@link Attribute#type} value. For basic (model specific) types (e.g. {@link #Diffuse}, {@link #Normal},
-	 * etc.), this value is usually ignored and the first texture coordinate vertex attribute is used. */
+	 * etc.), this value is usually ignored and the first texture coordinate vertex attribute is used.
+	 */
 	public int uvIndex = 0;
 
-	public TextureAttribute (final long type) {
+	public TextureAttribute(final long type) {
 		super(type);
-		if (!is(type)) throw new GdxRuntimeException("Invalid type specified");
+		if(!is(type)) throw new GdxRuntimeException("Invalid type specified");
 		textureDescription = new TextureDescriptor<>();
 	}
 
-	public <T extends Texture> TextureAttribute (final long type, final TextureDescriptor<T> textureDescription) {
+	public <T extends Texture> TextureAttribute(final long type, final TextureDescriptor<T> textureDescription) {
 		this(type);
 		this.textureDescription.set(textureDescription);
 	}
 
-	public <T extends Texture> TextureAttribute (final long type, final TextureDescriptor<T> textureDescription, float offsetU,
-		float offsetV, float scaleU, float scaleV, int uvIndex) {
+	public <T extends Texture> TextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
+	                                            float offsetV, float scaleU, float scaleV, int uvIndex) {
 		this(type, textureDescription);
 		this.offsetU = offsetU;
 		this.offsetV = offsetV;
@@ -133,27 +135,27 @@ public class TextureAttribute extends Attribute {
 		this.uvIndex = uvIndex;
 	}
 
-	public <T extends Texture> TextureAttribute (final long type, final TextureDescriptor<T> textureDescription, float offsetU,
-		float offsetV, float scaleU, float scaleV) {
+	public <T extends Texture> TextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
+	                                            float offsetV, float scaleU, float scaleV) {
 		this(type, textureDescription, offsetU, offsetV, scaleU, scaleV, 0);
 	}
 
-	public TextureAttribute (final long type, final Texture texture) {
+	public TextureAttribute(final long type, final Texture texture) {
 		this(type);
 		textureDescription.texture = texture;
 	}
 
-	public TextureAttribute (final long type, final TextureRegion region) {
+	public TextureAttribute(final long type, final TextureRegion region) {
 		this(type);
 		set(region);
 	}
 
-	public TextureAttribute (final TextureAttribute copyFrom) {
+	public TextureAttribute(final TextureAttribute copyFrom) {
 		this(copyFrom.type, copyFrom.textureDescription, copyFrom.offsetU, copyFrom.offsetV, copyFrom.scaleU, copyFrom.scaleV,
-			copyFrom.uvIndex);
+				copyFrom.uvIndex);
 	}
 
-	public void set (final TextureRegion region) {
+	public void set(final TextureRegion region) {
 		textureDescription.texture = region.getTexture();
 		offsetU = region.getU();
 		offsetV = region.getV();
@@ -162,12 +164,12 @@ public class TextureAttribute extends Attribute {
 	}
 
 	@Override
-	public Attribute copy () {
+	public Attribute copy() {
 		return new TextureAttribute(this);
 	}
 
 	@Override
-	public int hashCode () {
+	public int hashCode() {
 		int result = super.hashCode();
 		result = 991 * result + textureDescription.hashCode();
 		result = 991 * result + NumberUtils.floatToRawIntBits(offsetU);
@@ -179,16 +181,16 @@ public class TextureAttribute extends Attribute {
 	}
 
 	@Override
-	public int compareTo (Attribute o) {
-		if (type != o.type) return type < o.type ? -1 : 1;
-		TextureAttribute other = (TextureAttribute)o;
+	public int compareTo(Attribute o) {
+		if(type != o.type) return type < o.type ? -1 : 1;
+		TextureAttribute other = (TextureAttribute) o;
 		final int c = textureDescription.compareTo(other.textureDescription);
-		if (c != 0) return c;
-		if (uvIndex != other.uvIndex) return uvIndex - other.uvIndex;
-		if (!MathUtils.isEqual(scaleU, other.scaleU)) return scaleU > other.scaleU ? 1 : -1;
-		if (!MathUtils.isEqual(scaleV, other.scaleV)) return scaleV > other.scaleV ? 1 : -1;
-		if (!MathUtils.isEqual(offsetU, other.offsetU)) return offsetU > other.offsetU ? 1 : -1;
-		if (!MathUtils.isEqual(offsetV, other.offsetV)) return offsetV > other.offsetV ? 1 : -1;
+		if(c != 0) return c;
+		if(uvIndex != other.uvIndex) return uvIndex - other.uvIndex;
+		if(!MathUtils.isEqual(scaleU, other.scaleU)) return scaleU > other.scaleU ? 1 : -1;
+		if(!MathUtils.isEqual(scaleV, other.scaleV)) return scaleV > other.scaleV ? 1 : -1;
+		if(!MathUtils.isEqual(offsetU, other.offsetU)) return offsetU > other.offsetU ? 1 : -1;
+		if(!MathUtils.isEqual(offsetV, other.offsetV)) return offsetV > other.offsetV ? 1 : -1;
 		return 0;
 	}
 }

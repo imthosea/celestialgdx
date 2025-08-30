@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,14 +27,18 @@ import com.badlogic.gdx.utils.Timer.Task;
 import static com.badlogic.gdx.math.Interpolation.fade;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
-/** Keeps track of an application's tooltips.
- * @author Nathan Sweet */
+/**
+ * Keeps track of an application's tooltips.
+ * @author Nathan Sweet
+ */
 public class TooltipManager {
 	static private TooltipManager instance;
 	static private Files files;
 
-	/** Seconds from when an actor is hovered to when the tooltip is shown. Default is 2. Call {@link #hideAll()} after changing to
-	 * reset internal state. */
+	/**
+	 * Seconds from when an actor is hovered to when the tooltip is shown. Default is 2. Call {@link #hideAll()} after changing to
+	 * reset internal state.
+	 */
 	public final float initialTime = 2;
 	/** Once a tooltip is shown, this is used instead of {@link #initialTime}. Default is 0. */
 	public final float subsequentTime = 0;
@@ -49,26 +53,28 @@ public class TooltipManager {
 	/** The distance from the mouse position to offset the tooltip actor. Default is 15,19. */
 	public final float offsetX = 15;
 	public final float offsetY = 19;
-	/** The distance from the tooltip actor position to the edge of the screen where the actor will be shown on the other side of
-	 * the mouse cursor. Default is 7. */
+	/**
+	 * The distance from the tooltip actor position to the edge of the screen where the actor will be shown on the other side of
+	 * the mouse cursor. Default is 7.
+	 */
 	public final float edgeDistance = 7;
 
 	final Array<Tooltip> shown = new Array();
 
 	float time = initialTime;
 	final Task resetTask = new Task() {
-		public void run () {
+		public void run() {
 			time = initialTime;
 		}
 	};
 
 	Tooltip showTooltip;
 	final Task showTask = new Task() {
-		public void run () {
-			if (showTooltip == null || showTooltip.targetActor == null) return;
+		public void run() {
+			if(showTooltip == null || showTooltip.targetActor == null) return;
 
 			Stage stage = showTooltip.targetActor.getStage();
-			if (stage == null) return;
+			if(stage == null) return;
 			stage.addActor(showTooltip.container);
 			showTooltip.container.toFront();
 			shown.add(showTooltip);
@@ -76,38 +82,38 @@ public class TooltipManager {
 			showTooltip.container.clearActions();
 			showAction(showTooltip);
 
-			if (!showTooltip.instant) {
+			if(!showTooltip.instant) {
 				time = subsequentTime;
 				resetTask.cancel();
 			}
 		}
 	};
 
-	public void touchDown (Tooltip tooltip) {
+	public void touchDown(Tooltip tooltip) {
 		showTask.cancel();
-		if (tooltip.container.remove()) resetTask.cancel();
+		if(tooltip.container.remove()) resetTask.cancel();
 		resetTask.run();
-		if (enabled || tooltip.always) {
+		if(enabled || tooltip.always) {
 			showTooltip = tooltip;
 			Timer.schedule(showTask, time);
 		}
 	}
 
-	public void enter (Tooltip tooltip) {
+	public void enter(Tooltip tooltip) {
 		showTooltip = tooltip;
 		showTask.cancel();
-		if (enabled || tooltip.always) {
-			if (time == 0 || tooltip.instant)
+		if(enabled || tooltip.always) {
+			if(time == 0 || tooltip.instant)
 				showTask.run();
 			else
 				Timer.schedule(showTask, time);
 		}
 	}
 
-	public void hide (Tooltip tooltip) {
+	public void hide(Tooltip tooltip) {
 		showTooltip = null;
 		showTask.cancel();
-		if (tooltip.container.hasParent()) {
+		if(tooltip.container.hasParent()) {
 			shown.removeValue(tooltip, true);
 			hideAction(tooltip);
 			resetTask.cancel();
@@ -116,7 +122,7 @@ public class TooltipManager {
 	}
 
 	/** Called when tooltip is shown. Default implementation sets actions to animate showing. */
-	protected void showAction (Tooltip tooltip) {
+	protected void showAction(Tooltip tooltip) {
 		float actionTime = animations ? (time > 0 ? 0.5f : 0.15f) : 0.1f;
 		tooltip.container.setTransform(true);
 		tooltip.container.getColor().a = 0.2f;
@@ -124,33 +130,35 @@ public class TooltipManager {
 		tooltip.container.addAction(parallel(fadeIn(actionTime, fade), scaleTo(1, 1, actionTime, Interpolation.fade)));
 	}
 
-	/** Called when tooltip is hidden. Default implementation sets actions to animate hiding and to remove the actor from the stage
-	 * when the actions are complete. A subclass must at least remove the actor. */
-	protected void hideAction (Tooltip tooltip) {
+	/**
+	 * Called when tooltip is hidden. Default implementation sets actions to animate hiding and to remove the actor from the stage
+	 * when the actions are complete. A subclass must at least remove the actor.
+	 */
+	protected void hideAction(Tooltip tooltip) {
 		tooltip.container
-			.addAction(sequence(parallel(alpha(0.2f, 0.2f, fade), scaleTo(0.05f, 0.05f, 0.2f, Interpolation.fade)), removeActor()));
+				.addAction(sequence(parallel(alpha(0.2f, 0.2f, fade), scaleTo(0.05f, 0.05f, 0.2f, Interpolation.fade)), removeActor()));
 	}
 
-	public void hideAll () {
+	public void hideAll() {
 		resetTask.cancel();
 		showTask.cancel();
 		time = initialTime;
 		showTooltip = null;
 
-		for (Tooltip tooltip : shown)
+		for(Tooltip tooltip : shown)
 			tooltip.hide();
 		shown.clear();
 	}
 
 	/** Shows all tooltips on hover without a delay for {@link #resetTime} seconds. */
-	public void instant () {
+	public void instant() {
 		time = 0;
 		showTask.run();
 		showTask.cancel();
 	}
 
-	static public TooltipManager getInstance () {
-		if (files == null || files != Gdx.files) {
+	static public TooltipManager getInstance() {
+		if(files == null || files != Gdx.files) {
 			files = Gdx.files;
 			instance = new TooltipManager();
 		}

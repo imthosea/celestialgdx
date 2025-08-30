@@ -22,29 +22,34 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Vector3;
 
-/** FrustumShapeBuilder builds camera or frustum.
- * 
- * @author realitix */
+/**
+ * FrustumShapeBuilder builds camera or frustum.
+ * @author realitix
+ */
 public class FrustumShapeBuilder extends BaseShapeBuilder {
 
-	/** Build camera with default colors
+	/**
+	 * Build camera with default colors
 	 * @param builder MeshPartBuilder
-	 * @param camera Camera */
-	public static void build (MeshPartBuilder builder, Camera camera) {
+	 * @param camera Camera
+	 */
+	public static void build(MeshPartBuilder builder, Camera camera) {
 		build(builder, camera, tmpColor0.set(1, 0.66f, 0, 1), tmpColor1.set(1, 0, 0, 1), tmpColor2.set(0, 0.66f, 1, 1),
-			tmpColor3.set(1, 1, 1, 1), tmpColor4.set(0.2f, 0.2f, 0.2f, 1));
+				tmpColor3.set(1, 1, 1, 1), tmpColor4.set(0.2f, 0.2f, 0.2f, 1));
 	}
 
-	/** Build Camera with custom colors
+	/**
+	 * Build Camera with custom colors
 	 * @param builder
 	 * @param camera
 	 * @param frustumColor
 	 * @param coneColor
 	 * @param upColor
 	 * @param targetColor
-	 * @param crossColor */
-	public static void build (MeshPartBuilder builder, Camera camera, Color frustumColor, Color coneColor, Color upColor,
-		Color targetColor, Color crossColor) {
+	 * @param crossColor
+	 */
+	public static void build(MeshPartBuilder builder, Camera camera, Color frustumColor, Color coneColor, Color upColor,
+	                         Color targetColor, Color crossColor) {
 		Vector3[] planePoints = camera.frustum.planePoints;
 
 		// Frustum
@@ -70,12 +75,14 @@ public class FrustumShapeBuilder extends BaseShapeBuilder {
 		builder.line(planePoints[3], upColor, centerNear, upColor);
 	}
 
-	/** Build Frustum with custom colors
+	/**
+	 * Build Frustum with custom colors
 	 * @param builder
 	 * @param frustum
 	 * @param frustumColor
-	 * @param crossColor */
-	public static void build (MeshPartBuilder builder, Frustum frustum, Color frustumColor, Color crossColor) {
+	 * @param crossColor
+	 */
+	public static void build(MeshPartBuilder builder, Frustum frustum, Color frustumColor, Color crossColor) {
 		Vector3[] planePoints = frustum.planePoints;
 
 		// Near
@@ -98,32 +105,36 @@ public class FrustumShapeBuilder extends BaseShapeBuilder {
 
 		// Cross near
 		builder.line(middlePoint(planePoints[1], planePoints[0]), crossColor, middlePoint(planePoints[3], planePoints[2]),
-			crossColor);
+				crossColor);
 		builder.line(middlePoint(planePoints[2], planePoints[1]), crossColor, middlePoint(planePoints[3], planePoints[0]),
-			crossColor);
+				crossColor);
 
 		// Cross far
 		builder.line(middlePoint(planePoints[5], planePoints[4]), crossColor, middlePoint(planePoints[7], planePoints[6]),
-			crossColor);
+				crossColor);
 		builder.line(middlePoint(planePoints[6], planePoints[5]), crossColor, middlePoint(planePoints[7], planePoints[4]),
-			crossColor);
+				crossColor);
 	}
 
-	/** Return middle point's segment
+	/**
+	 * Return middle point's segment
 	 * @param point0 First segment's point
 	 * @param point1 Second segment's point
-	 * @return the middle point */
-	private static Vector3 middlePoint (Vector3 point0, Vector3 point1) {
+	 * @return the middle point
+	 */
+	private static Vector3 middlePoint(Vector3 point0, Vector3 point1) {
 		tmpV0.set(point1).sub(point0).scl(0.5f);
 		return tmpV1.set(point0).add(tmpV0);
 	}
 
-	/** Return center point's rectangle
+	/**
+	 * Return center point's rectangle
 	 * @param point0
 	 * @param point1
 	 * @param point2
-	 * @return the center point */
-	private static Vector3 centerPoint (Vector3 point0, Vector3 point1, Vector3 point2) {
+	 * @return the center point
+	 */
+	private static Vector3 centerPoint(Vector3 point0, Vector3 point1, Vector3 point2) {
 		tmpV0.set(point1).sub(point0).scl(0.5f);
 		tmpV1.set(point0).add(tmpV0);
 		tmpV0.set(point2).sub(point1).scl(0.5f);

@@ -26,8 +26,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Open GLES wrapper for Texture3D
- * @author mgsx */
+/**
+ * Open GLES wrapper for Texture3D
+ * @author mgsx
+ */
 public class Texture3D extends GLTexture {
 
 	final static Map<Application, Array<Texture3D>> managedTexture3Ds = new HashMap<>();
@@ -36,30 +38,30 @@ public class Texture3D extends GLTexture {
 
 	protected TextureWrap rWrap = TextureWrap.ClampToEdge;
 
-	public Texture3D (int width, int height, int depth, int glFormat, int glInternalFormat, int glType) {
+	public Texture3D(int width, int height, int depth, int glFormat, int glInternalFormat, int glType) {
 		this(new CustomTexture3DData(width, height, depth, 0, glFormat, glInternalFormat, glType));
 	}
 
-	public Texture3D (Texture3DData data) {
+	public Texture3D(Texture3DData data) {
 		super(GL30.GL_TEXTURE_3D, Gdx.gl.glGenTexture());
 
-		if (Gdx.gl30 == null) {
+		if(Gdx.gl30 == null) {
 			throw new GdxRuntimeException("Texture3D requires a device running with GLES 3.0 compatibilty");
 		}
 
 		load(data);
 
-		if (data.isManaged()) addManagedTexture(Gdx.app, this);
+		if(data.isManaged()) addManagedTexture(Gdx.app, this);
 	}
 
-	private void load (Texture3DData data) {
-		if (this.data != null && data.isManaged() != this.data.isManaged())
+	private void load(Texture3DData data) {
+		if(this.data != null && data.isManaged() != this.data.isManaged())
 			throw new GdxRuntimeException("New data must have the same managed status as the old data");
 		this.data = data;
 
 		bind();
 
-		if (!data.isPrepared()) data.prepare();
+		if(!data.isPrepared()) data.prepare();
 
 		data.consume3DData();
 
@@ -69,69 +71,69 @@ public class Texture3D extends GLTexture {
 		Gdx.gl.glBindTexture(glTarget, 0);
 	}
 
-	public Texture3DData getData () {
+	public Texture3DData getData() {
 		return data;
 	}
 
-	public void upload () {
+	public void upload() {
 		bind();
 		data.consume3DData();
 	}
 
 	@Override
-	public int getWidth () {
+	public int getWidth() {
 		return data.getWidth();
 	}
 
 	@Override
-	public int getHeight () {
+	public int getHeight() {
 		return data.getHeight();
 	}
 
 	@Override
-	public int getDepth () {
+	public int getDepth() {
 		return data.getDepth();
 	}
 
 	@Override
-	public boolean isManaged () {
+	public boolean isManaged() {
 		return data.isManaged();
 	}
 
 	@Override
-	protected void reload () {
-		if (!isManaged()) throw new GdxRuntimeException("Tried to reload an unmanaged TextureArray");
+	protected void reload() {
+		if(!isManaged()) throw new GdxRuntimeException("Tried to reload an unmanaged TextureArray");
 		glHandle = Gdx.gl.glGenTexture();
 		load(data);
 	}
 
-	private static void addManagedTexture (Application app, Texture3D texture) {
+	private static void addManagedTexture(Application app, Texture3D texture) {
 		Array<Texture3D> managedTextureArray = managedTexture3Ds.get(app);
-		if (managedTextureArray == null) managedTextureArray = new Array<>();
+		if(managedTextureArray == null) managedTextureArray = new Array<>();
 		managedTextureArray.add(texture);
 		managedTexture3Ds.put(app, managedTextureArray);
 	}
 
 	/** Clears all managed TextureArrays. This is an internal method. Do not use it! */
-	public static void clearAllTextureArrays (Application app) {
+	public static void clearAllTextureArrays(Application app) {
 		managedTexture3Ds.remove(app);
 	}
 
 	/** Invalidate all managed TextureArrays. This is an internal method. Do not use it! */
-	public static void invalidateAllTextureArrays (Application app) {
+	public static void invalidateAllTextureArrays(Application app) {
 		Array<Texture3D> managedTextureArray = managedTexture3Ds.get(app);
-		if (managedTextureArray == null) return;
+		if(managedTextureArray == null) return;
 
-		for (int i = 0; i < managedTextureArray.size; i++) {
+		for(int i = 0; i < managedTextureArray.size; i++) {
 			Texture3D textureArray = managedTextureArray.get(i);
 			textureArray.reload();
 		}
 	}
 
-	public static String getManagedStatus () {
+	public static String getManagedStatus() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Managed TextureArrays/app: { ");
-		for (Array<Texture3D> texture3DS : managedTexture3Ds.values()) {
+		for(Array<Texture3D> texture3DS : managedTexture3Ds.values()) {
 			builder.append(texture3DS.size);
 			builder.append(" ");
 		}
@@ -140,25 +142,25 @@ public class Texture3D extends GLTexture {
 	}
 
 	/** @return the number of managed Texture3D currently loaded */
-	public static int getNumManagedTextures3D () {
+	public static int getNumManagedTextures3D() {
 		return managedTexture3Ds.get(Gdx.app).size;
 	}
 
-	public void setWrap (TextureWrap u, TextureWrap v, TextureWrap r) {
+	public void setWrap(TextureWrap u, TextureWrap v, TextureWrap r) {
 		this.rWrap = r;
 		super.setWrap(u, v);
 		Gdx.gl.glTexParameteri(glTarget, GL30.GL_TEXTURE_WRAP_R, r.getGLEnum());
 	}
 
-	public void unsafeSetWrap (TextureWrap u, TextureWrap v, TextureWrap r, boolean force) {
+	public void unsafeSetWrap(TextureWrap u, TextureWrap v, TextureWrap r, boolean force) {
 		unsafeSetWrap(u, v, force);
-		if (r != null && (force || rWrap != r)) {
+		if(r != null && (force || rWrap != r)) {
 			Gdx.gl.glTexParameteri(glTarget, GL30.GL_TEXTURE_WRAP_R, u.getGLEnum());
 			rWrap = r;
 		}
 	}
 
-	public void unsafeSetWrap (TextureWrap u, TextureWrap v, TextureWrap r) {
+	public void unsafeSetWrap(TextureWrap u, TextureWrap v, TextureWrap r) {
 		unsafeSetWrap(u, v, r, false);
 	}
 

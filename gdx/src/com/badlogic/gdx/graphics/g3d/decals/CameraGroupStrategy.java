@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -86,7 +86,7 @@ public class CameraGroupStrategy implements GroupStrategy, Disposable {
 
 	final Pool<Array<Decal>> arrayPool = new Pool<>(16) {
 		@Override
-		protected Array<Decal> newObject () {
+		protected Array<Decal> newObject() {
 			return new Array();
 		}
 	};
@@ -97,49 +97,49 @@ public class CameraGroupStrategy implements GroupStrategy, Disposable {
 	ShaderProgram shader;
 	private final Comparator<Decal> cameraSorter;
 
-	public CameraGroupStrategy (Camera camera) {
+	public CameraGroupStrategy(Camera camera) {
 		this.camera = camera;
 		this.cameraSorter = new Comparator<>() {
 			@Override
-			public int compare (Decal o1, Decal o2) {
+			public int compare(Decal o1, Decal o2) {
 				float dist1 = CameraGroupStrategy.this.camera.position.dst(o1.position);
 				float dist2 = CameraGroupStrategy.this.camera.position.dst(o2.position);
-				return (int)Math.signum(dist2 - dist1);
+				return (int) Math.signum(dist2 - dist1);
 			}
 		};
 		createDefaultShader();
 	}
 
-	public CameraGroupStrategy (Camera camera, Comparator<Decal> sorter) {
+	public CameraGroupStrategy(Camera camera, Comparator<Decal> sorter) {
 		this.camera = camera;
 		this.cameraSorter = sorter;
 		createDefaultShader();
 	}
 
-	public void setCamera (Camera camera) {
+	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
 
-	public Camera getCamera () {
+	public Camera getCamera() {
 		return camera;
 	}
 
 	@Override
-	public int decideGroup (Decal decal) {
+	public int decideGroup(Decal decal) {
 		return decal.getMaterial().isOpaque() ? GROUP_OPAQUE : GROUP_BLEND;
 	}
 
 	@Override
-	public void beforeGroup (int group, Array<Decal> contents) {
-		if (group == GROUP_BLEND) {
+	public void beforeGroup(int group, Array<Decal> contents) {
+		if(group == GROUP_BLEND) {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glDepthMask(false);
 			contents.sort(cameraSorter);
 		} else {
-			for (int i = 0, n = contents.size; i < n; i++) {
+			for(int i = 0, n = contents.size; i < n; i++) {
 				Decal decal = contents.get(i);
 				Array<Decal> materialGroup = materialGroups.get(decal.material);
-				if (materialGroup == null) {
+				if(materialGroup == null) {
 					materialGroup = arrayPool.obtain();
 					materialGroup.clear();
 					usedArrays.add(materialGroup);
@@ -149,7 +149,7 @@ public class CameraGroupStrategy implements GroupStrategy, Disposable {
 			}
 
 			contents.clear();
-			for (Array<Decal> materialGroup : materialGroups.values()) {
+			for(Array<Decal> materialGroup : materialGroups.values()) {
 				contents.addAll(materialGroup);
 			}
 
@@ -160,15 +160,15 @@ public class CameraGroupStrategy implements GroupStrategy, Disposable {
 	}
 
 	@Override
-	public void afterGroup (int group) {
-		if (group == GROUP_BLEND) {
+	public void afterGroup(int group) {
+		if(group == GROUP_BLEND) {
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 			Gdx.gl.glDepthMask(true);
 		}
 	}
 
 	@Override
-	public void beforeGroups () {
+	public void beforeGroups() {
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		shader.bind();
 		shader.setUniformMatrix("u_projectionViewMatrix", camera.combined);
@@ -176,47 +176,47 @@ public class CameraGroupStrategy implements GroupStrategy, Disposable {
 	}
 
 	@Override
-	public void afterGroups () {
+	public void afterGroups() {
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 	}
 
-	private void createDefaultShader () {
+	private void createDefaultShader() {
 		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-			+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-			+ "uniform mat4 u_projectionViewMatrix;\n" //
-			+ "varying vec4 v_color;\n" //
-			+ "varying vec2 v_texCoords;\n" //
-			+ "\n" //
-			+ "void main()\n" //
-			+ "{\n" //
-			+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-			+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
-			+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-			+ "   gl_Position =  u_projectionViewMatrix * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-			+ "}\n";
+				+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+				+ "uniform mat4 u_projectionViewMatrix;\n" //
+				+ "varying vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "\n" //
+				+ "void main()\n" //
+				+ "{\n" //
+				+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+				+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
+				+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+				+ "   gl_Position =  u_projectionViewMatrix * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+				+ "}\n";
 		String fragmentShader = "#ifdef GL_ES\n" //
-			+ "precision mediump float;\n" //
-			+ "#endif\n" //
-			+ "varying vec4 v_color;\n" //
-			+ "varying vec2 v_texCoords;\n" //
-			+ "uniform sampler2D u_texture;\n" //
-			+ "void main()\n"//
-			+ "{\n" //
-			+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
-			+ "}";
+				+ "precision mediump float;\n" //
+				+ "#endif\n" //
+				+ "varying vec4 v_color;\n" //
+				+ "varying vec2 v_texCoords;\n" //
+				+ "uniform sampler2D u_texture;\n" //
+				+ "void main()\n"//
+				+ "{\n" //
+				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
+				+ "}";
 
 		shader = new ShaderProgram(vertexShader, fragmentShader);
-		if (!shader.isCompiled()) throw new IllegalArgumentException("couldn't compile shader: " + shader.getLog());
+		if(!shader.isCompiled()) throw new IllegalArgumentException("couldn't compile shader: " + shader.getLog());
 	}
 
 	@Override
-	public ShaderProgram getGroupShader (int group) {
+	public ShaderProgram getGroupShader(int group) {
 		return shader;
 	}
 
 	@Override
-	public void dispose () {
-		if (shader != null) shader.dispose();
+	public void dispose() {
+		if(shader != null) shader.dispose();
 	}
 }

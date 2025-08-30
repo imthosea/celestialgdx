@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.utils;
 
 import static org.junit.Assert.*;
@@ -11,7 +10,7 @@ public class PooledLinkedListTest {
 	private PooledLinkedList<Integer> list;
 
 	@Before
-	public void setUp () {
+	public void setUp() {
 		list = new PooledLinkedList<Integer>(10);
 		list.add(1);
 		list.add(2);
@@ -19,7 +18,7 @@ public class PooledLinkedListTest {
 	}
 
 	@Test
-	public void size () {
+	public void size() {
 		assertEquals(3, list.size());
 		list.iter();
 		list.next();
@@ -28,7 +27,7 @@ public class PooledLinkedListTest {
 	}
 
 	@Test
-	public void iteration () {
+	public void iteration() {
 		list.iter();
 		assertEquals(Integer.valueOf(1), list.next());
 		assertEquals(Integer.valueOf(2), list.next());
@@ -37,7 +36,7 @@ public class PooledLinkedListTest {
 	}
 
 	@Test
-	public void reverseIteration () {
+	public void reverseIteration() {
 		list.iterReverse();
 		assertEquals(Integer.valueOf(3), list.previous());
 		assertEquals(Integer.valueOf(2), list.previous());
@@ -46,7 +45,7 @@ public class PooledLinkedListTest {
 	}
 
 	@Test
-	public void remove () {
+	public void remove() {
 		list.iter();
 		list.next(); // 1
 		list.remove();
@@ -59,7 +58,7 @@ public class PooledLinkedListTest {
 	}
 
 	@Test
-	public void removeLast () {
+	public void removeLast() {
 		list.iter();
 		assertEquals(Integer.valueOf(1), list.next());
 		list.removeLast();
@@ -68,7 +67,7 @@ public class PooledLinkedListTest {
 	}
 
 	@Test
-	public void clear () {
+	public void clear() {
 		list.clear();
 		assertEquals(0, list.size());
 		list.iter();

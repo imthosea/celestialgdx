@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,27 +24,29 @@ import com.badlogic.gdx.utils.ObjectIntMap;
  * some backends (desktop, gwt, etc) the touch screen is replaced by mouse input. The accelerometer is of course not available on
  * all backends.
  * </p>
- * 
+ *
  * <p>
  * Instead of polling for events, one can process all input events with an {@link InputProcessor}. You can set the InputProcessor
  * via the {@link #setInputProcessor(InputProcessor)} method. It will be called before the {@link ApplicationListener#render()}
  * method in each frame.
  * </p>
- * 
+ *
  * <p>
  * Keyboard keys are translated to the constants in {@link Keys} transparently on all systems. Do not use system specific key
  * constants.
  * </p>
- * 
+ *
  * <p>
  * The class also offers methods to use (and test for the presence of) other input systems like vibration, compass, on-screen
  * keyboards, and cursor capture. Support for simple input dialogs is also provided.
  * </p>
- * 
- * @author mzechner */
+ * @author mzechner
+ */
 public interface Input {
-	/** Mouse buttons.
-	 * @author mzechner */
+	/**
+	 * Mouse buttons.
+	 * @author mzechner
+	 */
 	static public class Buttons {
 		public static final int LEFT = 0;
 		public static final int RIGHT = 1;
@@ -53,9 +55,10 @@ public interface Input {
 		public static final int FORWARD = 4;
 	}
 
-	/** Keys.
-	 * 
-	 * @author mzechner */
+	/**
+	 * Keys.
+	 * @author mzechner
+	 */
 	static public class Keys {
 		public static final int NUM_0 = 7;
 		public static final int NUM_1 = 8;
@@ -219,24 +222,24 @@ public interface Input {
 		public static final int WORLD_1 = 240;
 		public static final int WORLD_2 = 241;
 
-// public static final int BACKTICK = 0;
-// public static final int TILDE = 0;
-// public static final int UNDERSCORE = 0;
-// public static final int DOT = 0;
-// public static final int BREAK = 0;
-// public static final int PIPE = 0;
-// public static final int EXCLAMATION = 0;
-// public static final int QUESTIONMARK = 0;
+		// public static final int BACKTICK = 0;
+		// public static final int TILDE = 0;
+		// public static final int UNDERSCORE = 0;
+		// public static final int DOT = 0;
+		// public static final int BREAK = 0;
+		// public static final int PIPE = 0;
+		// public static final int EXCLAMATION = 0;
+		// public static final int QUESTIONMARK = 0;
 
-// ` | VK_BACKTICK
-// ~ | VK_TILDE
-// : | VK_COLON
-// _ | VK_UNDERSCORE
-// . | VK_DOT
-// (break) | VK_BREAK
-// | | VK_PIPE
-// ! | VK_EXCLAMATION
-// ? | VK_QUESTION
+		// ` | VK_BACKTICK
+		// ~ | VK_TILDE
+		// : | VK_COLON
+		// _ | VK_UNDERSCORE
+		// . | VK_DOT
+		// (break) | VK_BREAK
+		// | | VK_PIPE
+		// ! | VK_EXCLAMATION
+		// ? | VK_QUESTION
 		public static final int COLON = 243;
 		public static final int F1 = 131;
 		public static final int F2 = 132;
@@ -265,12 +268,15 @@ public interface Input {
 
 		public static final int MAX_KEYCODE = 255;
 
-		/** @return a human readable representation of the keycode. The returned value can be used in
-		 *         {@link Input.Keys#valueOf(String)} */
-		public static String toString (int keycode) {
-			if (keycode < 0) throw new IllegalArgumentException("keycode cannot be negative, keycode: " + keycode);
-			if (keycode > MAX_KEYCODE) throw new IllegalArgumentException("keycode cannot be greater than 255, keycode: " + keycode);
-			return switch (keycode) {
+		/**
+		 * @return a human readable representation of the keycode. The returned value can be used in
+		 * {@link Input.Keys#valueOf(String)}
+		 */
+		public static String toString(int keycode) {
+			if(keycode < 0) throw new IllegalArgumentException("keycode cannot be negative, keycode: " + keycode);
+			if(keycode > MAX_KEYCODE)
+				throw new IllegalArgumentException("keycode cannot be greater than 255, keycode: " + keycode);
+			return switch(keycode) {
 				// META* variables should not be used with this method.
 				case UNKNOWN -> "Unknown";
 				case SOFT_LEFT -> "Soft Left";
@@ -446,119 +452,136 @@ public interface Input {
 
 		private static ObjectIntMap<String> keyNames;
 
-		/** @param keyname the keyname returned by the {@link Keys#toString(int)} method
-		 * @return the int keycode */
-		public static int valueOf (String keyname) {
-			if (keyNames == null) initializeKeyNames();
+		/**
+		 * @param keyname the keyname returned by the {@link Keys#toString(int)} method
+		 * @return the int keycode
+		 */
+		public static int valueOf(String keyname) {
+			if(keyNames == null) initializeKeyNames();
 			return keyNames.get(keyname, -1);
 		}
 
 		/** lazily intialized in {@link Keys#valueOf(String)} */
-		private static void initializeKeyNames () {
+		private static void initializeKeyNames() {
 			keyNames = new ObjectIntMap<>();
-			for (int i = 0; i < 256; i++) {
+			for(int i = 0; i < 256; i++) {
 				String name = toString(i);
-				if (name != null) keyNames.put(name, i);
+				if(name != null) keyNames.put(name, i);
 			}
 		}
 	}
 
 	/** @return The maximum number of pointers supported */
-	public int getMaxPointers ();
+	public int getMaxPointers();
 
-	/** @return The x coordinate of the last touch on touch screen devices and the current mouse position on desktop for the first
-	 *         pointer in screen coordinates. The screen origin is the top left corner. */
-	public int getX ();
+	/**
+	 * @return The x coordinate of the last touch on touch screen devices and the current mouse position on desktop for the first
+	 * pointer in screen coordinates. The screen origin is the top left corner.
+	 */
+	public int getX();
 
-	/** Returns the x coordinate in screen coordinates of the given pointer. Pointers are indexed from 0 to n. The pointer id
+	/**
+	 * Returns the x coordinate in screen coordinates of the given pointer. Pointers are indexed from 0 to n. The pointer id
 	 * identifies the order in which the fingers went down on the screen, e.g. 0 is the first finger, 1 is the second and so on.
 	 * When two fingers are touched down and the first one is lifted the second one keeps its index. If another finger is placed on
 	 * the touch screen the first free index will be used.
-	 * 
 	 * @param pointer the pointer id.
-	 * @return the x coordinate */
-	public int getX (int pointer);
+	 * @return the x coordinate
+	 */
+	public int getX(int pointer);
 
-	/** @return The y coordinate of the last touch on touch screen devices and the current mouse position on desktop for the first
-	 *         pointer in screen coordinates. The screen origin is the top left corner. */
-	public int getY ();
+	/**
+	 * @return The y coordinate of the last touch on touch screen devices and the current mouse position on desktop for the first
+	 * pointer in screen coordinates. The screen origin is the top left corner.
+	 */
+	public int getY();
 
-	/** Returns the y coordinate in screen coordinates of the given pointer. Pointers are indexed from 0 to n. The pointer id
+	/**
+	 * Returns the y coordinate in screen coordinates of the given pointer. Pointers are indexed from 0 to n. The pointer id
 	 * identifies the order in which the fingers went down on the screen, e.g. 0 is the first finger, 1 is the second and so on.
 	 * When two fingers are touched down and the first one is lifted the second one keeps its index. If another finger is placed on
 	 * the touch screen the first free index will be used.
-	 * 
 	 * @param pointer the pointer id.
-	 * @return the y coordinate */
-	public int getY (int pointer);
+	 * @return the y coordinate
+	 */
+	public int getY(int pointer);
 
 	/** @return whether the screen is currently touched. */
-	public boolean isTouched ();
+	public boolean isTouched();
 
 	/** @return whether a new touch down event just occurred. */
-	public boolean justTouched ();
+	public boolean justTouched();
 
-	/** Whether the screen is currently touched by the pointer with the given index. Pointers are indexed from 0 to n. The pointer
+	/**
+	 * Whether the screen is currently touched by the pointer with the given index. Pointers are indexed from 0 to n. The pointer
 	 * id identifies the order in which the fingers went down on the screen, e.g. 0 is the first finger, 1 is the second and so on.
 	 * When two fingers are touched down and the first one is lifted the second one keeps its index. If another finger is placed on
 	 * the touch screen the first free index will be used.
-	 *
 	 * @param pointer the pointer
-	 * @return whether the screen is touched by the pointer */
-	public boolean isTouched (int pointer);
+	 * @return whether the screen is touched by the pointer
+	 */
+	public boolean isTouched(int pointer);
 
 	/** @return the pressure of the first pointer */
-	public float getPressure ();
+	public float getPressure();
 
-	/** Returns the pressure of the given pointer, where 0 is untouched. On Android it should be up to 1.0, but it can go above
+	/**
+	 * Returns the pressure of the given pointer, where 0 is untouched. On Android it should be up to 1.0, but it can go above
 	 * that slightly and its not consistent between devices. On iOS 1.0 is the normal touch and significantly more of hard touch.
 	 * Check relevant manufacturer documentation for details. Check availability with
 	 * {@link Input#isPeripheralAvailable(Peripheral)}. If not supported, returns 1.0 when touched.
-	 *
 	 * @param pointer the pointer id.
-	 * @return the pressure */
-	public float getPressure (int pointer);
+	 * @return the pressure
+	 */
+	public float getPressure(int pointer);
 
-	/** Whether a given button is pressed or not. Button constants can be found in {@link Buttons}. On Android only the
+	/**
+	 * Whether a given button is pressed or not. Button constants can be found in {@link Buttons}. On Android only the
 	 * Buttons#LEFT constant is meaningful before version 4.0.
 	 * @param button the button to check.
-	 * @return whether the button is down or not. */
-	public boolean isButtonPressed (int button);
+	 * @return whether the button is down or not.
+	 */
+	public boolean isButtonPressed(int button);
 
-	/** Returns whether a given button has just been pressed. Button constants can be found in {@link Buttons}. On Android only the
+	/**
+	 * Returns whether a given button has just been pressed. Button constants can be found in {@link Buttons}. On Android only the
 	 * Buttons#LEFT constant is meaningful before version 4.0. On WebGL (GWT), only LEFT, RIGHT and MIDDLE buttons are supported.
-	 *
 	 * @param button the button to check.
-	 * @return true or false. */
-	public boolean isButtonJustPressed (int button);
+	 * @return true or false.
+	 */
+	public boolean isButtonJustPressed(int button);
 
-	/** Returns whether the key is pressed.
-	 * 
+	/**
+	 * Returns whether the key is pressed.
 	 * @param key The key code as found in {@link Input.Keys}.
-	 * @return true or false. */
-	public boolean isKeyPressed (int key);
+	 * @return true or false.
+	 */
+	public boolean isKeyPressed(int key);
 
-	/** Returns whether the key has just been pressed.
-	 * 
+	/**
+	 * Returns whether the key has just been pressed.
 	 * @param key The key code as found in {@link Input.Keys}.
-	 * @return true or false. */
-	public boolean isKeyJustPressed (int key);
+	 * @return true or false.
+	 */
+	public boolean isKeyJustPressed(int key);
 
-	/** Sets the on-screen keyboard visible if available. Will use the Default keyboard type.
-	 *
+	/**
+	 * Sets the on-screen keyboard visible if available. Will use the Default keyboard type.
 	 * @param visible visible or not
-	 * @deprecated celestialgdx - unsupported */
+	 * @deprecated celestialgdx - unsupported
+	 */
 	@Deprecated
-	public void setOnscreenKeyboardVisible (boolean visible);
+	public void setOnscreenKeyboardVisible(boolean visible);
 
-	/** Sets the on-screen keyboard visible if available.
-	 *
+	/**
+	 * Sets the on-screen keyboard visible if available.
 	 * @param visible visible or not
 	 * @param type which type of keyboard we wish to display. Can be null when hiding
 	 * @deprecated celestialgdx - unsupported
-	 * */
+	 *
+	 */
 	@Deprecated
-	public void setOnscreenKeyboardVisible (boolean visible, OnscreenKeyboardType type);
+	public void setOnscreenKeyboardVisible(boolean visible, OnscreenKeyboardType type);
 
 	/**
 	 * @deprecated celestialgdx - unsupported
@@ -568,25 +591,30 @@ public interface Input {
 		Default, NumberPad, PhonePad, Email, Password, URI
 	}
 
-	/** Sets the {@link InputProcessor} that will receive all touch and key input events. It will be called before the
+	/**
+	 * Sets the {@link InputProcessor} that will receive all touch and key input events. It will be called before the
 	 * {@link ApplicationListener#render()} method each frame.
-	 * 
-	 * @param processor the InputProcessor */
-	public void setInputProcessor (InputProcessor processor);
+	 * @param processor the InputProcessor
+	 */
+	public void setInputProcessor(InputProcessor processor);
 
 	/** @return the currently set {@link InputProcessor} or null. */
-	public InputProcessor getInputProcessor ();
+	public InputProcessor getInputProcessor();
 
-	/** Only viable on the desktop. Will confine the mouse cursor location to the window and hide the mouse cursor. X and y
+	/**
+	 * Only viable on the desktop. Will confine the mouse cursor location to the window and hide the mouse cursor. X and y
 	 * coordinates are still reported as if the mouse was not catched.
-	 * @param catched whether to catch or not to catch the mouse cursor */
-	public void setCursorCatched (boolean catched);
+	 * @param catched whether to catch or not to catch the mouse cursor
+	 */
+	public void setCursorCatched(boolean catched);
 
 	/** @return whether the mouse cursor is catched. */
-	public boolean isCursorCatched ();
+	public boolean isCursorCatched();
 
-	/** Only viable on the desktop. Will set the mouse cursor location to the given window coordinates (origin top-left corner).
+	/**
+	 * Only viable on the desktop. Will set the mouse cursor location to the given window coordinates (origin top-left corner).
 	 * @param x the x-position
-	 * @param y the y-position */
-	public void setCursorPosition (int x, int y);
+	 * @param y the y-position
+	 */
+	public void setCursorPosition(int x, int y);
 }

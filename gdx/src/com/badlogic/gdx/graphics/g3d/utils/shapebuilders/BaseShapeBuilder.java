@@ -22,9 +22,11 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.FlushablePool;
 
-/** This class allows to reduce the static allocation needed for shape builders. It contains all the objects used internally by
+/**
+ * This class allows to reduce the static allocation needed for shape builders. It contains all the objects used internally by
  * shape builders.
- * @author realitix, xoppa */
+ * @author realitix, xoppa
+ */
 public class BaseShapeBuilder {
 	/* Color */
 	protected static final Color tmpColor0 = new Color();
@@ -59,31 +61,31 @@ public class BaseShapeBuilder {
 
 	private final static FlushablePool<Vector3> vectorPool = new FlushablePool<>() {
 		@Override
-		protected Vector3 newObject () {
+		protected Vector3 newObject() {
 			return new Vector3();
 		}
 	};
 
 	private final static FlushablePool<Matrix4> matrices4Pool = new FlushablePool<>() {
 		@Override
-		protected Matrix4 newObject () {
+		protected Matrix4 newObject() {
 			return new Matrix4();
 		}
 	};
 
 	/** Obtain a temporary {@link Vector3} object, must be free'd using {@link #freeAll()}. */
-	protected static Vector3 obtainV3 () {
+	protected static Vector3 obtainV3() {
 		return vectorPool.obtain();
 	}
 
 	/** Obtain a temporary {@link Matrix4} object, must be free'd using {@link #freeAll()}. */
-	protected static Matrix4 obtainM4 () {
+	protected static Matrix4 obtainM4() {
 		final Matrix4 result = matrices4Pool.obtain();
 		return result;
 	}
 
 	/** Free all objects obtained using one of the `obtainXX` methods. */
-	protected static void freeAll () {
+	protected static void freeAll() {
 		vectorPool.flush();
 		matrices4Pool.flush();
 	}

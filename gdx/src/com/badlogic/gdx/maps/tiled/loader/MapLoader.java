@@ -13,24 +13,24 @@ import java.util.function.Function;
 public class MapLoader<P extends BaseTiledMapLoadHandler.Parameters> extends AssetLoader<TiledMap, P> {
 	private final LoadHandlerSupplier<P> handlerSupplier;
 
-	public MapLoader (FileHandleResolver resolver, LoadHandlerSupplier<P> handlerSupplier) {
+	public MapLoader(FileHandleResolver resolver, LoadHandlerSupplier<P> handlerSupplier) {
 		super(resolver);
 		this.handlerSupplier = handlerSupplier;
 	}
 
 	@Override
-	public TiledMap load (String path, P parameter, AssetLoadingContext<TiledMap> ctx) throws Exception {
+	public TiledMap load(String path, P parameter, AssetLoadingContext<TiledMap> ctx) throws Exception {
 		FileHandle file = resolve(path);
 		char[] data = file.readString().toCharArray();
 		char[] projectFileData;
-		if (parameter == null || parameter.projectFilePath == null) {
+		if(parameter == null || parameter.projectFilePath == null) {
 			projectFileData = null;
 		} else {
 			projectFileData = resolve(parameter.projectFilePath).readString().toCharArray();
 		}
 
 		var handler = ctx.awaitWork(() -> {
-			var result = handlerSupplier.create(file, data,  projectFileData, parameter);
+			var result = handlerSupplier.create(file, data, projectFileData, parameter);
 			result.parseMap();
 			return result;
 		});
@@ -40,9 +40,9 @@ public class MapLoader<P extends BaseTiledMapLoadHandler.Parameters> extends Ass
 
 	@FunctionalInterface
 	public interface LoadHandlerSupplier<P extends BaseTiledMapLoadHandler.Parameters> {
-		BaseTiledMapLoadHandler<P> create (FileHandle file, char[] fileData,
-		                                   @Null char[] projectFileData,
-		                                   P parameter);
+		BaseTiledMapLoadHandler<P> create(FileHandle file, char[] fileData,
+		                                  @Null char[] projectFileData,
+		                                  P parameter);
 	}
 
 	// celestialgdx - this is a hack and should be removed

@@ -33,100 +33,100 @@ public class FileTextureArrayData implements TextureArrayData {
 	private final int depth;
 	final boolean useMipMaps;
 
-	public FileTextureArrayData (Pixmap.Format format, boolean useMipMaps, FileHandle[] files) {
+	public FileTextureArrayData(Pixmap.Format format, boolean useMipMaps, FileHandle[] files) {
 		this.format = format;
 		this.useMipMaps = useMipMaps;
 		this.depth = files.length;
 		textureDatas = new TextureData[files.length];
-		for (int i = 0; i < files.length; i++) {
+		for(int i = 0; i < files.length; i++) {
 			textureDatas[i] = TextureData.Factory.loadFromFile(files[i], format, useMipMaps);
 		}
 	}
 
 	@Override
-	public boolean isPrepared () {
+	public boolean isPrepared() {
 		return prepared;
 	}
 
 	@Override
-	public void prepare () {
+	public void prepare() {
 		int width = -1;
 		int height = -1;
-		for (TextureData data : textureDatas) {
+		for(TextureData data : textureDatas) {
 			data.prepare();
-			if (width == -1) {
+			if(width == -1) {
 				width = data.getWidth();
 				height = data.getHeight();
 				continue;
 			}
-			if (width != data.getWidth() || height != data.getHeight()) {
+			if(width != data.getWidth() || height != data.getHeight()) {
 				throw new GdxRuntimeException(
-					"Error whilst preparing TextureArray: TextureArray Textures must have equal dimensions.");
+						"Error whilst preparing TextureArray: TextureArray Textures must have equal dimensions.");
 			}
 		}
 		prepared = true;
 	}
 
 	@Override
-	public void consumeTextureArrayData () {
+	public void consumeTextureArrayData() {
 		boolean containsCustomData = false;
-		for (int i = 0; i < textureDatas.length; i++) {
-			if (textureDatas[i].getType() == TextureData.TextureDataType.Custom) {
+		for(int i = 0; i < textureDatas.length; i++) {
+			if(textureDatas[i].getType() == TextureData.TextureDataType.Custom) {
 				textureDatas[i].consumeCustomData(GL30.GL_TEXTURE_2D_ARRAY);
 				containsCustomData = true;
 			} else {
 				TextureData texData = textureDatas[i];
 				Pixmap pixmap = texData.consumePixmap();
 				boolean disposePixmap = texData.disposePixmap();
-				if (texData.getFormat() != pixmap.getFormat()) {
+				if(texData.getFormat() != pixmap.getFormat()) {
 					Pixmap temp = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), texData.getFormat());
 					temp.setBlending(Pixmap.Blending.None);
 					temp.drawPixmap(pixmap, 0, 0, 0, 0, pixmap.getWidth(), pixmap.getHeight());
-					if (texData.disposePixmap()) {
+					if(texData.disposePixmap()) {
 						pixmap.dispose();
 					}
 					pixmap = temp;
 					disposePixmap = true;
 				}
 				Gdx.gl30.glTexSubImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, pixmap.getWidth(), pixmap.getHeight(), 1,
-					pixmap.getGLInternalFormat(), pixmap.getGLType(), pixmap.getPixels());
-				if (disposePixmap) pixmap.dispose();
+						pixmap.getGLInternalFormat(), pixmap.getGLType(), pixmap.getPixels());
+				if(disposePixmap) pixmap.dispose();
 			}
 		}
-		if (useMipMaps && !containsCustomData) {
+		if(useMipMaps && !containsCustomData) {
 			Gdx.gl20.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
 		}
 	}
 
 	@Override
-	public int getWidth () {
+	public int getWidth() {
 		return textureDatas[0].getWidth();
 	}
 
 	@Override
-	public int getHeight () {
+	public int getHeight() {
 		return textureDatas[0].getHeight();
 	}
 
 	@Override
-	public int getDepth () {
+	public int getDepth() {
 		return depth;
 	}
 
 	@Override
-	public int getInternalFormat () {
+	public int getInternalFormat() {
 		return Pixmap.Format.toGlFormat(format);
 	}
 
 	@Override
-	public int getGLType () {
+	public int getGLType() {
 		return Pixmap.Format.toGlType(format);
 	}
 
 	@Override
-	public boolean isManaged () {
-		for (TextureData data : textureDatas) {
-			if (!data.isManaged()) {
+	public boolean isManaged() {
+		for(TextureData data : textureDatas) {
+			if(!data.isManaged()) {
 				return false;
 			}
 		}

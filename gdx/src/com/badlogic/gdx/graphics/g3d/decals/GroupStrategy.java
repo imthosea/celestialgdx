@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,31 +42,36 @@ import com.badlogic.gdx.utils.Array;
  * </p>
  */
 public interface GroupStrategy {
-	/** Returns the shader to be used for the group. Can be null in which case the GroupStrategy doesn't support GLES 2.0
+	/**
+	 * Returns the shader to be used for the group. Can be null in which case the GroupStrategy doesn't support GLES 2.0
 	 * @param group the group
-	 * @return the {@link ShaderProgram} */
-	public ShaderProgram getGroupShader (int group);
+	 * @return the {@link ShaderProgram}
+	 */
+	public ShaderProgram getGroupShader(int group);
 
-	/** Assigns a group to a decal
-	 * 
+	/**
+	 * Assigns a group to a decal
 	 * @param decal Decal to assign group to
-	 * @return group assigned */
-	public int decideGroup (Decal decal);
+	 * @return group assigned
+	 */
+	public int decideGroup(Decal decal);
 
-	/** Invoked directly before rendering the contents of a group
-	 * 
+	/**
+	 * Invoked directly before rendering the contents of a group
 	 * @param group Group that will be rendered
-	 * @param contents Array of entries of arrays containing all the decals in the group */
-	public void beforeGroup (int group, Array<Decal> contents);
+	 * @param contents Array of entries of arrays containing all the decals in the group
+	 */
+	public void beforeGroup(int group, Array<Decal> contents);
 
-	/** Invoked directly after rendering of a group has completed
-	 * 
-	 * @param group Group which completed rendering */
-	public void afterGroup (int group);
+	/**
+	 * Invoked directly after rendering of a group has completed
+	 * @param group Group which completed rendering
+	 */
+	public void afterGroup(int group);
 
 	/** Invoked before rendering any group */
-	public void beforeGroups ();
+	public void beforeGroups();
 
 	/** Invoked after having rendered all groups */
-	public void afterGroups ();
+	public void afterGroups();
 }

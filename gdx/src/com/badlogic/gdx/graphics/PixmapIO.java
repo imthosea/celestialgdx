@@ -39,30 +39,38 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
-/** Writes Pixmaps to various formats.
+/**
+ * Writes Pixmaps to various formats.
  * @author mzechner
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ */
 public class PixmapIO {
-	/** Writes the {@link Pixmap} to the given file using a custom compression scheme. First three integers define the width,
+	/**
+	 * Writes the {@link Pixmap} to the given file using a custom compression scheme. First three integers define the width,
 	 * height and format, remaining bytes are zlib compressed pixels. To be able to load the Pixmap to a Texture, use ".cim" as the
 	 * file suffix. Throws a GdxRuntimeException in case the Pixmap couldn't be written to the file.
-	 * @param file the file to write the Pixmap to */
-	static public void writeCIM (WriteableFileHandle file, Pixmap pixmap) {
+	 * @param file the file to write the Pixmap to
+	 */
+	static public void writeCIM(WriteableFileHandle file, Pixmap pixmap) {
 		CIM.write(file, pixmap);
 	}
 
-	/** Reads the {@link Pixmap} from the given file, assuming the Pixmap was written with the
+	/**
+	 * Reads the {@link Pixmap} from the given file, assuming the Pixmap was written with the
 	 * {@link PixmapIO#writeCIM(WriteableFileHandle, Pixmap)} method. Throws a GdxRuntimeException in case the file couldn't be read.
-	 * @param file the file to read the Pixmap from */
-	static public Pixmap readCIM (FileHandle file) {
+	 * @param file the file to read the Pixmap from
+	 */
+	static public Pixmap readCIM(FileHandle file) {
 		return CIM.read(file);
 	}
 
-	/** Writes the pixmap as a PNG. See {@link PNG} to write out multiple PNGs with minimal allocation.
+	/**
+	 * Writes the pixmap as a PNG. See {@link PNG} to write out multiple PNGs with minimal allocation.
 	 * @param compression sets the deflate compression level. Default is {@link Deflater#DEFAULT_COMPRESSION}
-	 * @param flipY flips the Pixmap vertically if true */
-	static public void writePNG (WriteableFileHandle file, Pixmap pixmap, int compression, boolean flipY) {
-		PNG writer = new PNG((int)(pixmap.getWidth() * pixmap.getHeight() * 1.5f)); // Guess at deflated size.
+	 * @param flipY flips the Pixmap vertically if true
+	 */
+	static public void writePNG(WriteableFileHandle file, Pixmap pixmap, int compression, boolean flipY) {
+		PNG writer = new PNG((int) (pixmap.getWidth() * pixmap.getHeight() * 1.5f)); // Guess at deflated size.
 		try {
 			writer.setFlipY(flipY);
 			writer.setCompression(compression);
@@ -72,9 +80,11 @@ public class PixmapIO {
 		}
 	}
 
-	/** Writes the pixmap as a PNG with compression. See {@link PNG} to configure the compression level, more efficiently flip the
-	 * pixmap vertically, and to write out multiple PNGs with minimal allocation. */
-	static public void writePNG (WriteableFileHandle file, Pixmap pixmap) {
+	/**
+	 * Writes the pixmap as a PNG with compression. See {@link PNG} to configure the compression level, more efficiently flip the
+	 * pixmap vertically, and to write out multiple PNGs with minimal allocation.
+	 */
+	static public void writePNG(WriteableFileHandle file, Pixmap pixmap) {
 		writePNG(file, pixmap, Deflater.DEFAULT_COMPRESSION, false);
 	}
 
@@ -84,21 +94,21 @@ public class PixmapIO {
 		static private final byte[] writeBuffer = new byte[BUFFER_SIZE];
 		static private final byte[] readBuffer = new byte[BUFFER_SIZE];
 
-		static public void write (WriteableFileHandle file, Pixmap pixmap) {
+		static public void write(WriteableFileHandle file, Pixmap pixmap) {
 			try(var out = new DataOutputStream(new DeflaterOutputStream(file.write(false)))) {
 				out.writeInt(pixmap.getWidth());
 				out.writeInt(pixmap.getHeight());
 				out.writeInt(Format.toGdx2DPixmapFormat(pixmap.getFormat()));
 
 				ByteBuffer pixelBuf = pixmap.getPixels();
-				((Buffer)pixelBuf).position(0);
-				((Buffer)pixelBuf).limit(pixelBuf.capacity());
+				((Buffer) pixelBuf).position(0);
+				((Buffer) pixelBuf).limit(pixelBuf.capacity());
 
 				int remainingBytes = pixelBuf.capacity() % BUFFER_SIZE;
 				int iterations = pixelBuf.capacity() / BUFFER_SIZE;
 
-				synchronized (writeBuffer) {
-					for (int i = 0; i < iterations; i++) {
+				synchronized(writeBuffer) {
+					for(int i = 0; i < iterations; i++) {
 						pixelBuf.get(writeBuffer);
 						out.write(writeBuffer);
 					}
@@ -107,14 +117,14 @@ public class PixmapIO {
 					out.write(writeBuffer, 0, remainingBytes);
 				}
 
-				((Buffer)pixelBuf).position(0);
-				((Buffer)pixelBuf).limit(pixelBuf.capacity());
-			} catch (Exception e) {
+				((Buffer) pixelBuf).position(0);
+				((Buffer) pixelBuf).limit(pixelBuf.capacity());
+			} catch(Exception e) {
 				throw new GdxRuntimeException("Couldn't write Pixmap to file '" + file + "'", e);
 			}
 		}
 
-		static public Pixmap read (FileHandle file) {
+		static public Pixmap read(FileHandle file) {
 			DataInputStream in = null;
 
 			try {
@@ -125,20 +135,20 @@ public class PixmapIO {
 				Pixmap pixmap = new Pixmap(width, height, format);
 
 				ByteBuffer pixelBuf = pixmap.getPixels();
-				((Buffer)pixelBuf).position(0);
-				((Buffer)pixelBuf).limit(pixelBuf.capacity());
+				((Buffer) pixelBuf).position(0);
+				((Buffer) pixelBuf).limit(pixelBuf.capacity());
 
-				synchronized (readBuffer) {
+				synchronized(readBuffer) {
 					int readBytes = 0;
-					while ((readBytes = in.read(readBuffer)) > 0) {
+					while((readBytes = in.read(readBuffer)) > 0) {
 						pixelBuf.put(readBuffer, 0, readBytes);
 					}
 				}
 
-				((Buffer)pixelBuf).position(0);
-				((Buffer)pixelBuf).limit(pixelBuf.capacity());
+				((Buffer) pixelBuf).position(0);
+				((Buffer) pixelBuf).limit(pixelBuf.capacity());
 				return pixmap;
-			} catch (Exception e) {
+			} catch(Exception e) {
 				throw new GdxRuntimeException("Couldn't read Pixmap from file '" + file + "'", e);
 			} finally {
 				StreamUtils.closeQuietly(in);
@@ -146,7 +156,8 @@ public class PixmapIO {
 		}
 	}
 
-	/** PNG encoder with compression. An instance can be reused to encode multiple PNGs with minimal allocation.
+	/**
+	 * PNG encoder with compression. An instance can be reused to encode multiple PNGs with minimal allocation.
 	 *
 	 * <pre>
 	 * Copyright (c) 2007 Matthias Mann - www.matthiasmann.de
@@ -170,11 +181,11 @@ public class PixmapIO {
 	 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 	 * THE SOFTWARE.
 	 * </pre>
-	 * 
 	 * @author Matthias Mann
-	 * @author Nathan Sweet */
+	 * @author Nathan Sweet
+	 */
 	static public class PNG implements Disposable {
-		static private final byte[] SIGNATURE = {(byte)137, 80, 78, 71, 13, 10, 26, 10};
+		static private final byte[] SIGNATURE = {(byte) 137, 80, 78, 71, 13, 10, 26, 10};
 		static private final int IHDR = 0x49484452, IDAT = 0x49444154, IEND = 0x49454E44;
 		static private final byte COLOR_ARGB = 6;
 		static private final byte COMPRESSION_DEFLATE = 0;
@@ -188,35 +199,35 @@ public class PixmapIO {
 		private boolean flipY = true;
 		private int lastLineLen;
 
-		public PNG () {
+		public PNG() {
 			this(128 * 128);
 		}
 
-		public PNG (int initialBufferSize) {
+		public PNG(int initialBufferSize) {
 			buffer = new ChunkBuffer(initialBufferSize);
 			deflater = new Deflater();
 		}
 
 		/** If true, the resulting PNG is flipped vertically. Default is true. */
-		public void setFlipY (boolean flipY) {
+		public void setFlipY(boolean flipY) {
 			this.flipY = flipY;
 		}
 
 		/** Sets the deflate compression level. Default is {@link Deflater#DEFAULT_COMPRESSION}. */
-		public void setCompression (int level) {
+		public void setCompression(int level) {
 			deflater.setLevel(level);
 		}
 
-		public void write (WriteableFileHandle file, Pixmap pixmap) {
+		public void write(WriteableFileHandle file, Pixmap pixmap) {
 			try(OutputStream out = file.write(false)) {
 				write(out, pixmap);
-			} catch (IOException e) {
+			} catch(IOException e) {
 				throw new GdxIoException(e);
 			}
 		}
 
 		/** Writes the pixmap to the stream without closing the stream. */
-		public void write (OutputStream output, Pixmap pixmap) throws IOException {
+		public void write(OutputStream output, Pixmap pixmap) throws IOException {
 			DeflaterOutputStream deflaterOutput = new DeflaterOutputStream(buffer, deflater);
 			DataOutputStream dataOutput = new DataOutputStream(output);
 			dataOutput.write(SIGNATURE);
@@ -236,7 +247,7 @@ public class PixmapIO {
 
 			int lineLen = pixmap.getWidth() * 4;
 			byte[] lineOut, curLine, prevLine;
-			if (lineOutBytes == null) {
+			if(lineOutBytes == null) {
 				lineOut = (lineOutBytes = new ByteArray(lineLen)).items;
 				curLine = (curLineBytes = new ByteArray(lineLen)).items;
 				prevLine = (prevLineBytes = new ByteArray(lineLen)).items;
@@ -244,7 +255,7 @@ public class PixmapIO {
 				lineOut = lineOutBytes.ensureCapacity(lineLen);
 				curLine = curLineBytes.ensureCapacity(lineLen);
 				prevLine = prevLineBytes.ensureCapacity(lineLen);
-				for (int i = 0, n = lastLineLen; i < n; i++)
+				for(int i = 0, n = lastLineLen; i < n; i++)
 					prevLine[i] = 0;
 			}
 			lastLineLen = lineLen;
@@ -252,42 +263,42 @@ public class PixmapIO {
 			ByteBuffer pixels = pixmap.getPixels();
 			int oldPosition = pixels.position();
 			boolean rgba8888 = pixmap.getFormat() == Format.RGBA8888;
-			for (int y = 0, h = pixmap.getHeight(); y < h; y++) {
+			for(int y = 0, h = pixmap.getHeight(); y < h; y++) {
 				int py = flipY ? (h - y - 1) : y;
-				if (rgba8888) {
-					((Buffer)pixels).position(py * lineLen);
+				if(rgba8888) {
+					((Buffer) pixels).position(py * lineLen);
 					pixels.get(curLine, 0, lineLen);
 				} else {
-					for (int px = 0, x = 0; px < pixmap.getWidth(); px++) {
+					for(int px = 0, x = 0; px < pixmap.getWidth(); px++) {
 						int pixel = pixmap.getPixel(px, py);
-						curLine[x++] = (byte)((pixel >> 24) & 0xff);
-						curLine[x++] = (byte)((pixel >> 16) & 0xff);
-						curLine[x++] = (byte)((pixel >> 8) & 0xff);
-						curLine[x++] = (byte)(pixel & 0xff);
+						curLine[x++] = (byte) ((pixel >> 24) & 0xff);
+						curLine[x++] = (byte) ((pixel >> 16) & 0xff);
+						curLine[x++] = (byte) ((pixel >> 8) & 0xff);
+						curLine[x++] = (byte) (pixel & 0xff);
 					}
 				}
 
-				lineOut[0] = (byte)(curLine[0] - prevLine[0]);
-				lineOut[1] = (byte)(curLine[1] - prevLine[1]);
-				lineOut[2] = (byte)(curLine[2] - prevLine[2]);
-				lineOut[3] = (byte)(curLine[3] - prevLine[3]);
+				lineOut[0] = (byte) (curLine[0] - prevLine[0]);
+				lineOut[1] = (byte) (curLine[1] - prevLine[1]);
+				lineOut[2] = (byte) (curLine[2] - prevLine[2]);
+				lineOut[3] = (byte) (curLine[3] - prevLine[3]);
 
-				for (int x = 4; x < lineLen; x++) {
+				for(int x = 4; x < lineLen; x++) {
 					int a = curLine[x - 4] & 0xff;
 					int b = prevLine[x] & 0xff;
 					int c = prevLine[x - 4] & 0xff;
 					int p = a + b - c;
 					int pa = p - a;
-					if (pa < 0) pa = -pa;
+					if(pa < 0) pa = -pa;
 					int pb = p - b;
-					if (pb < 0) pb = -pb;
+					if(pb < 0) pb = -pb;
 					int pc = p - c;
-					if (pc < 0) pc = -pc;
-					if (pa <= pb && pa <= pc)
+					if(pc < 0) pc = -pc;
+					if(pa <= pb && pa <= pc)
 						c = a;
-					else if (pb <= pc) //
+					else if(pb <= pc) //
 						c = b;
-					lineOut[x] = (byte)(curLine[x] - c);
+					lineOut[x] = (byte) (curLine[x] - c);
 				}
 
 				deflaterOutput.write(PAETH);
@@ -297,7 +308,7 @@ public class PixmapIO {
 				curLine = prevLine;
 				prevLine = temp;
 			}
-			((Buffer)pixels).position(oldPosition);
+			((Buffer) pixels).position(oldPosition);
 			deflaterOutput.finish();
 			buffer.endChunk(dataOutput);
 
@@ -309,7 +320,7 @@ public class PixmapIO {
 
 		/** Disposal will happen automatically in {@link #finalize()} but can be done explicitly if desired. */
 		@SuppressWarnings("javadoc")
-		public void dispose () {
+		public void dispose() {
 			deflater.end();
 		}
 
@@ -317,21 +328,21 @@ public class PixmapIO {
 			final ByteArrayOutputStream buffer;
 			final CRC32 crc;
 
-			ChunkBuffer (int initialSize) {
+			ChunkBuffer(int initialSize) {
 				this(new ByteArrayOutputStream(initialSize), new CRC32());
 			}
 
-			private ChunkBuffer (ByteArrayOutputStream buffer, CRC32 crc) {
+			private ChunkBuffer(ByteArrayOutputStream buffer, CRC32 crc) {
 				super(new CheckedOutputStream(buffer, crc));
 				this.buffer = buffer;
 				this.crc = crc;
 			}
 
-			public void endChunk (DataOutputStream target) throws IOException {
+			public void endChunk(DataOutputStream target) throws IOException {
 				flush();
 				target.writeInt(buffer.size() - 4);
 				buffer.writeTo(target);
-				target.writeInt((int)crc.getValue());
+				target.writeInt((int) crc.getValue());
 				buffer.reset();
 				crc.reset();
 			}

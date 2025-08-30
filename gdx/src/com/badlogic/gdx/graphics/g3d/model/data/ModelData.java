@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,9 +20,11 @@ import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/** Returned by a {@link ModelLoader}, contains meshes, materials, nodes and animations. OpenGL resources like textures or vertex
+/**
+ * Returned by a {@link ModelLoader}, contains meshes, materials, nodes and animations. OpenGL resources like textures or vertex
  * buffer objects are not stored. Instead, a ModelData instance needs to be converted to a Model first.
- * @author badlogic */
+ * @author badlogic
+ */
 public class ModelData {
 	public String id;
 	public final short version[] = new short[2];
@@ -31,9 +33,9 @@ public class ModelData {
 	public final Array<ModelNode> nodes = new Array<>();
 	public final Array<ModelAnimation> animations = new Array<>();
 
-	public void addMesh (ModelMesh mesh) {
-		for (ModelMesh other : meshes) {
-			if (other.id.equals(mesh.id)) {
+	public void addMesh(ModelMesh mesh) {
+		for(ModelMesh other : meshes) {
+			if(other.id.equals(mesh.id)) {
 				throw new GdxRuntimeException("Mesh with id '" + other.id + "' already in model");
 			}
 		}

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 
-/** An {@link Actor} that participates in layout and provides a minimum, preferred, and maximum size.
+/**
+ * An {@link Actor} that participates in layout and provides a minimum, preferred, and maximum size.
  * <p>
  * The default preferred size of a widget is 0 and this is almost always overridden by a subclass. The default minimum size
  * returns the preferred size, so a subclass may choose to return 0 if it wants to allow itself to be sized smaller. The default
@@ -31,49 +32,50 @@ import com.badlogic.gdx.scenes.scene2d.utils.Layout;
  * See {@link Layout} for details on how a widget should participate in layout. A widget's mutator methods should call
  * {@link #invalidate()} or {@link #invalidateHierarchy()} as needed.
  * @author mzechner
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ */
 public class Widget extends Actor implements Layout {
 	private boolean needsLayout = true;
 	private boolean fillParent;
 	private boolean layoutEnabled = true;
 
-	public float getMinWidth () {
+	public float getMinWidth() {
 		return getPrefWidth();
 	}
 
-	public float getMinHeight () {
+	public float getMinHeight() {
 		return getPrefHeight();
 	}
 
-	public float getPrefWidth () {
+	public float getPrefWidth() {
 		return 0;
 	}
 
-	public float getPrefHeight () {
+	public float getPrefHeight() {
 		return 0;
 	}
 
-	public float getMaxWidth () {
+	public float getMaxWidth() {
 		return 0;
 	}
 
-	public float getMaxHeight () {
+	public float getMaxHeight() {
 		return 0;
 	}
 
-	public void setLayoutEnabled (boolean enabled) {
+	public void setLayoutEnabled(boolean enabled) {
 		layoutEnabled = enabled;
-		if (enabled) invalidateHierarchy();
+		if(enabled) invalidateHierarchy();
 	}
 
-	public void validate () {
-		if (!layoutEnabled) return;
+	public void validate() {
+		if(!layoutEnabled) return;
 
 		Group parent = getParent();
-		if (fillParent && parent != null) {
+		if(fillParent && parent != null) {
 			float parentWidth, parentHeight;
 			Stage stage = getStage();
-			if (stage != null && parent == stage.getRoot()) {
+			if(stage != null && parent == stage.getRoot()) {
 				parentWidth = stage.getWidth();
 				parentHeight = stage.getHeight();
 			} else {
@@ -83,45 +85,45 @@ public class Widget extends Actor implements Layout {
 			setSize(parentWidth, parentHeight);
 		}
 
-		if (!needsLayout) return;
+		if(!needsLayout) return;
 		needsLayout = false;
 		layout();
 	}
 
 	/** Returns true if the widget's layout has been {@link #invalidate() invalidated}. */
-	public boolean needsLayout () {
+	public boolean needsLayout() {
 		return needsLayout;
 	}
 
-	public void invalidate () {
+	public void invalidate() {
 		needsLayout = true;
 	}
 
-	public void invalidateHierarchy () {
-		if (!layoutEnabled) return;
+	public void invalidateHierarchy() {
+		if(!layoutEnabled) return;
 		invalidate();
 		Group parent = getParent();
-		if (parent instanceof Layout) ((Layout)parent).invalidateHierarchy();
+		if(parent instanceof Layout) ((Layout) parent).invalidateHierarchy();
 	}
 
-	protected void sizeChanged () {
+	protected void sizeChanged() {
 		invalidate();
 	}
 
-	public void pack () {
+	public void pack() {
 		setSize(getPrefWidth(), getPrefHeight());
 		validate();
 	}
 
-	public void setFillParent (boolean fillParent) {
+	public void setFillParent(boolean fillParent) {
 		this.fillParent = fillParent;
 	}
 
 	/** If this method is overridden, the super method or {@link #validate()} should be called to ensure the widget is laid out. */
-	public void draw (Batch batch, float parentAlpha) {
+	public void draw(Batch batch, float parentAlpha) {
 		validate();
 	}
 
-	public void layout () {
+	public void layout() {
 	}
 }

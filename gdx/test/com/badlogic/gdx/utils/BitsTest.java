@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.utils;
 
 import static org.junit.Assert.*;
@@ -8,7 +7,7 @@ import org.junit.Test;
 public class BitsTest {
 
 	@Test
-	public void testHashcodeAndEquals () {
+	public void testHashcodeAndEquals() {
 		Bits b1 = new Bits();
 		Bits b2 = new Bits();
 
@@ -34,7 +33,7 @@ public class BitsTest {
 	}
 
 	@Test
-	public void testXor () {
+	public void testXor() {
 		Bits b1 = new Bits();
 		Bits b2 = new Bits();
 
@@ -52,7 +51,7 @@ public class BitsTest {
 	}
 
 	@Test
-	public void testOr () {
+	public void testOr() {
 		Bits b1 = new Bits();
 		Bits b2 = new Bits();
 
@@ -70,7 +69,7 @@ public class BitsTest {
 	}
 
 	@Test
-	public void testAnd () {
+	public void testAnd() {
 		Bits b1 = new Bits();
 		Bits b2 = new Bits();
 
@@ -87,7 +86,7 @@ public class BitsTest {
 	}
 
 	@Test
-	public void testCopyConstructor () {
+	public void testCopyConstructor() {
 		Bits b1 = new Bits();
 		b1.set(50);
 		b1.set(100);

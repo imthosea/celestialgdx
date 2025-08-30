@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,34 +24,36 @@ import com.badlogic.gdx.utils.I18NBundle;
 
 import java.util.Locale;
 
-/** {@link AssetLoader} for {@link I18NBundle} instances. The I18NBundle is loaded asynchronously.
+/**
+ * {@link AssetLoader} for {@link I18NBundle} instances. The I18NBundle is loaded asynchronously.
  * <p>
  * Notice that you can't load two bundles with the same base name and different locale or encoding using the same
  * {@link AssetManager}. For example, if you try to load the 2 bundles below
- * 
+ *
  * <pre>
  * manager.load(&quot;i18n/message&quot;, I18NBundle.class, new I18NBundleParameter(Locale.ITALIAN));
  * manager.load(&quot;i18n/message&quot;, I18NBundle.class, new I18NBundleParameter(Locale.ENGLISH));
  * </pre>
- * 
+ *
  * the English bundle won't be loaded because the asset manager thinks they are the same bundle since they have the same name.
  * There are 2 use cases:
  * <ul>
  * <li>If you want to load the English bundle so to replace the Italian bundle you have to unload the Italian bundle first.
  * <li>If you want to load the English bundle without replacing the Italian bundle you should use another asset manager.
  * </ul>
- * @author davebaol */
+ * @author davebaol
+ */
 public class I18NBundleLoader extends AssetLoader<I18NBundle, I18NBundleLoader.I18NBundleParameter> {
 
-	public I18NBundleLoader (FileHandleResolver resolver) {
+	public I18NBundleLoader(FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	@Override
-	public I18NBundle load (String path, I18NBundleParameter parameter, AssetLoadingContext<I18NBundle> ctx) throws Exception {
+	public I18NBundle load(String path, I18NBundleParameter parameter, AssetLoadingContext<I18NBundle> ctx) throws Exception {
 		Locale locale;
 		String encoding;
-		if (parameter == null) {
+		if(parameter == null) {
 			locale = Locale.getDefault();
 			encoding = null;
 		} else {
@@ -60,7 +62,7 @@ public class I18NBundleLoader extends AssetLoader<I18NBundle, I18NBundleLoader.I
 		}
 
 		FileHandle file = resolve(path);
-		if (encoding == null) {
+		if(encoding == null) {
 			return I18NBundle.createBundle(file, locale);
 		} else {
 			return I18NBundle.createBundle(file, locale, encoding);
@@ -71,15 +73,15 @@ public class I18NBundleLoader extends AssetLoader<I18NBundle, I18NBundleLoader.I
 		public final Locale locale;
 		public final String encoding;
 
-		public I18NBundleParameter () {
+		public I18NBundleParameter() {
 			this(null, null);
 		}
 
-		public I18NBundleParameter (Locale locale) {
+		public I18NBundleParameter(Locale locale) {
 			this(locale, null);
 		}
 
-		public I18NBundleParameter (Locale locale, String encoding) {
+		public I18NBundleParameter(Locale locale, String encoding) {
 			this.locale = locale;
 			this.encoding = encoding;
 		}

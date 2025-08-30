@@ -38,33 +38,35 @@ public class MapLayer {
 	private final MapProperties properties = new MapProperties();
 
 	/** @return layer's name */
-	public String getName () {
+	public String getName() {
 		return name;
 	}
 
 	/** @param name new name for the layer */
-	public void setName (String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	/** @return layer's opacity */
-	public float getOpacity () {
-		if (parent != null)
+	public float getOpacity() {
+		if(parent != null)
 			return opacity * parent.getOpacity();
 		else
 			return opacity;
 	}
 
 	/** @param opacity new opacity for the layer */
-	public void setOpacity (float opacity) {
+	public void setOpacity(float opacity) {
 		this.opacity = opacity;
 	}
 
-	/** Returns a temporary color that is the combination of this layer's tint color and its parent's tint color. The returned
+	/**
+	 * Returns a temporary color that is the combination of this layer's tint color and its parent's tint color. The returned
 	 * color is reused internally, so it should not be held onto or modified.
-	 * @return layer's tint color combined with the parent's tint color */
-	public Color getCombinedTintColor () {
-		if (parent != null) {
+	 * @return layer's tint color combined with the parent's tint color
+	 */
+	public Color getCombinedTintColor() {
+		if(parent != null) {
 			return tempColor.set(tintColor).mul(parent.getCombinedTintColor());
 		} else {
 			return tempColor.set(tintColor);
@@ -72,105 +74,105 @@ public class MapLayer {
 	}
 
 	/** @return layer's tint color */
-	public Color getTintColor () {
+	public Color getTintColor() {
 		return tintColor;
 	}
 
 	/** @param tintColor new tint color for the layer */
-	public void setTintColor (Color tintColor) {
+	public void setTintColor(Color tintColor) {
 		this.tintColor.set(tintColor);
 	}
 
 	/** @return layer's x offset */
-	public float getOffsetX () {
+	public float getOffsetX() {
 		return offsetX;
 	}
 
 	/** @param offsetX new x offset for the layer */
-	public void setOffsetX (float offsetX) {
+	public void setOffsetX(float offsetX) {
 		this.offsetX = offsetX;
 		invalidateRenderOffset();
 	}
 
 	/** @return layer's y offset */
-	public float getOffsetY () {
+	public float getOffsetY() {
 		return offsetY;
 	}
 
 	/** @param offsetY new y offset for the layer */
-	public void setOffsetY (float offsetY) {
+	public void setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 		invalidateRenderOffset();
 	}
 
 	/** @return layer's parallax scrolling factor for x-axis */
-	public float getParallaxX () {
+	public float getParallaxX() {
 		return parallaxX;
 	}
 
-	public void setParallaxX (float parallaxX) {
+	public void setParallaxX(float parallaxX) {
 		this.parallaxX = parallaxX;
 	}
 
 	/** @return layer's parallax scrolling factor for y-axis */
-	public float getParallaxY () {
+	public float getParallaxY() {
 		return parallaxY;
 	}
 
-	public void setParallaxY (float parallaxY) {
+	public void setParallaxY(float parallaxY) {
 		this.parallaxY = parallaxY;
 	}
 
 	/** @return the layer's x render offset, this takes into consideration all parent layers' offsets */
-	public float getRenderOffsetX () {
-		if (renderOffsetDirty) calculateRenderOffsets();
+	public float getRenderOffsetX() {
+		if(renderOffsetDirty) calculateRenderOffsets();
 		return renderOffsetX;
 	}
 
 	/** @return the layer's y render offset, this takes into consideration all parent layers' offsets */
-	public float getRenderOffsetY () {
-		if (renderOffsetDirty) calculateRenderOffsets();
+	public float getRenderOffsetY() {
+		if(renderOffsetDirty) calculateRenderOffsets();
 		return renderOffsetY;
 	}
 
 	/** set the renderOffsetDirty state to true, when this layer or any parents' offset has changed **/
-	public void invalidateRenderOffset () {
+	public void invalidateRenderOffset() {
 		renderOffsetDirty = true;
 	}
 
 	/** @return the layer's parent {@link MapLayer}, or null if the layer does not have a parent **/
-	public MapLayer getParent () {
+	public MapLayer getParent() {
 		return parent;
 	}
 
 	/** @param parent the layer's new parent {@MapLayer}, internal use only **/
-	public void setParent (MapLayer parent) {
-		if (parent == this) throw new GdxRuntimeException("Can't set self as the parent");
+	public void setParent(MapLayer parent) {
+		if(parent == this) throw new GdxRuntimeException("Can't set self as the parent");
 		this.parent = parent;
 	}
 
 	/** @return collection of objects contained in the layer */
-	public MapObjects getObjects () {
+	public MapObjects getObjects() {
 		return objects;
 	}
 
 	/** @return whether the layer is visible or not */
-	public boolean isVisible () {
+	public boolean isVisible() {
 		return visible;
 	}
 
 	/** @param visible toggles layer's visibility */
-	public void setVisible (boolean visible) {
+	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
 	/** @return layer's set of properties */
-	public MapProperties getProperties () {
+	public MapProperties getProperties() {
 		return properties;
 	}
 
-	protected void calculateRenderOffsets () {
-		if (parent != null) {
+	protected void calculateRenderOffsets() {
+		if(parent != null) {
 			parent.calculateRenderOffsets();
 			renderOffsetX = parent.getRenderOffsetX() + offsetX;
 			renderOffsetY = parent.getRenderOffsetY() + offsetY;

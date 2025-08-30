@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,6 @@
  ******************************************************************************/
 
 package com.badlogic.gdx.maps.tiled.renderers;
-
-import static com.badlogic.gdx.graphics.g2d.Batch.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -38,13 +36,17 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
 
-/** Renders ortho tiles by caching geometry on the GPU. How much is cached is controlled by {@link #setOverCache(float)}. When the
+import static com.badlogic.gdx.graphics.g2d.Batch.*;
+
+/**
+ * Renders ortho tiles by caching geometry on the GPU. How much is cached is controlled by {@link #setOverCache(float)}. When the
  * view reaches the edge of the cached tiles, the cache is rebuilt at the new view position.
  * <p>
  * This class may have poor performance when tiles are often changed dynamically, since the cache must be rebuilt after each
  * change.
  * @author Justin Shapcott
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ */
 public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable {
 	static private final float tolerance = 0.00001f;
 	static protected final int NUM_VERTICES = 20;
@@ -66,38 +68,38 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 	protected boolean canCacheMoreN, canCacheMoreE, canCacheMoreW, canCacheMoreS;
 
 	/** Creates a renderer with a unit scale of 1 and cache size of 2000. */
-	public OrthoCachedTiledMapRenderer (TiledMap map) {
+	public OrthoCachedTiledMapRenderer(TiledMap map) {
 		this(map, 1, 2000);
 	}
 
 	/** Creates a renderer with a cache size of 2000. */
-	public OrthoCachedTiledMapRenderer (TiledMap map, float unitScale) {
+	public OrthoCachedTiledMapRenderer(TiledMap map, float unitScale) {
 		this(map, unitScale, 2000);
 	}
 
 	/** @param cacheSize The maximum number of tiles that can be cached. */
-	public OrthoCachedTiledMapRenderer (TiledMap map, float unitScale, int cacheSize) {
+	public OrthoCachedTiledMapRenderer(TiledMap map, float unitScale, int cacheSize) {
 		this.map = map;
 		this.unitScale = unitScale;
 		spriteCache = new SpriteCache(cacheSize, true);
 	}
 
 	@Override
-	public void setView (OrthographicCamera camera) {
+	public void setView(OrthographicCamera camera) {
 		spriteCache.setProjectionMatrix(camera.combined);
 		float width = camera.viewportWidth * camera.zoom + maxTileWidth * 2 * unitScale;
 		float height = camera.viewportHeight * camera.zoom + maxTileHeight * 2 * unitScale;
 		viewBounds.set(camera.position.x - width / 2, camera.position.y - height / 2, width, height);
 
-		if ((canCacheMoreW && viewBounds.x < cacheBounds.x - tolerance) || //
-			(canCacheMoreS && viewBounds.y < cacheBounds.y - tolerance) || //
-			(canCacheMoreE && viewBounds.x + viewBounds.width > cacheBounds.x + cacheBounds.width + tolerance) || //
-			(canCacheMoreN && viewBounds.y + viewBounds.height > cacheBounds.y + cacheBounds.height + tolerance) //
+		if((canCacheMoreW && viewBounds.x < cacheBounds.x - tolerance) || //
+				(canCacheMoreS && viewBounds.y < cacheBounds.y - tolerance) || //
+				(canCacheMoreE && viewBounds.x + viewBounds.width > cacheBounds.x + cacheBounds.width + tolerance) || //
+				(canCacheMoreN && viewBounds.y + viewBounds.height > cacheBounds.y + cacheBounds.height + tolerance) //
 		) cached = false;
 	}
 
 	@Override
-	public void setView (Matrix4 projection, float x, float y, float width, float height) {
+	public void setView(Matrix4 projection, float x, float y, float width, float height) {
 		spriteCache.setProjectionMatrix(projection);
 		x -= maxTileWidth * unitScale;
 		y -= maxTileHeight * unitScale;
@@ -105,16 +107,16 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 		height += maxTileHeight * 2 * unitScale;
 		viewBounds.set(x, y, width, height);
 
-		if ((canCacheMoreW && viewBounds.x < cacheBounds.x - tolerance) || //
-			(canCacheMoreS && viewBounds.y < cacheBounds.y - tolerance) || //
-			(canCacheMoreE && viewBounds.x + viewBounds.width > cacheBounds.x + cacheBounds.width + tolerance) || //
-			(canCacheMoreN && viewBounds.y + viewBounds.height > cacheBounds.y + cacheBounds.height + tolerance) //
+		if((canCacheMoreW && viewBounds.x < cacheBounds.x - tolerance) || //
+				(canCacheMoreS && viewBounds.y < cacheBounds.y - tolerance) || //
+				(canCacheMoreE && viewBounds.x + viewBounds.width > cacheBounds.x + cacheBounds.width + tolerance) || //
+				(canCacheMoreN && viewBounds.y + viewBounds.height > cacheBounds.y + cacheBounds.height + tolerance) //
 		) cached = false;
 	}
 
 	@Override
-	public void render () {
-		if (!cached) {
+	public void render() {
+		if(!cached) {
 			cached = true;
 			count = 0;
 			spriteCache.clear();
@@ -126,37 +128,37 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 			cacheBounds.width = viewBounds.width + extraWidth * 2;
 			cacheBounds.height = viewBounds.height + extraHeight * 2;
 
-			for (MapLayer layer : map.getLayers()) {
+			for(MapLayer layer : map.getLayers()) {
 				spriteCache.beginCache();
-				if (layer instanceof TiledMapTileLayer) {
-					renderTileLayer((TiledMapTileLayer)layer);
-				} else if (layer instanceof TiledMapImageLayer) {
-					renderImageLayer((TiledMapImageLayer)layer);
+				if(layer instanceof TiledMapTileLayer) {
+					renderTileLayer((TiledMapTileLayer) layer);
+				} else if(layer instanceof TiledMapImageLayer) {
+					renderImageLayer((TiledMapImageLayer) layer);
 				}
 				spriteCache.endCache();
 			}
 		}
 
-		if (blending) {
+		if(blending) {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		}
 		spriteCache.begin();
 		MapLayers mapLayers = map.getLayers();
-		for (int i = 0, j = mapLayers.getCount(); i < j; i++) {
+		for(int i = 0, j = mapLayers.getCount(); i < j; i++) {
 			MapLayer layer = mapLayers.get(i);
-			if (layer.isVisible()) {
+			if(layer.isVisible()) {
 				spriteCache.draw(i);
 				renderObjects(layer);
 			}
 		}
 		spriteCache.end();
-		if (blending) Gdx.gl.glDisable(GL20.GL_BLEND);
+		if(blending) Gdx.gl.glDisable(GL20.GL_BLEND);
 	}
 
 	@Override
-	public void render (int[] layers) {
-		if (!cached) {
+	public void render(int[] layers) {
+		if(!cached) {
 			cached = true;
 			count = 0;
 			spriteCache.clear();
@@ -168,50 +170,50 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 			cacheBounds.width = viewBounds.width + extraWidth * 2;
 			cacheBounds.height = viewBounds.height + extraHeight * 2;
 
-			for (MapLayer layer : map.getLayers()) {
+			for(MapLayer layer : map.getLayers()) {
 				spriteCache.beginCache();
-				if (layer instanceof TiledMapTileLayer) {
-					renderTileLayer((TiledMapTileLayer)layer);
-				} else if (layer instanceof TiledMapImageLayer) {
-					renderImageLayer((TiledMapImageLayer)layer);
+				if(layer instanceof TiledMapTileLayer) {
+					renderTileLayer((TiledMapTileLayer) layer);
+				} else if(layer instanceof TiledMapImageLayer) {
+					renderImageLayer((TiledMapImageLayer) layer);
 				}
 				spriteCache.endCache();
 			}
 		}
 
-		if (blending) {
+		if(blending) {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		}
 		spriteCache.begin();
 		MapLayers mapLayers = map.getLayers();
-		for (int i : layers) {
+		for(int i : layers) {
 			MapLayer layer = mapLayers.get(i);
-			if (layer.isVisible()) {
+			if(layer.isVisible()) {
 				spriteCache.draw(i);
 				renderObjects(layer);
 			}
 		}
 		spriteCache.end();
-		if (blending) Gdx.gl.glDisable(GL20.GL_BLEND);
+		if(blending) Gdx.gl.glDisable(GL20.GL_BLEND);
 	}
 
 	@Override
-	public void renderObjects (MapLayer layer) {
-		for (MapObject object : layer.getObjects()) {
+	public void renderObjects(MapLayer layer) {
+		for(MapObject object : layer.getObjects()) {
 			renderObject(object);
 		}
 	}
 
 	@Override
-	public void renderObject (MapObject object) {
+	public void renderObject(MapObject object) {
 	}
 
 	@Override
-	public void renderTileLayer (TiledMapTileLayer layer) {
+	public void renderTileLayer(TiledMapTileLayer layer) {
 
 		final float color = Color.toFloatBits(layer.getCombinedTintColor().r, layer.getCombinedTintColor().g,
-			layer.getCombinedTintColor().b, layer.getOpacity() * layer.getCombinedTintColor().a);
+				layer.getCombinedTintColor().b, layer.getOpacity() * layer.getCombinedTintColor().a);
 
 		final int layerWidth = layer.getWidth();
 		final int layerHeight = layer.getHeight();
@@ -223,13 +225,13 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 		// offset in tiled is y down, so we flip it
 		final float layerOffsetY = -layer.getRenderOffsetY() * unitScale - viewBounds.y * (layer.getParallaxY() - 1);
 
-		final int col1 = Math.max(0, (int)((cacheBounds.x - layerOffsetX) / layerTileWidth));
+		final int col1 = Math.max(0, (int) ((cacheBounds.x - layerOffsetX) / layerTileWidth));
 		final int col2 = Math.min(layerWidth,
-			(int)((cacheBounds.x + cacheBounds.width + layerTileWidth - layerOffsetX) / layerTileWidth));
+				(int) ((cacheBounds.x + cacheBounds.width + layerTileWidth - layerOffsetX) / layerTileWidth));
 
-		final int row1 = Math.max(0, (int)((cacheBounds.y - layerOffsetY) / layerTileHeight));
+		final int row1 = Math.max(0, (int) ((cacheBounds.y - layerOffsetY) / layerTileHeight));
 		final int row2 = Math.min(layerHeight,
-			(int)((cacheBounds.y + cacheBounds.height + layerTileHeight - layerOffsetY) / layerTileHeight));
+				(int) ((cacheBounds.y + cacheBounds.height + layerTileHeight - layerOffsetY) / layerTileHeight));
 
 		canCacheMoreN = row2 < layerHeight;
 		canCacheMoreE = col2 < layerWidth;
@@ -237,13 +239,13 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 		canCacheMoreS = row1 > 0;
 
 		float[] vertices = this.vertices;
-		for (int row = row2; row >= row1; row--) {
-			for (int col = col1; col < col2; col++) {
+		for(int row = row2; row >= row1; row--) {
+			for(int col = col1; col < col2; col++) {
 				final TiledMapTileLayer.Cell cell = layer.getCell(col, row);
-				if (cell == null) continue;
+				if(cell == null) continue;
 
 				final TiledMapTile tile = cell.getTile();
-				if (tile == null) continue;
+				if(tile == null) continue;
 
 				count++;
 				final boolean flipX = cell.getFlipHorizontally();
@@ -289,7 +291,7 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 				vertices[U4] = u2;
 				vertices[V4] = v1;
 
-				if (flipX) {
+				if(flipX) {
 					float temp = vertices[U1];
 					vertices[U1] = vertices[U3];
 					vertices[U3] = temp;
@@ -297,7 +299,7 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 					vertices[U2] = vertices[U4];
 					vertices[U4] = temp;
 				}
-				if (flipY) {
+				if(flipY) {
 					float temp = vertices[V1];
 					vertices[V1] = vertices[V3];
 					vertices[V3] = temp;
@@ -305,51 +307,51 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 					vertices[V2] = vertices[V4];
 					vertices[V4] = temp;
 				}
-				if (rotations != 0) {
-					switch (rotations) {
-					case Cell.ROTATE_90: {
-						float tempV = vertices[V1];
-						vertices[V1] = vertices[V2];
-						vertices[V2] = vertices[V3];
-						vertices[V3] = vertices[V4];
-						vertices[V4] = tempV;
+				if(rotations != 0) {
+					switch(rotations) {
+						case Cell.ROTATE_90: {
+							float tempV = vertices[V1];
+							vertices[V1] = vertices[V2];
+							vertices[V2] = vertices[V3];
+							vertices[V3] = vertices[V4];
+							vertices[V4] = tempV;
 
-						float tempU = vertices[U1];
-						vertices[U1] = vertices[U2];
-						vertices[U2] = vertices[U3];
-						vertices[U3] = vertices[U4];
-						vertices[U4] = tempU;
-						break;
-					}
-					case Cell.ROTATE_180: {
-						float tempU = vertices[U1];
-						vertices[U1] = vertices[U3];
-						vertices[U3] = tempU;
-						tempU = vertices[U2];
-						vertices[U2] = vertices[U4];
-						vertices[U4] = tempU;
-						float tempV = vertices[V1];
-						vertices[V1] = vertices[V3];
-						vertices[V3] = tempV;
-						tempV = vertices[V2];
-						vertices[V2] = vertices[V4];
-						vertices[V4] = tempV;
-						break;
-					}
-					case Cell.ROTATE_270: {
-						float tempV = vertices[V1];
-						vertices[V1] = vertices[V4];
-						vertices[V4] = vertices[V3];
-						vertices[V3] = vertices[V2];
-						vertices[V2] = tempV;
+							float tempU = vertices[U1];
+							vertices[U1] = vertices[U2];
+							vertices[U2] = vertices[U3];
+							vertices[U3] = vertices[U4];
+							vertices[U4] = tempU;
+							break;
+						}
+						case Cell.ROTATE_180: {
+							float tempU = vertices[U1];
+							vertices[U1] = vertices[U3];
+							vertices[U3] = tempU;
+							tempU = vertices[U2];
+							vertices[U2] = vertices[U4];
+							vertices[U4] = tempU;
+							float tempV = vertices[V1];
+							vertices[V1] = vertices[V3];
+							vertices[V3] = tempV;
+							tempV = vertices[V2];
+							vertices[V2] = vertices[V4];
+							vertices[V4] = tempV;
+							break;
+						}
+						case Cell.ROTATE_270: {
+							float tempV = vertices[V1];
+							vertices[V1] = vertices[V4];
+							vertices[V4] = vertices[V3];
+							vertices[V3] = vertices[V2];
+							vertices[V2] = tempV;
 
-						float tempU = vertices[U1];
-						vertices[U1] = vertices[U4];
-						vertices[U4] = vertices[U3];
-						vertices[U3] = vertices[U2];
-						vertices[U2] = tempU;
-						break;
-					}
+							float tempU = vertices[U1];
+							vertices[U1] = vertices[U4];
+							vertices[U4] = vertices[U3];
+							vertices[U3] = vertices[U2];
+							vertices[U2] = tempU;
+							break;
+						}
 					}
 				}
 				spriteCache.add(texture, vertices, 0, NUM_VERTICES);
@@ -360,7 +362,7 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 	protected final Rectangle imageBounds = new Rectangle();
 
 	@Override
-	public void renderImageLayer (TiledMapImageLayer layer) {
+	public void renderImageLayer(TiledMapImageLayer layer) {
 
 		final Color combinedTint = layer.getCombinedTintColor();
 		// Check if layer supports transparency
@@ -375,13 +377,13 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 		// For image layer rendering multiply all by alpha
 		// except for opacity when image layer does not support transparency
 		final float color = Color.toFloatBits(combinedTint.r * alphaMultiplier, combinedTint.g * alphaMultiplier,
-			combinedTint.b * alphaMultiplier, layer.getOpacity() * opacityMultiplier);
+				combinedTint.b * alphaMultiplier, layer.getOpacity() * opacityMultiplier);
 
 		final float[] vertices = this.vertices;
 
 		TextureRegion region = layer.getTextureRegion();
 
-		if (region == null) {
+		if(region == null) {
 			return;
 		}
 
@@ -393,7 +395,7 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 		final float y2 = y1 + region.getRegionHeight() * unitScale;
 
 		imageBounds.set(x1, y1, x2 - x1, y2 - y1);
-		if (!layer.isRepeatX() && !layer.isRepeatY()) {
+		if(!layer.isRepeatX() && !layer.isRepeatY()) {
 
 			final float u1 = region.getU();
 			final float v1 = region.getV2();
@@ -429,8 +431,8 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 		} else {
 
 			// Determine number of times to repeat image across X and Y, + 4 for padding to avoid pop in/out
-			int repeatX = layer.isRepeatX() ? (int)Math.ceil((cacheBounds.width / imageBounds.width) + 4) : 0;
-			int repeatY = layer.isRepeatY() ? (int)Math.ceil((cacheBounds.height / imageBounds.height) + 4) : 0;
+			int repeatX = layer.isRepeatX() ? (int) Math.ceil((cacheBounds.width / imageBounds.width) + 4) : 0;
+			int repeatY = layer.isRepeatY() ? (int) Math.ceil((cacheBounds.height / imageBounds.height) + 4) : 0;
 
 			// Calculate the offset of the first image to align with the camera
 			float startX = cacheBounds.x;
@@ -438,8 +440,8 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 			startX = startX - (startX % imageBounds.width);
 			startY = startY - (startY % imageBounds.height);
 
-			for (int i = 0; i <= repeatX; i++) {
-				for (int j = 0; j <= repeatY; j++) {
+			for(int i = 0; i <= repeatX; i++) {
+				for(int j = 0; j <= repeatY; j++) {
 					float rx1 = x1;
 					float ry1 = y1;
 					float rx2 = x2;
@@ -448,12 +450,12 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 					// Use (i -2)/(j-2) to begin placing our repeating images outside the camera.
 					// In case the image is offset, we must negate this using + (x1% imageBounds.width)
 					// It's a way to get the remainder of how many images would fit between its starting position and 0
-					if (layer.isRepeatX()) {
+					if(layer.isRepeatX()) {
 						rx1 = startX + ((i - 2) * imageBounds.width) + (x1 % imageBounds.width);
 						rx2 = rx1 + imageBounds.width;
 					}
 
-					if (layer.isRepeatY()) {
+					if(layer.isRepeatY()) {
 						ry1 = startY + ((j - 2) * imageBounds.height) + (y1 % imageBounds.height);
 						ry2 = ry1 + imageBounds.height;
 					}
@@ -494,46 +496,50 @@ public class OrthoCachedTiledMapRenderer implements TiledMapRenderer, Disposable
 	}
 
 	/** Causes the cache to be rebuilt the next time it is rendered. */
-	public void invalidateCache () {
+	public void invalidateCache() {
 		cached = false;
 	}
 
 	/** Returns true if tiles are currently cached. */
-	public boolean isCached () {
+	public boolean isCached() {
 		return cached;
 	}
 
-	/** Sets the percentage of the view that is cached in each direction. Default is 0.5.
+	/**
+	 * Sets the percentage of the view that is cached in each direction. Default is 0.5.
 	 * <p>
 	 * Eg, 0.75 will cache 75% of the width of the view to the left and right of the view, and 75% of the height of the view above
-	 * and below the view. */
-	public void setOverCache (float overCache) {
+	 * and below the view.
+	 */
+	public void setOverCache(float overCache) {
 		this.overCache = overCache;
 	}
 
-	/** Expands the view size in each direction, ensuring that tiles of this size or smaller are never culled from the visible
+	/**
+	 * Expands the view size in each direction, ensuring that tiles of this size or smaller are never culled from the visible
 	 * portion of the view. Default is 0,0.
 	 * <p>
 	 * The amount of tiles cached is computed using <code>(view size + max tile size) * overCache</code>, meaning the max tile size
 	 * increases the amount cached and possibly {@link #setOverCache(float)} can be reduced.
 	 * <p>
 	 * If the view size and {@link #setOverCache(float)} are configured so the size of the cached tiles is always larger than the
-	 * largest tile size, this setting is not needed. */
-	public void setMaxTileSize (float maxPixelWidth, float maxPixelHeight) {
+	 * largest tile size, this setting is not needed.
+	 */
+	public void setMaxTileSize(float maxPixelWidth, float maxPixelHeight) {
 		this.maxTileWidth = maxPixelWidth;
 		this.maxTileHeight = maxPixelHeight;
 	}
 
-	public void setBlending (boolean blending) {
+	public void setBlending(boolean blending) {
 		this.blending = blending;
 	}
 
-	public SpriteCache getSpriteCache () {
+	public SpriteCache getSpriteCache() {
 		return spriteCache;
 	}
 
 	@Override
-	public void dispose () {
+	public void dispose() {
 		spriteCache.dispose();
 	}
 }

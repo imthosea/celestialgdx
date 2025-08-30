@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.math;
 
 import static org.junit.Assert.*;
@@ -7,42 +6,42 @@ import org.junit.Test;
 
 public class Vector2Test {
 	@Test
-	public void testToString () {
+	public void testToString() {
 		assertEquals("(-5.0,42.00055)", new Vector2(-5f, 42.00055f).toString());
 	}
 
 	@Test
-	public void testFromString () {
+	public void testFromString() {
 		assertEquals(new Vector2(-5f, 42.00055f), new Vector2().fromString("(-5,42.00055)"));
 	}
 
 	@Test
-	public void testAngle () {
+	public void testAngle() {
 		assertEquals(270f, new Vector2(0, -1f).angleDeg(), MathUtils.FLOAT_ROUNDING_ERROR);
 	}
 
 	@Test
-	public void testAngleRelative () {
+	public void testAngleRelative() {
 		assertEquals(270f, new Vector2(0, -1f).angleDeg(Vector2.X), MathUtils.FLOAT_ROUNDING_ERROR);
 	}
 
 	@Test
-	public void testAngleStatic () {
+	public void testAngleStatic() {
 		assertEquals(270f, Vector2.angleDeg(0, -1f), MathUtils.FLOAT_ROUNDING_ERROR);
 	}
 
 	@Test
-	public void testAngleRad () {
+	public void testAngleRad() {
 		assertEquals(-MathUtils.HALF_PI, new Vector2(0, -1f).angleRad(), MathUtils.FLOAT_ROUNDING_ERROR);
 	}
 
 	@Test
-	public void testAngleRadRelative () {
+	public void testAngleRadRelative() {
 		assertEquals(-MathUtils.HALF_PI, new Vector2(0, -1f).angleRad(Vector2.X), MathUtils.FLOAT_ROUNDING_ERROR);
 	}
 
 	@Test
-	public void testAngleRadStatic () {
+	public void testAngleRadStatic() {
 		assertEquals(-MathUtils.HALF_PI, Vector2.angleRad(0, -1f), MathUtils.FLOAT_ROUNDING_ERROR);
 	}
 

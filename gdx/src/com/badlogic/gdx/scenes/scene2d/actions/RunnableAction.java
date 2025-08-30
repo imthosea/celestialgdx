@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,15 +19,17 @@ package com.badlogic.gdx.scenes.scene2d.actions;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.utils.Pool;
 
-/** An action that runs a {@link Runnable}. Alternatively, the {@link #run()} method can be overridden instead of setting a
+/**
+ * An action that runs a {@link Runnable}. Alternatively, the {@link #run()} method can be overridden instead of setting a
  * runnable.
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ */
 public class RunnableAction extends Action {
 	private Runnable runnable;
 	private boolean ran;
 
-	public boolean act (float delta) {
-		if (!ran) {
+	public boolean act(float delta) {
+		if(!ran) {
 			ran = true;
 			run();
 		}
@@ -35,7 +37,7 @@ public class RunnableAction extends Action {
 	}
 
 	/** Called to run the runnable. */
-	public void run () {
+	public void run() {
 		Pool pool = getPool();
 		setPool(null); // Ensure this action can't be returned to the pool inside the runnable.
 		try {
@@ -45,20 +47,20 @@ public class RunnableAction extends Action {
 		}
 	}
 
-	public void restart () {
+	public void restart() {
 		ran = false;
 	}
 
-	public void reset () {
+	public void reset() {
 		super.reset();
 		runnable = null;
 	}
 
-	public Runnable getRunnable () {
+	public Runnable getRunnable() {
 		return runnable;
 	}
 
-	public void setRunnable (Runnable runnable) {
+	public void setRunnable(Runnable runnable) {
 		this.runnable = runnable;
 	}
 }

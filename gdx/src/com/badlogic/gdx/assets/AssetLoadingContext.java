@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,19 +25,25 @@ import com.badlogic.gdx.utils.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-/** Responsible for loading an asset through an {@link AssetLoader} based on an {@link AssetDescriptor}.
- * */
+/**
+ * Responsible for loading an asset through an {@link AssetLoader} based on an {@link AssetDescriptor}.
+ *
+ */
 public class AssetLoadingContext<T> {
 	public final AssetManager manager;
 	public final AssetDescriptor<T> desc;
 	public final AssetLoader<T, ?> loader;
 
 	private final CompletableFuture<T> future;
-//	private final long startTime;
+	//	private final long startTime;
 
 	private final List<String> dependencies = new ArrayList<>(); // synchronized
 	private final AtomicInteger refCount = new AtomicInteger(1);
@@ -46,7 +52,7 @@ public class AssetLoadingContext<T> {
 
 	private volatile boolean active = true;
 
-	public AssetLoadingContext (AssetManager manager, AssetDescriptor<T> desc, AssetLoader<T, ?> loader) {
+	public AssetLoadingContext(AssetManager manager, AssetDescriptor<T> desc, AssetLoader<T, ?> loader) {
 		this.manager = manager;
 		this.desc = desc;
 		this.loader = loader;
@@ -56,23 +62,23 @@ public class AssetLoadingContext<T> {
 		//		this.startTime = manager.log.getLevel() == Logger.DEBUG ? TimeUtils.nanoTime() : 0;
 	}
 
-	void schedule () {
+	void schedule() {
 		Thread.startVirtualThread(this::load);
 	}
 
-	private void load () {
+	private void load() {
 		try {
 			requireActive();
 			T result = loader.load(desc.fileName, cast(desc.params), this);
 			requireActive();
 			complete(result);
-		} catch (TaskNotActiveException e) {
+		} catch(TaskNotActiveException e) {
 			future.completeExceptionally(e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			manager.log.error("Error loading " + desc.fileName, e);
 			future.completeExceptionally(e);
 
-			if (manager.listener != null)
+			if(manager.listener != null)
 				manager.listener.error(desc, e);
 		} finally {
 			active = false;
@@ -80,10 +86,10 @@ public class AssetLoadingContext<T> {
 		}
 	}
 
-	private void complete (T result) {
+	private void complete(T result) {
 		List<String> dependencies;
-		synchronized (this.dependencies) {
-			if (this.dependencies.isEmpty()) {
+		synchronized(this.dependencies) {
+			if(this.dependencies.isEmpty()) {
 				dependencies = Collections.emptyList();
 			} else {
 				// clone to avoid post modifications
@@ -101,15 +107,15 @@ public class AssetLoadingContext<T> {
 
 		future.complete(result);
 
-		if (desc.params != null && desc.params.loadedCallback != null)
+		if(desc.params != null && desc.params.loadedCallback != null)
 			desc.params.loadedCallback.finishedLoading(manager, desc.fileName, desc.type);
 	}
 
-	public <D> D dependOn (AssetDescriptor<D> desc) {
+	public <D> D dependOn(AssetDescriptor<D> desc) {
 		requireActive();
 		manager.load(desc);
-		synchronized (dependencies) {
-			if (!dependencies.contains(desc.fileName)) {
+		synchronized(dependencies) {
+			if(!dependencies.contains(desc.fileName)) {
 				dependencies.add(desc.fileName);
 			}
 		}
@@ -118,22 +124,22 @@ public class AssetLoadingContext<T> {
 		return result;
 	}
 
-	public <D> D dependOn (String path, Class<D> type) {
+	public <D> D dependOn(String path, Class<D> type) {
 		return dependOn(new AssetDescriptor<>(path, type));
 	}
 
-	public <D> D dependOn (FileHandle file, Class<D> type) {
+	public <D> D dependOn(FileHandle file, Class<D> type) {
 		return dependOn(new AssetDescriptor<>(file, type));
 	}
 
-	public <D, P> D dependOn (String path, Class<D> type, AssetLoaderParameters<P> parameter) {
+	public <D, P> D dependOn(String path, Class<D> type, AssetLoaderParameters<P> parameter) {
 		return dependOn(cast(new AssetDescriptor<>(path, type, (AssetLoaderParameters<D>) parameter)));
 	}
 
-	public <D> void createDependency (String path, Class<D> type, D object) {
+	public <D> void createDependency(String path, Class<D> type, D object) {
 		requireActive();
 
-		if (manager.assets.containsKey(path)) {
+		if(manager.assets.containsKey(path)) {
 			throw new IllegalStateException("Tried to replace asset " + path);
 		}
 
@@ -145,13 +151,13 @@ public class AssetLoadingContext<T> {
 		createdDependencies.add(path);
 	}
 
-	public <T> T awaitMainThread (Supplier<T> supplier) {
+	public <T> T awaitMainThread(Supplier<T> supplier) {
 		requireActive();
 		CompletableFuture<T> future = new CompletableFuture<>();
 		Gdx.app.postRunnable(() -> {
 			try {
 				future.complete(supplier.get());
-			} catch (Exception e) {
+			} catch(Exception e) {
 				manager.log.error("Error performing sync task for " + desc.fileName, e);
 				future.completeExceptionally(e);
 			}
@@ -163,43 +169,43 @@ public class AssetLoadingContext<T> {
 
 	// TODO celestialgdx use this more
 	// or remove it if it doesn't actually improve performance
-	public <T> T awaitWork (Callable<T> supplier) {
+	public <T> T awaitWork(Callable<T> supplier) {
 		requireActive();
 		try {
 			return manager.workExecutor.submit(supplier).get();
-		} catch (InterruptedException | ExecutionException e) {
+		} catch(InterruptedException | ExecutionException e) {
 			throw new RuntimeException("Error performing work task", e);
 		} finally {
 			requireActive();
 		}
 	}
 
-	public void awaitWork (Runnable work) {
+	public void awaitWork(Runnable work) {
 		requireActive();
 		try {
 			manager.workExecutor.submit(work).get();
-		} catch (InterruptedException | ExecutionException e) {
+		} catch(InterruptedException | ExecutionException e) {
 			throw new RuntimeException("Error performing work task", e);
 		} finally {
 			requireActive();
 		}
 	}
 
-	private static <T> T cast (Object obj) {
+	private static <T> T cast(Object obj) {
 		return (T) obj;
 	}
 
 	// package-private to avoid accidental calls
-	T awaitResult () {
-		if (Gdx.app.isGameThread()) {
+	T awaitResult() {
+		if(Gdx.app.isGameThread()) {
 			// since many tasks require awaitMainThread,
 			// we must poll events in between
-			while (true) {
+			while(true) {
 				try {
 					return future.get(10L, TimeUnit.MILLISECONDS);
-				} catch (InterruptedException | ExecutionException e) {
+				} catch(InterruptedException | ExecutionException e) {
 					throw new GdxRuntimeException(e);
-				} catch (TimeoutException e) {
+				} catch(TimeoutException e) {
 					Gdx.app.pollRunnables();
 					// and then try again
 				}
@@ -208,13 +214,13 @@ public class AssetLoadingContext<T> {
 
 		try {
 			return future.get();
-		} catch (InterruptedException | ExecutionException e) {
+		} catch(InterruptedException | ExecutionException e) {
 			throw new GdxRuntimeException(e);
 		}
 	}
 
-	public void cancel () {
-		if (!active) {
+	public void cancel() {
+		if(!active) {
 			manager.unload(desc.fileName);
 			return;
 		}
@@ -222,24 +228,24 @@ public class AssetLoadingContext<T> {
 		createdDependencies.forEach(manager::unload);
 	}
 
-	public Logger logger () {
+	public Logger logger() {
 		return manager.getLogger();
 	}
 
-	void incrementRefCount () {
-		if (!active) {
+	void incrementRefCount() {
+		if(!active) {
 			manager.load(desc);
 			return;
 		}
 		refCount.incrementAndGet();
 	}
 
-	private void requireActive () {
-		if (!active) throw new TaskNotActiveException();
+	private void requireActive() {
+		if(!active) throw new TaskNotActiveException();
 	}
 
 	public static class TaskNotActiveException extends RuntimeException {
-		public TaskNotActiveException () {
+		public TaskNotActiveException() {
 			super("This task either finished or was cancelled");
 		}
 	}

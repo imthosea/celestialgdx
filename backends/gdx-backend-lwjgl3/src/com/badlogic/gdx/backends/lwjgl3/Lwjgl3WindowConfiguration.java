@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,7 @@ public class Lwjgl3WindowConfiguration {
 	boolean initialVisible = true;
 	boolean vSyncEnabled = true;
 
-	void setWindowConfiguration (Lwjgl3WindowConfiguration config) {
+	void setWindowConfiguration(Lwjgl3WindowConfiguration config) {
 		windowX = config.windowX;
 		windowY = config.windowY;
 		windowWidth = config.windowWidth;
@@ -62,85 +62,94 @@ public class Lwjgl3WindowConfiguration {
 	}
 
 	/** @param visibility whether the window will be visible on creation. (default true) */
-	public void setInitialVisible (boolean visibility) {
+	public void setInitialVisible(boolean visibility) {
 		this.initialVisible = visibility;
 	}
 
-	/** Sets the app to use windowed mode.
-	 * 
+	/**
+	 * Sets the app to use windowed mode.
 	 * @param width the width of the window (default 640)
-	 * @param height the height of the window (default 480) */
-	public void setWindowedMode (int width, int height) {
+	 * @param height the height of the window (default 480)
+	 */
+	public void setWindowedMode(int width, int height) {
 		this.windowWidth = width;
 		this.windowHeight = height;
 	}
 
 	/** @param resizable whether the windowed mode window is resizable (default true) */
-	public void setResizable (boolean resizable) {
+	public void setResizable(boolean resizable) {
 		this.windowResizable = resizable;
 	}
 
 	/** @param decorated whether the windowed mode window is decorated, i.e. displaying the title bars (default true) */
-	public void setDecorated (boolean decorated) {
+	public void setDecorated(boolean decorated) {
 		this.windowDecorated = decorated;
 	}
 
 	/** @param maximized whether the window starts maximized. Ignored if the window is full screen. (default false) */
-	public void setMaximized (boolean maximized) {
+	public void setMaximized(boolean maximized) {
 		this.windowMaximized = maximized;
 	}
 
 	/** @param monitor what monitor the window should maximize to */
-	public void setMaximizedMonitor (Graphics.Monitor monitor) {
-		this.maximizedMonitor = (Lwjgl3Graphics.Lwjgl3Monitor)monitor;
+	public void setMaximizedMonitor(Graphics.Monitor monitor) {
+		this.maximizedMonitor = (Lwjgl3Graphics.Lwjgl3Monitor) monitor;
 	}
 
-	/** @param autoIconify whether the window should automatically iconify and restore previous video mode on input focus loss.
-	 *           (default true) Does nothing in windowed mode. */
-	public void setAutoIconify (boolean autoIconify) {
+	/**
+	 * @param autoIconify whether the window should automatically iconify and restore previous video mode on input focus loss.
+	 * (default true) Does nothing in windowed mode.
+	 */
+	public void setAutoIconify(boolean autoIconify) {
 		this.autoIconify = autoIconify;
 	}
 
 	/** Sets the position of the window in windowed mode. Default -1 for both coordinates for centered on primary monitor. */
-	public void setWindowPosition (int x, int y) {
+	public void setWindowPosition(int x, int y) {
 		windowX = x;
 		windowY = y;
 	}
 
-	/** Sets minimum and maximum size limits for the window. If the window is full screen or not resizable, these limits are
-	 * ignored. The default for all four parameters is -1, which means unrestricted. */
-	public void setWindowSizeLimits (int minWidth, int minHeight, int maxWidth, int maxHeight) {
+	/**
+	 * Sets minimum and maximum size limits for the window. If the window is full screen or not resizable, these limits are
+	 * ignored. The default for all four parameters is -1, which means unrestricted.
+	 */
+	public void setWindowSizeLimits(int minWidth, int minHeight, int maxWidth, int maxHeight) {
 		windowMinWidth = minWidth;
 		windowMinHeight = minHeight;
 		windowMaxWidth = maxWidth;
 		windowMaxHeight = maxHeight;
 	}
 
-	public void setWindowIcon (Pixmap... pixmaps) {
+	public void setWindowIcon(Pixmap... pixmaps) {
 		this.pixmaps = pixmaps;
 	}
 
 	/** Sets the {@link Lwjgl3WindowListener} which will be informed about iconficiation, focus loss and window close events. */
-	public void setWindowListener (Lwjgl3WindowListener windowListener) {
+	public void setWindowListener(Lwjgl3WindowListener windowListener) {
 		this.windowListener = windowListener;
 	}
 
-	/** Sets the app to use fullscreen mode. Use the static methods like {@link Lwjgl3ApplicationConfiguration#getDisplayMode()} on
-	 * this class to enumerate connected monitors and their fullscreen display modes. */
-	public void setFullscreenMode (DisplayMode mode) {
-		this.fullscreenMode = (Lwjgl3DisplayMode)mode;
+	/**
+	 * Sets the app to use fullscreen mode. Use the static methods like {@link Lwjgl3ApplicationConfiguration#getDisplayMode()} on
+	 * this class to enumerate connected monitors and their fullscreen display modes.
+	 */
+	public void setFullscreenMode(DisplayMode mode) {
+		this.fullscreenMode = (Lwjgl3DisplayMode) mode;
 	}
 
 	/** Sets the window title. If null, the application listener's class name is used. */
-	public void setTitle (String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
-	/** Sets whether to use vsync. This setting can be changed anytime at runtime via {@link Graphics#setVSync(boolean)}.
+	/**
+	 * Sets whether to use vsync. This setting can be changed anytime at runtime via {@link Graphics#setVSync(boolean)}.
 	 *
 	 * For multi-window applications, only one (the main) window should enable vsync. Otherwise, every window will wait for the
-	 * vertical blank on swap individually, effectively cutting the frame rate to (refreshRate / numberOfWindows). */
-	public void useVsync (boolean vsync) {
+	 * vertical blank on swap individually, effectively cutting the frame rate to (refreshRate / numberOfWindows).
+	 */
+	public void useVsync(boolean vsync) {
 		this.vSyncEnabled = vsync;
 	}
 }

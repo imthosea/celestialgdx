@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,35 +43,35 @@ public class FreeType {
 	
 	static jint lastError = 0;	
 	 */
-	
+
 	/**
-	 * 
+	 *
 	 * @return returns the last error code FreeType reported
 	 */
 	static native int getLastErrorCode(); /*
 		return lastError;
 	*/
-	
+
 	private static class Pointer {
 		long address;
-		
+
 		Pointer(long address) {
 			this.address = address;
 		}
 	}
-	
+
 	public static class Library extends Pointer implements Disposable {
 		final LongMap<ByteBuffer> fontData = new LongMap<>();
-		
-		Library (long address) {
+
+		Library(long address) {
 			super(address);
 		}
 
 		@Override
-		public void dispose () {
+		public void dispose() {
 			doneFreeType(address);
-			for(ByteBuffer buffer: fontData.values()) {
-				if (BufferUtils.isUnsafeByteBuffer(buffer)) 
+			for(ByteBuffer buffer : fontData.values()) {
+				if(BufferUtils.isUnsafeByteBuffer(buffer))
 					BufferUtils.disposeUnsafeByteBuffer(buffer);
 			}
 		}
@@ -81,15 +81,15 @@ public class FreeType {
 		*/
 
 		public Face newFace(FileHandle fontFile, int faceIndex) {
-			if (fontFile instanceof MappableFile mappable) {
+			if(fontFile instanceof MappableFile mappable) {
 				return newMemoryFace(mappable.map(), faceIndex);
 			}
 
 			InputStream input = fontFile.read();
 			try {
-				int fileSize = (int)fontFile.length();
+				int fileSize = (int) fontFile.length();
 				ByteBuffer buffer;
-				if (fileSize == 0) {
+				if(fileSize == 0) {
 					// Copy to a byte[] to get the size, then copy to the buffer.
 					byte[] data = StreamUtils.copyStreamToByteArray(input, 1024 * 16);
 					buffer = BufferUtils.newUnsafeByteBuffer(data.length);
@@ -100,7 +100,7 @@ public class FreeType {
 					StreamUtils.copyStream(input, buffer);
 				}
 				return newMemoryFace(buffer, faceIndex);
-			} catch (IOException ex) {
+			} catch(IOException ex) {
 				throw new GdxRuntimeException(ex);
 			} finally {
 				StreamUtils.closeQuietly(input);
@@ -116,11 +116,10 @@ public class FreeType {
 		public Face newMemoryFace(ByteBuffer buffer, int faceIndex) {
 			long face = newMemoryFace(address, buffer, buffer.remaining(), faceIndex);
 			if(face == 0) {
-				if (BufferUtils.isUnsafeByteBuffer(buffer)) 
+				if(BufferUtils.isUnsafeByteBuffer(buffer))
 					BufferUtils.disposeUnsafeByteBuffer(buffer);
 				throw new GdxRuntimeException("Couldn't load font, FreeType error code: " + getLastErrorCode());
-			}
-			else {
+			} else {
 				fontData.put(face, buffer);
 				return new Face(face, this);
 			}
@@ -138,7 +137,8 @@ public class FreeType {
 
 		public Stroker createStroker() {
 			long stroker = strokerNew(address);
-			if(stroker == 0) throw new GdxRuntimeException("Couldn't create FreeType stroker, FreeType error code: " + getLastErrorCode());
+			if(stroker == 0)
+				throw new GdxRuntimeException("Couldn't create FreeType stroker, FreeType error code: " + getLastErrorCode());
 			return new Stroker(stroker);
 		}
 
@@ -155,19 +155,19 @@ public class FreeType {
 
 	public static class Face extends FreeType.Pointer implements Disposable {
 		final FreeType.Library library;
-		
-		public Face (long address, Library library) {
+
+		public Face(long address, Library library) {
 			super(address);
 			this.library = library;
 		}
-		
+
 		@Override
 		public void dispose() {
 			doneFace(address);
 			ByteBuffer buffer = library.fontData.get(address);
 			if(buffer != null) {
 				library.fontData.remove(address);
-				if (BufferUtils.isUnsafeByteBuffer(buffer)) 
+				if(BufferUtils.isUnsafeByteBuffer(buffer))
 					BufferUtils.disposeUnsafeByteBuffer(buffer);
 			}
 		}
@@ -179,83 +179,83 @@ public class FreeType {
 		public int getFaceFlags() {
 			return getFaceFlags(address);
 		}
-		
+
 		private static native int getFaceFlags(long face); /*
 			return ((FT_Face)face)->face_flags;
 		*/
-		
+
 		public int getStyleFlags() {
 			return getStyleFlags(address);
 		}
-		
+
 		private static native int getStyleFlags(long face); /*
 			return ((FT_Face)face)->style_flags;
 		*/
-		
+
 		public int getNumGlyphs() {
 			return getNumGlyphs(address);
 		}
-		
+
 		private static native int getNumGlyphs(long face); /*
 			return ((FT_Face)face)->num_glyphs;
 		*/
-		
+
 		public int getAscender() {
 			return getAscender(address);
 		}
-		
+
 		private static native int getAscender(long face); /*
 			return ((FT_Face)face)->ascender;
 		*/
-		
+
 		public int getDescender() {
 			return getDescender(address);
 		}
-		
+
 		private static native int getDescender(long face); /*
 			return ((FT_Face)face)->descender;
 		*/
-		
+
 		public int getHeight() {
 			return getHeight(address);
 		}
-		
+
 		private static native int getHeight(long face); /*
 			return ((FT_Face)face)->height;
 		*/
-		
+
 		public int getMaxAdvanceWidth() {
 			return getMaxAdvanceWidth(address);
 		}
-		
+
 		private static native int getMaxAdvanceWidth(long face); /*
 			return ((FT_Face)face)->max_advance_width;
 		*/
-		
+
 		public int getMaxAdvanceHeight() {
 			return getMaxAdvanceHeight(address);
 		}
-		
+
 		private static native int getMaxAdvanceHeight(long face); /*
 			return ((FT_Face)face)->max_advance_height;
 		*/
-		
+
 		public int getUnderlinePosition() {
 			return getUnderlinePosition(address);
 		}
-		
+
 		private static native int getUnderlinePosition(long face); /*
 			return ((FT_Face)face)->underline_position;
 		*/
-		
+
 		public int getUnderlineThickness() {
 			return getUnderlineThickness(address);
 		}
-		
+
 		private static native int getUnderlineThickness(long face); /*
 			return ((FT_Face)face)->underline_thickness;
 		*/
-		
+
 		public boolean selectSize(int strikeIndex) {
 			return selectSize(address, strikeIndex);
 		}
@@ -299,15 +299,15 @@ public class FreeType {
 		public GlyphSlot getGlyph() {
 			return new GlyphSlot(getGlyph(address));
 		}
-		
+
 		private static native long getGlyph(long face); /*
 			return (jlong)((FT_Face)face)->glyph;
 		*/
-		
+
 		public Size getSize() {
 			return new Size(getSize(address));
 		}
-		
+
 		private static native long getSize(long face); /*
 			return (jlong)((FT_Face)face)->size;
 		*/
@@ -340,165 +340,165 @@ public class FreeType {
 		*/
 
 	}
-	
+
 	public static class Size extends Pointer {
-		Size (long address) {
+		Size(long address) {
 			super(address);
 		}
-		
+
 		public SizeMetrics getMetrics() {
 			return new SizeMetrics(getMetrics(address));
 		}
-		
+
 		private static native long getMetrics(long address); /*
 			return (jlong)&((FT_Size)address)->metrics;
 		*/
 	}
-	
+
 	public static class SizeMetrics extends Pointer {
-		SizeMetrics (long address) {
+		SizeMetrics(long address) {
 			super(address);
 		}
-		
+
 		public int getXppem() {
 			return getXppem(address);
 		}
-		
+
 		private static native int getXppem(long metrics); /*
 			return ((FT_Size_Metrics*)metrics)->x_ppem;
 		*/
-		
+
 		public int getYppem() {
 			return getYppem(address);
 		}
-		
+
 		private static native int getYppem(long metrics); /*
 			return ((FT_Size_Metrics*)metrics)->y_ppem;
 		*/
-		
+
 		public int getXScale() {
 			return getXscale(address);
 		}
-		
+
 		private static native int getXscale(long metrics); /*
 			return ((FT_Size_Metrics*)metrics)->x_scale;
 		*/
-		
+
 		public int getYscale() {
 			return getYscale(address);
 		}
-		
+
 		private static native int getYscale(long metrics); /*
 			return ((FT_Size_Metrics*)metrics)->x_scale;
 		*/
-		
+
 		public int getAscender() {
 			return getAscender(address);
 		}
-		
+
 		private static native int getAscender(long metrics); /*
 			return ((FT_Size_Metrics*)metrics)->ascender;
 		*/
-		
+
 		public int getDescender() {
 			return getDescender(address);
 		}
-		
+
 		private static native int getDescender(long metrics); /*
 			return ((FT_Size_Metrics*)metrics)->descender;
 		*/
-		
+
 		public int getHeight() {
 			return getHeight(address);
 		}
-		
+
 		private static native int getHeight(long metrics); /*
 			return ((FT_Size_Metrics*)metrics)->height;
 		*/
-		
+
 		public int getMaxAdvance() {
 			return getMaxAdvance(address);
 		}
-		
+
 		private static native int getMaxAdvance(long metrics); /*
 			return ((FT_Size_Metrics*)metrics)->max_advance;
 		*/
 	}
-	
+
 	public static class GlyphSlot extends Pointer {
-		GlyphSlot (long address) {
+		GlyphSlot(long address) {
 			super(address);
 		}
-		
+
 		public GlyphMetrics getMetrics() {
 			return new GlyphMetrics(getMetrics(address));
-		}		
-		
+		}
+
 		private static native long getMetrics(long slot); /*
 			return (jlong)&((FT_GlyphSlot)slot)->metrics;
 		*/
-		
+
 		public int getLinearHoriAdvance() {
 			return getLinearHoriAdvance(address);
 		}
-		
+
 		private static native int getLinearHoriAdvance(long slot); /*
 			return ((FT_GlyphSlot)slot)->linearHoriAdvance;
 		*/
-		
+
 		public int getLinearVertAdvance() {
 			return getLinearVertAdvance(address);
 		}
-		
+
 		private static native int getLinearVertAdvance(long slot); /*
 			return ((FT_GlyphSlot)slot)->linearVertAdvance;
 		*/
-		
+
 		public int getAdvanceX() {
 			return getAdvanceX(address);
 		}
-		
+
 		private static native int getAdvanceX(long slot); /*
 			return ((FT_GlyphSlot)slot)->advance.x;
 		*/
-		
+
 		public int getAdvanceY() {
 			return getAdvanceY(address);
 		}
-		
+
 		private static native int getAdvanceY(long slot); /*
 			return ((FT_GlyphSlot)slot)->advance.y;
 		*/
-		
+
 		public int getFormat() {
 			return getFormat(address);
 		}
-		
+
 		private static native int getFormat(long slot); /*
 			return ((FT_GlyphSlot)slot)->format;
 		*/
-		
+
 		public Bitmap getBitmap() {
 			return new Bitmap(getBitmap(address));
 		}
-		
+
 		private static native long getBitmap(long slot); /*
 			FT_GlyphSlot glyph = ((FT_GlyphSlot)slot);
 			return (jlong)&(glyph->bitmap);
 		*/
-		
+
 		public int getBitmapLeft() {
 			return getBitmapLeft(address);
 		}
-		
+
 		private static native int getBitmapLeft(long slot); /*
 			return ((FT_GlyphSlot)slot)->bitmap_left;
 		*/
-		
+
 		public int getBitmapTop() {
 			return getBitmapTop(address);
 		}
-		
+
 		private static native int getBitmapTop(long slot); /*
 			return ((FT_GlyphSlot)slot)->bitmap_top;
 		*/
@@ -513,7 +513,8 @@ public class FreeType {
 
 		public Glyph getGlyph() {
 			long glyph = getGlyph(address);
-			if(glyph == 0) throw new GdxRuntimeException("Couldn't get glyph, FreeType error code: " + getLastErrorCode());
+			if(glyph == 0)
+				throw new GdxRuntimeException("Couldn't get glyph, FreeType error code: " + getLastErrorCode());
 			return new Glyph(glyph);
 		}
 
@@ -527,16 +528,16 @@ public class FreeType {
 			else return (jlong)glyph;
 		*/
 	}
-	
+
 	public static class Glyph extends Pointer implements Disposable {
 		private boolean rendered;
 
-		Glyph (long address) {
+		Glyph(long address) {
 			super(address);
 		}
 
 		@Override
-		public void dispose () {
+		public void dispose() {
 			done(address);
 		}
 
@@ -556,7 +557,8 @@ public class FreeType {
 
 		public void toBitmap(int renderMode) {
 			long bitmap = toBitmap(address, renderMode);
-			if (bitmap == 0) throw new GdxRuntimeException("Couldn't render glyph, FreeType error code: " + getLastErrorCode());
+			if(bitmap == 0)
+				throw new GdxRuntimeException("Couldn't render glyph, FreeType error code: " + getLastErrorCode());
 			address = bitmap;
 			rendered = true;
 		}
@@ -572,7 +574,7 @@ public class FreeType {
 		*/
 
 		public Bitmap getBitmap() {
-			if (!rendered) {
+			if(!rendered) {
 				throw new GdxRuntimeException("Glyph is not yet rendered");
 			}
 			return new Bitmap(getBitmap(address));
@@ -584,7 +586,7 @@ public class FreeType {
 		*/
 
 		public int getLeft() {
-			if (!rendered) {
+			if(!rendered) {
 				throw new GdxRuntimeException("Glyph is not yet rendered");
 			}
 			return getLeft(address);
@@ -596,7 +598,7 @@ public class FreeType {
 		*/
 
 		public int getTop() {
-			if (!rendered) {
+			if(!rendered) {
 				throw new GdxRuntimeException("Glyph is not yet rendered");
 			}
 			return getTop(address);
@@ -610,36 +612,36 @@ public class FreeType {
 	}
 
 	public static class Bitmap extends Pointer {
-		Bitmap (long address) {
+		Bitmap(long address) {
 			super(address);
 		}
-		
+
 		public int getRows() {
 			return getRows(address);
 		}
-		
+
 		private static native int getRows(long bitmap); /*
 			return ((FT_Bitmap*)bitmap)->rows;
 		*/
-		
+
 		public int getWidth() {
 			return getWidth(address);
 		}
-		
+
 		private static native int getWidth(long bitmap); /*
 			return ((FT_Bitmap*)bitmap)->width;
 		*/
-		
+
 		public int getPitch() {
 			return getPitch(address);
 		}
-		
+
 		private static native int getPitch(long bitmap); /*
 			return ((FT_Bitmap*)bitmap)->pitch;
 		*/
-		
+
 		public ByteBuffer getBuffer() {
-			if (getRows() == 0)
+			if(getRows() == 0)
 				// Issue #768 - CheckJNI frowns upon env->NewDirectByteBuffer with NULL buffer or capacity 0
 				//                  "JNI WARNING: invalid values for address (0x0) or capacity (0)"
 				//              FreeType sets FT_Bitmap::buffer to NULL when the bitmap is empty (e.g. for ' ')
@@ -655,13 +657,13 @@ public class FreeType {
 		*/
 
 		// @on
-		public Pixmap getPixmap (Format format, Color color, float gamma) {
+		public Pixmap getPixmap(Format format, Color color, float gamma) {
 			int width = getWidth(), rows = getRows();
 			ByteBuffer src = getBuffer();
 			Pixmap pixmap;
 			int pixelMode = getPixelMode();
 			int rowBytes = Math.abs(getPitch()); // We currently ignore negative pitch.
-			if (color == Color.WHITE && pixelMode == FT_PIXEL_MODE_GRAY && rowBytes == width && gamma == 1) {
+			if(color == Color.WHITE && pixelMode == FT_PIXEL_MODE_GRAY && rowBytes == width && gamma == 1) {
 				pixmap = new Pixmap(width, rows, Format.Alpha);
 				BufferUtils.copy(src, pixmap.getPixels(), pixmap.getPixels().capacity());
 			} else {
@@ -670,14 +672,14 @@ public class FreeType {
 				byte[] srcRow = new byte[rowBytes];
 				int[] dstRow = new int[width];
 				IntBuffer dst = pixmap.getPixels().asIntBuffer();
-				if (pixelMode == FT_PIXEL_MODE_MONO) {
+				if(pixelMode == FT_PIXEL_MODE_MONO) {
 					// Use the specified color for each set bit.
-					for (int y = 0; y < rows; y++) {
+					for(int y = 0; y < rows; y++) {
 						src.get(srcRow);
-						for (int i = 0, x = 0; x < width; i++, x += 8) {
+						for(int i = 0, x = 0; x < width; i++, x += 8) {
 							byte b = srcRow[i];
-							for (int ii = 0, n = Math.min(8, width - x); ii < n; ii++) {
-								if ((b & (1 << (7 - ii))) != 0)
+							for(int ii = 0, n = Math.min(8, width - x); ii < n; ii++) {
+								if((b & (1 << (7 - ii))) != 0)
 									dstRow[x + ii] = rgba;
 								else
 									dstRow[x + ii] = 0;
@@ -689,19 +691,19 @@ public class FreeType {
 					// Use the specified color for RGB, blend the FreeType bitmap with alpha.
 					int rgb = rgba & 0xffffff00;
 					int a = rgba & 0xff;
-					for (int y = 0; y < rows; y++) {
+					for(int y = 0; y < rows; y++) {
 						src.get(srcRow);
-						for (int x = 0; x < width; x++) {
+						for(int x = 0; x < width; x++) {
 							// Zero raised to any power is always zero.
 							// 255 (=one) raised to any power is always one.
 							// We only need Math.pow() when alpha is NOT zero and NOT one.
 							int alpha = srcRow[x] & 0xff;
-							if (alpha == 0)
+							if(alpha == 0)
 								dstRow[x] = rgb;
-							else if (alpha == 255)
+							else if(alpha == 255)
 								dstRow[x] = rgb | a;
 							else
-								dstRow[x] = rgb | (int)(a * (float)Math.pow(alpha / 255f, gamma)); // Inverse gamma.
+								dstRow[x] = rgb | (int) (a * (float) Math.pow(alpha / 255f, gamma)); // Inverse gamma.
 						}
 						dst.put(dstRow);
 					}
@@ -709,7 +711,7 @@ public class FreeType {
 			}
 
 			Pixmap converted = pixmap;
-			if (format != pixmap.getFormat()) {
+			if(format != pixmap.getFormat()) {
 				converted = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), format);
 				converted.setBlending(Blending.None);
 				converted.drawPixmap(pixmap, 0, 0);
@@ -723,85 +725,85 @@ public class FreeType {
 		public int getNumGray() {
 			return getNumGray(address);
 		}
-		
+
 		private static native int getNumGray(long bitmap); /*
 			return ((FT_Bitmap*)bitmap)->num_grays;
 		*/
-		
+
 		public int getPixelMode() {
 			return getPixelMode(address);
 		}
-		
+
 		private static native int getPixelMode(long bitmap); /*
 			return ((FT_Bitmap*)bitmap)->pixel_mode;
 		*/
 	}
-	
+
 	public static class GlyphMetrics extends Pointer {
-		GlyphMetrics (long address) {
+		GlyphMetrics(long address) {
 			super(address);
 		}
-		
+
 		public int getWidth() {
 			return getWidth(address);
 		}
-		
+
 		private static native int getWidth(long metrics); /*
 			return ((FT_Glyph_Metrics*)metrics)->width;
 		*/
-		
+
 		public int getHeight() {
 			return getHeight(address);
 		}
-		
+
 		private static native int getHeight(long metrics); /*
 			return ((FT_Glyph_Metrics*)metrics)->height;
 		*/
-		
+
 		public int getHoriBearingX() {
 			return getHoriBearingX(address);
 		}
-		
+
 		private static native int getHoriBearingX(long metrics); /*
 			return ((FT_Glyph_Metrics*)metrics)->horiBearingX;
 		*/
-		
+
 		public int getHoriBearingY() {
 			return getHoriBearingY(address);
 		}
-		
+
 		private static native int getHoriBearingY(long metrics); /*
 			return ((FT_Glyph_Metrics*)metrics)->horiBearingY;
 		*/
-		
+
 		public int getHoriAdvance() {
 			return getHoriAdvance(address);
 		}
-		
+
 		private static native int getHoriAdvance(long metrics); /*
 			return ((FT_Glyph_Metrics*)metrics)->horiAdvance;
 		*/
-	
+
 		public int getVertBearingX() {
 			return getVertBearingX(address);
 		}
-		
+
 		private static native int getVertBearingX(long metrics); /*
 			return ((FT_Glyph_Metrics*)metrics)->vertBearingX;
 		*/
-		
+
 		public int getVertBearingY() {
 			return getVertBearingY(address);
 		}
-	
+
 		private static native int getVertBearingY(long metrics); /*
 			return ((FT_Glyph_Metrics*)metrics)->vertBearingY;
 		 */
-		
+
 		public int getVertAdvance() {
 			return getVertAdvance(address);
 		}
-	
+
 		private static native int getVertAdvance(long metrics); /*
 			return ((FT_Glyph_Metrics*)metrics)->vertAdvance;
 		*/
@@ -830,15 +832,15 @@ public class FreeType {
 		*/
 	}
 
-   public static int FT_PIXEL_MODE_NONE = 0;
-   public static final int FT_PIXEL_MODE_MONO = 1;
-   public static final int FT_PIXEL_MODE_GRAY = 2;
-   public static int FT_PIXEL_MODE_GRAY2 = 3;
-   public static int FT_PIXEL_MODE_GRAY4 = 4;
-   public static int FT_PIXEL_MODE_LCD = 5;
-   public static int FT_PIXEL_MODE_LCD_V = 6;
-	
-	private static int encode (char a, char b, char c, char d) {
+	public static int FT_PIXEL_MODE_NONE = 0;
+	public static final int FT_PIXEL_MODE_MONO = 1;
+	public static final int FT_PIXEL_MODE_GRAY = 2;
+	public static int FT_PIXEL_MODE_GRAY2 = 3;
+	public static int FT_PIXEL_MODE_GRAY4 = 4;
+	public static int FT_PIXEL_MODE_LCD = 5;
+	public static int FT_PIXEL_MODE_LCD_V = 6;
+
+	private static int encode(char a, char b, char c, char d) {
 		return (a << 24) | (b << 16) | (c << 8) | d;
 	}
 
@@ -856,77 +858,77 @@ public class FreeType {
 	public static int FT_ENCODING_ADOBE_LATIN_1 = encode('l', 'a', 't', '1');
 	public static int FT_ENCODING_OLD_LATIN_2 = encode('l', 'a', 't', '2');
 	public static int FT_ENCODING_APPLE_ROMAN = encode('a', 'r', 'm', 'n');
-	
-	public static int FT_FACE_FLAG_SCALABLE          = ( 1 <<  0 );
-	public static final int FT_FACE_FLAG_FIXED_SIZES       = ( 1 <<  1 );
-	public static int FT_FACE_FLAG_FIXED_WIDTH       = ( 1 <<  2 );
-	public static int FT_FACE_FLAG_SFNT              = ( 1 <<  3 );
-	public static final int FT_FACE_FLAG_HORIZONTAL        = ( 1 <<  4 );
-	public static int FT_FACE_FLAG_VERTICAL          = ( 1 <<  5 );
-	public static int FT_FACE_FLAG_KERNING           = ( 1 <<  6 );
-	public static int FT_FACE_FLAG_FAST_GLYPHS       = ( 1 <<  7 );
-	public static int FT_FACE_FLAG_MULTIPLE_MASTERS  = ( 1 <<  8 );
-	public static int FT_FACE_FLAG_GLYPH_NAMES       = ( 1 <<  9 );
-	public static int FT_FACE_FLAG_EXTERNAL_STREAM   = ( 1 << 10 );
-	public static int FT_FACE_FLAG_HINTER            = ( 1 << 11 );
-	public static int FT_FACE_FLAG_CID_KEYED         = ( 1 << 12 );
-	public static int FT_FACE_FLAG_TRICKY            = ( 1 << 13 );
-	
-	public static int FT_STYLE_FLAG_ITALIC = ( 1 << 0 );
-	public static int FT_STYLE_FLAG_BOLD   = ( 1 << 1 );
-	
-	public static final int FT_LOAD_DEFAULT                      = 0x0;
-	public static int FT_LOAD_NO_SCALE                     = 0x1;
-	public static final int FT_LOAD_NO_HINTING                   = 0x2;
-	public static int FT_LOAD_RENDER                       = 0x4;
-	public static int FT_LOAD_NO_BITMAP                    = 0x8;
-	public static int FT_LOAD_VERTICAL_LAYOUT              = 0x10;
-	public static final int FT_LOAD_FORCE_AUTOHINT               = 0x20;
-	public static int FT_LOAD_CROP_BITMAP                  = 0x40;
-	public static int FT_LOAD_PEDANTIC                     = 0x80;
-	public static int FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH  = 0x200;
-	public static int FT_LOAD_NO_RECURSE                   = 0x400;
-	public static int FT_LOAD_IGNORE_TRANSFORM             = 0x800;
-	public static int FT_LOAD_MONOCHROME                   = 0x1000;
-	public static int FT_LOAD_LINEAR_DESIGN                = 0x2000;
-	public static int FT_LOAD_NO_AUTOHINT                  = 0x8000;
-	
-	public static final int FT_LOAD_TARGET_NORMAL                = 0x0;
-	public static final int FT_LOAD_TARGET_LIGHT                 = 0x10000;
-	public static final int FT_LOAD_TARGET_MONO                  = 0x20000;
-	public static int FT_LOAD_TARGET_LCD                   = 0x30000;
-	public static int FT_LOAD_TARGET_LCD_V                 = 0x40000;
 
-   public static final int FT_RENDER_MODE_NORMAL = 0;
-   public static int FT_RENDER_MODE_LIGHT = 1;
-   public static final int FT_RENDER_MODE_MONO = 2;
-   public static int FT_RENDER_MODE_LCD = 3;
-   public static int FT_RENDER_MODE_LCD_V = 4;
-   public static int FT_RENDER_MODE_MAX = 5;
-   
-   public static int FT_KERNING_DEFAULT = 0;
-   public static int FT_KERNING_UNFITTED = 1;
-   public static int FT_KERNING_UNSCALED = 2;
-	
+	public static int FT_FACE_FLAG_SCALABLE = (1 << 0);
+	public static final int FT_FACE_FLAG_FIXED_SIZES = (1 << 1);
+	public static int FT_FACE_FLAG_FIXED_WIDTH = (1 << 2);
+	public static int FT_FACE_FLAG_SFNT = (1 << 3);
+	public static final int FT_FACE_FLAG_HORIZONTAL = (1 << 4);
+	public static int FT_FACE_FLAG_VERTICAL = (1 << 5);
+	public static int FT_FACE_FLAG_KERNING = (1 << 6);
+	public static int FT_FACE_FLAG_FAST_GLYPHS = (1 << 7);
+	public static int FT_FACE_FLAG_MULTIPLE_MASTERS = (1 << 8);
+	public static int FT_FACE_FLAG_GLYPH_NAMES = (1 << 9);
+	public static int FT_FACE_FLAG_EXTERNAL_STREAM = (1 << 10);
+	public static int FT_FACE_FLAG_HINTER = (1 << 11);
+	public static int FT_FACE_FLAG_CID_KEYED = (1 << 12);
+	public static int FT_FACE_FLAG_TRICKY = (1 << 13);
+
+	public static int FT_STYLE_FLAG_ITALIC = (1 << 0);
+	public static int FT_STYLE_FLAG_BOLD = (1 << 1);
+
+	public static final int FT_LOAD_DEFAULT = 0x0;
+	public static int FT_LOAD_NO_SCALE = 0x1;
+	public static final int FT_LOAD_NO_HINTING = 0x2;
+	public static int FT_LOAD_RENDER = 0x4;
+	public static int FT_LOAD_NO_BITMAP = 0x8;
+	public static int FT_LOAD_VERTICAL_LAYOUT = 0x10;
+	public static final int FT_LOAD_FORCE_AUTOHINT = 0x20;
+	public static int FT_LOAD_CROP_BITMAP = 0x40;
+	public static int FT_LOAD_PEDANTIC = 0x80;
+	public static int FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH = 0x200;
+	public static int FT_LOAD_NO_RECURSE = 0x400;
+	public static int FT_LOAD_IGNORE_TRANSFORM = 0x800;
+	public static int FT_LOAD_MONOCHROME = 0x1000;
+	public static int FT_LOAD_LINEAR_DESIGN = 0x2000;
+	public static int FT_LOAD_NO_AUTOHINT = 0x8000;
+
+	public static final int FT_LOAD_TARGET_NORMAL = 0x0;
+	public static final int FT_LOAD_TARGET_LIGHT = 0x10000;
+	public static final int FT_LOAD_TARGET_MONO = 0x20000;
+	public static int FT_LOAD_TARGET_LCD = 0x30000;
+	public static int FT_LOAD_TARGET_LCD_V = 0x40000;
+
+	public static final int FT_RENDER_MODE_NORMAL = 0;
+	public static int FT_RENDER_MODE_LIGHT = 1;
+	public static final int FT_RENDER_MODE_MONO = 2;
+	public static int FT_RENDER_MODE_LCD = 3;
+	public static int FT_RENDER_MODE_LCD_V = 4;
+	public static int FT_RENDER_MODE_MAX = 5;
+
+	public static int FT_KERNING_DEFAULT = 0;
+	public static int FT_KERNING_UNFITTED = 1;
+	public static int FT_KERNING_UNSCALED = 2;
+
 	public static final int FT_STROKER_LINECAP_BUTT = 0;
 	public static final int FT_STROKER_LINECAP_ROUND = 1;
 	public static int FT_STROKER_LINECAP_SQUARE = 2;
 
-	public static final int FT_STROKER_LINEJOIN_ROUND          = 0;
-	public static int FT_STROKER_LINEJOIN_BEVEL          = 1;
+	public static final int FT_STROKER_LINEJOIN_ROUND = 0;
+	public static int FT_STROKER_LINEJOIN_BEVEL = 1;
 	public static final int FT_STROKER_LINEJOIN_MITER_VARIABLE = 2;
-	public static int FT_STROKER_LINEJOIN_MITER          = FT_STROKER_LINEJOIN_MITER_VARIABLE;
-	public static final int FT_STROKER_LINEJOIN_MITER_FIXED    = 3;
+	public static int FT_STROKER_LINEJOIN_MITER = FT_STROKER_LINEJOIN_MITER_VARIABLE;
+	public static final int FT_STROKER_LINEJOIN_MITER_FIXED = 3;
 
-   public static Library initFreeType() {   	
-   	new SharedLibraryLoader().load("gdx-freetype");
-   	long address = initFreeTypeJni();
-   	if(address == 0)
-   		throw new GdxRuntimeException("Couldn't initialize FreeType library, FreeType error code: " + getLastErrorCode());
-   	else
-   		return new Library(address);
-   }
-   
+	public static Library initFreeType() {
+		new SharedLibraryLoader().load("gdx-freetype");
+		long address = initFreeTypeJni();
+		if(address == 0)
+			throw new GdxRuntimeException("Couldn't initialize FreeType library, FreeType error code: " + getLastErrorCode());
+		else
+			return new Library(address);
+	}
+
 	private static native long initFreeTypeJni(); /*
 		FT_Library library = 0;
 		FT_Error error = FT_Init_FreeType(&library);
@@ -937,38 +939,38 @@ public class FreeType {
 		else return (jlong)library;
 	*/
 
-	public static int toInt (int value) {
+	public static int toInt(int value) {
 		return ((value + 63) & -64) >> 6;
 	}
-   
-//	public static void main (String[] args) throws Exception {
-//		FreetypeBuild.main(args);
-//		new SharedLibraryLoader("libs/gdx-freetype-natives.jar").load("gdx-freetype");
-//		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890\"!`?'.,;:()[]{}<>|/@\\^$-%+=#_&~*�?�?�?�?�? ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿À�?ÂÃÄÅÆÇÈÉÊËÌ�?Î�?�?ÑÒÓÔÕÖ×ØÙÚÛÜ�?Þßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
-//		
-//		Library library = FreeType.initFreeType();
-//		Face face = library.newFace(new FileHandle("lsans.ttf"), 0);
-//		face.setPixelSizes(0, 15);
-//		SizeMetrics faceMetrics = face.getSize().getMetrics();
-//		System.out.println(toInt(faceMetrics.getAscender()) + ", " + toInt(faceMetrics.getDescender()) + ", " + toInt(faceMetrics.getHeight()));
-//		
-//		for(int i = 0; i < chars.length(); i++) {
-//			if(!FreeType.loadGlyph(face, FreeType.getCharIndex(face, chars.charAt(i)), 0)) continue;
-//			if(!FreeType.renderGlyph(face.getGlyph(), FT_RENDER_MODE_NORMAL)) continue;
-//			Bitmap bitmap = face.getGlyph().getBitmap();
-//			GlyphMetrics glyphMetrics = face.getGlyph().getMetrics();
-//			System.out.println(toInt(glyphMetrics.getHoriBearingX()) + ", " + toInt(glyphMetrics.getHoriBearingY()));
-//			System.out.println(toInt(glyphMetrics.getWidth()) + ", " + toInt(glyphMetrics.getHeight()) + ", " + toInt(glyphMetrics.getHoriAdvance()));
-//			System.out.println(bitmap.getWidth() + ", " + bitmap.getRows() + ", " + bitmap.getPitch() + ", " + bitmap.getNumGray());
-//			for(int y = 0; y < bitmap.getRows(); y++) {
-//				for(int x = 0; x < bitmap.getWidth(); x++) {
-//					System.out.print(bitmap.getBuffer().get(x + bitmap.getPitch() * y) != 0? "X": " ");
-//				}
-//				System.out.println();
-//			}
-//		}
-//	
-//		face.dispose();
-//		library.dispose();
-//	}
+
+	//	public static void main (String[] args) throws Exception {
+	//		FreetypeBuild.main(args);
+	//		new SharedLibraryLoader("libs/gdx-freetype-natives.jar").load("gdx-freetype");
+	//		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890\"!`?'.,;:()[]{}<>|/@\\^$-%+=#_&~*�?�?�?�?�? ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿À�?ÂÃÄÅÆÇÈÉÊËÌ�?Î�?�?ÑÒÓÔÕÖ×ØÙÚÛÜ�?Þßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+	//
+	//		Library library = FreeType.initFreeType();
+	//		Face face = library.newFace(new FileHandle("lsans.ttf"), 0);
+	//		face.setPixelSizes(0, 15);
+	//		SizeMetrics faceMetrics = face.getSize().getMetrics();
+	//		System.out.println(toInt(faceMetrics.getAscender()) + ", " + toInt(faceMetrics.getDescender()) + ", " + toInt(faceMetrics.getHeight()));
+	//
+	//		for(int i = 0; i < chars.length(); i++) {
+	//			if(!FreeType.loadGlyph(face, FreeType.getCharIndex(face, chars.charAt(i)), 0)) continue;
+	//			if(!FreeType.renderGlyph(face.getGlyph(), FT_RENDER_MODE_NORMAL)) continue;
+	//			Bitmap bitmap = face.getGlyph().getBitmap();
+	//			GlyphMetrics glyphMetrics = face.getGlyph().getMetrics();
+	//			System.out.println(toInt(glyphMetrics.getHoriBearingX()) + ", " + toInt(glyphMetrics.getHoriBearingY()));
+	//			System.out.println(toInt(glyphMetrics.getWidth()) + ", " + toInt(glyphMetrics.getHeight()) + ", " + toInt(glyphMetrics.getHoriAdvance()));
+	//			System.out.println(bitmap.getWidth() + ", " + bitmap.getRows() + ", " + bitmap.getPitch() + ", " + bitmap.getNumGray());
+	//			for(int y = 0; y < bitmap.getRows(); y++) {
+	//				for(int x = 0; x < bitmap.getWidth(); x++) {
+	//					System.out.print(bitmap.getBuffer().get(x + bitmap.getPitch() * y) != 0? "X": " ");
+	//				}
+	//				System.out.println();
+	//			}
+	//		}
+	//
+	//		face.dispose();
+	//		library.dispose();
+	//	}
 }

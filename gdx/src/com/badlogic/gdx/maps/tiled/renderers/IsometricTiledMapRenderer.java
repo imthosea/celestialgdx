@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2013 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,40 +40,40 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 	private final Vector2 topLeft = new Vector2();
 	private final Vector2 bottomRight = new Vector2();
 
-	public IsometricTiledMapRenderer (TiledMap map) {
+	public IsometricTiledMapRenderer(TiledMap map) {
 		super(map);
 		this.invIsotransform = init();
 	}
 
-	public IsometricTiledMapRenderer (TiledMap map, Batch batch) {
+	public IsometricTiledMapRenderer(TiledMap map, Batch batch) {
 		super(map, batch);
 		this.invIsotransform = init();
 	}
 
-	public IsometricTiledMapRenderer (TiledMap map, float unitScale) {
+	public IsometricTiledMapRenderer(TiledMap map, float unitScale) {
 		super(map, unitScale);
 		this.invIsotransform = init();
 	}
 
-	public IsometricTiledMapRenderer (TiledMap map, float unitScale, Batch batch) {
+	public IsometricTiledMapRenderer(TiledMap map, float unitScale, Batch batch) {
 		super(map, unitScale, batch);
 		this.invIsotransform = init();
 	}
 
-	private Matrix4 init () {
+	private Matrix4 init() {
 		// create the isometric transform
 		Matrix4 isoTransform = new Matrix4();
 		isoTransform.idt();
 
 		// isoTransform.translate(0, 32, 0);
-		isoTransform.scale((float)(Math.sqrt(2.0) / 2.0), (float)(Math.sqrt(2.0) / 4.0), 1.0f);
+		isoTransform.scale((float) (Math.sqrt(2.0) / 2.0), (float) (Math.sqrt(2.0) / 4.0), 1.0f);
 		isoTransform.rotate(0.0f, 0.0f, 1.0f, -45);
 
 		// ... and the inverse matrix
 		return isoTransform.inv();
 	}
 
-	private Vector3 translateScreenToIso (Vector2 vec) {
+	private Vector3 translateScreenToIso(Vector2 vec) {
 		screenPos.set(vec.x, vec.y, 0);
 		screenPos.mul(invIsotransform);
 
@@ -81,7 +81,7 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 	}
 
 	@Override
-	public void renderTileLayer (TiledMapTileLayer layer) {
+	public void renderTileLayer(TiledMapTileLayer layer) {
 		final Color batchColor = batch.getColor();
 		final float color = getTileLayerColor(layer, batchColor);
 
@@ -106,22 +106,22 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 		bottomRight.set(viewBounds.x + viewBounds.width - layerOffsetX, viewBounds.y + viewBounds.height - layerOffsetY);
 
 		// transforming screen coordinates to iso coordinates
-		int row1 = (int)(translateScreenToIso(topLeft).y / tileWidth) - 2;
-		int row2 = (int)(translateScreenToIso(bottomRight).y / tileWidth) + 2;
+		int row1 = (int) (translateScreenToIso(topLeft).y / tileWidth) - 2;
+		int row2 = (int) (translateScreenToIso(bottomRight).y / tileWidth) + 2;
 
-		int col1 = (int)(translateScreenToIso(bottomLeft).x / tileWidth) - 2;
-		int col2 = (int)(translateScreenToIso(topRight).x / tileWidth) + 2;
+		int col1 = (int) (translateScreenToIso(bottomLeft).x / tileWidth) - 2;
+		int col2 = (int) (translateScreenToIso(topRight).x / tileWidth) + 2;
 
-		for (int row = row2; row >= row1; row--) {
-			for (int col = col1; col <= col2; col++) {
+		for(int row = row2; row >= row1; row--) {
+			for(int col = col1; col <= col2; col++) {
 				float x = (col * halfTileWidth) + (row * halfTileWidth);
 				float y = (row * halfTileHeight) - (col * halfTileHeight);
 
 				final TiledMapTileLayer.Cell cell = layer.getCell(col, row);
-				if (cell == null) continue;
+				if(cell == null) continue;
 				final TiledMapTile tile = cell.getTile();
 
-				if (tile != null) {
+				if(tile != null) {
 					final boolean flipX = cell.getFlipHorizontally();
 					final boolean flipY = cell.getFlipVertically();
 					final int rotations = cell.getRotation();
@@ -162,7 +162,7 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 					vertices[U4] = u2;
 					vertices[V4] = v1;
 
-					if (flipX) {
+					if(flipX) {
 						float temp = vertices[U1];
 						vertices[U1] = vertices[U3];
 						vertices[U3] = temp;
@@ -170,7 +170,7 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 						vertices[U2] = vertices[U4];
 						vertices[U4] = temp;
 					}
-					if (flipY) {
+					if(flipY) {
 						float temp = vertices[V1];
 						vertices[V1] = vertices[V3];
 						vertices[V3] = temp;
@@ -178,51 +178,51 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 						vertices[V2] = vertices[V4];
 						vertices[V4] = temp;
 					}
-					if (rotations != 0) {
-						switch (rotations) {
-						case Cell.ROTATE_90: {
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V2];
-							vertices[V2] = vertices[V3];
-							vertices[V3] = vertices[V4];
-							vertices[V4] = tempV;
+					if(rotations != 0) {
+						switch(rotations) {
+							case Cell.ROTATE_90: {
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V2];
+								vertices[V2] = vertices[V3];
+								vertices[V3] = vertices[V4];
+								vertices[V4] = tempV;
 
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U2];
-							vertices[U2] = vertices[U3];
-							vertices[U3] = vertices[U4];
-							vertices[U4] = tempU;
-							break;
-						}
-						case Cell.ROTATE_180: {
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U3];
-							vertices[U3] = tempU;
-							tempU = vertices[U2];
-							vertices[U2] = vertices[U4];
-							vertices[U4] = tempU;
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V3];
-							vertices[V3] = tempV;
-							tempV = vertices[V2];
-							vertices[V2] = vertices[V4];
-							vertices[V4] = tempV;
-							break;
-						}
-						case Cell.ROTATE_270: {
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V4];
-							vertices[V4] = vertices[V3];
-							vertices[V3] = vertices[V2];
-							vertices[V2] = tempV;
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U2];
+								vertices[U2] = vertices[U3];
+								vertices[U3] = vertices[U4];
+								vertices[U4] = tempU;
+								break;
+							}
+							case Cell.ROTATE_180: {
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U3];
+								vertices[U3] = tempU;
+								tempU = vertices[U2];
+								vertices[U2] = vertices[U4];
+								vertices[U4] = tempU;
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V3];
+								vertices[V3] = tempV;
+								tempV = vertices[V2];
+								vertices[V2] = vertices[V4];
+								vertices[V4] = tempV;
+								break;
+							}
+							case Cell.ROTATE_270: {
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V4];
+								vertices[V4] = vertices[V3];
+								vertices[V3] = vertices[V2];
+								vertices[V2] = tempV;
 
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U4];
-							vertices[U4] = vertices[U3];
-							vertices[U3] = vertices[U2];
-							vertices[U2] = tempU;
-							break;
-						}
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U4];
+								vertices[U4] = vertices[U3];
+								vertices[U3] = vertices[U2];
+								vertices[U2] = tempU;
+								break;
+							}
 						}
 					}
 					batch.draw(region.getTexture(), vertices, 0, NUM_VERTICES);
@@ -232,7 +232,7 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 	}
 
 	@Override
-	public void renderImageLayer (TiledMapImageLayer layer) {
+	public void renderImageLayer(TiledMapImageLayer layer) {
 		final Color batchColor = batch.getColor();
 
 		final float color = getImageLayerColor(layer, batchColor);
@@ -241,7 +241,7 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 
 		TextureRegion region = layer.getTextureRegion();
 
-		if (region == null) {
+		if(region == null) {
 			return;
 		}
 		/** Because of the way libGDX handles the isometric coordinates. The leftmost tile of the map begins rendering at world
@@ -263,8 +263,8 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 
 		imageBounds.set(x1, y1, x2 - x1, y2 - y1);
 
-		if (!layer.isRepeatX() && !layer.isRepeatY()) {
-			if (viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
+		if(!layer.isRepeatX() && !layer.isRepeatY()) {
+			if(viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
 				final float u1 = region.getU();
 				final float v1 = region.getV2();
 				final float u2 = region.getU2();
@@ -299,8 +299,8 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 		} else {
 
 			// Determine number of times to repeat image across X and Y, + 4 for padding to avoid pop in/out
-			int repeatX = layer.isRepeatX() ? (int)Math.ceil((viewBounds.width / imageBounds.width) + 4) : 0;
-			int repeatY = layer.isRepeatY() ? (int)Math.ceil((viewBounds.height / imageBounds.height) + 4) : 0;
+			int repeatX = layer.isRepeatX() ? (int) Math.ceil((viewBounds.width / imageBounds.width) + 4) : 0;
+			int repeatY = layer.isRepeatY() ? (int) Math.ceil((viewBounds.height / imageBounds.height) + 4) : 0;
 
 			// Calculate the offset of the first image to align with the camera
 			float startX = viewBounds.x;
@@ -308,8 +308,8 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 			startX = startX - (startX % imageBounds.width);
 			startY = startY - (startY % imageBounds.height);
 
-			for (int i = 0; i <= repeatX; i++) {
-				for (int j = 0; j <= repeatY; j++) {
+			for(int i = 0; i <= repeatX; i++) {
+				for(int j = 0; j <= repeatY; j++) {
 					float rx1 = x1;
 					float ry1 = y1;
 					float rx2 = x2;
@@ -318,19 +318,19 @@ public class IsometricTiledMapRenderer extends BatchTiledMapRenderer {
 					// Use (i -2)/(j-2) to begin placing our repeating images outside the camera.
 					// In case the image is offset, we must negate this using + (x1% imageBounds.width)
 					// It's a way to get the remainder of how many images would fit between its starting position and 0
-					if (layer.isRepeatX()) {
+					if(layer.isRepeatX()) {
 						rx1 = startX + ((i - 2) * imageBounds.width) + (x1 % imageBounds.width);
 						rx2 = rx1 + imageBounds.width;
 					}
 
-					if (layer.isRepeatY()) {
+					if(layer.isRepeatY()) {
 						ry1 = startY + ((j - 2) * imageBounds.height) + (y1 % imageBounds.height);
 						ry2 = ry1 + imageBounds.height;
 					}
 
 					repeatedImageBounds.set(rx1, ry1, rx2 - rx1, ry2 - ry1);
 
-					if (viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
+					if(viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
 						final float ru1 = region.getU();
 						final float rv1 = region.getV2();
 						final float ru2 = region.getU2();

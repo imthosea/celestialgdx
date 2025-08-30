@@ -22,7 +22,7 @@ import org.junit.Test;
 public class LongArrayTest {
 	/** Test of the different adding methods */
 	@Test
-	public void addTest () {
+	public void addTest() {
 		/*
 		 * Test of the classic add(long value) method, it should be adding a number at the first available place.
 		 */
@@ -61,35 +61,35 @@ public class LongArrayTest {
 
 	/** Test of the get() method */
 	@Test
-	public void getTest () {
+	public void getTest() {
 		LongArray longArray = new LongArray();
 		longArray.add(3, 4, 5, 1);
 		Assert.assertEquals(3, longArray.get(0));
 		try {
 			longArray.get(9);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// We should get here as we want to get an index that's out of bounds.
 		}
 	}
 
 	/** Test of the set() method */
 	@Test
-	public void setTest () {
+	public void setTest() {
 		LongArray longArray = new LongArray(new long[] {3, 4, 5, 7});
 		longArray.set(1, 51);
 		Assert.assertEquals(51, longArray.get(1));
 		try {
 			longArray.set(5, 8);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// We should get here as we are trying to set the value of an index that's out of bounds.
 		}
 	}
 
 	/** Test of the incr() method */
 	@Test
-	public void incrTest () {
+	public void incrTest() {
 		LongArray longArray = new LongArray(new long[] {3, 4, 5, 1, 56, 32});
 		longArray.incr(3, 45);
 		Assert.assertEquals(46, longArray.get(3));
@@ -98,14 +98,14 @@ public class LongArrayTest {
 		try {
 			longArray.incr(28, 4);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as we are trying to increase at an index out of bounds
 		}
 	}
 
 	/** Test of the mul() method */
 	@Test
-	public void mulTest () {
+	public void mulTest() {
 		LongArray longArray = new LongArray(new long[] {3, 4, 5, 1, 56, 32});
 		longArray.mul(1, 3);
 		Assert.assertEquals(12, longArray.get(1));
@@ -114,14 +114,14 @@ public class LongArrayTest {
 		try {
 			longArray.mul(17, 8);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as we are trying to multiply at an index out of bounds
 		}
 	}
 
 	/** Test of the insert() method */
 	@Test
-	public void insertTest () {
+	public void insertTest() {
 		// With an ordered array
 		LongArray longArray1 = new LongArray();
 		longArray1.addAll(new long[] {1, 3, 4, 5, 6});
@@ -132,7 +132,7 @@ public class LongArrayTest {
 		try {
 			longArray1.insertRange(400, 4);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as we are trying to insert at an index out of bounds
 		}
 
@@ -144,33 +144,33 @@ public class LongArrayTest {
 		try {
 			longArray2.insert(2783, 3);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as we are trying to insert at an index out of bounds
 		}
 	}
 
 	/** Test of the swap() method */
 	@Test
-	public void swapTest () {
+	public void swapTest() {
 		LongArray longArray1 = new LongArray(new long[] {1, 3, 4, 5, 6});
 		longArray1.swap(1, 4);
 		Assert.assertArrayEquals(new long[] {1, 6, 4, 5, 3}, longArray1.toArray());
 		try {
 			longArray1.swap(100, 3);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as we are trying to swap at an index out of bounds
 		}
 		try {
 			longArray1.swap(3, 100);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as we are trying to swap at an index out of bounds
 		}
 	}
 
 	@Test
-	public void containsTest () {
+	public void containsTest() {
 		LongArray longArray1 = new LongArray(new long[] {1, 3, 4, 5, 6});
 		Assert.assertTrue(longArray1.contains(3));
 		Assert.assertFalse(longArray1.contains(100));
@@ -178,7 +178,7 @@ public class LongArrayTest {
 
 	/** Test of the indexOf() method */
 	@Test
-	public void indexOfTest () {
+	public void indexOfTest() {
 		LongArray longArray1 = new LongArray(new long[] {1, 3, 4, 5, 6, 6, 3, 9, 68000, 68000});
 		Assert.assertEquals(-1, longArray1.indexOf(100));
 		Assert.assertEquals(1, longArray1.indexOf(3));
@@ -188,7 +188,7 @@ public class LongArrayTest {
 
 	/** Test of all remove methods (removeValue, removeIndex, removeRange, removeAll) */
 	@Test
-	public void removeTest () {
+	public void removeTest() {
 		// removeValue test
 		LongArray longArray1 = LongArray.with(1, 3, 4, 5, 6, 6, 3, 9);
 		Assert.assertTrue(longArray1.removeValue(3));
@@ -202,7 +202,7 @@ public class LongArrayTest {
 		try {
 			longArray1.removeIndex(56);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as we are trying to remove at an index that is out of bounds
 		}
 
@@ -214,13 +214,13 @@ public class LongArrayTest {
 		try {
 			longArray2.removeRange(3, 4);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as we are trying to remove at a range that is out of bounds
 		}
 		try {
 			longArray2.removeRange(1, 0);
 			Assert.fail();
-		} catch (IndexOutOfBoundsException e) {
+		} catch(IndexOutOfBoundsException e) {
 			// This should throw an exception as the starting index is > than ending index
 		}
 
@@ -238,7 +238,7 @@ public class LongArrayTest {
 
 	/** Test of the pop(), peek() and first() methods */
 	@Test
-	public void popPeekFirstTest () {
+	public void popPeekFirstTest() {
 		LongArray longArray = LongArray.with(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 		LongArray emptyLongArray = new LongArray();
 		Assert.assertEquals(1, longArray.first());
@@ -248,26 +248,26 @@ public class LongArrayTest {
 		try {
 			long first = emptyLongArray.first();
 			Assert.fail();
-		} catch (IllegalStateException e) {
+		} catch(IllegalStateException e) {
 			// This should throw an exception as we can't take the first item of an empty array
 		}
 		try {
 			long last = emptyLongArray.pop();
 			Assert.fail();
-		} catch (IllegalStateException e) {
+		} catch(IllegalStateException e) {
 			// This should throw an exception as we can't take the last item of an empty array
 		}
 		try {
 			long last = emptyLongArray.peek();
 			Assert.fail();
-		} catch (IllegalStateException e) {
+		} catch(IllegalStateException e) {
 			// This should throw an exception as we can't take the last item of an empty array
 		}
 	}
 
 	/** test of the isEmpty() and notEmpty() methods */
 	@Test
-	public void emptyTest () {
+	public void emptyTest() {
 		Assert.assertTrue((new LongArray()).isEmpty());
 		Assert.assertFalse((new LongArray(new long[] {1})).isEmpty());
 		Assert.assertFalse((new LongArray()).notEmpty());
@@ -276,7 +276,7 @@ public class LongArrayTest {
 
 	/** Test of the clear() method */
 	@Test
-	public void clearTest () {
+	public void clearTest() {
 		LongArray longArray = new LongArray(new long[] {1});
 		longArray.clear();
 		Assert.assertTrue(longArray.isEmpty());
@@ -284,7 +284,7 @@ public class LongArrayTest {
 
 	/** Test of the shrink() method */
 	@Test
-	public void shrinkTest () {
+	public void shrinkTest() {
 		LongArray longArray = new LongArray(); // This LongArray will have an "items" attribute of length 16 by default
 		longArray.add(1, 2, 3);
 		Assert.assertArrayEquals(new long[] {1, 2, 3}, longArray.shrink());
@@ -293,26 +293,26 @@ public class LongArrayTest {
 
 	/** Test of the ensureCapacity method */
 	@Test
-	public void ensureCapacityTest () {
+	public void ensureCapacityTest() {
 		LongArray longArray1 = new LongArray(
-			new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 0, 10, 389, 8, 392, 4, 27346, 2, 234, 12});
+				new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 0, 10, 389, 8, 392, 4, 27346, 2, 234, 12});
 		LongArray longArray2 = new LongArray(new long[] {1, 2, 3});
 		Assert.assertArrayEquals(new long[] {1, 2, 3, 0, 0, 0, 0, 0}, longArray2.ensureCapacity(2));
 		Assert.assertArrayEquals(new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 0, 10, 389, 8, 392, 4, 27346, 2, 234, 12, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, longArray1.ensureCapacity(18));
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, longArray1.ensureCapacity(18));
 		try {
 			longArray1.ensureCapacity(-6);
 			Assert.fail();
-		} catch (IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			// This should throw an exception as it is not allowed to have a negative integer as ensureCapacity argument
 		}
 	}
 
 	/** Test of the setSize() method */
 	@Test
-	public void setSizeTest () {
+	public void setSizeTest() {
 		LongArray longArray1 = new LongArray(
-			new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 90, 10, 389, 8, 392, 4, 27346, 2, 234, 12});
+				new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 90, 10, 389, 8, 392, 4, 27346, 2, 234, 12});
 		longArray1.setSize(23);
 		Assert.assertEquals(23, longArray1.size);
 		longArray1.setSize(10);
@@ -322,36 +322,36 @@ public class LongArrayTest {
 		try {
 			longArray1.setSize(-3);
 			Assert.fail();
-		} catch (IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			// This should throw an exception as it is not allowed to have a negative integer as setSize argument
 		}
 	}
 
 	/** Test of resize() method */
 	@Test
-	public void resizeTest () {
+	public void resizeTest() {
 		LongArray longArray1 = new LongArray(
-			new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 90, 10, 389, 8, 392, 4, 27346, 2, 234, 12});
+				new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 90, 10, 389, 8, 392, 4, 27346, 2, 234, 12});
 		Assert.assertArrayEquals(
-			new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 90, 10, 389, 8, 392, 4, 27346, 2, 234, 12, 0, 0},
-			longArray1.resize(23));
+				new long[] {1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 90, 10, 389, 8, 392, 4, 27346, 2, 234, 12, 0, 0},
+				longArray1.resize(23));
 	}
 
 	/** Test of sort() and reverse() methods */
 	@Test
-	public void sortAndReverseTest () {
+	public void sortAndReverseTest() {
 		LongArray longArray1 = LongArray.with(1, 2, 4, 6, 32, 53, 564, 53, 2, 1, 89, 90, 10, 389, 8, 392, 4, 27346, 2, 234, 12);
 		longArray1.sort();
 		Assert.assertArrayEquals(new long[] {1, 1, 2, 2, 2, 4, 4, 6, 8, 10, 12, 32, 53, 53, 89, 90, 234, 389, 392, 564, 27346},
-			longArray1.toArray());
+				longArray1.toArray());
 		longArray1.reverse();
 		Assert.assertArrayEquals(new long[] {27346, 564, 392, 389, 234, 90, 89, 53, 53, 32, 12, 10, 8, 6, 4, 4, 2, 2, 2, 1, 1},
-			longArray1.toArray());
+				longArray1.toArray());
 	}
 
 	/** Test of equals() method */
 	@Test
-	public void equalsTest () {
+	public void equalsTest() {
 		LongArray longArray1 = new LongArray();
 		LongArray longArray2 = new LongArray();
 		longArray1.add(1, 2);

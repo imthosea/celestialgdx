@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.graphics.g2d;
 
 import com.badlogic.gdx.files.WriteableFileHandle;
@@ -12,8 +11,10 @@ import java.util.regex.Matcher;
 
 import static com.badlogic.gdx.graphics.g2d.PixmapPacker.indexPattern;
 
-/** Saves PixmapPackers to files.
- * @author jshapcott */
+/**
+ * Saves PixmapPackers to files.
+ * @author jshapcott
+ */
 public class PixmapPackerIO {
 
 	/** Image formats which can be used when saving a PixmapPacker. */
@@ -26,11 +27,11 @@ public class PixmapPackerIO {
 		private final String extension;
 
 		/** Returns the file extension for the image format. */
-		public String getExtension () {
+		public String getExtension() {
 			return extension;
 		}
 
-		ImageFormat (String extension) {
+		ImageFormat(String extension) {
 			this.extension = extension;
 		}
 	}
@@ -43,38 +44,40 @@ public class PixmapPackerIO {
 		public boolean useIndexes;
 	}
 
-	/** Saves the provided PixmapPacker to the provided file. The resulting file will use the standard TextureAtlas file format and
+	/**
+	 * Saves the provided PixmapPacker to the provided file. The resulting file will use the standard TextureAtlas file format and
 	 * can be loaded by TextureAtlas as if it had been created using TexturePacker. Default {@link SaveParameters} will be used.
-	 * 
 	 * @param file the file to which the atlas descriptor will be written, images will be written as siblings
 	 * @param packer the PixmapPacker to be written
-	 * @throws IOException if the atlas file can not be written */
-	public void save (WriteableFileHandle file, PixmapPacker packer) throws IOException {
+	 * @throws IOException if the atlas file can not be written
+	 */
+	public void save(WriteableFileHandle file, PixmapPacker packer) throws IOException {
 		save(file, packer, new SaveParameters());
 	}
 
-	/** Saves the provided PixmapPacker to the provided file. The resulting file will use the standard TextureAtlas file format and
+	/**
+	 * Saves the provided PixmapPacker to the provided file. The resulting file will use the standard TextureAtlas file format and
 	 * can be loaded by TextureAtlas as if it had been created using TexturePacker.
-	 * 
 	 * @param file the file to which the atlas descriptor will be written, images will be written as siblings
 	 * @param packer the PixmapPacker to be written
 	 * @param parameters the SaveParameters specifying how to save the PixmapPacker
-	 * @throws IOException if the atlas file can not be written */
-	public void save (WriteableFileHandle file, PixmapPacker packer, SaveParameters parameters) throws IOException {
+	 * @throws IOException if the atlas file can not be written
+	 */
+	public void save(WriteableFileHandle file, PixmapPacker packer, SaveParameters parameters) throws IOException {
 		Writer writer = file.writer(false);
 		int index = 0;
-		for (Page page : packer.pages) {
-			if (page.rects.size > 0) {
+		for(Page page : packer.pages) {
+			if(page.rects.size > 0) {
 				WriteableFileHandle pageFile = file.sibling(file.nameWithoutExtension() + "_" + (++index) + parameters.format.getExtension());
-				switch (parameters.format) {
-				case CIM: {
-					PixmapIO.writeCIM(pageFile, page.image);
-					break;
-				}
-				case PNG: {
-					PixmapIO.writePNG(pageFile, page.image);
-					break;
-				}
+				switch(parameters.format) {
+					case CIM: {
+						PixmapIO.writeCIM(pageFile, page.image);
+						break;
+					}
+					case PNG: {
+						PixmapIO.writePNG(pageFile, page.image);
+						break;
+					}
 				}
 				writer.write("\n");
 				writer.write(pageFile.name() + "\n");
@@ -82,12 +85,12 @@ public class PixmapPackerIO {
 				writer.write("format: " + packer.pageFormat.name() + "\n");
 				writer.write("filter: " + parameters.minFilter.name() + "," + parameters.magFilter.name() + "\n");
 				writer.write("repeat: none" + "\n");
-				for (String name : page.rects.keys()) {
+				for(String name : page.rects.keys()) {
 					int imageIndex = -1;
 					String imageName = name;
-					if (parameters.useIndexes) {
+					if(parameters.useIndexes) {
 						Matcher matcher = indexPattern.matcher(imageName);
-						if (matcher.matches()) {
+						if(matcher.matches()) {
 							imageName = matcher.group(1);
 							imageIndex = Integer.parseInt(matcher.group(2));
 						}
@@ -97,12 +100,12 @@ public class PixmapPackerIO {
 					writer.write("  rotate: false" + "\n");
 					writer.write("  xy: " + rect.getX() + "," + rect.getY() + "\n");
 					writer.write("  size: " + rect.getWidth() + "," + rect.getHeight() + "\n");
-					if (rect.splits != null) {
+					if(rect.splits != null) {
 						writer.write(
-							"  split: " + rect.splits[0] + ", " + rect.splits[1] + ", " + rect.splits[2] + ", " + rect.splits[3] + "\n");
-						if (rect.pads != null) {
+								"  split: " + rect.splits[0] + ", " + rect.splits[1] + ", " + rect.splits[2] + ", " + rect.splits[3] + "\n");
+						if(rect.pads != null) {
 							writer
-								.write("  pad: " + rect.pads[0] + ", " + rect.pads[1] + ", " + rect.pads[2] + ", " + rect.pads[3] + "\n");
+									.write("  pad: " + rect.pads[0] + ", " + rect.pads[1] + ", " + rect.pads[2] + ", " + rect.pads[3] + "\n");
 						}
 					}
 					writer.write("  orig: " + rect.originalWidth + ", " + rect.originalHeight + "\n");

@@ -24,8 +24,10 @@ import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/** Wraps a standard OpenGL ES Cubemap. Must be disposed when it is no longer used.
- * @author Xoppa */
+/**
+ * Wraps a standard OpenGL ES Cubemap. Must be disposed when it is no longer used.
+ * @author Xoppa
+ */
 public class Cubemap extends GLTexture {
 	/** Enum to identify each side of a Cubemap */
 	public enum CubemapSide {
@@ -51,7 +53,7 @@ public class Cubemap extends GLTexture {
 		/** The direction vector to target the side. */
 		public final Vector3 direction;
 
-		CubemapSide (int index, int glEnum, float upX, float upY, float upZ, float directionX, float directionY, float directionZ) {
+		CubemapSide(int index, int glEnum, float upX, float upY, float upZ, float directionX, float directionY, float directionZ) {
 			this.index = index;
 			this.glEnum = glEnum;
 			this.up = new Vector3(upX, upY, upZ);
@@ -59,17 +61,17 @@ public class Cubemap extends GLTexture {
 		}
 
 		/** @return The OpenGL target (used for glTexImage2D) of the side. */
-		public int getGLEnum () {
+		public int getGLEnum() {
 			return glEnum;
 		}
 
 		/** @return The up vector of the side. */
-		public Vector3 getUp (Vector3 out) {
+		public Vector3 getUp(Vector3 out) {
 			return out.set(up);
 		}
 
 		/** @return The direction vector of the side. */
-		public Vector3 getDirection (Vector3 out) {
+		public Vector3 getDirection(Vector3 out) {
 			return out.set(direction);
 		}
 	}
@@ -77,61 +79,61 @@ public class Cubemap extends GLTexture {
 	protected final CubemapData data;
 
 	/** Construct a Cubemap based on the given CubemapData. */
-	public Cubemap (CubemapData data) {
+	public Cubemap(CubemapData data) {
 		super(GL20.GL_TEXTURE_CUBE_MAP);
 		this.data = data;
 		load(data);
 	}
 
 	/** Construct a Cubemap with the specified texture files for the sides, does not generate mipmaps. */
-	public Cubemap (FileHandle positiveX, FileHandle negativeX, FileHandle positiveY, FileHandle negativeY, FileHandle positiveZ,
-		FileHandle negativeZ) {
+	public Cubemap(FileHandle positiveX, FileHandle negativeX, FileHandle positiveY, FileHandle negativeY, FileHandle positiveZ,
+	               FileHandle negativeZ) {
 		this(positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ, false);
 	}
 
 	/** Construct a Cubemap with the specified texture files for the sides, optionally generating mipmaps. */
-	public Cubemap (FileHandle positiveX, FileHandle negativeX, FileHandle positiveY, FileHandle negativeY, FileHandle positiveZ,
-		FileHandle negativeZ, boolean useMipMaps) {
+	public Cubemap(FileHandle positiveX, FileHandle negativeX, FileHandle positiveY, FileHandle negativeY, FileHandle positiveZ,
+	               FileHandle negativeZ, boolean useMipMaps) {
 		this(TextureData.Factory.loadFromFile(positiveX, useMipMaps), TextureData.Factory.loadFromFile(negativeX, useMipMaps),
-			TextureData.Factory.loadFromFile(positiveY, useMipMaps), TextureData.Factory.loadFromFile(negativeY, useMipMaps),
-			TextureData.Factory.loadFromFile(positiveZ, useMipMaps), TextureData.Factory.loadFromFile(negativeZ, useMipMaps));
+				TextureData.Factory.loadFromFile(positiveY, useMipMaps), TextureData.Factory.loadFromFile(negativeY, useMipMaps),
+				TextureData.Factory.loadFromFile(positiveZ, useMipMaps), TextureData.Factory.loadFromFile(negativeZ, useMipMaps));
 	}
 
 	/** Construct a Cubemap with the specified {@link Pixmap}s for the sides, does not generate mipmaps. */
-	public Cubemap (Pixmap positiveX, Pixmap negativeX, Pixmap positiveY, Pixmap negativeY, Pixmap positiveZ, Pixmap negativeZ) {
+	public Cubemap(Pixmap positiveX, Pixmap negativeX, Pixmap positiveY, Pixmap negativeY, Pixmap positiveZ, Pixmap negativeZ) {
 		this(positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ, false);
 	}
 
 	/** Construct a Cubemap with the specified {@link Pixmap}s for the sides, optionally generating mipmaps. */
-	public Cubemap (Pixmap positiveX, Pixmap negativeX, Pixmap positiveY, Pixmap negativeY, Pixmap positiveZ, Pixmap negativeZ,
-		boolean useMipMaps) {
+	public Cubemap(Pixmap positiveX, Pixmap negativeX, Pixmap positiveY, Pixmap negativeY, Pixmap positiveZ, Pixmap negativeZ,
+	               boolean useMipMaps) {
 		this(positiveX == null ? null : new PixmapTextureData(positiveX, null, useMipMaps, false),
-			negativeX == null ? null : new PixmapTextureData(negativeX, null, useMipMaps, false),
-			positiveY == null ? null : new PixmapTextureData(positiveY, null, useMipMaps, false),
-			negativeY == null ? null : new PixmapTextureData(negativeY, null, useMipMaps, false),
-			positiveZ == null ? null : new PixmapTextureData(positiveZ, null, useMipMaps, false),
-			negativeZ == null ? null : new PixmapTextureData(negativeZ, null, useMipMaps, false));
+				negativeX == null ? null : new PixmapTextureData(negativeX, null, useMipMaps, false),
+				positiveY == null ? null : new PixmapTextureData(positiveY, null, useMipMaps, false),
+				negativeY == null ? null : new PixmapTextureData(negativeY, null, useMipMaps, false),
+				positiveZ == null ? null : new PixmapTextureData(positiveZ, null, useMipMaps, false),
+				negativeZ == null ? null : new PixmapTextureData(negativeZ, null, useMipMaps, false));
 	}
 
 	/** Construct a Cubemap with {@link Pixmap}s for each side of the specified size. */
-	public Cubemap (int width, int height, int depth, Format format) {
+	public Cubemap(int width, int height, int depth, Format format) {
 		this(new PixmapTextureData(new Pixmap(depth, height, format), null, false, true),
-			new PixmapTextureData(new Pixmap(depth, height, format), null, false, true),
-			new PixmapTextureData(new Pixmap(width, depth, format), null, false, true),
-			new PixmapTextureData(new Pixmap(width, depth, format), null, false, true),
-			new PixmapTextureData(new Pixmap(width, height, format), null, false, true),
-			new PixmapTextureData(new Pixmap(width, height, format), null, false, true));
+				new PixmapTextureData(new Pixmap(depth, height, format), null, false, true),
+				new PixmapTextureData(new Pixmap(width, depth, format), null, false, true),
+				new PixmapTextureData(new Pixmap(width, depth, format), null, false, true),
+				new PixmapTextureData(new Pixmap(width, height, format), null, false, true),
+				new PixmapTextureData(new Pixmap(width, height, format), null, false, true));
 	}
 
 	/** Construct a Cubemap with the specified {@link TextureData}'s for the sides */
-	public Cubemap (TextureData positiveX, TextureData negativeX, TextureData positiveY, TextureData negativeY,
-		TextureData positiveZ, TextureData negativeZ) {
+	public Cubemap(TextureData positiveX, TextureData negativeX, TextureData positiveY, TextureData negativeY,
+	               TextureData positiveZ, TextureData negativeZ) {
 		this(new FacedCubemapData(positiveX, negativeX, positiveY, negativeY, positiveZ, negativeZ));
 	}
 
 	/** Sets the sides of this cubemap to the specified {@link CubemapData}. */
-	public void load (CubemapData data) {
-		if (!data.isPrepared()) data.prepare();
+	public void load(CubemapData data) {
+		if(!data.isPrepared()) data.prepare();
 		bind();
 		unsafeSetFilter(minFilter, magFilter, true);
 		unsafeSetWrap(uWrap, vWrap, true);
@@ -140,45 +142,45 @@ public class Cubemap extends GLTexture {
 		Gdx.gl.glBindTexture(glTarget, 0);
 	}
 
-	public CubemapData getCubemapData () {
+	public CubemapData getCubemapData() {
 		return data;
 	}
 
 	@Override
-	public boolean isManaged () {
+	public boolean isManaged() {
 		return data.isManaged();
 	}
 
 	@Override
-	protected void reload () {
-		if (!isManaged()) throw new GdxRuntimeException("Tried to reload an unmanaged Cubemap");
+	protected void reload() {
+		if(!isManaged()) throw new GdxRuntimeException("Tried to reload an unmanaged Cubemap");
 		glHandle = Gdx.gl.glGenTexture();
 		load(data);
 	}
 
 	@Override
-	public int getWidth () {
+	public int getWidth() {
 		return data.getWidth();
 	}
 
 	@Override
-	public int getHeight () {
+	public int getHeight() {
 		return data.getHeight();
 	}
 
 	@Override
-	public int getDepth () {
+	public int getDepth() {
 		return 0;
 	}
 
 	/** Disposes all resources associated with the cubemap */
 	@Override
-	public void dispose () {
+	public void dispose() {
 		// this is a hack. reason: we have to set the glHandle to 0 for textures that are
 		// reloaded through the asset manager as we first remove (and thus dispose) the texture
 		// and then reload it. the glHandle is set to 0 in invalidateAllTextures prior to
 		// removal from the asset manager.
-		if (glHandle == 0) return;
+		if(glHandle == 0) return;
 		delete();
 	}
 }

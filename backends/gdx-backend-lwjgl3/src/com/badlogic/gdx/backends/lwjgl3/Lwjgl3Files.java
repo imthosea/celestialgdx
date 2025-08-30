@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,54 +23,56 @@ import com.badlogic.gdx.files.FileHandle;
 
 import java.io.File;
 
-/** @author mzechner
- * @author Nathan Sweet */
+/**
+ * @author mzechner
+ * @author Nathan Sweet
+ */
 public final class Lwjgl3Files implements Files {
 	static public final String externalPath = System.getProperty("user.home") + File.separator;
 	static public final String localPath = new File("").getAbsolutePath() + File.separator;
 
 	@Override
-	public FileHandle classpath (String path) {
+	public FileHandle classpath(String path) {
 		return new ClasspathFileHandle(path);
 	}
 
 	@Override
-	public FileHandle internal (String path) {
+	public FileHandle internal(String path) {
 		return new SystemFileHandle(path);
 	}
 
 	@Override
-	public FileHandle external (String path) {
+	public FileHandle external(String path) {
 		return new SystemFileHandle(externalPath + path);
 	}
 
 	@Override
-	public FileHandle absolute (String path) {
+	public FileHandle absolute(String path) {
 		return new SystemFileHandle(localPath + path);
 	}
 
 	@Override
-	public FileHandle local (String path) {
+	public FileHandle local(String path) {
 		return new SystemFileHandle(path);
 	}
 
 	@Override
-	public String getExternalStoragePath () {
+	public String getExternalStoragePath() {
 		return externalPath;
 	}
 
 	@Override
-	public boolean isExternalStorageAvailable () {
+	public boolean isExternalStorageAvailable() {
 		return true;
 	}
 
 	@Override
-	public String getLocalStoragePath () {
+	public String getLocalStoragePath() {
 		return localPath;
 	}
 
 	@Override
-	public boolean isLocalStorageAvailable () {
+	public boolean isLocalStorageAvailable() {
 		return true;
 	}
 }

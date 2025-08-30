@@ -17,17 +17,35 @@
 package com.badlogic.gdx.assets;
 
 import com.badlogic.gdx.Application;
-import com.badlogic.gdx.assets.loaders.*;
+import com.badlogic.gdx.assets.loaders.AssetLoader;
+import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
+import com.badlogic.gdx.assets.loaders.CubemapLoader;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.I18NBundleLoader;
+import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
+import com.badlogic.gdx.assets.loaders.PixmapLoader;
+import com.badlogic.gdx.assets.loaders.ShaderProgramLoader;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
+import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
+import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonRegionLoader;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.I18NBundle;
+import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.Null;
 
-import java.lang.StringBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +58,6 @@ import java.util.function.Supplier;
 
 /**
  * Loads and stores assets like textures, bitmapfonts, tile maps, sounds, music and so on.
- *
  * @author mzechner, made parallel by Thosea
  */
 public class AssetManager implements Disposable {
@@ -51,7 +68,7 @@ public class AssetManager implements Disposable {
 
 		final AtomicInteger refCount;
 
-		Asset (String fileName, Class<?> type, Object object, AtomicInteger refCount) {
+		Asset(String fileName, Class<?> type, Object object, AtomicInteger refCount) {
 			this.fileName = fileName;
 			this.type = type;
 			this.object = object;
@@ -79,21 +96,23 @@ public class AssetManager implements Disposable {
 	public final Logger log = new Logger("AssetManager", Application.LOG_ERROR);
 
 	/** Creates a new AssetManager with all default loaders. */
-	public AssetManager () {
+	public AssetManager() {
 		this(new InternalFileHandleResolver());
 	}
 
 	/** Creates a new AssetManager with all default loaders. */
-	public AssetManager (FileHandleResolver resolver) {
+	public AssetManager(FileHandleResolver resolver) {
 		this(resolver, true);
 	}
 
-	/** Creates a new AssetManager with optionally all default loaders. If you don't add the default loaders then you do have to
+	/**
+	 * Creates a new AssetManager with optionally all default loaders. If you don't add the default loaders then you do have to
 	 * manually add the loaders you need, including any loaders they might depend on.
-	 * @param defaultLoaders whether to add the default loaders */
-	public AssetManager (FileHandleResolver resolver, boolean defaultLoaders) {
+	 * @param defaultLoaders whether to add the default loaders
+	 */
+	public AssetManager(FileHandleResolver resolver, boolean defaultLoaders) {
 		this.resolver = resolver;
-		if (defaultLoaders) {
+		if(defaultLoaders) {
 			setLoader(BitmapFont.class, new BitmapFontLoader(resolver));
 			setLoader(Pixmap.class, new PixmapLoader(resolver));
 			setLoader(TextureAtlas.class, new TextureAtlasLoader(resolver));
@@ -106,71 +125,85 @@ public class AssetManager implements Disposable {
 			setLoader(I18NBundle.class, new I18NBundleLoader(resolver));
 			// TODO celestialgdx - what do i do with these??
 			//			setLoader(Model.class, ".g3dj", new G3dModelLoader(new JsonReader(), resolver));
-//			setLoader(Model.class, ".g3db", new G3dModelLoader(new UBJsonReader(), resolver));
-//			setLoader(Model.class, ".obj", new ObjLoader(resolver));
+			//			setLoader(Model.class, ".g3db", new G3dModelLoader(new UBJsonReader(), resolver));
+			//			setLoader(Model.class, ".obj", new ObjLoader(resolver));
 			setLoader(ShaderProgram.class, new ShaderProgramLoader(resolver));
 			setLoader(Cubemap.class, new CubemapLoader(resolver));
 		}
 	}
 
-	/** Returns the {@link FileHandleResolver} for which this AssetManager was loaded with.
-	 * @return the file handle resolver which this AssetManager uses */
-	public FileHandleResolver getFileHandleResolver () {
+	/**
+	 * Returns the {@link FileHandleResolver} for which this AssetManager was loaded with.
+	 * @return the file handle resolver which this AssetManager uses
+	 */
+	public FileHandleResolver getFileHandleResolver() {
 		return resolver;
 	}
 
-	/** @param fileName the asset file name
+	/**
+	 * @param fileName the asset file name
 	 * @return the asset
-	 * @throws GdxRuntimeException if the asset is not loaded */
-	public <T> T get (String fileName) {
+	 * @throws GdxRuntimeException if the asset is not loaded
+	 */
+	public <T> T get(String fileName) {
 		return get(fileName, true);
 	}
 
-	/** @param fileName the asset file name
+	/**
+	 * @param fileName the asset file name
 	 * @param type the asset type
 	 * @return the asset
-	 * @throws GdxRuntimeException if the asset is not loaded */
-	public <T> T get (String fileName, Class<T> type) {
+	 * @throws GdxRuntimeException if the asset is not loaded
+	 */
+	public <T> T get(String fileName, Class<T> type) {
 		return get(fileName, type, true);
 	}
 
-	/** @param fileName the asset file name
+	/**
+	 * @param fileName the asset file name
 	 * @param required true to throw GdxRuntimeException if the asset is not loaded, else null is returned
-	 * @return the asset or null if it is not loaded and required is false */
-	public @Null <T> T get (String fileName, boolean required) {
+	 * @return the asset or null if it is not loaded and required is false
+	 */
+	public @Null <T> T get(String fileName, boolean required) {
 		Asset asset = assets.get(fileName);
-		if (asset != null) {
+		if(asset != null) {
 			return (T) asset.object;
 		}
-		if (required) throw new GdxRuntimeException("Asset not loaded: " + fileName);
+		if(required) throw new GdxRuntimeException("Asset not loaded: " + fileName);
 		return null;
 	}
 
-	/** @param fileName the asset file name
+	/**
+	 * @param fileName the asset file name
 	 * @param type the asset type
 	 * @param required true to throw GdxRuntimeException if the asset is not loaded, else null is returned
-	 * @return the asset or null if it is not loaded and required is false */
-	public @Null <T> T get (String fileName, Class<T> type, boolean required) {
+	 * @return the asset or null if it is not loaded and required is false
+	 */
+	public @Null <T> T get(String fileName, Class<T> type, boolean required) {
 		Asset asset = assets.get(fileName);
-		if (asset != null && asset.type == type) {
+		if(asset != null && asset.type == type) {
 			return (T) asset.object;
 		}
-		if (required) throw new GdxRuntimeException("Asset not loaded: " + fileName);
+		if(required) throw new GdxRuntimeException("Asset not loaded: " + fileName);
 		return null;
 	}
 
-	/** @param assetDescriptor the asset descriptor
+	/**
+	 * @param assetDescriptor the asset descriptor
 	 * @return the asset
-	 * @throws GdxRuntimeException if the asset is not loaded */
-	public <T> T get (AssetDescriptor<T> assetDescriptor) {
+	 * @throws GdxRuntimeException if the asset is not loaded
+	 */
+	public <T> T get(AssetDescriptor<T> assetDescriptor) {
 		return get(assetDescriptor.fileName, assetDescriptor.type, true);
 	}
 
-	/** @param type the asset type
-	 * @return all the assets matching the specified type */
-	public <T> Array<T> getAll (Class<T> type, Array<T> out) {
+	/**
+	 * @param type the asset type
+	 * @return all the assets matching the specified type
+	 */
+	public <T> Array<T> getAll(Class<T> type, Array<T> out) {
 		assets.values().forEach(asset -> {
-			if (asset.type == type) out.add((T) asset.object);
+			if(asset.type == type) out.add((T) asset.object);
 		});
 		return out;
 	}
@@ -178,31 +211,30 @@ public class AssetManager implements Disposable {
 	/**
 	 * Returns true if an asset with the specified name is loading, queued to be loaded, or has been loaded.
 	 */
-	public boolean contains (String fileName) {
-		if (isLoaded(fileName)) return true;
+	public boolean contains(String fileName) {
+		if(isLoaded(fileName)) return true;
 		return tasks.containsKey(fileName);
 	}
 
 	/**
 	 * Returns true if an asset with the specified name and type is loading, queued to be loaded, or has been loaded.
 	 */
-	public boolean contains (String fileName, Class<?> type) {
-		if (isLoaded(fileName, type)) return true;
+	public boolean contains(String fileName, Class<?> type) {
+		if(isLoaded(fileName, type)) return true;
 
-		for (AssetLoadingContext<?> ctx : tasks.values()) {
-			if (ctx.desc.type == type && ctx.desc.fileName.equals(fileName)) return true;
+		for(AssetLoadingContext<?> ctx : tasks.values()) {
+			if(ctx.desc.type == type && ctx.desc.fileName.equals(fileName)) return true;
 		}
 		return false;
 	}
 
 	/**
 	 * Removes the asset and all its dependencies, if they are not used by other assets.
-	 *
 	 * @param fileName the file name
 	 */
-	public synchronized void unload (String fileName) {
+	public synchronized void unload(String fileName) {
 		AssetLoadingContext<?> ctx = tasks.remove(fileName);
-		if (ctx != null) {
+		if(ctx != null) {
 			log.info("Unload (from tasks): " + fileName);
 			ctx.cancel();
 			writeCount(() -> toLoad--);
@@ -210,22 +242,22 @@ public class AssetManager implements Disposable {
 		}
 
 		Asset asset = assets.get(fileName);
-		if (asset == null) throw new GdxRuntimeException("Asset not loaded: " + fileName);
+		if(asset == null) throw new GdxRuntimeException("Asset not loaded: " + fileName);
 
 		// remove any dependencies (or just decrement their ref count).
 		List<String> dependencies = assetDependencies.get(fileName);
-		if (dependencies != null) {
-			for (String dependency : dependencies) {
-				if (isLoaded(dependency)) unload(dependency);
+		if(dependencies != null) {
+			for(String dependency : dependencies) {
+				if(isLoaded(dependency)) unload(dependency);
 			}
 		}
 
 		// if it is reference counted, decrement ref count and check if we can really get rid of it.
-		if (asset.refCount.decrementAndGet() <= 0) {
+		if(asset.refCount.decrementAndGet() <= 0) {
 			log.info("Unload (dispose): " + fileName);
 
 			// if it is disposable dispose it
-			if (asset.object instanceof Disposable disposable) disposable.dispose();
+			if(asset.object instanceof Disposable disposable) disposable.dispose();
 
 			// remove the asset from the manager.
 			assets.remove(fileName);
@@ -235,11 +267,13 @@ public class AssetManager implements Disposable {
 		}
 	}
 
-	/** @param object the asset
-	 * @return whether the asset is contained in this manager */
-	public <T> boolean containsAsset (T object) {
-		for (Asset asset : assets.values())
-			if (asset.object == object) return true;
+	/**
+	 * @param object the asset
+	 * @return whether the asset is contained in this manager
+	 */
+	public <T> boolean containsAsset(T object) {
+		for(Asset asset : assets.values())
+			if(asset.object == object) return true;
 		return false;
 	}
 
@@ -247,9 +281,9 @@ public class AssetManager implements Disposable {
 	 * @param object the asset
 	 * @return the filename of the asset or null
 	 */
-	public <T> String getAssetFileName (T object) {
-		for (Asset asset : assets.values())
-			if (asset.object == object) return asset.fileName;
+	public <T> String getAssetFileName(T object) {
+		for(Asset asset : assets.values())
+			if(asset.object == object) return asset.fileName;
 		return null;
 	}
 
@@ -257,7 +291,7 @@ public class AssetManager implements Disposable {
 	 * @param assetDesc the AssetDescriptor of the asset
 	 * @return whether the asset is loaded
 	 */
-	public boolean isLoaded (AssetDescriptor<?> assetDesc) {
+	public boolean isLoaded(AssetDescriptor<?> assetDesc) {
 		return isLoaded(assetDesc.fileName);
 	}
 
@@ -265,8 +299,8 @@ public class AssetManager implements Disposable {
 	 * @param fileName the file name of the asset
 	 * @return whether the asset is loaded
 	 */
-	public boolean isLoaded (String fileName) {
-		if (fileName == null) return false;
+	public boolean isLoaded(String fileName) {
+		if(fileName == null) return false;
 		return assets.containsKey(fileName);
 	}
 
@@ -274,45 +308,42 @@ public class AssetManager implements Disposable {
 	 * @param fileName the file name of the asset
 	 * @return whether the asset is loaded
 	 */
-	public boolean isLoaded (String fileName, Class<?> type) {
+	public boolean isLoaded(String fileName, Class<?> type) {
 		Asset asset = assets.get(fileName);
 		return asset != null && asset.type == type;
 	}
 
 	/**
 	 * Returns the default loader for the given type.
-	 *
 	 * @param type The type of the loader to get
 	 * @return The loader capable of loading the type, or null if none exists
 	 */
-	public <T> AssetLoader<T, ?> getLoader (final Class<T> type) {
+	public <T> AssetLoader<T, ?> getLoader(final Class<T> type) {
 		return (AssetLoader<T, ?>) loaders.get(type);
 	}
 
 	/**
 	 * Adds the given asset to the loading queue of the AssetManager.
-	 *
 	 * @param fileName the file name (interpretation depends on {@link AssetLoader})
-	 * @param type     the type of the asset.
+	 * @param type the type of the asset.
 	 */
-	public <T> void load (String fileName, Class<T> type) {
+	public <T> void load(String fileName, Class<T> type) {
 		load(fileName, type, null);
 	}
 
 	/**
 	 * Adds the given asset to the loading queue of the AssetManager.
-	 *
-	 * @param fileName  the file name (interpretation depends on {@link AssetLoader})
-	 * @param type      the type of the asset.
+	 * @param fileName the file name (interpretation depends on {@link AssetLoader})
+	 * @param type the type of the asset.
 	 * @param parameter parameters for the AssetLoader.
 	 */
-	public synchronized <T> void load (String fileName, Class<T> type, AssetLoaderParameters<T> parameter) {
+	public synchronized <T> void load(String fileName, Class<T> type, AssetLoaderParameters<T> parameter) {
 		AssetLoader<T, ?> loader = getLoader(type);
-		if (loader == null) throw new GdxRuntimeException("No loader for type: " + type.getSimpleName());
+		if(loader == null) throw new GdxRuntimeException("No loader for type: " + type.getSimpleName());
 
 		AssetLoadingContext<?> existing = tasks.get(fileName);
-		if (existing != null) {
-			if (existing.desc.type != type) {
+		if(existing != null) {
+			if(existing.desc.type != type) {
 				throw new GdxRuntimeException(
 						"Asset with name '" + fileName + "' already in task list, but has different type (expected: "
 								+ type.getSimpleName() + ", found: " + existing.desc.type.getSimpleName() + ")");
@@ -324,7 +355,7 @@ public class AssetManager implements Disposable {
 
 		// reset stats
 		writeCount(() -> {
-			if (tasks.isEmpty()) {
+			if(tasks.isEmpty()) {
 				loaded = 0;
 				toLoad = 1;
 			} else {
@@ -341,81 +372,89 @@ public class AssetManager implements Disposable {
 		log.debug("Queued: " + desc);
 	}
 
-	/** Adds the given asset to the loading queue of the AssetManager.
-	 * @param desc the {@link AssetDescriptor} */
-	public <T> void load (AssetDescriptor<T> desc) {
+	/**
+	 * Adds the given asset to the loading queue of the AssetManager.
+	 * @param desc the {@link AssetDescriptor}
+	 */
+	public <T> void load(AssetDescriptor<T> desc) {
 		load(desc.fileName, desc.type, desc.params);
 	}
 
-	public boolean isFinished () {
+	public boolean isFinished() {
 		return tasks.isEmpty();
 	}
 
 	/** Blocks until all assets are loaded. */
-	public void finishLoading () {
+	public void finishLoading() {
 		log.debug("Waiting for loading to complete...");
 		AssetLoadingContext<?> ctx = null;
-		while (true) {
-			if (!tasks.isEmpty()) {
+		while(true) {
+			if(!tasks.isEmpty()) {
 				ctx = tasks.values().iterator().next();
 			}
-			if (ctx == null) {
+			if(ctx == null) {
 				log.debug("Loading complete.");
 				return;
 			}
 			try {
 				ctx.awaitResult();
-			} catch (AssetLoadingContext.TaskNotActiveException ignored) {
+			} catch(AssetLoadingContext.TaskNotActiveException ignored) {
 			}
 		}
 	}
 
-	/** Blocks until the specified asset is loaded.
-	 * @param assetDesc the AssetDescriptor of the asset */
-	public <T> T finishLoadingAsset (AssetDescriptor<T> assetDesc) {
+	/**
+	 * Blocks until the specified asset is loaded.
+	 * @param assetDesc the AssetDescriptor of the asset
+	 */
+	public <T> T finishLoadingAsset(AssetDescriptor<T> assetDesc) {
 		return finishLoadingAsset(assetDesc.fileName);
 	}
 
-	/** Blocks until the specified asset is loaded.
-	 * @param fileName the file name (interpretation depends on {@link AssetLoader}) */
-	public <T> T finishLoadingAsset (String fileName) {
+	/**
+	 * Blocks until the specified asset is loaded.
+	 * @param fileName the file name (interpretation depends on {@link AssetLoader})
+	 */
+	public <T> T finishLoadingAsset(String fileName) {
 		log.debug("Waiting for asset to be loaded: " + fileName);
 		AssetLoadingContext<?> ctx = tasks.get(fileName);
-		if (ctx != null) {
+		if(ctx != null) {
 			return (T) ctx.awaitResult();
 		} else {
 			return get(fileName);
 		}
 	}
 
-	public <T> void addAsset (final String fileName, Class<T> type, T object) {
+	public <T> void addAsset(final String fileName, Class<T> type, T object) {
 		assets.put(fileName, new Asset(fileName, type, object, new AtomicInteger(1)));
 	}
 
-	/** Sets a new {@link AssetLoader} for the given type.
+	/**
+	 * Sets a new {@link AssetLoader} for the given type.
 	 * @param type the type of the asset
-	 * @param loader the loader */
-	public <T, P extends AssetLoaderParameters<T>> void setLoader (Class<T> type, AssetLoader<T, P> loader) {
-		if (type == null) throw new IllegalArgumentException("type cannot be null.");
-		if (loader == null) throw new IllegalArgumentException("loader cannot be null.");
+	 * @param loader the loader
+	 */
+	public <T, P extends AssetLoaderParameters<T>> void setLoader(Class<T> type, AssetLoader<T, P> loader) {
+		if(type == null) throw new IllegalArgumentException("type cannot be null.");
+		if(loader == null) throw new IllegalArgumentException("loader cannot be null.");
 		log.debug("Loader set: " + type.getSimpleName() + " -> " + loader.getClass().getSimpleName());
 		loaders.put(type, loader);
 	}
 
 	/** @return the number of loaded assets */
-	public int getLoadedAssets () {
+	public int getLoadedAssets() {
 		return assets.size();
 	}
 
 	/** @return the number of currently queued assets */
-	public int getQueuedAssets () {
+	public int getQueuedAssets() {
 		return tasks.size();
 	}
 
 	/** @return the progress in percent of completion. */
-	public float getProgress () {
+	public float getProgress() {
 		return readCount(() -> {
-			if (toLoad == 0) return 1;
+			if(toLoad == 0) return 1;
 			return Math.min(1, loaded / (float) toLoad);
 		}).floatValue();
 	}
@@ -424,7 +463,7 @@ public class AssetManager implements Disposable {
 	 * Disposes all assets in the manager and stops all asynchronous loading.
 	 */
 	@Override
-	public void dispose () {
+	public void dispose() {
 		log.debug("Disposing.");
 		clear();
 	}
@@ -432,7 +471,7 @@ public class AssetManager implements Disposable {
 	/**
 	 * Clears and disposes all assets and the preloading queue.
 	 */
-	public void clear () {
+	public void clear() {
 		tasks.values().forEach(AssetLoadingContext::cancel);
 		tasks.clear();
 		assets.clear();
@@ -447,23 +486,25 @@ public class AssetManager implements Disposable {
 	/**
 	 * @return the {@link Logger} used by the {@link AssetManager}
 	 */
-	public Logger getLogger () {
+	public Logger getLogger() {
 		return log;
 	}
 
-	/** Returns the reference count of an asset.
-	 * @param fileName */
-	public int getReferenceCount (String fileName) {
+	/**
+	 * Returns the reference count of an asset.
+	 * @param fileName
+	 */
+	public int getReferenceCount(String fileName) {
 		Asset asset = assets.get(fileName);
-		if (asset == null) throw new GdxRuntimeException("Asset not loaded: " + fileName);
+		if(asset == null) throw new GdxRuntimeException("Asset not loaded: " + fileName);
 		return asset.refCount.get();
 	}
 
 	/** @return a string containing ref count and dependency information for all assets. */
-	public synchronized String getDiagnostics () {
+	public synchronized String getDiagnostics() {
 		StringBuilder buffer = new StringBuilder(256);
-		for (Map.Entry<String, Asset> entry : assets.entrySet()) {
-			if (!buffer.isEmpty()) buffer.append('\n');
+		for(Map.Entry<String, Asset> entry : assets.entrySet()) {
+			if(!buffer.isEmpty()) buffer.append('\n');
 			buffer.append(entry.getKey());
 			buffer.append(", ");
 			buffer.append(entry.getValue().object);
@@ -471,9 +512,9 @@ public class AssetManager implements Disposable {
 			buffer.append(entry.getValue().refCount);
 
 			List<String> dependencies = assetDependencies.get(entry.getKey());
-			if (dependencies != null) {
+			if(dependencies != null) {
 				buffer.append(", deps: [");
-				for (String dep : dependencies) {
+				for(String dep : dependencies) {
 					buffer.append(dep);
 					buffer.append(',');
 				}
@@ -484,26 +525,26 @@ public class AssetManager implements Disposable {
 	}
 
 	/** @return the file names of all loaded assets. */
-	public String[] getAssetNames () {
-		synchronized (assets) {
+	public String[] getAssetNames() {
+		synchronized(assets) {
 			return assets.keySet().toArray(new String[0]);
 		}
 	}
 
 	/** @return the dependencies of an asset or an empty list if the asset has no dependencies. */
-	public List<String> getDependencies (String fileName) {
+	public List<String> getDependencies(String fileName) {
 		return assetDependencies.get(fileName);
 	}
 
 	/**
 	 * @return the type of a loaded asset.
 	 */
-	public Class<?> getAssetType (String fileName) {
+	public Class<?> getAssetType(String fileName) {
 		Asset asset = assets.get(fileName);
 		return asset != null ? asset.type : null;
 	}
 
-	private <T> T readCount (Supplier<T> supplier) {
+	private <T> T readCount(Supplier<T> supplier) {
 		countLock.readLock().lock();
 		try {
 			return supplier.get();
@@ -512,7 +553,7 @@ public class AssetManager implements Disposable {
 		}
 	}
 
-	private void writeCount (Runnable action) {
+	private void writeCount(Runnable action) {
 		countLock.writeLock().lock();
 		try {
 			action.run();

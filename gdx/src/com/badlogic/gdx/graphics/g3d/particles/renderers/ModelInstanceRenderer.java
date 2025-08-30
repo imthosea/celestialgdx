@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,29 +24,31 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerComponent;
 import com.badlogic.gdx.graphics.g3d.particles.batches.ModelInstanceParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.ParticleBatch;
 
-/** A {@link ParticleControllerRenderer} which will render particles as {@link ModelInstance} to a
+/**
+ * A {@link ParticleControllerRenderer} which will render particles as {@link ModelInstance} to a
  * {@link ModelInstanceParticleBatch}.
- * @author Inferno */
+ * @author Inferno
+ */
 public class ModelInstanceRenderer
-	extends ParticleControllerRenderer<ModelInstanceControllerRenderData, ModelInstanceParticleBatch> {
+		extends ParticleControllerRenderer<ModelInstanceControllerRenderData, ModelInstanceParticleBatch> {
 	private boolean hasColor, hasScale, hasRotation;
 
-	public ModelInstanceRenderer () {
+	public ModelInstanceRenderer() {
 		super(new ModelInstanceControllerRenderData());
 	}
 
-	public ModelInstanceRenderer (ModelInstanceParticleBatch batch) {
+	public ModelInstanceRenderer(ModelInstanceParticleBatch batch) {
 		this();
 		setBatch(batch);
 	}
 
 	@Override
-	public void allocateChannels () {
+	public void allocateChannels() {
 		renderData.positionChannel = controller.particles.addChannel(ParticleChannels.Position);
 	}
 
 	@Override
-	public void init () {
+	public void init() {
 		renderData.modelInstanceChannel = controller.particles.getChannel(ParticleChannels.ModelInstance);
 		renderData.colorChannel = controller.particles.getChannel(ParticleChannels.Color);
 		renderData.scaleChannel = controller.particles.getChannel(ParticleChannels.Scale);
@@ -57,13 +59,13 @@ public class ModelInstanceRenderer
 	}
 
 	@Override
-	public void update () {
-		for (int i = 0, positionOffset = 0,
-			c = controller.particles.size; i < c; ++i, positionOffset += renderData.positionChannel.strideSize) {
+	public void update() {
+		for(int i = 0, positionOffset = 0,
+		    c = controller.particles.size; i < c; ++i, positionOffset += renderData.positionChannel.strideSize) {
 			ModelInstance instance = renderData.modelInstanceChannel.data[i];
 			float scale = hasScale ? renderData.scaleChannel.data[i] : 1;
 			float qx = 0, qy = 0, qz = 0, qw = 1;
-			if (hasRotation) {
+			if(hasRotation) {
 				int rotationOffset = i * renderData.rotationChannel.strideSize;
 				qx = renderData.rotationChannel.data[rotationOffset + ParticleChannels.XOffset];
 				qy = renderData.rotationChannel.data[rotationOffset + ParticleChannels.YOffset];
@@ -72,16 +74,16 @@ public class ModelInstanceRenderer
 			}
 
 			instance.transform.set(renderData.positionChannel.data[positionOffset + ParticleChannels.XOffset],
-				renderData.positionChannel.data[positionOffset + ParticleChannels.YOffset],
-				renderData.positionChannel.data[positionOffset + ParticleChannels.ZOffset], qx, qy, qz, qw, scale, scale, scale);
-			if (hasColor) {
+					renderData.positionChannel.data[positionOffset + ParticleChannels.YOffset],
+					renderData.positionChannel.data[positionOffset + ParticleChannels.ZOffset], qx, qy, qz, qw, scale, scale, scale);
+			if(hasColor) {
 				int colorOffset = i * renderData.colorChannel.strideSize;
-				ColorAttribute colorAttribute = (ColorAttribute)instance.materials.get(0).get(ColorAttribute.Diffuse);
-				BlendingAttribute blendingAttribute = (BlendingAttribute)instance.materials.get(0).get(BlendingAttribute.Type);
+				ColorAttribute colorAttribute = (ColorAttribute) instance.materials.get(0).get(ColorAttribute.Diffuse);
+				BlendingAttribute blendingAttribute = (BlendingAttribute) instance.materials.get(0).get(BlendingAttribute.Type);
 				colorAttribute.color.r = renderData.colorChannel.data[colorOffset + ParticleChannels.RedOffset];
 				colorAttribute.color.g = renderData.colorChannel.data[colorOffset + ParticleChannels.GreenOffset];
 				colorAttribute.color.b = renderData.colorChannel.data[colorOffset + ParticleChannels.BlueOffset];
-				if (blendingAttribute != null)
+				if(blendingAttribute != null)
 					blendingAttribute.opacity = renderData.colorChannel.data[colorOffset + ParticleChannels.AlphaOffset];
 			}
 		}
@@ -89,12 +91,12 @@ public class ModelInstanceRenderer
 	}
 
 	@Override
-	public ParticleControllerComponent copy () {
+	public ParticleControllerComponent copy() {
 		return new ModelInstanceRenderer(batch);
 	}
 
 	@Override
-	public boolean isCompatible (ParticleBatch<?> batch) {
+	public boolean isCompatible(ParticleBatch<?> batch) {
 		return batch instanceof ModelInstanceParticleBatch;
 	}
 

@@ -20,7 +20,8 @@ import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ShortArray;
 
-/** A simple implementation of the ear cutting algorithm to triangulate simple polygons without holes. For more information:
+/**
+ * A simple implementation of the ear cutting algorithm to triangulate simple polygons without holes. For more information:
  * <ul>
  * <li><a href="http://cgm.cs.mcgill.ca/~godfried/teaching/cg-projects/97/Ian/algorithm2.html">http://cgm.cs.mcgill.ca/~godfried/
  * teaching/cg-projects/97/Ian/algorithm2.html</a></li>
@@ -38,7 +39,8 @@ import com.badlogic.gdx.utils.ShortArray;
  * @author Nicolas Gramlich (optimizations, collinear edge support)
  * @author Eric Spitz
  * @author Thomas ten Cate (bugfixes, optimizations)
- * @author Nathan Sweet (rewrite, return indices, no allocation, optimizations) */
+ * @author Nathan Sweet (rewrite, return indices, no allocation, optimizations)
+ */
 public class EarClippingTriangulator {
 	static private final int CONCAVE = -1;
 	static private final int CONVEX = 1;
@@ -51,20 +53,22 @@ public class EarClippingTriangulator {
 	private final ShortArray triangles = new ShortArray();
 
 	/** @see #computeTriangles(float[], int, int) */
-	public ShortArray computeTriangles (FloatArray vertices) {
+	public ShortArray computeTriangles(FloatArray vertices) {
 		return computeTriangles(vertices.items, 0, vertices.size);
 	}
 
 	/** @see #computeTriangles(float[], int, int) */
-	public ShortArray computeTriangles (float[] vertices) {
+	public ShortArray computeTriangles(float[] vertices) {
 		return computeTriangles(vertices, 0, vertices.length);
 	}
 
-	/** Triangulates the given (convex or concave) simple polygon to a list of triangle vertices.
+	/**
+	 * Triangulates the given (convex or concave) simple polygon to a list of triangle vertices.
 	 * @param vertices pairs describing vertices of the polygon, in either clockwise or counterclockwise order.
 	 * @return triples of triangle indices in clockwise order. Note the returned array is reused for later calls to the same
-	 *         method. */
-	public ShortArray computeTriangles (float[] vertices, int offset, int count) {
+	 * method.
+	 */
+	public ShortArray computeTriangles(float[] vertices, int offset, int count) {
 		this.vertices = vertices;
 		int vertexCount = this.vertexCount = count / 2;
 		int vertexOffset = offset / 2;
@@ -74,18 +78,18 @@ public class EarClippingTriangulator {
 		indicesArray.ensureCapacity(vertexCount);
 		indicesArray.size = vertexCount;
 		short[] indices = this.indices = indicesArray.items;
-		if (GeometryUtils.isClockwise(vertices, offset, count)) {
-			for (short i = 0; i < vertexCount; i++)
-				indices[i] = (short)(vertexOffset + i);
+		if(GeometryUtils.isClockwise(vertices, offset, count)) {
+			for(short i = 0; i < vertexCount; i++)
+				indices[i] = (short) (vertexOffset + i);
 		} else {
-			for (int i = 0, n = vertexCount - 1; i < vertexCount; i++)
-				indices[i] = (short)(vertexOffset + n - i); // Reversed.
+			for(int i = 0, n = vertexCount - 1; i < vertexCount; i++)
+				indices[i] = (short) (vertexOffset + n - i); // Reversed.
 		}
 
 		IntArray vertexTypes = this.vertexTypes;
 		vertexTypes.clear();
 		vertexTypes.ensureCapacity(vertexCount);
-		for (int i = 0, n = vertexCount; i < n; ++i)
+		for(int i = 0, n = vertexCount; i < n; ++i)
 			vertexTypes.add(classifyVertex(i));
 
 		// A polygon with n vertices has a triangulation of n-2 triangles.
@@ -96,10 +100,10 @@ public class EarClippingTriangulator {
 		return triangles;
 	}
 
-	private void triangulate () {
+	private void triangulate() {
 		int[] vertexTypes = this.vertexTypes.items;
 
-		while (vertexCount > 3) {
+		while(vertexCount > 3) {
 			int earTipIndex = findEarTip();
 			cutEarTip(earTipIndex);
 
@@ -110,7 +114,7 @@ public class EarClippingTriangulator {
 			vertexTypes[nextIndex] = classifyVertex(nextIndex);
 		}
 
-		if (vertexCount == 3) {
+		if(vertexCount == 3) {
 			ShortArray triangles = this.triangles;
 			short[] indices = this.indices;
 			triangles.add(indices[0]);
@@ -120,20 +124,20 @@ public class EarClippingTriangulator {
 	}
 
 	/** @return {@link #CONCAVE} or {@link #CONVEX} */
-	private int classifyVertex (int index) {
+	private int classifyVertex(int index) {
 		short[] indices = this.indices;
 		int previous = indices[previousIndex(index)] * 2;
 		int current = indices[index] * 2;
 		int next = indices[nextIndex(index)] * 2;
 		float[] vertices = this.vertices;
 		return computeSpannedAreaSign(vertices[previous], vertices[previous + 1], vertices[current], vertices[current + 1],
-			vertices[next], vertices[next + 1]);
+				vertices[next], vertices[next + 1]);
 	}
 
-	private int findEarTip () {
+	private int findEarTip() {
 		int vertexCount = this.vertexCount;
-		for (int i = 0; i < vertexCount; i++)
-			if (isEarTip(i)) return i;
+		for(int i = 0; i < vertexCount; i++)
+			if(isEarTip(i)) return i;
 
 		// Desperate mode: if no vertex is an ear tip, we are dealing with a degenerate polygon (e.g. nearly collinear).
 		// Note that the input was not necessarily degenerate, but we could have made it so by clipping some valid ears.
@@ -143,14 +147,14 @@ public class EarClippingTriangulator {
 
 		// Return a convex or tangential vertex if one exists.
 		int[] vertexTypes = this.vertexTypes.items;
-		for (int i = 0; i < vertexCount; i++)
-			if (vertexTypes[i] != CONCAVE) return i;
+		for(int i = 0; i < vertexCount; i++)
+			if(vertexTypes[i] != CONCAVE) return i;
 		return 0; // If all vertices are concave, just return the first one.
 	}
 
-	private boolean isEarTip (int earTipIndex) {
+	private boolean isEarTip(int earTipIndex) {
 		int[] vertexTypes = this.vertexTypes.items;
-		if (vertexTypes[earTipIndex] == CONCAVE) return false;
+		if(vertexTypes[earTipIndex] == CONCAVE) return false;
 
 		int previousIndex = previousIndex(earTipIndex);
 		int nextIndex = nextIndex(earTipIndex);
@@ -165,19 +169,19 @@ public class EarClippingTriangulator {
 
 		// Check if any point is inside the triangle formed by previous, current and next vertices.
 		// Only consider vertices that are not part of this triangle, or else we'll always find one inside.
-		for (int i = nextIndex(nextIndex); i != previousIndex; i = nextIndex(i)) {
+		for(int i = nextIndex(nextIndex); i != previousIndex; i = nextIndex(i)) {
 			// Concave vertices can obviously be inside the candidate ear, but so can tangential vertices
 			// if they coincide with one of the triangle's vertices.
-			if (vertexTypes[i] != CONVEX) {
+			if(vertexTypes[i] != CONVEX) {
 				int v = indices[i] * 2;
 				float vx = vertices[v];
 				float vy = vertices[v + 1];
 				// Because the polygon has clockwise winding order, the area sign will be positive if the point is strictly inside.
 				// It will be 0 on the edge, which we want to include as well.
 				// note: check the edge defined by p1->p3 first since this fails _far_ more then the other 2 checks.
-				if (computeSpannedAreaSign(p3x, p3y, p1x, p1y, vx, vy) >= 0) {
-					if (computeSpannedAreaSign(p1x, p1y, p2x, p2y, vx, vy) >= 0) {
-						if (computeSpannedAreaSign(p2x, p2y, p3x, p3y, vx, vy) >= 0) return false;
+				if(computeSpannedAreaSign(p3x, p3y, p1x, p1y, vx, vy) >= 0) {
+					if(computeSpannedAreaSign(p1x, p1y, p2x, p2y, vx, vy) >= 0) {
+						if(computeSpannedAreaSign(p2x, p2y, p3x, p3y, vx, vy) >= 0) return false;
 					}
 				}
 			}
@@ -185,7 +189,7 @@ public class EarClippingTriangulator {
 		return true;
 	}
 
-	private void cutEarTip (int earTipIndex) {
+	private void cutEarTip(int earTipIndex) {
 		short[] indices = this.indices;
 		ShortArray triangles = this.triangles;
 
@@ -198,18 +202,18 @@ public class EarClippingTriangulator {
 		vertexCount--;
 	}
 
-	private int previousIndex (int index) {
+	private int previousIndex(int index) {
 		return (index == 0 ? vertexCount : index) - 1;
 	}
 
-	private int nextIndex (int index) {
+	private int nextIndex(int index) {
 		return (index + 1) % vertexCount;
 	}
 
-	static private int computeSpannedAreaSign (float p1x, float p1y, float p2x, float p2y, float p3x, float p3y) {
+	static private int computeSpannedAreaSign(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y) {
 		float area = p1x * (p3y - p2y);
 		area += p2x * (p1y - p3y);
 		area += p3x * (p2y - p1y);
-		return (int)Math.signum(area);
+		return (int) Math.signum(area);
 	}
 }
