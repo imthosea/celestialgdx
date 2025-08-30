@@ -23,32 +23,39 @@ import com.badlogic.gdx.files.FileHandle;
 
 import java.util.function.Supplier;
 
-/** Abstract base class for asset loaders.
- * @author mzechner
- *
+/**
+ * Abstract base class for asset loaders.
  * @param <T> the class of the asset the loader supports
- * @param <P> the class of the loading parameters the loader supports. */
+ * @param <P> the class of the loading parameters the loader supports.
+ * @author mzechner
+ */
 public abstract class AssetLoader<T, P extends AssetLoaderParameters<T>> {
 	/** {@link FileHandleResolver} used to map from plain asset names to {@link FileHandle} instances **/
 	protected final FileHandleResolver resolver;
 
-	/** Constructor, sets the {@link FileHandleResolver} to use to resolve the file associated with the asset name.
-	 * @param resolver */
-	public AssetLoader (FileHandleResolver resolver) {
+	/**
+	 * Constructor, sets the {@link FileHandleResolver} to use to resolve the file associated with the asset name.
+	 * @param resolver
+	 */
+	public AssetLoader(FileHandleResolver resolver) {
 		this.resolver = resolver;
 	}
 
-	/** Called on a virtual thread to load the asset
+	/**
+	 * Called on a virtual thread to load the asset
 	 * @param path the file path, may or may not point to a real file. use {@link #resolve}
 	 * @param parameter asset parameter
 	 * @see AssetLoadingContext#dependOn(AssetDescriptor)
 	 * @see AssetLoadingContext#awaitMainThread(Supplier)
-	 * */
-	public abstract T load (String path, P parameter, AssetLoadingContext<T> ctx) throws Exception;
+	 *
+	 */
+	public abstract T load(String path, P parameter, AssetLoadingContext<T> ctx) throws Exception;
 
-	/** @param fileName file name to resolve
-	 * @return handle to the file, as resolved by the {@link FileHandleResolver} set on the loader */
-	protected FileHandle resolve (String fileName) {
+	/**
+	 * @param fileName file name to resolve
+	 * @return handle to the file, as resolved by the {@link FileHandleResolver} set on the loader
+	 */
+	protected FileHandle resolve(String fileName) {
 		return resolver.resolve(fileName);
 	}
 }

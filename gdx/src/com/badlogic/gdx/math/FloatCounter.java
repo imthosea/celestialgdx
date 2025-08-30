@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,10 +18,11 @@ package com.badlogic.gdx.math;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
 
-/** Track properties of a stream of float values. The properties (total value, minimum, etc) are updated as values are
+/**
+ * Track properties of a stream of float values. The properties (total value, minimum, etc) are updated as values are
  * {@link #put(float)} into the stream.
- * 
- * @author xoppa */
+ * @author xoppa
+ */
 public class FloatCounter implements Poolable {
 	/** The amount of values added */
 	public int count;
@@ -40,36 +41,40 @@ public class FloatCounter implements Poolable {
 	/** Provides access to the WindowedMean if any (can be null) */
 	public final WindowedMean mean;
 
-	/** Construct a new FloatCounter
-	 * @param windowSize The size of the mean window or 1 or below to not use a windowed mean. */
-	public FloatCounter (int windowSize) {
+	/**
+	 * Construct a new FloatCounter
+	 * @param windowSize The size of the mean window or 1 or below to not use a windowed mean.
+	 */
+	public FloatCounter(int windowSize) {
 		mean = (windowSize > 1) ? new WindowedMean(windowSize) : null;
 		reset();
 	}
 
-	/** Add a value and update all fields.
-	 * @param value The value to add */
-	public void put (float value) {
+	/**
+	 * Add a value and update all fields.
+	 * @param value The value to add
+	 */
+	public void put(float value) {
 		latest = value;
 		total += value;
 		count++;
 		average = total / count;
 
-		if (mean != null) {
+		if(mean != null) {
 			mean.addValue(value);
 			this.value = mean.getMean();
 		} else
 			this.value = latest;
 
-		if (mean == null || mean.hasEnoughData()) {
-			if (this.value < min) min = this.value;
-			if (this.value > max) max = this.value;
+		if(mean == null || mean.hasEnoughData()) {
+			if(this.value < min) min = this.value;
+			if(this.value > max) max = this.value;
 		}
 	}
 
 	/** Reset all values to their default value. */
 	@Override
-	public void reset () {
+	public void reset() {
 		count = 0;
 		total = 0f;
 		min = Float.MAX_VALUE;
@@ -77,12 +82,12 @@ public class FloatCounter implements Poolable {
 		average = 0f;
 		latest = 0f;
 		value = 0f;
-		if (mean != null) mean.clear();
+		if(mean != null) mean.clear();
 	}
 
 	@Override
-	public String toString () {
+	public String toString() {
 		return "FloatCounter{" + "count=" + count + ", total=" + total + ", min=" + min + ", max=" + max + ", average=" + average
-			+ ", latest=" + latest + ", value=" + value + '}';
+				+ ", latest=" + latest + ", value=" + value + '}';
 	}
 }

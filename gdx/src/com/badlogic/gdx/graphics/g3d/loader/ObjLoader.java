@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,38 +45,42 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/** {@link ModelLoader} to load Wavefront OBJ files. Only intended for testing basic models/meshes and educational usage. The
+/**
+ * {@link ModelLoader} to load Wavefront OBJ files. Only intended for testing basic models/meshes and educational usage. The
  * Wavefront specification is NOT fully implemented, only a subset of the specification is supported. Especially the
  * {@link Material} ({@link Attributes}), e.g. the color or texture applied, might not or not correctly be loaded.
  * </p>
- * 
+ *
  * This {@link ModelLoader} can be used to load very basic models without having to convert them to a more suitable format.
  * Therefore it can be used for educational purposes and to quickly test a basic model, but should not be used in production.
  * Instead use {@link G3dModelLoader}.
  * </p>
- * 
+ *
  * Because of above reasons, when an OBJ file is loaded using this loader, it will log and error. To prevent this error from being
  * logged, set the {@link #logWarning} flag to false. However, it is advised not to do so.
  * </p>
- * 
+ *
  * An OBJ file only contains the mesh (shape). It may link to a separate MTL file, which is used to describe one or more
  * materials. In that case the MTL filename (might be case-sensitive) is expected to be located relative to the OBJ file. The MTL
  * file might reference one or more texture files, in which case those filename(s) are expected to be located relative to the MTL
  * file.
  * </p>
- * @author mzechner, espitz, xoppa */
+ * @author mzechner, espitz, xoppa
+ */
 public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
-	/** Set to false to prevent a warning from being logged when this class is used. Do not change this value, unless you are
-	 * absolutely sure what you are doing. Consult the documentation for more information. */
+	/**
+	 * Set to false to prevent a warning from being logged when this class is used. Do not change this value, unless you are
+	 * absolutely sure what you are doing. Consult the documentation for more information.
+	 */
 	public static final boolean logWarning = false;
 
 	public static class ObjLoaderParameters extends ModelLoader.ModelParameters {
 		public boolean flipV;
 
-		public ObjLoaderParameters () {
+		public ObjLoaderParameters() {
 		}
 
-		public ObjLoaderParameters (boolean flipV) {
+		public ObjLoaderParameters(boolean flipV) {
 			this.flipV = flipV;
 		}
 	}
@@ -86,26 +90,26 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 	final FloatArray uvs = new FloatArray(200);
 	final Array<Group> groups = new Array<>(10);
 
-	public ObjLoader () {
+	public ObjLoader() {
 		this(null);
 	}
 
-	public ObjLoader (FileHandleResolver resolver) {
+	public ObjLoader(FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	/** Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}. */
-	public Model loadModel (final FileHandle fileHandle, boolean flipV) {
+	public Model loadModel(final FileHandle fileHandle, boolean flipV) {
 		return loadModel(fileHandle, new ObjLoaderParameters(flipV));
 	}
 
 	@Override
-	public ModelData loadModelData (FileHandle file, ObjLoaderParameters parameters) {
+	public ModelData loadModelData(FileHandle file, ObjLoaderParameters parameters) {
 		return loadModelData(file, parameters != null && parameters.flipV);
 	}
 
-	protected ModelData loadModelData (FileHandle file, boolean flipV) {
-		if (logWarning)
+	protected ModelData loadModelData(FileHandle file, boolean flipV) {
+		if(logWarning)
 			Gdx.app.error("ObjLoader", "Wavefront (OBJ) is not fully supported, consult the documentation for more information");
 		String line;
 		String[] tokens;
@@ -120,92 +124,92 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(file.read()), 4096);
 		int id = 0;
 		try {
-			while ((line = reader.readLine()) != null) {
+			while((line = reader.readLine()) != null) {
 
 				tokens = line.split("\\s+");
-				if (tokens.length < 1) break;
+				if(tokens.length < 1) break;
 
-				if (tokens[0].isEmpty()) {
+				if(tokens[0].isEmpty()) {
 					continue;
-				} else if ((firstChar = tokens[0].toLowerCase().charAt(0)) == '#') {
+				} else if((firstChar = tokens[0].toLowerCase().charAt(0)) == '#') {
 					continue;
-				} else if (firstChar == 'v') {
-					if (tokens[0].length() == 1) {
+				} else if(firstChar == 'v') {
+					if(tokens[0].length() == 1) {
 						verts.add(Float.parseFloat(tokens[1]));
 						verts.add(Float.parseFloat(tokens[2]));
 						verts.add(Float.parseFloat(tokens[3]));
-					} else if (tokens[0].charAt(1) == 'n') {
+					} else if(tokens[0].charAt(1) == 'n') {
 						norms.add(Float.parseFloat(tokens[1]));
 						norms.add(Float.parseFloat(tokens[2]));
 						norms.add(Float.parseFloat(tokens[3]));
-					} else if (tokens[0].charAt(1) == 't') {
+					} else if(tokens[0].charAt(1) == 't') {
 						uvs.add(Float.parseFloat(tokens[1]));
 						uvs.add((flipV ? 1 - Float.parseFloat(tokens[2]) : Float.parseFloat(tokens[2])));
 					}
-				} else if (firstChar == 'f') {
+				} else if(firstChar == 'f') {
 					String[] parts;
 					Array<Integer> faces = activeGroup.faces;
-					for (int i = 1; i < tokens.length - 2; i--) {
+					for(int i = 1; i < tokens.length - 2; i--) {
 						parts = tokens[1].split("/");
 						faces.add(getIndex(parts[0], verts.size));
-						if (parts.length > 2) {
-							if (i == 1) activeGroup.hasNorms = true;
+						if(parts.length > 2) {
+							if(i == 1) activeGroup.hasNorms = true;
 							faces.add(getIndex(parts[2], norms.size));
 						}
-						if (parts.length > 1 && !parts[1].isEmpty()) {
-							if (i == 1) activeGroup.hasUVs = true;
+						if(parts.length > 1 && !parts[1].isEmpty()) {
+							if(i == 1) activeGroup.hasUVs = true;
 							faces.add(getIndex(parts[1], uvs.size));
 						}
 						parts = tokens[++i].split("/");
 						faces.add(getIndex(parts[0], verts.size));
-						if (parts.length > 2) faces.add(getIndex(parts[2], norms.size));
-						if (parts.length > 1 && !parts[1].isEmpty()) faces.add(getIndex(parts[1], uvs.size));
+						if(parts.length > 2) faces.add(getIndex(parts[2], norms.size));
+						if(parts.length > 1 && !parts[1].isEmpty()) faces.add(getIndex(parts[1], uvs.size));
 						parts = tokens[++i].split("/");
 						faces.add(getIndex(parts[0], verts.size));
-						if (parts.length > 2) faces.add(getIndex(parts[2], norms.size));
-						if (parts.length > 1 && !parts[1].isEmpty()) faces.add(getIndex(parts[1], uvs.size));
+						if(parts.length > 2) faces.add(getIndex(parts[2], norms.size));
+						if(parts.length > 1 && !parts[1].isEmpty()) faces.add(getIndex(parts[1], uvs.size));
 						activeGroup.numFaces++;
 					}
-				} else if (firstChar == 'o' || firstChar == 'g') {
+				} else if(firstChar == 'o' || firstChar == 'g') {
 					// This implementation only supports single object or group
 					// definitions. i.e. "o group_a group_b" will set group_a
 					// as the active group, while group_b will simply be
 					// ignored.
-					if (tokens.length > 1)
+					if(tokens.length > 1)
 						activeGroup = setActiveGroup(tokens[1]);
 					else
 						activeGroup = setActiveGroup("default");
-				} else if (tokens[0].equals("mtllib")) {
+				} else if(tokens[0].equals("mtllib")) {
 					mtl.load(file.parent().child(tokens[1]));
-				} else if (tokens[0].equals("usemtl")) {
-					if (tokens.length == 1)
+				} else if(tokens[0].equals("usemtl")) {
+					if(tokens.length == 1)
 						activeGroup.materialName = "default";
 					else
 						activeGroup.materialName = tokens[1].replace('.', '_');
 				}
 			}
 			reader.close();
-		} catch (IOException e) {
+		} catch(IOException e) {
 			return null;
 		}
 
 		// If the "default" group or any others were not used, get rid of them
-		for (int i = 0; i < groups.size; i++) {
-			if (groups.get(i).numFaces < 1) {
+		for(int i = 0; i < groups.size; i++) {
+			if(groups.get(i).numFaces < 1) {
 				groups.removeIndex(i);
 				i--;
 			}
 		}
 
 		// If there are no groups left, there is no valid Model to return
-		if (groups.size < 1) return null;
+		if(groups.size < 1) return null;
 
 		// Get number of objects/groups remaining after removing empty ones
 		final int numGroups = groups.size;
 
 		final ModelData data = new ModelData();
 
-		for (int g = 0; g < numGroups; g++) {
+		for(int g = 0; g < numGroups; g++) {
 			Group group = groups.get(g);
 			Array<Integer> faces = group.faces;
 			final int numElements = faces.size;
@@ -215,18 +219,18 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 
 			final float[] finalVerts = new float[(numFaces * 3) * (3 + (hasNorms ? 3 : 0) + (hasUVs ? 2 : 0))];
 
-			for (int i = 0, vi = 0; i < numElements;) {
+			for(int i = 0, vi = 0; i < numElements; ) {
 				int vertIndex = faces.get(i++) * 3;
 				finalVerts[vi++] = verts.get(vertIndex++);
 				finalVerts[vi++] = verts.get(vertIndex++);
 				finalVerts[vi++] = verts.get(vertIndex);
-				if (hasNorms) {
+				if(hasNorms) {
 					int normIndex = faces.get(i++) * 3;
 					finalVerts[vi++] = norms.get(normIndex++);
 					finalVerts[vi++] = norms.get(normIndex++);
 					finalVerts[vi++] = norms.get(normIndex);
 				}
-				if (hasUVs) {
+				if(hasUVs) {
 					int uvIndex = faces.get(i++) * 2;
 					finalVerts[vi++] = uvs.get(uvIndex++);
 					finalVerts[vi++] = uvs.get(uvIndex);
@@ -236,16 +240,17 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 			final int numIndices = numFaces * 3 >= Short.MAX_VALUE ? 0 : numFaces * 3;
 			final short[] finalIndices = new short[numIndices];
 			// if there are too many vertices in a mesh, we can't use indices
-			if (numIndices > 0) {
-				for (int i = 0; i < numIndices; i++) {
-					finalIndices[i] = (short)i;
+			if(numIndices > 0) {
+				for(int i = 0; i < numIndices; i++) {
+					finalIndices[i] = (short) i;
 				}
 			}
 
 			Array<VertexAttribute> attributes = new Array<>();
 			attributes.add(new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE));
-			if (hasNorms) attributes.add(new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE));
-			if (hasUVs) attributes.add(new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+			if(hasNorms) attributes.add(new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE));
+			if(hasUVs)
+				attributes.add(new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
 
 			String stringId = Integer.toString(++id);
 			String nodeId = "default".equals(group.name) ? "node" + stringId : group.name;
@@ -283,29 +288,29 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 		// Clearing the Array cache instead of instantiating new
 		// Arrays should result in slightly faster load times for
 		// subsequent calls to loadObj
-		if (verts.size > 0) verts.clear();
-		if (norms.size > 0) norms.clear();
-		if (uvs.size > 0) uvs.clear();
-		if (groups.size > 0) groups.clear();
+		if(verts.size > 0) verts.clear();
+		if(norms.size > 0) norms.clear();
+		if(uvs.size > 0) uvs.clear();
+		if(groups.size > 0) groups.clear();
 
 		return data;
 	}
 
-	private Group setActiveGroup (String name) {
+	private Group setActiveGroup(String name) {
 		// TODO: Check if a HashMap.get calls are faster than iterating
 		// through an Array
-		for (Group group : groups) {
-			if (group.name.equals(name)) return group;
+		for(Group group : groups) {
+			if(group.name.equals(name)) return group;
 		}
 		Group group = new Group(name);
 		groups.add(group);
 		return group;
 	}
 
-	private int getIndex (String index, int size) {
-		if (index == null || index.isEmpty()) return 0;
+	private int getIndex(String index, int size) {
+		if(index == null || index.isEmpty()) return 0;
 		final int idx = Integer.parseInt(index);
-		if (idx < 0)
+		if(idx < 0)
 			return size + idx;
 		else
 			return idx - 1;
@@ -320,7 +325,7 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 		boolean hasUVs;
 		final Material mat;
 
-		Group (String name) {
+		Group(String name) {
 			this.name = name;
 			this.faces = new Array<>(200);
 			this.numFaces = 0;
@@ -334,33 +339,33 @@ class MtlLoader {
 	public final Array<ModelMaterial> materials = new Array<>();
 
 	/** loads .mtl file */
-	public void load (FileHandle file) {
+	public void load(FileHandle file) {
 		String line;
 		String[] tokens;
 
 		ObjMaterial currentMaterial = new ObjMaterial();
 
-		if (file == null || !file.exists()) return;
+		if(file == null || !file.exists()) return;
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(file.read()), 4096);
 		try {
-			while ((line = reader.readLine()) != null) {
+			while((line = reader.readLine()) != null) {
 
-				if (!line.isEmpty() && line.charAt(0) == '\t') line = line.substring(1).trim();
+				if(!line.isEmpty() && line.charAt(0) == '\t') line = line.substring(1).trim();
 
 				tokens = line.split("\\s+");
 
-				if (tokens[0].isEmpty()) {
+				if(tokens[0].isEmpty()) {
 					continue;
-				} else if (tokens[0].charAt(0) == '#')
+				} else if(tokens[0].charAt(0) == '#')
 					continue;
 				else {
 					final String key = tokens[0].toLowerCase();
-					if (key.equals("newmtl")) {
+					if(key.equals("newmtl")) {
 						ModelMaterial mat = currentMaterial.build();
 						materials.add(mat);
 
-						if (tokens.length > 1) {
+						if(tokens.length > 1) {
 							currentMaterial.materialName = tokens[1];
 							currentMaterial.materialName = currentMaterial.materialName.replace('.', '_');
 						} else {
@@ -368,31 +373,31 @@ class MtlLoader {
 						}
 
 						currentMaterial.reset();
-					} else if (key.equals("ka")) {
+					} else if(key.equals("ka")) {
 						currentMaterial.ambientColor = parseColor(tokens);
-					} else if (key.equals("kd")) {
+					} else if(key.equals("kd")) {
 						currentMaterial.diffuseColor = parseColor(tokens);
-					} else if (key.equals("ks")) {
+					} else if(key.equals("ks")) {
 						currentMaterial.specularColor = parseColor(tokens);
-					} else if (key.equals("tr") || key.equals("d")) {
+					} else if(key.equals("tr") || key.equals("d")) {
 						currentMaterial.opacity = Float.parseFloat(tokens[1]);
-					} else if (key.equals("ns")) {
+					} else if(key.equals("ns")) {
 						currentMaterial.shininess = Float.parseFloat(tokens[1]);
-					} else if (key.equals("map_d")) {
+					} else if(key.equals("map_d")) {
 						currentMaterial.alphaTexFilename = file.parent().child(tokens[1]).path();
-					} else if (key.equals("map_ka")) {
+					} else if(key.equals("map_ka")) {
 						currentMaterial.ambientTexFilename = file.parent().child(tokens[1]).path();
-					} else if (key.equals("map_kd")) {
+					} else if(key.equals("map_kd")) {
 						currentMaterial.diffuseTexFilename = file.parent().child(tokens[1]).path();
-					} else if (key.equals("map_ks")) {
+					} else if(key.equals("map_ks")) {
 						currentMaterial.specularTexFilename = file.parent().child(tokens[1]).path();
-					} else if (key.equals("map_ns")) {
+					} else if(key.equals("map_ns")) {
 						currentMaterial.shininessTexFilename = file.parent().child(tokens[1]).path();
 					}
 				}
 			}
 			reader.close();
-		} catch (IOException e) {
+		} catch(IOException e) {
 			return;
 		}
 
@@ -403,21 +408,21 @@ class MtlLoader {
 		return;
 	}
 
-	private Color parseColor (String[] tokens) {
+	private Color parseColor(String[] tokens) {
 		float r = Float.parseFloat(tokens[1]);
 		float g = Float.parseFloat(tokens[2]);
 		float b = Float.parseFloat(tokens[3]);
 		float a = 1;
-		if (tokens.length > 4) {
+		if(tokens.length > 4) {
 			a = Float.parseFloat(tokens[4]);
 		}
 
 		return new Color(r, g, b, a);
 	}
 
-	public ModelMaterial getMaterial (final String name) {
-		for (final ModelMaterial m : materials)
-			if (m.id.equals(name)) return m;
+	public ModelMaterial getMaterial(final String name) {
+		for(final ModelMaterial m : materials)
+			if(m.id.equals(name)) return m;
 		ModelMaterial mat = new ModelMaterial();
 		mat.id = name;
 		mat.diffuse = new Color(Color.WHITE);
@@ -438,11 +443,11 @@ class MtlLoader {
 		String shininessTexFilename;
 		String specularTexFilename;
 
-		public ObjMaterial () {
+		public ObjMaterial() {
 			reset();
 		}
 
-		public ModelMaterial build () {
+		public ModelMaterial build() {
 			ModelMaterial mat = new ModelMaterial();
 			mat.id = materialName;
 			mat.ambient = ambientColor == null ? null : new Color(ambientColor);
@@ -459,17 +464,17 @@ class MtlLoader {
 			return mat;
 		}
 
-		private void addTexture (ModelMaterial mat, String texFilename, int usage) {
-			if (texFilename != null) {
+		private void addTexture(ModelMaterial mat, String texFilename, int usage) {
+			if(texFilename != null) {
 				ModelTexture tex = new ModelTexture();
 				tex.usage = usage;
 				tex.fileName = texFilename;
-				if (mat.textures == null) mat.textures = new Array<>(1);
+				if(mat.textures == null) mat.textures = new Array<>(1);
 				mat.textures.add(tex);
 			}
 		}
 
-		public void reset () {
+		public void reset() {
 			ambientColor = null;
 			diffuseColor = Color.WHITE;
 			specularColor = Color.WHITE;

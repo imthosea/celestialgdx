@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.SnapshotArray;
 
-/** A {@link Group} that participates in layout and provides a minimum, preferred, and maximum size.
+/**
+ * A {@link Group} that participates in layout and provides a minimum, preferred, and maximum size.
  * <p>
  * The default preferred size of a widget group is 0 and this is almost always overridden by a subclass. The default minimum size
  * returns the preferred size, so a subclass may choose to return 0 for minimum size if it wants to allow itself to be sized
@@ -32,113 +33,114 @@ import com.badlogic.gdx.utils.SnapshotArray;
  * See {@link Layout} for details on how a widget group should participate in layout. A widget group's mutator methods should call
  * {@link #invalidate()} or {@link #invalidateHierarchy()} as needed. By default, invalidateHierarchy is called when child widgets
  * are added and removed.
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ */
 public class WidgetGroup extends Group implements Layout {
 	private boolean needsLayout = true;
 	private boolean fillParent;
 	private boolean layoutEnabled = true;
 
-	public WidgetGroup () {
+	public WidgetGroup() {
 	}
 
 	/** Creates a new widget group containing the specified actors. */
-	public WidgetGroup (Actor... actors) {
-		for (Actor actor : actors)
+	public WidgetGroup(Actor... actors) {
+		for(Actor actor : actors)
 			addActor(actor);
 	}
 
-	public float getMinWidth () {
+	public float getMinWidth() {
 		return getPrefWidth();
 	}
 
-	public float getMinHeight () {
+	public float getMinHeight() {
 		return getPrefHeight();
 	}
 
-	public float getPrefWidth () {
+	public float getPrefWidth() {
 		return 0;
 	}
 
-	public float getPrefHeight () {
+	public float getPrefHeight() {
 		return 0;
 	}
 
-	public float getMaxWidth () {
+	public float getMaxWidth() {
 		return 0;
 	}
 
-	public float getMaxHeight () {
+	public float getMaxHeight() {
 		return 0;
 	}
 
-	public void setLayoutEnabled (boolean enabled) {
+	public void setLayoutEnabled(boolean enabled) {
 		layoutEnabled = enabled;
 		setLayoutEnabled(this, enabled);
 	}
 
-	private void setLayoutEnabled (Group parent, boolean enabled) {
+	private void setLayoutEnabled(Group parent, boolean enabled) {
 		SnapshotArray<Actor> children = parent.getChildren();
-		for (int i = 0, n = children.size; i < n; i++) {
+		for(int i = 0, n = children.size; i < n; i++) {
 			Actor actor = children.get(i);
-			if (actor instanceof Layout)
-				((Layout)actor).setLayoutEnabled(enabled);
-			else if (actor instanceof Group) //
-				setLayoutEnabled((Group)actor, enabled);
+			if(actor instanceof Layout)
+				((Layout) actor).setLayoutEnabled(enabled);
+			else if(actor instanceof Group) //
+				setLayoutEnabled((Group) actor, enabled);
 		}
 	}
 
-	public void validate () {
-		if (!layoutEnabled) return;
+	public void validate() {
+		if(!layoutEnabled) return;
 
 		Group parent = getParent();
-		if (fillParent && parent != null) {
+		if(fillParent && parent != null) {
 			Stage stage = getStage();
-			if (stage != null && parent == stage.getRoot())
+			if(stage != null && parent == stage.getRoot())
 				setSize(stage.getWidth(), stage.getHeight());
 			else
 				setSize(parent.getWidth(), parent.getHeight());
 		}
 
-		if (!needsLayout) return;
+		if(!needsLayout) return;
 		needsLayout = false;
 		layout();
 
 		// Widgets may call invalidateHierarchy during layout (eg, a wrapped label). The root-most widget group retries layout a
 		// reasonable number of times.
-		if (needsLayout) {
-			if (parent instanceof WidgetGroup) return; // The parent widget will layout again.
-			for (int i = 0; i < 5; i++) {
+		if(needsLayout) {
+			if(parent instanceof WidgetGroup) return; // The parent widget will layout again.
+			for(int i = 0; i < 5; i++) {
 				needsLayout = false;
 				layout();
-				if (!needsLayout) break;
+				if(!needsLayout) break;
 			}
 		}
 	}
 
 	/** Returns true if the widget's layout has been {@link #invalidate() invalidated}. */
-	public boolean needsLayout () {
+	public boolean needsLayout() {
 		return needsLayout;
 	}
 
-	public void invalidate () {
+	public void invalidate() {
 		needsLayout = true;
 	}
 
-	public void invalidateHierarchy () {
+	public void invalidateHierarchy() {
 		invalidate();
 		Group parent = getParent();
-		if (parent instanceof Layout) ((Layout)parent).invalidateHierarchy();
+		if(parent instanceof Layout) ((Layout) parent).invalidateHierarchy();
 	}
 
-	protected void childrenChanged () {
+	protected void childrenChanged() {
 		invalidateHierarchy();
 	}
 
-	protected void sizeChanged () {
+	protected void sizeChanged() {
 		invalidate();
 	}
 
-	public void pack () {
+	public void pack() {
 		setSize(getPrefWidth(), getPrefHeight());
 		validate();
 		// Validating the layout may change the pref size. Eg, a wrapped label doesn't know its pref height until it knows its
@@ -147,23 +149,27 @@ public class WidgetGroup extends Group implements Layout {
 		validate();
 	}
 
-	public void setFillParent (boolean fillParent) {
+	public void setFillParent(boolean fillParent) {
 		this.fillParent = fillParent;
 	}
 
-	public void layout () {
+	public void layout() {
 	}
 
-	/** If this method is overridden, the super method or {@link #validate()} should be called to ensure the widget group is laid
-	 * out. */
-	public Actor hit (float x, float y, boolean touchable) {
+	/**
+	 * If this method is overridden, the super method or {@link #validate()} should be called to ensure the widget group is laid
+	 * out.
+	 */
+	public Actor hit(float x, float y, boolean touchable) {
 		validate();
 		return super.hit(x, y, touchable);
 	}
 
-	/** If this method is overridden, the super method or {@link #validate()} should be called to ensure the widget group is laid
-	 * out. */
-	public void draw (Batch batch, float parentAlpha) {
+	/**
+	 * If this method is overridden, the super method or {@link #validate()} should be called to ensure the widget group is laid
+	 * out.
+	 */
+	public void draw(Batch batch, float parentAlpha) {
 		validate();
 		super.draw(batch, parentAlpha);
 	}

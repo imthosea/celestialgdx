@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,11 +22,13 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import java.util.Arrays;
 
-/** This class represents an group of elements like an array, but the properties of the elements are stored as separate arrays.
+/**
+ * This class represents an group of elements like an array, but the properties of the elements are stored as separate arrays.
  * These arrays are called {@link Channel} and are represented by {@link ChannelDescriptor}. It's not necessary to store primitive
  * types in the channels but doing so will "exploit" data locality in the JVM, which is ensured for primitive types. Use
  * {@link FloatChannel}, {@link IntChannel}, {@link ObjectChannel} to store the data.
- * @author inferno */
+ * @author inferno
+ */
 public class ParallelArray {
 
 	/** This class describes the content of a {@link Channel} */
@@ -37,14 +39,14 @@ public class ParallelArray {
 		public final int count;
 
 		@Deprecated
-		public ChannelDescriptor (int id, Class<?> type, int count) {
+		public ChannelDescriptor(int id, Class<?> type, int count) {
 			this.id = id;
 			this.type = type;
 			this.count = count;
 			this.arraySupplier = size -> java.lang.reflect.Array.newInstance(type, size);
 		}
 
-		public ChannelDescriptor (int id, ArraySupplier<?> arraySupplier, int count) {
+		public ChannelDescriptor(int id, ArraySupplier<?> arraySupplier, int count) {
 			this.id = id;
 			this.arraySupplier = arraySupplier;
 			this.count = count;
@@ -58,45 +60,45 @@ public class ParallelArray {
 		public Object data;
 		public final int strideSize;
 
-		public Channel (int id, Object data, int strideSize) {
+		public Channel(int id, Object data, int strideSize) {
 			this.id = id;
 			this.strideSize = strideSize;
 			this.data = data;
 		}
 
-		public abstract void add (int index, Object... objects);
+		public abstract void add(int index, Object... objects);
 
-		public abstract void swap (int i, int k);
+		public abstract void swap(int i, int k);
 
-		protected abstract void setCapacity (int requiredCapacity);
+		protected abstract void setCapacity(int requiredCapacity);
 	}
 
 	/** This interface is used to provide custom initialization of the {@link Channel} data */
 	public static interface ChannelInitializer<T extends Channel> {
-		public void init (T channel);
+		public void init(T channel);
 	}
 
 	public class FloatChannel extends Channel {
 		public float[] data;
 
-		public FloatChannel (int id, int strideSize, int size) {
+		public FloatChannel(int id, int strideSize, int size) {
 			super(id, new float[size * strideSize], strideSize);
-			this.data = (float[])super.data;
+			this.data = (float[]) super.data;
 		}
 
 		@Override
-		public void add (int index, Object... objects) {
-			for (int i = strideSize * size, c = i + strideSize, k = 0; i < c; ++i, ++k) {
-				data[i] = (Float)objects[k];
+		public void add(int index, Object... objects) {
+			for(int i = strideSize * size, c = i + strideSize, k = 0; i < c; ++i, ++k) {
+				data[i] = (Float) objects[k];
 			}
 		}
 
 		@Override
-		public void swap (int i, int k) {
+		public void swap(int i, int k) {
 			float t;
 			i = strideSize * i;
 			k = strideSize * k;
-			for (int c = i + strideSize; i < c; ++i, ++k) {
+			for(int c = i + strideSize; i < c; ++i, ++k) {
 				t = data[i];
 				data[i] = data[k];
 				data[k] = t;
@@ -104,7 +106,7 @@ public class ParallelArray {
 		}
 
 		@Override
-		public void setCapacity (int requiredCapacity) {
+		public void setCapacity(int requiredCapacity) {
 			float[] newData = new float[strideSize * requiredCapacity];
 			System.arraycopy(data, 0, newData, 0, Math.min(data.length, newData.length));
 			super.data = data = newData;
@@ -114,24 +116,24 @@ public class ParallelArray {
 	public class IntChannel extends Channel {
 		public int[] data;
 
-		public IntChannel (int id, int strideSize, int size) {
+		public IntChannel(int id, int strideSize, int size) {
 			super(id, new int[size * strideSize], strideSize);
-			this.data = (int[])super.data;
+			this.data = (int[]) super.data;
 		}
 
 		@Override
-		public void add (int index, Object... objects) {
-			for (int i = strideSize * size, c = i + strideSize, k = 0; i < c; ++i, ++k) {
-				data[i] = (Integer)objects[k];
+		public void add(int index, Object... objects) {
+			for(int i = strideSize * size, c = i + strideSize, k = 0; i < c; ++i, ++k) {
+				data[i] = (Integer) objects[k];
 			}
 		}
 
 		@Override
-		public void swap (int i, int k) {
+		public void swap(int i, int k) {
 			int t;
 			i = strideSize * i;
 			k = strideSize * k;
-			for (int c = i + strideSize; i < c; ++i, ++k) {
+			for(int c = i + strideSize; i < c; ++i, ++k) {
 				t = data[i];
 				data[i] = data[k];
 				data[k] = t;
@@ -139,7 +141,7 @@ public class ParallelArray {
 		}
 
 		@Override
-		public void setCapacity (int requiredCapacity) {
+		public void setCapacity(int requiredCapacity) {
 			int[] newData = new int[strideSize * requiredCapacity];
 			System.arraycopy(data, 0, newData, 0, Math.min(data.length, newData.length));
 			super.data = data = newData;
@@ -150,24 +152,24 @@ public class ParallelArray {
 	public class ObjectChannel<T> extends Channel {
 		public T[] data;
 
-		public ObjectChannel (int id, int strideSize, int size, ArraySupplier<T[]> arraySupplier) {
+		public ObjectChannel(int id, int strideSize, int size, ArraySupplier<T[]> arraySupplier) {
 			super(id, arraySupplier.get(size * strideSize), strideSize);
-			this.data = (T[])super.data;
+			this.data = (T[]) super.data;
 		}
 
 		@Override
-		public void add (int index, Object... objects) {
-			for (int i = strideSize * size, c = i + strideSize, k = 0; i < c; ++i, ++k) {
-				this.data[i] = (T)objects[k];
+		public void add(int index, Object... objects) {
+			for(int i = strideSize * size, c = i + strideSize, k = 0; i < c; ++i, ++k) {
+				this.data[i] = (T) objects[k];
 			}
 		}
 
 		@Override
-		public void swap (int i, int k) {
+		public void swap(int i, int k) {
 			T t;
 			i = strideSize * i;
 			k = strideSize * k;
-			for (int c = i + strideSize; i < c; ++i, ++k) {
+			for(int c = i + strideSize; i < c; ++i, ++k) {
 				t = data[i];
 				data[i] = data[k];
 				data[k] = t;
@@ -175,7 +177,7 @@ public class ParallelArray {
 		}
 
 		@Override
-		public void setCapacity (int requiredCapacity) {
+		public void setCapacity(int requiredCapacity) {
 			super.data = data = Arrays.copyOf(data, strideSize * requiredCapacity);
 		}
 	}
@@ -187,63 +189,69 @@ public class ParallelArray {
 	/** the current amount of defined elements, do not change manually unless you know what you are doing. */
 	public int size;
 
-	public ParallelArray (int capacity) {
+	public ParallelArray(int capacity) {
 		arrays = new Array<>(false, 2, Channel[]::new);
 		this.capacity = capacity;
 		size = 0;
 	}
 
-	/** Adds and returns a channel described by the channel descriptor parameter. If a channel with the same id already exists, no
-	 * allocation is performed and that channel is returned. */
-	public <T extends Channel> T addChannel (ChannelDescriptor channelDescriptor) {
+	/**
+	 * Adds and returns a channel described by the channel descriptor parameter. If a channel with the same id already exists, no
+	 * allocation is performed and that channel is returned.
+	 */
+	public <T extends Channel> T addChannel(ChannelDescriptor channelDescriptor) {
 		return addChannel(channelDescriptor, null);
 	}
 
-	/** Adds and returns a channel described by the channel descriptor parameter. If a channel with the same id already exists, no
+	/**
+	 * Adds and returns a channel described by the channel descriptor parameter. If a channel with the same id already exists, no
 	 * allocation is performed and that channel is returned. Otherwise a new channel is allocated and initialized with the
-	 * initializer. */
-	public <T extends Channel> T addChannel (ChannelDescriptor channelDescriptor, ChannelInitializer<T> initializer) {
+	 * initializer.
+	 */
+	public <T extends Channel> T addChannel(ChannelDescriptor channelDescriptor, ChannelInitializer<T> initializer) {
 		T channel = getChannel(channelDescriptor);
-		if (channel == null) {
+		if(channel == null) {
 			channel = allocateChannel(channelDescriptor);
-			if (initializer != null) initializer.init(channel);
+			if(initializer != null) initializer.init(channel);
 			arrays.add(channel);
 		}
 		return channel;
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	private <T extends Channel> T allocateChannel (ChannelDescriptor channelDescriptor) {
-		if (channelDescriptor.type == float.class) {
-			return (T)new FloatChannel(channelDescriptor.id, channelDescriptor.count, capacity);
-		} else if (channelDescriptor.type == int.class) {
-			return (T)new IntChannel(channelDescriptor.id, channelDescriptor.count, capacity);
+	private <T extends Channel> T allocateChannel(ChannelDescriptor channelDescriptor) {
+		if(channelDescriptor.type == float.class) {
+			return (T) new FloatChannel(channelDescriptor.id, channelDescriptor.count, capacity);
+		} else if(channelDescriptor.type == int.class) {
+			return (T) new IntChannel(channelDescriptor.id, channelDescriptor.count, capacity);
 		} else {
-			return (T)new ObjectChannel(channelDescriptor.id, channelDescriptor.count, capacity, channelDescriptor.arraySupplier);
+			return (T) new ObjectChannel(channelDescriptor.id, channelDescriptor.count, capacity, channelDescriptor.arraySupplier);
 		}
 	}
 
 	/** Removes the channel with the given id */
-	public <T> void removeArray (int id) {
+	public <T> void removeArray(int id) {
 		arrays.removeIndex(findIndex(id));
 	}
 
-	private int findIndex (int id) {
-		for (int i = 0; i < arrays.size; ++i) {
+	private int findIndex(int id) {
+		for(int i = 0; i < arrays.size; ++i) {
 			Channel array = arrays.items[i];
-			if (array.id == id) return i;
+			if(array.id == id) return i;
 		}
 		return -1;
 	}
 
-	/** Adds an element considering the values in the same order as the current channels in the array. The n_th value must have the
-	 * same type and stride of the given channel at position n */
-	public void addElement (Object... values) {
+	/**
+	 * Adds an element considering the values in the same order as the current channels in the array. The n_th value must have the
+	 * same type and stride of the given channel at position n
+	 */
+	public void addElement(Object... values) {
 		/* FIXME make it grow... */
-		if (size == capacity) throw new GdxRuntimeException("Capacity reached, cannot add other elements");
+		if(size == capacity) throw new GdxRuntimeException("Capacity reached, cannot add other elements");
 
 		int k = 0;
-		for (Channel strideArray : arrays) {
+		for(Channel strideArray : arrays) {
 			strideArray.add(k, values);
 			k += strideArray.strideSize;
 		}
@@ -251,10 +259,10 @@ public class ParallelArray {
 	}
 
 	/** Removes the element at the given index and swaps it with the last available element */
-	public void removeElement (int index) {
+	public void removeElement(int index) {
 		int last = size - 1;
 		// Swap
-		for (Channel strideArray : arrays) {
+		for(Channel strideArray : arrays) {
 			strideArray.swap(index, last);
 		}
 		size = last;
@@ -262,24 +270,26 @@ public class ParallelArray {
 
 	/** @return the channel with the same id as the one in the descriptor */
 	@SuppressWarnings("unchecked")
-	public <T extends Channel> T getChannel (ChannelDescriptor descriptor) {
-		for (Channel array : arrays) {
-			if (array.id == descriptor.id) return (T)array;
+	public <T extends Channel> T getChannel(ChannelDescriptor descriptor) {
+		for(Channel array : arrays) {
+			if(array.id == descriptor.id) return (T) array;
 		}
 		return null;
 	}
 
 	/** Removes all the channels and sets size to 0 */
-	public void clear () {
+	public void clear() {
 		arrays.clear();
 		size = 0;
 	}
 
-	/** Sets the capacity. Each contained channel will be resized to match the required capacity and the current data will be
-	 * preserved. */
-	public void setCapacity (int requiredCapacity) {
-		if (capacity != requiredCapacity) {
-			for (Channel channel : arrays) {
+	/**
+	 * Sets the capacity. Each contained channel will be resized to match the required capacity and the current data will be
+	 * preserved.
+	 */
+	public void setCapacity(int requiredCapacity) {
+		if(capacity != requiredCapacity) {
+			for(Channel channel : arrays) {
 				channel.setCapacity(requiredCapacity);
 			}
 			capacity = requiredCapacity;

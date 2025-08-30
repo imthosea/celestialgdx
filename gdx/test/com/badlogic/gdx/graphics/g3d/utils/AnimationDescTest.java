@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.graphics.g3d.utils;
 
 import org.junit.Assert;
@@ -13,7 +12,7 @@ public class AnimationDescTest {
 	private AnimationDesc anim;
 
 	@Before
-	public void setup () {
+	public void setup() {
 		anim = new AnimationDesc();
 		anim.animation = new Animation();
 		anim.duration = 1f;
@@ -25,33 +24,33 @@ public class AnimationDescTest {
 	}
 
 	@Test
-	public void testUpdateNominal () {
+	public void testUpdateNominal() {
 		Assert.assertEquals(-1, anim.update(.75f), epsilon);
 		Assert.assertEquals(.5f, anim.update(.75f), epsilon);
 		Assert.assertEquals(.75f, anim.update(.75f), epsilon);
 	}
 
 	@Test
-	public void testUpdateJustEnd () {
+	public void testUpdateJustEnd() {
 		Assert.assertEquals(-1, anim.update(.5f), epsilon);
 		Assert.assertEquals(0, anim.update(.5f), epsilon);
 		Assert.assertEquals(.5f, anim.update(.5f), epsilon);
 	}
 
 	@Test
-	public void testUpdateBigDelta () {
+	public void testUpdateBigDelta() {
 		Assert.assertEquals(4.2f, anim.update(5.2f), epsilon);
 		Assert.assertEquals(7.3f, anim.update(7.3f), epsilon);
 	}
 
 	@Test
-	public void testUpdateZeroDelta () {
+	public void testUpdateZeroDelta() {
 		Assert.assertEquals(-1, anim.update(0f), epsilon);
 		Assert.assertEquals(0f, anim.time, epsilon);
 	}
 
 	@Test
-	public void testUpdateReverseNominal () {
+	public void testUpdateReverseNominal() {
 		anim.speed = -1;
 		anim.time = anim.duration;
 
@@ -61,7 +60,7 @@ public class AnimationDescTest {
 	}
 
 	@Test
-	public void testUpdateReverseJustEnd () {
+	public void testUpdateReverseJustEnd() {
 		anim.speed = -1;
 		anim.time = anim.duration;
 
@@ -71,7 +70,7 @@ public class AnimationDescTest {
 	}
 
 	@Test
-	public void testUpdateReverseBigDelta () {
+	public void testUpdateReverseBigDelta() {
 		anim.speed = -1;
 		anim.time = anim.duration;
 
@@ -80,7 +79,7 @@ public class AnimationDescTest {
 	}
 
 	@Test
-	public void testUpdateReverseZeroDelta () {
+	public void testUpdateReverseZeroDelta() {
 		anim.speed = -1;
 		anim.time = anim.duration;
 

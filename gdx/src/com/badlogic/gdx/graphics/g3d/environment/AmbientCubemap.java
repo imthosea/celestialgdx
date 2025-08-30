@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,41 +25,41 @@ import java.util.Arrays;
 public class AmbientCubemap {
 	private static final int NUM_VALUES = 6 * 3;
 
-	private final static float clamp (final float v) {
+	private final static float clamp(final float v) {
 		return v < 0f ? 0f : (Math.min(v, 1f));
 	}
 
 	public final float data[];
 
-	public AmbientCubemap () {
+	public AmbientCubemap() {
 		data = new float[NUM_VALUES];
 	}
 
-	public AmbientCubemap (final float copyFrom[]) {
-		if (copyFrom.length != (NUM_VALUES)) throw new GdxRuntimeException("Incorrect array size");
+	public AmbientCubemap(final float copyFrom[]) {
+		if(copyFrom.length != (NUM_VALUES)) throw new GdxRuntimeException("Incorrect array size");
 		data = new float[copyFrom.length];
 		System.arraycopy(copyFrom, 0, data, 0, data.length);
 	}
 
-	public AmbientCubemap (final AmbientCubemap copyFrom) {
+	public AmbientCubemap(final AmbientCubemap copyFrom) {
 		this(copyFrom.data);
 	}
 
-	public AmbientCubemap set (final float values[]) {
+	public AmbientCubemap set(final float values[]) {
 		System.arraycopy(values, 0, data, 0, data.length);
 		return this;
 	}
 
-	public AmbientCubemap set (final AmbientCubemap other) {
+	public AmbientCubemap set(final AmbientCubemap other) {
 		return set(other.data);
 	}
 
-	public AmbientCubemap set (final Color color) {
+	public AmbientCubemap set(final Color color) {
 		return set(color.r, color.g, color.b);
 	}
 
-	public AmbientCubemap set (float r, float g, float b) {
-		for (int idx = 0; idx < NUM_VALUES;) {
+	public AmbientCubemap set(float r, float g, float b) {
+		for(int idx = 0; idx < NUM_VALUES; ) {
 			data[idx] = r;
 			data[idx + 1] = g;
 			data[idx + 2] = b;
@@ -68,24 +68,24 @@ public class AmbientCubemap {
 		return this;
 	}
 
-	public Color getColor (final Color out, int side) {
+	public Color getColor(final Color out, int side) {
 		side *= 3;
 		return out.set(data[side], data[side + 1], data[side + 2], 1f);
 	}
 
-	public AmbientCubemap clear () {
+	public AmbientCubemap clear() {
 		Arrays.fill(data, 0f);
 		return this;
 	}
 
-	public AmbientCubemap clamp () {
-		for (int i = 0; i < data.length; i++)
+	public AmbientCubemap clamp() {
+		for(int i = 0; i < data.length; i++)
 			data[i] = clamp(data[i]);
 		return this;
 	}
 
-	public AmbientCubemap add (float r, float g, float b) {
-		for (int idx = 0; idx < data.length;) {
+	public AmbientCubemap add(float r, float g, float b) {
+		for(int idx = 0; idx < data.length; ) {
 			data[idx++] += r;
 			data[idx++] += g;
 			data[idx++] += b;
@@ -93,14 +93,14 @@ public class AmbientCubemap {
 		return this;
 	}
 
-	public AmbientCubemap add (final Color color) {
+	public AmbientCubemap add(final Color color) {
 		return add(color.r, color.g, color.b);
 	}
 
-	public AmbientCubemap add (final float r, final float g, final float b, final float x, final float y, final float z) {
+	public AmbientCubemap add(final float r, final float g, final float b, final float x, final float y, final float z) {
 		final float x2 = x * x, y2 = y * y, z2 = z * z;
 		float d = x2 + y2 + z2;
-		if (d == 0f) return this;
+		if(d == 0f) return this;
 		d = 1f / d * (d + 1f);
 		final float rd = r * d, gd = g * d, bd = b * d;
 		int idx = x > 0 ? 0 : 3;
@@ -118,31 +118,31 @@ public class AmbientCubemap {
 		return this;
 	}
 
-	public AmbientCubemap add (final Color color, final Vector3 direction) {
+	public AmbientCubemap add(final Color color, final Vector3 direction) {
 		return add(color.r, color.g, color.b, direction.x, direction.y, direction.z);
 	}
 
-	public AmbientCubemap add (final float r, final float g, final float b, final Vector3 direction) {
+	public AmbientCubemap add(final float r, final float g, final float b, final Vector3 direction) {
 		return add(r, g, b, direction.x, direction.y, direction.z);
 	}
 
-	public AmbientCubemap add (final Color color, final float x, final float y, final float z) {
+	public AmbientCubemap add(final Color color, final float x, final float y, final float z) {
 		return add(color.r, color.g, color.b, x, y, z);
 	}
 
-	public AmbientCubemap add (final Color color, final Vector3 point, final Vector3 target) {
+	public AmbientCubemap add(final Color color, final Vector3 point, final Vector3 target) {
 		return add(color.r, color.g, color.b, target.x - point.x, target.y - point.y, target.z - point.z);
 	}
 
-	public AmbientCubemap add (final Color color, final Vector3 point, final Vector3 target, final float intensity) {
+	public AmbientCubemap add(final Color color, final Vector3 point, final Vector3 target, final float intensity) {
 		final float t = intensity / (1f + target.dst(point));
 		return add(color.r * t, color.g * t, color.b * t, target.x - point.x, target.y - point.y, target.z - point.z);
 	}
 
 	@Override
-	public String toString () {
+	public String toString() {
 		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < data.length; i += 3) {
+		for(int i = 0; i < data.length; i += 3) {
 			result.append(data[i]).append(", ").append(data[i + 1]).append(", ").append(data[i + 2]).append("\n");
 		}
 		return result.toString();

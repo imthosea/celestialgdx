@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,8 +31,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-/** loads {@link PolygonRegion PolygonRegions} using a {@link com.badlogic.gdx.graphics.g2d.PolygonRegionLoader}
- * @author dermetfan */
+/**
+ * loads {@link PolygonRegion PolygonRegions} using a {@link com.badlogic.gdx.graphics.g2d.PolygonRegionLoader}
+ * @author dermetfan
+ */
 public class PolygonRegionLoader extends AssetLoader<PolygonRegion, PolygonRegionParameters> {
 
 	public static class PolygonRegionParameters extends AssetLoaderParameters<PolygonRegion> {
@@ -40,51 +42,53 @@ public class PolygonRegionLoader extends AssetLoader<PolygonRegion, PolygonRegio
 		/** what the line starts with that contains the file name of the texture for this {@code PolygonRegion} */
 		public String texturePrefix = "i ";
 
-		/** what buffer size of the reader should be used to read the {@link #texturePrefix} line
-		 * @see FileHandle#reader(int) */
+		/**
+		 * what buffer size of the reader should be used to read the {@link #texturePrefix} line
+		 * @see FileHandle#reader(int)
+		 */
 		public int readerBuffer = 1024;
 
 		/** the possible file name extensions of the texture file */
-		public String[] textureExtensions = new String[]{"png", "PNG", "jpeg", "JPEG", "jpg", "JPG", "cim", "CIM", "etc1", "ETC1",
-			"ktx", "KTX", "zktx", "ZKTX"};
+		public String[] textureExtensions = new String[] {"png", "PNG", "jpeg", "JPEG", "jpg", "JPG", "cim", "CIM", "etc1", "ETC1",
+				"ktx", "KTX", "zktx", "ZKTX"};
 
 	}
 
 	private static final PolygonRegionParameters defaultParameters = new PolygonRegionParameters();
 
-	public PolygonRegionLoader () {
+	public PolygonRegionLoader() {
 		this(new InternalFileHandleResolver());
 	}
 
-	public PolygonRegionLoader (FileHandleResolver resolver) {
+	public PolygonRegionLoader(FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	@Override
-	public PolygonRegion load (String path, PolygonRegionParameters params, AssetLoadingContext<PolygonRegion> ctx) throws Exception {
-		if (params == null) params = defaultParameters;
+	public PolygonRegion load(String path, PolygonRegionParameters params, AssetLoadingContext<PolygonRegion> ctx) throws Exception {
+		if(params == null) params = defaultParameters;
 
 		String image = null;
 		FileHandle file = resolve(path);
 		EarClippingTriangulator triangulator = new EarClippingTriangulator();
 
-		try (BufferedReader reader = file.reader(params.readerBuffer)) {
-			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-				if (line.startsWith(params.texturePrefix)) {
+		try(BufferedReader reader = file.reader(params.readerBuffer)) {
+			for(String line = reader.readLine(); line != null; line = reader.readLine()) {
+				if(line.startsWith(params.texturePrefix)) {
 					image = line.substring(params.texturePrefix.length());
 					break;
 				}
 			}
 		}
 
-		if (image == null && params.textureExtensions != null) {
-			for (String extension : params.textureExtensions) {
+		if(image == null && params.textureExtensions != null) {
+			for(String extension : params.textureExtensions) {
 				FileHandle sibling = file.sibling(file.nameWithoutExtension() + "." + extension);
-				if (sibling.exists()) image = sibling.name();
+				if(sibling.exists()) image = sibling.name();
 			}
 		}
 
-		if (image == null) {
+		if(image == null) {
 			// TODO celestialgdx - this what I'm supposed to do?
 			throw new IllegalStateException("missing image");
 		}
@@ -93,7 +97,8 @@ public class PolygonRegionLoader extends AssetLoader<PolygonRegion, PolygonRegio
 		return load(new TextureRegion(texture), triangulator, file);
 	}
 
-	/** Loads a PolygonRegion from a PSH (Polygon SHape) file. The PSH file format defines the polygon vertices before
+	/**
+	 * Loads a PolygonRegion from a PSH (Polygon SHape) file. The PSH file format defines the polygon vertices before
 	 * triangulation:
 	 * <p>
 	 * s 200.0, 100.0, ...
@@ -101,23 +106,24 @@ public class PolygonRegionLoader extends AssetLoader<PolygonRegion, PolygonRegio
 	 * Lines not prefixed with "s" are ignored. PSH files can be created with external tools, eg: <br>
 	 * https://code.google.com/p/libgdx-polygoneditor/ <br>
 	 * http://www.codeandweb.com/physicseditor/
-	 * @param file file handle to the shape definition file */
-	public PolygonRegion load (TextureRegion textureRegion, EarClippingTriangulator triangulator, FileHandle file) {
+	 * @param file file handle to the shape definition file
+	 */
+	public PolygonRegion load(TextureRegion textureRegion, EarClippingTriangulator triangulator, FileHandle file) {
 		try(BufferedReader reader = file.reader(256)) {
-			while (true) {
+			while(true) {
 				String line = reader.readLine();
-				if (line == null) break;
-				if (line.startsWith("s")) {
+				if(line == null) break;
+				if(line.startsWith("s")) {
 					// Read shape.
 					String[] polygonStrings = line.substring(1).trim().split(",");
 					float[] vertices = new float[polygonStrings.length];
-					for (int i = 0, n = vertices.length; i < n; i++)
+					for(int i = 0, n = vertices.length; i < n; i++)
 						vertices[i] = Float.parseFloat(polygonStrings[i]);
 					// It would probably be better if PSH stored the vertices and triangles, then we don't have to triangulate here.
 					return new PolygonRegion(textureRegion, vertices, triangulator.computeTriangles(vertices).toArray());
 				}
 			}
-		} catch (IOException ex) {
+		} catch(IOException ex) {
 			throw new GdxIoException("Error reading polygon shape file: " + file, ex);
 		}
 		throw new GdxRuntimeException("Polygon shape not found: " + file);

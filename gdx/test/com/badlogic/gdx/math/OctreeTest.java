@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.math;
 
 import static org.junit.Assert.assertEquals;
@@ -13,7 +12,7 @@ import org.junit.Test;
 public class OctreeTest {
 
 	@Test
-	public void testInsert () {
+	public void testInsert() {
 		int maxDepth = 2;
 		int maxItemsPerNode = 1;
 
@@ -22,20 +21,20 @@ public class OctreeTest {
 
 		Octree<BoundingBox> octree = new Octree<>(min, max, maxDepth, maxItemsPerNode, new Octree.Collider<BoundingBox>() {
 			@Override
-			public boolean intersects (BoundingBox nodeBounds, BoundingBox geometry) {
+			public boolean intersects(BoundingBox nodeBounds, BoundingBox geometry) {
 				return nodeBounds.intersects(geometry);
 			}
 
 			@Override
-			public boolean intersects (Frustum frustum, BoundingBox geometry) {
+			public boolean intersects(Frustum frustum, BoundingBox geometry) {
 				return false;
 			}
 
 			final Vector3 tmp = new Vector3();
 
 			@Override
-			public float intersects (Ray ray, BoundingBox geometry) {
-				if (!Intersector.intersectRayBounds(ray, geometry, tmp)) {
+			public float intersects(Ray ray, BoundingBox geometry) {
+				if(!Intersector.intersectRayBounds(ray, geometry, tmp)) {
 					return tmp.dst2(ray.origin);
 				}
 				return Float.POSITIVE_INFINITY;

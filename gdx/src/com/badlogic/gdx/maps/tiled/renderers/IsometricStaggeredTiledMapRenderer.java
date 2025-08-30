@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2013 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,6 @@
  ******************************************************************************/
 
 package com.badlogic.gdx.maps.tiled.renderers;
-
-import static com.badlogic.gdx.graphics.g2d.SpriteBatch.*;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -27,26 +25,28 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
+import static com.badlogic.gdx.graphics.g2d.SpriteBatch.*;
+
 public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 
-	public IsometricStaggeredTiledMapRenderer (TiledMap map) {
+	public IsometricStaggeredTiledMapRenderer(TiledMap map) {
 		super(map);
 	}
 
-	public IsometricStaggeredTiledMapRenderer (TiledMap map, Batch batch) {
+	public IsometricStaggeredTiledMapRenderer(TiledMap map, Batch batch) {
 		super(map, batch);
 	}
 
-	public IsometricStaggeredTiledMapRenderer (TiledMap map, float unitScale) {
+	public IsometricStaggeredTiledMapRenderer(TiledMap map, float unitScale) {
 		super(map, unitScale);
 	}
 
-	public IsometricStaggeredTiledMapRenderer (TiledMap map, float unitScale, Batch batch) {
+	public IsometricStaggeredTiledMapRenderer(TiledMap map, float unitScale, Batch batch) {
 		super(map, unitScale, batch);
 	}
 
 	@Override
-	public void renderTileLayer (TiledMapTileLayer layer) {
+	public void renderTileLayer(TiledMapTileLayer layer) {
 		final Color batchColor = batch.getColor();
 		final float color = getTileLayerColor(layer, batchColor);
 
@@ -63,22 +63,22 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 		final float layerTileWidth50 = layerTileWidth * 0.50f;
 		final float layerTileHeight50 = layerTileHeight * 0.50f;
 
-		final int minX = Math.max(0, (int)(((viewBounds.x - layerTileWidth50 - layerOffsetX) / layerTileWidth)));
+		final int minX = Math.max(0, (int) (((viewBounds.x - layerTileWidth50 - layerOffsetX) / layerTileWidth)));
 		final int maxX = Math.min(layerWidth,
-			(int)((viewBounds.x + viewBounds.width + layerTileWidth + layerTileWidth50 - layerOffsetX) / layerTileWidth));
+				(int) ((viewBounds.x + viewBounds.width + layerTileWidth + layerTileWidth50 - layerOffsetX) / layerTileWidth));
 
-		final int minY = Math.max(0, (int)(((viewBounds.y - layerTileHeight - layerOffsetY) / layerTileHeight)));
+		final int minY = Math.max(0, (int) (((viewBounds.y - layerTileHeight - layerOffsetY) / layerTileHeight)));
 		final int maxY = Math.min(layerHeight,
-			(int)((viewBounds.y + viewBounds.height + layerTileHeight - layerOffsetY) / layerTileHeight50));
+				(int) ((viewBounds.y + viewBounds.height + layerTileHeight - layerOffsetY) / layerTileHeight50));
 
-		for (int y = maxY - 1; y >= minY; y--) {
+		for(int y = maxY - 1; y >= minY; y--) {
 			float offsetX = (y % 2 == 1) ? layerTileWidth50 : 0;
-			for (int x = maxX - 1; x >= minX; x--) {
+			for(int x = maxX - 1; x >= minX; x--) {
 				final TiledMapTileLayer.Cell cell = layer.getCell(x, y);
-				if (cell == null) continue;
+				if(cell == null) continue;
 				final TiledMapTile tile = cell.getTile();
 
-				if (tile != null) {
+				if(tile != null) {
 					final boolean flipX = cell.getFlipHorizontally();
 					final boolean flipY = cell.getFlipVertically();
 					final int rotations = cell.getRotation();
@@ -118,7 +118,7 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 					vertices[U4] = u2;
 					vertices[V4] = v1;
 
-					if (flipX) {
+					if(flipX) {
 						float temp = vertices[U1];
 						vertices[U1] = vertices[U3];
 						vertices[U3] = temp;
@@ -127,7 +127,7 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 						vertices[U4] = temp;
 					}
 
-					if (flipY) {
+					if(flipY) {
 						float temp = vertices[V1];
 						vertices[V1] = vertices[V3];
 						vertices[V3] = temp;
@@ -136,51 +136,51 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 						vertices[V4] = temp;
 					}
 
-					if (rotations != 0) {
-						switch (rotations) {
-						case Cell.ROTATE_90: {
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V2];
-							vertices[V2] = vertices[V3];
-							vertices[V3] = vertices[V4];
-							vertices[V4] = tempV;
+					if(rotations != 0) {
+						switch(rotations) {
+							case Cell.ROTATE_90: {
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V2];
+								vertices[V2] = vertices[V3];
+								vertices[V3] = vertices[V4];
+								vertices[V4] = tempV;
 
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U2];
-							vertices[U2] = vertices[U3];
-							vertices[U3] = vertices[U4];
-							vertices[U4] = tempU;
-							break;
-						}
-						case Cell.ROTATE_180: {
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U3];
-							vertices[U3] = tempU;
-							tempU = vertices[U2];
-							vertices[U2] = vertices[U4];
-							vertices[U4] = tempU;
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V3];
-							vertices[V3] = tempV;
-							tempV = vertices[V2];
-							vertices[V2] = vertices[V4];
-							vertices[V4] = tempV;
-							break;
-						}
-						case Cell.ROTATE_270: {
-							float tempV = vertices[V1];
-							vertices[V1] = vertices[V4];
-							vertices[V4] = vertices[V3];
-							vertices[V3] = vertices[V2];
-							vertices[V2] = tempV;
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U2];
+								vertices[U2] = vertices[U3];
+								vertices[U3] = vertices[U4];
+								vertices[U4] = tempU;
+								break;
+							}
+							case Cell.ROTATE_180: {
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U3];
+								vertices[U3] = tempU;
+								tempU = vertices[U2];
+								vertices[U2] = vertices[U4];
+								vertices[U4] = tempU;
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V3];
+								vertices[V3] = tempV;
+								tempV = vertices[V2];
+								vertices[V2] = vertices[V4];
+								vertices[V4] = tempV;
+								break;
+							}
+							case Cell.ROTATE_270: {
+								float tempV = vertices[V1];
+								vertices[V1] = vertices[V4];
+								vertices[V4] = vertices[V3];
+								vertices[V3] = vertices[V2];
+								vertices[V2] = tempV;
 
-							float tempU = vertices[U1];
-							vertices[U1] = vertices[U4];
-							vertices[U4] = vertices[U3];
-							vertices[U3] = vertices[U2];
-							vertices[U2] = tempU;
-							break;
-						}
+								float tempU = vertices[U1];
+								vertices[U1] = vertices[U4];
+								vertices[U4] = vertices[U3];
+								vertices[U3] = vertices[U2];
+								vertices[U2] = tempU;
+								break;
+							}
 						}
 					}
 					batch.draw(region.getTexture(), vertices, 0, NUM_VERTICES);
@@ -190,7 +190,7 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 	}
 
 	@Override
-	public void renderImageLayer (TiledMapImageLayer layer) {
+	public void renderImageLayer(TiledMapImageLayer layer) {
 		final Color batchColor = batch.getColor();
 
 		final float color = getImageLayerColor(layer, batchColor);
@@ -199,7 +199,7 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 
 		TextureRegion region = layer.getTextureRegion();
 
-		if (region == null) {
+		if(region == null) {
 			return;
 		}
 
@@ -216,8 +216,8 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 
 		imageBounds.set(x1, y1, x2 - x1, y2 - y1);
 
-		if (!layer.isRepeatX() && !layer.isRepeatY()) {
-			if (viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
+		if(!layer.isRepeatX() && !layer.isRepeatY()) {
+			if(viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
 				final float u1 = region.getU();
 				final float v1 = region.getV2();
 				final float u2 = region.getU2();
@@ -252,8 +252,8 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 		} else {
 
 			// Determine number of times to repeat image across X and Y, + 4 for padding to avoid pop in/out
-			int repeatX = layer.isRepeatX() ? (int)Math.ceil((viewBounds.width / imageBounds.width) + 4) : 0;
-			int repeatY = layer.isRepeatY() ? (int)Math.ceil((viewBounds.height / imageBounds.height) + 4) : 0;
+			int repeatX = layer.isRepeatX() ? (int) Math.ceil((viewBounds.width / imageBounds.width) + 4) : 0;
+			int repeatY = layer.isRepeatY() ? (int) Math.ceil((viewBounds.height / imageBounds.height) + 4) : 0;
 
 			// Calculate the offset of the first image to align with the camera
 			float startX = viewBounds.x;
@@ -261,8 +261,8 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 			startX = startX - (startX % imageBounds.width);
 			startY = startY - (startY % imageBounds.height);
 
-			for (int i = 0; i <= repeatX; i++) {
-				for (int j = 0; j <= repeatY; j++) {
+			for(int i = 0; i <= repeatX; i++) {
+				for(int j = 0; j <= repeatY; j++) {
 					float rx1 = x1;
 					float ry1 = y1;
 					float rx2 = x2;
@@ -271,19 +271,19 @@ public class IsometricStaggeredTiledMapRenderer extends BatchTiledMapRenderer {
 					// Use (i -2)/(j-2) to begin placing our repeating images outside the camera.
 					// In case the image is offset, we must negate this using + (x1% imageBounds.width)
 					// It's a way to get the remainder of how many images would fit between its starting position and 0
-					if (layer.isRepeatX()) {
+					if(layer.isRepeatX()) {
 						rx1 = startX + ((i - 2) * imageBounds.width) + (x1 % imageBounds.width);
 						rx2 = rx1 + imageBounds.width;
 					}
 
-					if (layer.isRepeatY()) {
+					if(layer.isRepeatY()) {
 						ry1 = startY + ((j - 2) * imageBounds.height) + (y1 % imageBounds.height);
 						ry2 = ry1 + imageBounds.height;
 					}
 
 					repeatedImageBounds.set(rx1, ry1, rx2 - rx1, ry2 - ry1);
 
-					if (viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
+					if(viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
 						final float ru1 = region.getU();
 						final float rv1 = region.getV2();
 						final float ru2 = region.getU2();

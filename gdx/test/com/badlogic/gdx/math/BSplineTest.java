@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.math;
 
 import org.junit.Assert;
@@ -7,7 +6,7 @@ import org.junit.Test;
 public class BSplineTest {
 
 	@Test
-	public void testCubicSplineNonContinuous () {
+	public void testCubicSplineNonContinuous() {
 		Vector3[] controlPoints = {new Vector3(0, 0, 0), new Vector3(1, 1, 0), new Vector3(2, 0, 0), new Vector3(3, -1, 0)};
 		BSpline<Vector3> spline = new BSpline<>(controlPoints, 3, false);
 
@@ -21,7 +20,7 @@ public class BSplineTest {
 	}
 
 	@Test
-	public void testCubicSplineContinuous () {
+	public void testCubicSplineContinuous() {
 		// Define a rough circle based on the 4 cardinal directions.
 		Vector3[] controlPoints = {new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(-1, 0, 0), new Vector3(0, -1, 0),};
 		BSpline<Vector3> spline = new BSpline<>(controlPoints, 3, true);
@@ -38,7 +37,7 @@ public class BSplineTest {
 	}
 
 	@Test
-	public void testCubicDerivative () {
+	public void testCubicDerivative() {
 		Vector3[] controlPoints = {new Vector3(0, 0, 0), new Vector3(1, 1, 0), new Vector3(2, 0, 0), new Vector3(3, -1, 0)};
 		BSpline<Vector3> spline = new BSpline<>(controlPoints, 3, true);
 
@@ -52,7 +51,7 @@ public class BSplineTest {
 	}
 
 	@Test
-	public void testContinuousApproximation () {
+	public void testContinuousApproximation() {
 		Vector3[] controlPoints = {new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(-1, 0, 0), new Vector3(0, -1, 0)};
 		BSpline<Vector3> spline = new BSpline<>(controlPoints, 3, true);
 
@@ -64,7 +63,7 @@ public class BSplineTest {
 	}
 
 	@Test
-	public void testNonContinuousApproximation () {
+	public void testNonContinuousApproximation() {
 		Vector3[] controlPoints = {new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(-1, 0, 0), new Vector3(0, -1, 0)};
 		BSpline<Vector3> spline = new BSpline<>(controlPoints, 3, false);
 
@@ -83,7 +82,7 @@ public class BSplineTest {
 	}
 
 	@Test
-	public void testSplineContinuity () {
+	public void testSplineContinuity() {
 		Vector3[] controlPoints = {new Vector3(0, 0, 0), new Vector3(1, 1, 0), new Vector3(2, 0, 0), new Vector3(3, -1, 0)};
 		BSpline<Vector3> spline = new BSpline<>(controlPoints, 3, true);
 
@@ -100,7 +99,7 @@ public class BSplineTest {
 
 	/** Test to validate calculation with edge cases (t = 0 and t = 1). */
 	@Test
-	public void testEdgeCases () {
+	public void testEdgeCases() {
 		// The first and last control points aren't on the path.
 		Vector3[] controlPoints = {new Vector3(0, 0, 0), new Vector3(1, 1, 0), new Vector3(2, 0, 0), new Vector3(3, -1, 0)};
 		BSpline<Vector3> spline = new BSpline<>(controlPoints, 3, false);

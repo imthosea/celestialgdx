@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.scenes.scene2d.utils;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,9 +9,11 @@ import com.badlogic.gdx.utils.Pools;
 
 import java.util.Iterator;
 
-/** Manages selected objects. Optionally fires a {@link ChangeEvent} on an actor. Selection changes can be vetoed via
+/**
+ * Manages selected objects. Optionally fires a {@link ChangeEvent} on an actor. Selection changes can be vetoed via
  * {@link ChangeEvent#cancel()}.
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ */
 public class Selection<T> implements Disableable, Iterable<T> {
 	private @Null Actor actor;
 	final OrderedSet<T> selected = new OrderedSet();
@@ -25,32 +26,34 @@ public class Selection<T> implements Disableable, Iterable<T> {
 	@Null T lastSelected;
 
 	/** @param actor An actor to fire {@link ChangeEvent} on when the selection changes, or null. */
-	public void setActor (@Null Actor actor) {
+	public void setActor(@Null Actor actor) {
 		this.actor = actor;
 	}
 
-	/** Selects or deselects the specified item based on how the selection is configured, whether ctrl is currently pressed, etc.
-	 * This is typically invoked by user interaction. */
-	public void choose (T item) {
-		if (item == null) throw new IllegalArgumentException("item cannot be null.");
-		if (isDisabled) return;
+	/**
+	 * Selects or deselects the specified item based on how the selection is configured, whether ctrl is currently pressed, etc.
+	 * This is typically invoked by user interaction.
+	 */
+	public void choose(T item) {
+		if(item == null) throw new IllegalArgumentException("item cannot be null.");
+		if(isDisabled) return;
 		snapshot();
 		try {
-			if ((toggle || UIUtils.ctrl()) && selected.contains(item)) {
-				if (required && selected.size == 1) return;
+			if((toggle || UIUtils.ctrl()) && selected.contains(item)) {
+				if(required && selected.size == 1) return;
 				selected.remove(item);
 				lastSelected = null;
 			} else {
 				boolean modified = false;
-				if (!multiple || (!toggle && !UIUtils.ctrl())) {
-					if (selected.size == 1 && selected.contains(item)) return;
+				if(!multiple || (!toggle && !UIUtils.ctrl())) {
+					if(selected.size == 1 && selected.contains(item)) return;
 					modified = selected.size > 0;
 					selected.clear(8);
 				}
-				if (!selected.add(item) && !modified) return;
+				if(!selected.add(item) && !modified) return;
 				lastSelected = item;
 			}
-			if (fireChangeEvent())
+			if(fireChangeEvent())
 				revert();
 			else
 				changed();
@@ -61,53 +64,53 @@ public class Selection<T> implements Disableable, Iterable<T> {
 
 	/** @deprecated Use {@link #notEmpty()}. */
 	@Deprecated
-	public boolean hasItems () {
+	public boolean hasItems() {
 		return selected.size > 0;
 	}
 
-	public boolean notEmpty () {
+	public boolean notEmpty() {
 		return selected.size > 0;
 	}
 
-	public boolean isEmpty () {
+	public boolean isEmpty() {
 		return selected.size == 0;
 	}
 
-	public int size () {
+	public int size() {
 		return selected.size;
 	}
 
-	public OrderedSet<T> items () {
+	public OrderedSet<T> items() {
 		return selected;
 	}
 
 	/** Returns the first selected item, or null. */
-	public @Null T first () {
+	public @Null T first() {
 		return selected.size == 0 ? null : selected.first();
 	}
 
-	void snapshot () {
+	void snapshot() {
 		old.clear(selected.size);
 		old.addAll(selected);
 	}
 
-	void revert () {
+	void revert() {
 		selected.clear(old.size);
 		selected.addAll(old);
 	}
 
-	void cleanup () {
+	void cleanup() {
 		old.clear(32);
 	}
 
 	/** Sets the selection to only the specified item. */
-	public void set (T item) {
-		if (item == null) throw new IllegalArgumentException("item cannot be null.");
-		if (selected.size == 1 && selected.first() == item) return;
+	public void set(T item) {
+		if(item == null) throw new IllegalArgumentException("item cannot be null.");
+		if(selected.size == 1 && selected.first() == item) return;
 		snapshot();
 		selected.clear(8);
 		selected.add(item);
-		if (programmaticChangeEvents && fireChangeEvent())
+		if(programmaticChangeEvents && fireChangeEvent())
 			revert();
 		else {
 			lastSelected = item;
@@ -116,20 +119,20 @@ public class Selection<T> implements Disableable, Iterable<T> {
 		cleanup();
 	}
 
-	public void setAll (Array<T> items) {
+	public void setAll(Array<T> items) {
 		boolean added = false;
 		snapshot();
 		lastSelected = null;
 		selected.clear(items.size);
-		for (int i = 0, n = items.size; i < n; i++) {
+		for(int i = 0, n = items.size; i < n; i++) {
 			T item = items.get(i);
-			if (item == null) throw new IllegalArgumentException("item cannot be null.");
-			if (selected.add(item)) added = true;
+			if(item == null) throw new IllegalArgumentException("item cannot be null.");
+			if(selected.add(item)) added = true;
 		}
-		if (added) {
-			if (programmaticChangeEvents && fireChangeEvent())
+		if(added) {
+			if(programmaticChangeEvents && fireChangeEvent())
 				revert();
-			else if (items.size > 0) {
+			else if(items.size > 0) {
 				lastSelected = items.peek();
 				changed();
 			}
@@ -138,10 +141,10 @@ public class Selection<T> implements Disableable, Iterable<T> {
 	}
 
 	/** Adds the item to the selection. */
-	public void add (T item) {
-		if (item == null) throw new IllegalArgumentException("item cannot be null.");
-		if (!selected.add(item)) return;
-		if (programmaticChangeEvents && fireChangeEvent())
+	public void add(T item) {
+		if(item == null) throw new IllegalArgumentException("item cannot be null.");
+		if(!selected.add(item)) return;
+		if(programmaticChangeEvents && fireChangeEvent())
 			selected.remove(item);
 		else {
 			lastSelected = item;
@@ -149,16 +152,16 @@ public class Selection<T> implements Disableable, Iterable<T> {
 		}
 	}
 
-	public void addAll (Array<T> items) {
+	public void addAll(Array<T> items) {
 		boolean added = false;
 		snapshot();
-		for (int i = 0, n = items.size; i < n; i++) {
+		for(int i = 0, n = items.size; i < n; i++) {
 			T item = items.get(i);
-			if (item == null) throw new IllegalArgumentException("item cannot be null.");
-			if (selected.add(item)) added = true;
+			if(item == null) throw new IllegalArgumentException("item cannot be null.");
+			if(selected.add(item)) added = true;
 		}
-		if (added) {
-			if (programmaticChangeEvents && fireChangeEvent())
+		if(added) {
+			if(programmaticChangeEvents && fireChangeEvent())
 				revert();
 			else {
 				lastSelected = items.peek();
@@ -168,10 +171,10 @@ public class Selection<T> implements Disableable, Iterable<T> {
 		cleanup();
 	}
 
-	public void remove (T item) {
-		if (item == null) throw new IllegalArgumentException("item cannot be null.");
-		if (!selected.remove(item)) return;
-		if (programmaticChangeEvents && fireChangeEvent())
+	public void remove(T item) {
+		if(item == null) throw new IllegalArgumentException("item cannot be null.");
+		if(!selected.remove(item)) return;
+		if(programmaticChangeEvents && fireChangeEvent())
 			selected.add(item);
 		else {
 			lastSelected = null;
@@ -179,16 +182,16 @@ public class Selection<T> implements Disableable, Iterable<T> {
 		}
 	}
 
-	public void removeAll (Array<T> items) {
+	public void removeAll(Array<T> items) {
 		boolean removed = false;
 		snapshot();
-		for (int i = 0, n = items.size; i < n; i++) {
+		for(int i = 0, n = items.size; i < n; i++) {
 			T item = items.get(i);
-			if (item == null) throw new IllegalArgumentException("item cannot be null.");
-			if (selected.remove(item)) removed = true;
+			if(item == null) throw new IllegalArgumentException("item cannot be null.");
+			if(selected.remove(item)) removed = true;
 		}
-		if (removed) {
-			if (programmaticChangeEvents && fireChangeEvent())
+		if(removed) {
+			if(programmaticChangeEvents && fireChangeEvent())
 				revert();
 			else {
 				lastSelected = null;
@@ -198,14 +201,14 @@ public class Selection<T> implements Disableable, Iterable<T> {
 		cleanup();
 	}
 
-	public void clear () {
-		if (selected.size == 0) {
+	public void clear() {
+		if(selected.size == 0) {
 			lastSelected = null;
 			return;
 		}
 		snapshot();
 		selected.clear(8);
-		if (programmaticChangeEvents && fireChangeEvent())
+		if(programmaticChangeEvents && fireChangeEvent())
 			revert();
 		else {
 			lastSelected = null;
@@ -215,14 +218,16 @@ public class Selection<T> implements Disableable, Iterable<T> {
 	}
 
 	/** Called after the selection changes. The default implementation does nothing. */
-	protected void changed () {
+	protected void changed() {
 	}
 
-	/** Fires a change event on the selection's actor, if any. Called internally when the selection changes, depending on
+	/**
+	 * Fires a change event on the selection's actor, if any. Called internally when the selection changes, depending on
 	 * {@link #setProgrammaticChangeEvents(boolean)}.
-	 * @return true if the change should be undone. */
-	public boolean fireChangeEvent () {
-		if (actor == null) return false;
+	 * @return true if the change should be undone.
+	 */
+	public boolean fireChangeEvent() {
+		if(actor == null) return false;
 		ChangeEvent changeEvent = Pools.obtain(ChangeEvent.class);
 		try {
 			return actor.fire(changeEvent);
@@ -232,79 +237,79 @@ public class Selection<T> implements Disableable, Iterable<T> {
 	}
 
 	/** @param item May be null (returns false). */
-	public boolean contains (@Null T item) {
-		if (item == null) return false;
+	public boolean contains(@Null T item) {
+		if(item == null) return false;
 		return selected.contains(item);
 	}
 
 	/** Makes a best effort to return the last item selected, else returns an arbitrary item or null if the selection is empty. */
-	public @Null T getLastSelected () {
-		if (lastSelected != null) {
+	public @Null T getLastSelected() {
+		if(lastSelected != null) {
 			return lastSelected;
-		} else if (selected.size > 0) {
+		} else if(selected.size > 0) {
 			return selected.first();
 		}
 		return null;
 	}
 
-	public Iterator<T> iterator () {
+	public Iterator<T> iterator() {
 		return selected.iterator();
 	}
 
-	public Array<T> toArray () {
+	public Array<T> toArray() {
 		return selected.iterator().toArray();
 	}
 
-	public Array<T> toArray (Array<T> array) {
+	public Array<T> toArray(Array<T> array) {
 		return selected.iterator().toArray(array);
 	}
 
 	/** If true, prevents {@link #choose(Object)} from changing the selection. Default is false. */
-	public void setDisabled (boolean isDisabled) {
+	public void setDisabled(boolean isDisabled) {
 		this.isDisabled = isDisabled;
 	}
 
-	public boolean isDisabled () {
+	public boolean isDisabled() {
 		return isDisabled;
 	}
 
-	public boolean getToggle () {
+	public boolean getToggle() {
 		return toggle;
 	}
 
 	/** If true, prevents {@link #choose(Object)} from clearing the selection. Default is false. */
-	public void setToggle (boolean toggle) {
+	public void setToggle(boolean toggle) {
 		this.toggle = toggle;
 	}
 
-	public boolean getMultiple () {
+	public boolean getMultiple() {
 		return multiple;
 	}
 
 	/** If true, allows {@link #choose(Object)} to select multiple items. Default is false. */
-	public void setMultiple (boolean multiple) {
+	public void setMultiple(boolean multiple) {
 		this.multiple = multiple;
 	}
 
-	public boolean getRequired () {
+	public boolean getRequired() {
 		return required;
 	}
 
 	/** If true, prevents {@link #choose(Object)} from selecting none. Default is false. */
-	public void setRequired (boolean required) {
+	public void setRequired(boolean required) {
 		this.required = required;
 	}
 
 	/** If false, only {@link #choose(Object)} will fire a change event. Default is true. */
-	public void setProgrammaticChangeEvents (boolean programmaticChangeEvents) {
+	public void setProgrammaticChangeEvents(boolean programmaticChangeEvents) {
 		this.programmaticChangeEvents = programmaticChangeEvents;
 	}
 
-	public boolean getProgrammaticChangeEvents () {
+	public boolean getProgrammaticChangeEvents() {
 		return programmaticChangeEvents;
 	}
 
-	public String toString () {
+	public String toString() {
 		return selected.toString();
 	}
 }

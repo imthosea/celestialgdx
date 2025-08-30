@@ -30,27 +30,28 @@ public class Polyline implements Shape2D {
 	private boolean dirty = true;
 	private Rectangle bounds;
 
-	public Polyline () {
+	public Polyline() {
 		this.localVertices = new float[0];
 	}
 
-	public Polyline (float[] vertices) {
-		if (vertices.length < 4) throw new IllegalArgumentException("polylines must contain at least 2 points.");
+	public Polyline(float[] vertices) {
+		if(vertices.length < 4) throw new IllegalArgumentException("polylines must contain at least 2 points.");
 		this.localVertices = vertices;
 	}
 
 	/** Returns vertices without scaling or rotation and without being offset by the polyline position. */
-	public float[] getVertices () {
+	public float[] getVertices() {
 		return localVertices;
 	}
 
 	/** Returns vertices scaled, rotated, and offset by the polygon position. */
-	public float[] getTransformedVertices () {
-		if (!dirty) return worldVertices;
+	public float[] getTransformedVertices() {
+		if(!dirty) return worldVertices;
 		dirty = false;
 
 		final float[] localVertices = this.localVertices;
-		if (worldVertices == null || worldVertices.length < localVertices.length) worldVertices = new float[localVertices.length];
+		if(worldVertices == null || worldVertices.length < localVertices.length)
+			worldVertices = new float[localVertices.length];
 
 		final float[] worldVertices = this.worldVertices;
 		final float positionX = x;
@@ -64,18 +65,18 @@ public class Polyline implements Shape2D {
 		final float cos = MathUtils.cosDeg(rotation);
 		final float sin = MathUtils.sinDeg(rotation);
 
-		for (int i = 0, n = localVertices.length; i < n; i += 2) {
+		for(int i = 0, n = localVertices.length; i < n; i += 2) {
 			float x = localVertices[i] - originX;
 			float y = localVertices[i + 1] - originY;
 
 			// scale if needed
-			if (scale) {
+			if(scale) {
 				x *= scaleX;
 				y *= scaleY;
 			}
 
 			// rotate if needed
-			if (rotation != 0) {
+			if(rotation != 0) {
 				float oldX = x;
 				x = cos * x - sin * y;
 				y = sin * oldX + cos * y;
@@ -88,129 +89,130 @@ public class Polyline implements Shape2D {
 	}
 
 	/** Returns the euclidean length of the polyline without scaling */
-	public float getLength () {
-		if (!calculateLength) return length;
+	public float getLength() {
+		if(!calculateLength) return length;
 		calculateLength = false;
 
 		length = 0;
-		for (int i = 0, n = localVertices.length - 2; i < n; i += 2) {
+		for(int i = 0, n = localVertices.length - 2; i < n; i += 2) {
 			float x = localVertices[i + 2] - localVertices[i];
 			float y = localVertices[i + 1] - localVertices[i + 3];
-			length += (float)Math.sqrt(x * x + y * y);
+			length += (float) Math.sqrt(x * x + y * y);
 		}
 
 		return length;
 	}
 
 	/** Returns the euclidean length of the polyline */
-	public float getScaledLength () {
-		if (!calculateScaledLength) return scaledLength;
+	public float getScaledLength() {
+		if(!calculateScaledLength) return scaledLength;
 		calculateScaledLength = false;
 
 		scaledLength = 0;
-		for (int i = 0, n = localVertices.length - 2; i < n; i += 2) {
+		for(int i = 0, n = localVertices.length - 2; i < n; i += 2) {
 			float x = localVertices[i + 2] * scaleX - localVertices[i] * scaleX;
 			float y = localVertices[i + 1] * scaleY - localVertices[i + 3] * scaleY;
-			scaledLength += (float)Math.sqrt(x * x + y * y);
+			scaledLength += (float) Math.sqrt(x * x + y * y);
 		}
 
 		return scaledLength;
 	}
 
-	public float getX () {
+	public float getX() {
 		return x;
 	}
 
-	public float getY () {
+	public float getY() {
 		return y;
 	}
 
-	public float getOriginX () {
+	public float getOriginX() {
 		return originX;
 	}
 
-	public float getOriginY () {
+	public float getOriginY() {
 		return originY;
 	}
 
-	public float getRotation () {
+	public float getRotation() {
 		return rotation;
 	}
 
-	public float getScaleX () {
+	public float getScaleX() {
 		return scaleX;
 	}
 
-	public float getScaleY () {
+	public float getScaleY() {
 		return scaleY;
 	}
 
-	public void setOrigin (float originX, float originY) {
+	public void setOrigin(float originX, float originY) {
 		this.originX = originX;
 		this.originY = originY;
 		dirty = true;
 	}
 
-	public void setPosition (float x, float y) {
+	public void setPosition(float x, float y) {
 		this.x = x;
 		this.y = y;
 		dirty = true;
 	}
 
-	public void setVertices (float[] vertices) {
-		if (vertices.length < 4) throw new IllegalArgumentException("polylines must contain at least 2 points.");
+	public void setVertices(float[] vertices) {
+		if(vertices.length < 4) throw new IllegalArgumentException("polylines must contain at least 2 points.");
 		this.localVertices = vertices;
 		dirty = true;
 	}
 
-	public void setRotation (float degrees) {
+	public void setRotation(float degrees) {
 		this.rotation = degrees;
 		dirty = true;
 	}
 
-	public void rotate (float degrees) {
+	public void rotate(float degrees) {
 		rotation += degrees;
 		dirty = true;
 	}
 
-	public void setScale (float scaleX, float scaleY) {
+	public void setScale(float scaleX, float scaleY) {
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		dirty = true;
 		calculateScaledLength = true;
 	}
 
-	public void scale (float amount) {
+	public void scale(float amount) {
 		this.scaleX += amount;
 		this.scaleY += amount;
 		dirty = true;
 		calculateScaledLength = true;
 	}
 
-	public void calculateLength () {
+	public void calculateLength() {
 		calculateLength = true;
 	}
 
-	public void calculateScaledLength () {
+	public void calculateScaledLength() {
 		calculateScaledLength = true;
 	}
 
-	public void dirty () {
+	public void dirty() {
 		dirty = true;
 	}
 
-	public void translate (float x, float y) {
+	public void translate(float x, float y) {
 		this.x += x;
 		this.y += y;
 		dirty = true;
 	}
 
-	/** Returns an axis-aligned bounding box of this polyline.
+	/**
+	 * Returns an axis-aligned bounding box of this polyline.
 	 *
 	 * Note the returned Rectangle is cached in this polyline, and will be reused if this Polyline is changed.
-	 *
-	 * @return this polyline's bounding box {@link Rectangle} */
-	public Rectangle getBoundingRectangle () {
+	 * @return this polyline's bounding box {@link Rectangle}
+	 */
+	public Rectangle getBoundingRectangle() {
 		float[] vertices = getTransformedVertices();
 
 		float minX = vertices[0];
@@ -219,14 +221,14 @@ public class Polyline implements Shape2D {
 		float maxY = vertices[1];
 
 		final int numFloats = vertices.length;
-		for (int i = 2; i < numFloats; i += 2) {
+		for(int i = 2; i < numFloats; i += 2) {
 			minX = Math.min(minX, vertices[i]);
 			minY = Math.min(minY, vertices[i + 1]);
 			maxX = Math.max(maxX, vertices[i]);
 			maxY = Math.max(maxY, vertices[i + 1]);
 		}
 
-		if (bounds == null) bounds = new Rectangle();
+		if(bounds == null) bounds = new Rectangle();
 		bounds.x = minX;
 		bounds.y = minY;
 		bounds.width = maxX - minX;
@@ -236,12 +238,12 @@ public class Polyline implements Shape2D {
 	}
 
 	@Override
-	public boolean contains (Vector2 point) {
+	public boolean contains(Vector2 point) {
 		return false;
 	}
 
 	@Override
-	public boolean contains (float x, float y) {
+	public boolean contains(float x, float y) {
 		return false;
 	}
 }

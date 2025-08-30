@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.utils;
 
 import org.junit.Test;
@@ -8,14 +7,14 @@ import static org.junit.Assert.*;
 public class JsonTest {
 
 	@Test
-	public void testFromJsonObject () {
+	public void testFromJsonObject() {
 		Json json = new Json();
 		JsonValue value = json.fromJson(null, JsonValue.class, "{\"key\":\"value\"}");
 		assertEquals("value", value.getString("key"));
 	}
 
 	@Test
-	public void testFromJsonArray () {
+	public void testFromJsonArray() {
 		Json json = new Json();
 		Array<String> value = json.fromJson(null, "[\"value1\",\"value2\"]");
 		assertEquals("value1", value.get(0));
@@ -23,14 +22,14 @@ public class JsonTest {
 	}
 
 	@Test
-	public void testCharFromNumber () {
+	public void testCharFromNumber() {
 		Json json = new Json();
 		char value = json.fromJson(char.class, "90");
 		assertEquals('Z', value);
 	}
 
 	@Test
-	public void testReuseReader () {
+	public void testReuseReader() {
 		Json json = new Json();
 		JsonValue value = json.fromJson(null, JsonValue.class, "{\"key\":\"value\"}");
 		assertEquals("value", value.getString("key"));

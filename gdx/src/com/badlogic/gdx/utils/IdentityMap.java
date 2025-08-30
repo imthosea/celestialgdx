@@ -16,7 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
-/** An unordered map that uses identity comparison for the object keys. Null keys are not allowed. No allocation is done except
+/**
+ * An unordered map that uses identity comparison for the object keys. Null keys are not allowed. No allocation is done except
  * when growing the table size.
  * <p>
  * This class performs fast contains and remove (typically O(1), worst case O(n) but that is rare in practice). Add may be
@@ -31,55 +32,60 @@ package com.badlogic.gdx.utils;
  * "https://probablydance.com/2018/06/16/fibonacci-hashing-the-optimization-that-the-world-forgot-or-a-better-alternative-to-integer-modulo/">Malte
  * Skarupke's blog post</a>). Linear probing continues to work even when all hashCodes collide, just more slowly.
  * @author Tommy Ettinger
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ */
 public class IdentityMap<K, V> extends ObjectMap<K, V> {
 	/** Creates a new map with an initial capacity of 51 and a load factor of 0.8. */
-	public IdentityMap () {
+	public IdentityMap() {
 		super();
 	}
 
-	/** Creates a new map with a load factor of 0.8.
-	 * @param initialCapacity The backing array size is initialCapacity / loadFactor, increased to the next power of two. */
-	public IdentityMap (int initialCapacity) {
+	/**
+	 * Creates a new map with a load factor of 0.8.
+	 * @param initialCapacity The backing array size is initialCapacity / loadFactor, increased to the next power of two.
+	 */
+	public IdentityMap(int initialCapacity) {
 		super(initialCapacity);
 	}
 
-	/** Creates a new map with the specified initial capacity and load factor. This map will hold initialCapacity items before
+	/**
+	 * Creates a new map with the specified initial capacity and load factor. This map will hold initialCapacity items before
 	 * growing the backing table.
-	 * @param initialCapacity The backing array size is initialCapacity / loadFactor, increased to the next power of two. */
-	public IdentityMap (int initialCapacity, float loadFactor) {
+	 * @param initialCapacity The backing array size is initialCapacity / loadFactor, increased to the next power of two.
+	 */
+	public IdentityMap(int initialCapacity, float loadFactor) {
 		super(initialCapacity, loadFactor);
 	}
 
 	/** Creates a new map identical to the specified map. */
-	public IdentityMap (IdentityMap<K, V> map) {
+	public IdentityMap(IdentityMap<K, V> map) {
 		super(map);
 	}
 
-	protected int place (K item) {
-		return (int)(System.identityHashCode(item) * 0x9E3779B97F4A7C15L >>> shift);
+	protected int place(K item) {
+		return (int) (System.identityHashCode(item) * 0x9E3779B97F4A7C15L >>> shift);
 	}
 
-	int locateKey (K key) {
-		if (key == null) throw new IllegalArgumentException("key cannot be null.");
+	int locateKey(K key) {
+		if(key == null) throw new IllegalArgumentException("key cannot be null.");
 		K[] keyTable = this.keyTable;
-		for (int i = place(key);; i = i + 1 & mask) {
+		for(int i = place(key); ; i = i + 1 & mask) {
 			K other = keyTable[i];
-			if (other == null) return -(i + 1); // Empty space is available.
-			if (other == key) return i; // Same key was found.
+			if(other == null) return -(i + 1); // Empty space is available.
+			if(other == key) return i; // Same key was found.
 		}
 	}
 
-	public int hashCode () {
+	public int hashCode() {
 		int h = size;
 		K[] keyTable = this.keyTable;
 		V[] valueTable = this.valueTable;
-		for (int i = 0, n = keyTable.length; i < n; i++) {
+		for(int i = 0, n = keyTable.length; i < n; i++) {
 			K key = keyTable[i];
-			if (key != null) {
+			if(key != null) {
 				h += System.identityHashCode(key);
 				V value = valueTable[i];
-				if (value != null) h += value.hashCode();
+				if(value != null) h += value.hashCode();
 			}
 		}
 		return h;

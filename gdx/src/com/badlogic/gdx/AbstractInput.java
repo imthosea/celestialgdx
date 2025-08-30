@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx;
 
 public abstract class AbstractInput implements Input {
@@ -6,22 +5,22 @@ public abstract class AbstractInput implements Input {
 	protected final boolean[] justPressedKeys;
 	protected boolean keyJustPressed;
 
-	public AbstractInput () {
+	public AbstractInput() {
 		pressedKeys = new boolean[Keys.MAX_KEYCODE + 1];
 		justPressedKeys = new boolean[Keys.MAX_KEYCODE + 1];
 	}
 
 	@Override
-	public boolean isKeyPressed (int key) {
-		if (key < 0 || key > Keys.MAX_KEYCODE) {
+	public boolean isKeyPressed(int key) {
+		if(key < 0 || key > Keys.MAX_KEYCODE) {
 			return false;
 		}
 		return pressedKeys[key];
 	}
 
 	@Override
-	public boolean isKeyJustPressed (int key) {
-		if (key < 0 || key > Keys.MAX_KEYCODE) {
+	public boolean isKeyJustPressed(int key) {
+		if(key < 0 || key > Keys.MAX_KEYCODE) {
 			return false;
 		}
 		return justPressedKeys[key];

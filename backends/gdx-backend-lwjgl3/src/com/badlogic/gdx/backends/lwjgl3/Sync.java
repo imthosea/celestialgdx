@@ -34,10 +34,11 @@ package com.badlogic.gdx.backends.lwjgl3;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
-/** A highly accurate sync method that continually adapts to the system it runs on to provide reliable results.
- *
+/**
+ * A highly accurate sync method that continually adapts to the system it runs on to provide reliable results.
  * @author Riven
- * @author kappaOne */
+ * @author kappaOne
+ */
 class Sync {
 
 	/** number of nano seconds in a second */
@@ -53,20 +54,21 @@ class Sync {
 	private final RunningAvg sleepDurations = new RunningAvg(10);
 	private final RunningAvg yieldDurations = new RunningAvg(10);
 
-	public Sync () {
+	public Sync() {
 
 	}
 
-	/** An accurate sync method that will attempt to run at a constant frame rate. It should be called once every frame.
-	 *
-	 * @param fps - the desired frame rate, in frames per second */
-	public void sync (int fps) {
-		if (fps <= 0) return;
-		if (!initialised) initialise();
+	/**
+	 * An accurate sync method that will attempt to run at a constant frame rate. It should be called once every frame.
+	 * @param fps - the desired frame rate, in frames per second
+	 */
+	public void sync(int fps) {
+		if(fps <= 0) return;
+		if(!initialised) initialise();
 
 		try {
 			// sleep until the average sleep time is greater than the time remaining till nextFrame
-			for (long t0 = getTime(), t1; (nextFrame - t0) > sleepDurations.avg(); t0 = t1) {
+			for(long t0 = getTime(), t1; (nextFrame - t0) > sleepDurations.avg(); t0 = t1) {
 				Thread.sleep(1);
 				sleepDurations.add((t1 = getTime()) - t0); // update average sleep time
 			}
@@ -75,11 +77,11 @@ class Sync {
 			sleepDurations.dampenForLowResTicker();
 
 			// yield until the average yield time is greater than the time remaining till nextFrame
-			for (long t0 = getTime(), t1; (nextFrame - t0) > yieldDurations.avg(); t0 = t1) {
+			for(long t0 = getTime(), t1; (nextFrame - t0) > yieldDurations.avg(); t0 = t1) {
 				Thread.yield();
 				yieldDurations.add((t1 = getTime()) - t0); // update average yield time
 			}
-		} catch (InterruptedException e) {
+		} catch(InterruptedException e) {
 
 		}
 
@@ -87,20 +89,22 @@ class Sync {
 		nextFrame = Math.max(nextFrame + NANOS_IN_SECOND / fps, getTime());
 	}
 
-	/** This method will initialise the sync method by setting initial values for sleepDurations/yieldDurations and nextFrame.
+	/**
+	 * This method will initialise the sync method by setting initial values for sleepDurations/yieldDurations and nextFrame.
 	 *
-	 * If running on windows it will start the sleep timer fix. */
-	private void initialise () {
+	 * If running on windows it will start the sleep timer fix.
+	 */
+	private void initialise() {
 		initialised = true;
 
 		sleepDurations.init(1000 * 1000);
-		yieldDurations.init((int)(-(getTime() - getTime()) * 1.333));
+		yieldDurations.init((int) (-(getTime() - getTime()) * 1.333));
 
 		nextFrame = getTime();
 
 		String osName = System.getProperty("os.name");
 
-		if (osName.startsWith("Win")) {
+		if(osName.startsWith("Win")) {
 			// On windows the sleep functions can be highly inaccurate by
 			// over 10ms making in unusable. However it can be forced to
 			// be a bit more accurate by running a separate sleeping daemon
@@ -108,7 +112,7 @@ class Sync {
 			Thread timerAccuracyThread = new Thread(() -> {
 				try {
 					Thread.sleep(Long.MAX_VALUE);
-				} catch (InterruptedException ignored) {
+				} catch(InterruptedException ignored) {
 				}
 			});
 
@@ -118,11 +122,12 @@ class Sync {
 		}
 	}
 
-	/** Get the system time in nano seconds
-	 *
-	 * @return will return the current time in nano's */
-	private long getTime () {
-		return (long)(glfwGetTime() * NANOS_IN_SECOND);
+	/**
+	 * Get the system time in nano seconds
+	 * @return will return the current time in nano's
+	 */
+	private long getTime() {
+		return (long) (glfwGetTime() * NANOS_IN_SECOND);
 	}
 
 	private static class RunningAvg {
@@ -132,33 +137,33 @@ class Sync {
 		private static final long DAMPEN_THRESHOLD = 10 * 1000L * 1000L; // 10ms
 		private static final float DAMPEN_FACTOR = 0.9f; // don't change: 0.9f is exactly right!
 
-		public RunningAvg (int slotCount) {
+		public RunningAvg(int slotCount) {
 			this.slots = new long[slotCount];
 			this.offset = 0;
 		}
 
-		public void init (long value) {
-			while (this.offset < this.slots.length) {
+		public void init(long value) {
+			while(this.offset < this.slots.length) {
 				this.slots[this.offset++] = value;
 			}
 		}
 
-		public void add (long value) {
+		public void add(long value) {
 			this.slots[this.offset++ % this.slots.length] = value;
 			this.offset %= this.slots.length;
 		}
 
-		public long avg () {
+		public long avg() {
 			long sum = 0;
-			for (long slot : this.slots) {
+			for(long slot : this.slots) {
 				sum += slot;
 			}
 			return sum / this.slots.length;
 		}
 
-		public void dampenForLowResTicker () {
-			if (this.avg() > DAMPEN_THRESHOLD) {
-				for (int i = 0; i < this.slots.length; i++) {
+		public void dampenForLowResTicker() {
+			if(this.avg() > DAMPEN_THRESHOLD) {
+				for(int i = 0; i < this.slots.length; i++) {
 					this.slots[i] *= DAMPEN_FACTOR;
 				}
 			}

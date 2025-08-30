@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,33 +25,33 @@ public class PerformanceCounters {
 	private long lastTick = 0L;
 	public final Array<PerformanceCounter> counters = new Array<>();
 
-	public PerformanceCounter add (final String name, final int windowSize) {
+	public PerformanceCounter add(final String name, final int windowSize) {
 		PerformanceCounter result = new PerformanceCounter(name, windowSize);
 		counters.add(result);
 		return result;
 	}
 
-	public PerformanceCounter add (final String name) {
+	public PerformanceCounter add(final String name) {
 		PerformanceCounter result = new PerformanceCounter(name);
 		counters.add(result);
 		return result;
 	}
 
-	public void tick () {
+	public void tick() {
 		final long t = TimeUtils.nanoTime();
-		if (lastTick > 0L) tick((t - lastTick) * nano2seconds);
+		if(lastTick > 0L) tick((t - lastTick) * nano2seconds);
 		lastTick = t;
 	}
 
-	public void tick (final float deltaTime) {
-		for (int i = 0; i < counters.size; i++)
+	public void tick(final float deltaTime) {
+		for(int i = 0; i < counters.size; i++)
 			counters.get(i).tick(deltaTime);
 	}
 
-	public StringBuilder toString (final StringBuilder sb) {
+	public StringBuilder toString(final StringBuilder sb) {
 		sb.setLength(0);
-		for (int i = 0; i < counters.size; i++) {
-			if (i != 0) sb.append("; ");
+		for(int i = 0; i < counters.size; i++) {
+			if(i != 0) sb.append("; ");
 			counters.get(i).toString(sb);
 		}
 		return sb;

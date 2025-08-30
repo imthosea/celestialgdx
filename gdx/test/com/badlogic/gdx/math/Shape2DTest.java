@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.math;
 
 import static org.junit.Assert.assertFalse;
@@ -9,7 +8,7 @@ import org.junit.Test;
 public class Shape2DTest {
 
 	@Test
-	public void testCircle () {
+	public void testCircle() {
 		Circle c1 = new Circle(0, 0, 1);
 		Circle c2 = new Circle(0, 0, 1);
 		Circle c3 = new Circle(2, 0, 1);
@@ -28,7 +27,7 @@ public class Shape2DTest {
 	}
 
 	@Test
-	public void testRectangle () {
+	public void testRectangle() {
 		Rectangle r1 = new Rectangle(0, 0, 1, 1);
 		Rectangle r2 = new Rectangle(1, 0, 2, 1);
 		assertTrue(r1.overlaps(r1));

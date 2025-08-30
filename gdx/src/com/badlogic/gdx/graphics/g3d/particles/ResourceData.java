@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 
-/** This class handles the assets and configurations required by a given resource when de/serialized. It's handy when a given
+/**
+ * This class handles the assets and configurations required by a given resource when de/serialized. It's handy when a given
  * object or one of its members requires some assets to be loaded to work properly after being deserialized. To save the assets,
  * the object should implement the {@link Configurable} interface and obtain a {@link SaveData} object to store every required
  * asset or information which will be used during the loading phase. The passed in {@link AssetManager} is generally used to find
@@ -35,69 +36,72 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
  * of serialization, because the per object {@link SaveData} blocks are stored as an {@link Array} within the {@link ResourceData}
  * , while the global {@link SaveData} instances can be accessed in any order because require a unique {@link String} and are
  * stored in an {@link ObjectMap}.
- * @author Inferno */
+ * @author Inferno
+ */
 public class ResourceData<T> implements Json.Serializable {
 
 	/** This interface must be implemented by any class requiring additional assets to be loaded/saved */
 	public static interface Configurable<T> {
-		public void save (AssetManager manager, ResourceData<T> resources);
+		public void save(AssetManager manager, ResourceData<T> resources);
 
-		public void load (AssetManager manager, ResourceData<T> resources);
+		public void load(AssetManager manager, ResourceData<T> resources);
 	}
 
-	/** Contains all the saved data. {@link #data} is a map which link an asset name to its instance. {@link #assets} is an array
+	/**
+	 * Contains all the saved data. {@link #data} is a map which link an asset name to its instance. {@link #assets} is an array
 	 * of indices addressing a given {@link com.badlogic.gdx.graphics.g3d.particles.ResourceData.AssetData} in the
-	 * {@link ResourceData} */
+	 * {@link ResourceData}
+	 */
 	public static class SaveData implements Json.Serializable {
 		ObjectMap<String, Object> data;
 		final IntArray assets;
 		private int loadIndex;
 		protected ResourceData resources;
 
-		public SaveData () {
+		public SaveData() {
 			data = new ObjectMap<>();
 			assets = new IntArray();
 			loadIndex = 0;
 		}
 
-		public SaveData (ResourceData resources) {
+		public SaveData(ResourceData resources) {
 			data = new ObjectMap<>();
 			assets = new IntArray();
 			loadIndex = 0;
 			this.resources = resources;
 		}
 
-		public <K> void saveAsset (String filename, Class<K> type) {
+		public <K> void saveAsset(String filename, Class<K> type) {
 			int i = resources.getAssetData(filename, type);
-			if (i == -1) {
+			if(i == -1) {
 				resources.sharedAssets.add(new AssetData(filename, type));
 				i = resources.sharedAssets.size - 1;
 			}
 			assets.add(i);
 		}
 
-		public void save (String key, Object value) {
+		public void save(String key, Object value) {
 			data.put(key, value);
 		}
 
-		public AssetDescriptor loadAsset () {
-			if (loadIndex == assets.size) return null;
-			AssetData data = (AssetData)resources.sharedAssets.get(assets.get(loadIndex++));
+		public AssetDescriptor loadAsset() {
+			if(loadIndex == assets.size) return null;
+			AssetData data = (AssetData) resources.sharedAssets.get(assets.get(loadIndex++));
 			return new AssetDescriptor(data.filename, data.type);
 		}
 
-		public <K> K load (String key) {
-			return (K)data.get(key);
+		public <K> K load(String key) {
+			return (K) data.get(key);
 		}
 
 		@Override
-		public void write (Json json) {
+		public void write(Json json) {
 			json.writeValue("data", data, ObjectMap.class);
 			json.writeValue("indices", assets.toArray(), int[].class);
 		}
 
 		@Override
-		public void read (Json json, JsonValue jsonData) {
+		public void read(Json json, JsonValue jsonData) {
 			data = json.readValue("data", ObjectMap.class, jsonData);
 			assets.addAll(json.readValue("indices", int[].class, jsonData));
 		}
@@ -108,34 +112,36 @@ public class ResourceData<T> implements Json.Serializable {
 		public String filename;
 		public Class<T> type;
 
-		public AssetData () {
+		public AssetData() {
 		}
 
-		public AssetData (String filename, Class<T> type) {
+		public AssetData(String filename, Class<T> type) {
 			this.filename = filename;
 			this.type = type;
 		}
 
 		@Override
-		public void write (Json json) {
+		public void write(Json json) {
 			json.writeValue("filename", filename);
 			json.writeValue("type", type.getName());
 		}
 
 		@Override
-		public void read (Json json, JsonValue jsonData) {
+		public void read(Json json, JsonValue jsonData) {
 			filename = json.readValue("filename", String.class, jsonData);
 			String className = json.readValue("type", String.class, jsonData);
 			try {
-				type = (Class<T>)Class.forName(className);
-			} catch (ClassNotFoundException e) {
+				type = (Class<T>) Class.forName(className);
+			} catch(ClassNotFoundException e) {
 				throw new GdxRuntimeException("Class not found: " + className, e);
 			}
 		}
 	}
 
-	/** Unique data, can be used to save/load generic data which is not always loaded back after saving. Must be used to store data
-	 * which is uniquely addressable by a given string (i.e a system configuration). */
+	/**
+	 * Unique data, can be used to save/load generic data which is not always loaded back after saving. Must be used to store data
+	 * which is uniquely addressable by a given string (i.e a system configuration).
+	 */
 	private ObjectMap<String, SaveData> uniqueData;
 
 	/** Objects save data, must be loaded in the same saving order */
@@ -146,22 +152,22 @@ public class ResourceData<T> implements Json.Serializable {
 	private int currentLoadIndex;
 	public T resource;
 
-	public ResourceData () {
+	public ResourceData() {
 		uniqueData = new ObjectMap<>();
 		data = new Array<>(true, 3, SaveData[]::new);
 		sharedAssets = new Array<>();
 		currentLoadIndex = 0;
 	}
 
-	public ResourceData (T resource) {
+	public ResourceData(T resource) {
 		this();
 		this.resource = resource;
 	}
 
-	<K> int getAssetData (String filename, Class<K> type) {
+	<K> int getAssetData(String filename, Class<K> type) {
 		int i = 0;
-		for (AssetData data : sharedAssets) {
-			if (data.filename.equals(filename) && data.type == type) {
+		for(AssetData data : sharedAssets) {
+			if(data.filename.equals(filename) && data.type == type) {
 				return i;
 			}
 			++i;
@@ -169,45 +175,46 @@ public class ResourceData<T> implements Json.Serializable {
 		return -1;
 	}
 
-	public Array<AssetDescriptor> getAssetDescriptors () {
+	public Array<AssetDescriptor> getAssetDescriptors() {
 		Array<AssetDescriptor> descriptors = new Array<>();
-		for (AssetData data : sharedAssets) {
+		for(AssetData data : sharedAssets) {
 			descriptors.add(new AssetDescriptor<T>(data.filename, data.type));
 		}
 		return descriptors;
 	}
 
-	public Array<AssetData> getAssets () {
+	public Array<AssetData> getAssets() {
 		return sharedAssets;
 	}
 
 	/** Creates and adds a new SaveData object to the save data list */
-	public SaveData createSaveData () {
+	public SaveData createSaveData() {
 		SaveData saveData = new SaveData(this);
 		data.add(saveData);
 		return saveData;
 	}
 
 	/** Creates and adds a new and unique SaveData object to the save data map */
-	public SaveData createSaveData (String key) {
+	public SaveData createSaveData(String key) {
 		SaveData saveData = new SaveData(this);
-		if (uniqueData.containsKey(key)) throw new RuntimeException("Key already used, data must be unique, use a different key");
+		if(uniqueData.containsKey(key))
+			throw new RuntimeException("Key already used, data must be unique, use a different key");
 		uniqueData.put(key, saveData);
 		return saveData;
 	}
 
 	/** @return the next save data in the list */
-	public SaveData getSaveData () {
+	public SaveData getSaveData() {
 		return data.get(currentLoadIndex++);
 	}
 
 	/** @return the unique save data in the map */
-	public SaveData getSaveData (String key) {
+	public SaveData getSaveData(String key) {
 		return uniqueData.get(key);
 	}
 
 	@Override
-	public void write (Json json) {
+	public void write(Json json) {
 		json.writeValue("unique", uniqueData, ObjectMap.class);
 		json.writeValue("data", data, Array.class, SaveData.class);
 		json.writeValue("assets", sharedAssets.toArray(AssetData[]::new), AssetData[].class);
@@ -215,14 +222,14 @@ public class ResourceData<T> implements Json.Serializable {
 	}
 
 	@Override
-	public void read (Json json, JsonValue jsonData) {
+	public void read(Json json, JsonValue jsonData) {
 		uniqueData = json.readValue("unique", ObjectMap.class, jsonData);
-		for (Entry<String, SaveData> entry : uniqueData.entries()) {
+		for(Entry<String, SaveData> entry : uniqueData.entries()) {
 			entry.value.resources = this;
 		}
 
 		data = json.readValue("data", Array.class, SaveData.class, jsonData);
-		for (SaveData saveData : data) {
+		for(SaveData saveData : data) {
 			saveData.resources = this;
 		}
 

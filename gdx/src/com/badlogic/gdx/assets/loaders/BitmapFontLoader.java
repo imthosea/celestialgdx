@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,34 +31,36 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/** {@link AssetLoader} for {@link BitmapFont} instances. Loads the font description file (.fnt) asynchronously, loads the
+/**
+ * {@link AssetLoader} for {@link BitmapFont} instances. Loads the font description file (.fnt) asynchronously, loads the
  * {@link Texture} containing the glyphs as a dependency. The {@link BitmapFontParameter} allows you to set things like texture
  * filters or whether to flip the glyphs vertically.
- * @author mzechner */
+ * @author mzechner
+ */
 public class BitmapFontLoader extends AssetLoader<BitmapFont, BitmapFontLoader.BitmapFontParameter> {
-	public BitmapFontLoader (FileHandleResolver resolver) {
+	public BitmapFontLoader(FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	@Override
-	public BitmapFont load (String path, BitmapFontParameter parameter, AssetLoadingContext<BitmapFont> ctx) throws Exception {
+	public BitmapFont load(String path, BitmapFontParameter parameter, AssetLoadingContext<BitmapFont> ctx) throws Exception {
 		FileHandle file = resolve(path);
-		if (parameter != null && parameter.bitmapFontData != null) {
+		if(parameter != null && parameter.bitmapFontData != null) {
 			BitmapFontData data = parameter.bitmapFontData;
 			TextureAtlas atlas = ctx.dependOn(parameter.atlasName, TextureAtlas.class);
 			String name = file.sibling(data.imagePaths[0]).nameWithoutExtension();
 			AtlasRegion region = atlas.findRegion(name);
 
-			if (region == null)
+			if(region == null)
 				throw new GdxRuntimeException("Could not find font region " + name + " in atlas " + parameter.atlasName);
 			return new BitmapFont(file, region);
 		} else {
 			BitmapFontData data = new BitmapFontData(file, parameter != null && parameter.flip);
 			Array<TextureRegion> regs = new Array<>(data.getImagePaths().length);
-			for (int i = 0; i < data.getImagePaths().length; i++) {
+			for(int i = 0; i < data.getImagePaths().length; i++) {
 				TextureLoader.TextureParameter textureParams = new TextureLoader.TextureParameter();
 
-				if (parameter != null) {
+				if(parameter != null) {
 					textureParams.genMipMaps = parameter.genMipMaps;
 					textureParams.minFilter = parameter.minFilter;
 					textureParams.magFilter = parameter.magFilter;
@@ -70,9 +72,11 @@ public class BitmapFontLoader extends AssetLoader<BitmapFont, BitmapFontLoader.B
 		}
 	}
 
-	/** Parameter to be passed to {@link AssetManager#load(String, Class, AssetLoaderParameters)} if additional configuration is
+	/**
+	 * Parameter to be passed to {@link AssetManager#load(String, Class, AssetLoaderParameters)} if additional configuration is
 	 * necessary for the {@link BitmapFont}.
-	 * @author mzechner */
+	 * @author mzechner
+	 */
 	static public class BitmapFontParameter extends AssetLoaderParameters<BitmapFont> {
 		/** Flips the font vertically if {@code true}. Defaults to {@code false}. **/
 		public boolean flip = false;
@@ -86,12 +90,16 @@ public class BitmapFontLoader extends AssetLoader<BitmapFont, BitmapFontLoader.B
 		/** The {@link TextureFilter} to use when scaling up the {@link BitmapFont}. Defaults to {@link TextureFilter#Nearest}. */
 		public TextureFilter magFilter = TextureFilter.Nearest;
 
-		/** optional {@link BitmapFontData} to be used instead of loading the {@link Texture} directly. Use this if your font is
-		 * embedded in a {@link Skin}. **/
+		/**
+		 * optional {@link BitmapFontData} to be used instead of loading the {@link Texture} directly. Use this if your font is
+		 * embedded in a {@link Skin}.
+		 **/
 		public BitmapFontData bitmapFontData;
 
-		/** The name of the {@link TextureAtlas} to load the {@link BitmapFont} itself from. Optional; if {@code null}, will look
-		 * for a separate image */
+		/**
+		 * The name of the {@link TextureAtlas} to load the {@link BitmapFont} itself from. Optional; if {@code null}, will look
+		 * for a separate image
+		 */
 		public String atlasName;
 	}
 }

@@ -30,19 +30,19 @@ public abstract class FileHandle {
 	protected final String path;
 	protected final String name;
 
-	protected FileHandle (String path, String name) {
+	protected FileHandle(String path, String name) {
 		this.path = path;
 		this.name = name;
 	}
 
-	protected FileHandle (String path) {
+	protected FileHandle(String path) {
 		this.path = path;
 		this.name = name(path);
 	}
 
-	private static String name (String path) {
+	private static String name(String path) {
 		int slashIndex = path.lastIndexOf('/');
-		if (slashIndex == -1 || slashIndex == path.length() - 1) return path;
+		if(slashIndex == -1 || slashIndex == path.length() - 1) return path;
 		return path.substring(slashIndex);
 	}
 
@@ -51,89 +51,97 @@ public abstract class FileHandle {
 	public abstract FileHandle sibling(String name);
 	public abstract FileHandle child(String name);
 
-	public abstract InputStream read () throws GdxIoException;
-	public abstract long length () throws GdxIoException;
+	public abstract InputStream read() throws GdxIoException;
+	public abstract long length() throws GdxIoException;
 
-	/** @return the path of the file as specified on construction, e.g. Gdx.files.internal("dir/file.png") -> dir/file.png.
-	 *         backward slashes will be replaced by forward slashes. */
-	public String path () {
+	/**
+	 * @return the path of the file as specified on construction, e.g. Gdx.files.internal("dir/file.png") -> dir/file.png.
+	 * backward slashes will be replaced by forward slashes.
+	 */
+	public String path() {
 		return path;
 	}
 
 	/** @return the name of the file, without any parent paths. */
-	public String name () {
+	public String name() {
 		return name;
 	}
 
 	/** Returns the file extension (without the dot) or an empty string if the file name doesn't contain a dot. */
-	public String extension () {
+	public String extension() {
 		int dotIndex = name.lastIndexOf('.');
-		if (dotIndex == -1) return "";
+		if(dotIndex == -1) return "";
 		return name.substring(dotIndex + 1);
 	}
 
 	/** @return the name of the file, without parent paths or the extension. */
-	public String nameWithoutExtension () {
+	public String nameWithoutExtension() {
 		int dotIndex = name.lastIndexOf('.');
-		if (dotIndex == -1) return name;
+		if(dotIndex == -1) return name;
 		return name.substring(0, dotIndex);
 	}
 
-	/** @return the path and filename without the extension, e.g. dir/dir2/file.png -> dir/dir2/file. backward slashes will be
-	 *         returned as forward slashes. */
-	public String pathWithoutExtension () {
+	/**
+	 * @return the path and filename without the extension, e.g. dir/dir2/file.png -> dir/dir2/file. backward slashes will be
+	 * returned as forward slashes.
+	 */
+	public String pathWithoutExtension() {
 		int dotIndex = path.lastIndexOf('.');
-		if (dotIndex == -1) return path;
+		if(dotIndex == -1) return path;
 		return path.substring(0, dotIndex);
 	}
 
-	public BufferedReader reader () throws IOException {
+	public BufferedReader reader() throws IOException {
 		return new BufferedReader(new InputStreamReader(read()));
 	}
 
-	public BufferedReader reader (int bufSize) throws IOException {
+	public BufferedReader reader(int bufSize) throws IOException {
 		return new BufferedReader(new InputStreamReader(read()), bufSize);
 	}
 
-	public BufferedReader reader (String charset) {
+	public BufferedReader reader(String charset) {
 		try {
 			return new BufferedReader(new InputStreamReader(read(), charset));
-		} catch (UnsupportedEncodingException e) {
+		} catch(UnsupportedEncodingException e) {
 			throw new GdxIoException(e);
 		}
 	}
 
-	public BufferedReader reader (String charset, int bufSize) throws IOException {
+	public BufferedReader reader(String charset, int bufSize) throws IOException {
 		return new BufferedReader(new InputStreamReader(read(), charset), bufSize);
 	}
 
-	/** Reads the entire file into a string using the platform's default charset.
-	 * @throws GdxRuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
-	public String readString () throws GdxIoException {
+	/**
+	 * Reads the entire file into a string using the platform's default charset.
+	 * @throws GdxRuntimeException if the file handle represents a directory, doesn't exist, or could not be read.
+	 */
+	public String readString() throws GdxIoException {
 		return readString(null);
 	}
 
-	public String readString (String charset) throws GdxIoException {
-		try (InputStream stream = read()) {
+	public String readString(String charset) throws GdxIoException {
+		try(InputStream stream = read()) {
 			StringBuilder output = new StringBuilder(stream.available());
-			try (var reader = charset == null ? new InputStreamReader(read()) : new InputStreamReader(read(), charset)) {
+			try(var reader = charset == null ? new InputStreamReader(read()) : new InputStreamReader(read(), charset)) {
 				char[] buffer = new char[256];
-				while (true) {
+				while(true) {
 					int length = reader.read(buffer);
-					if (length == -1) break;
+					if(length == -1) break;
 					output.append(buffer, 0, length);
 				}
 			}
 			return output.toString();
-		} catch (IOException e) {
+		} catch(IOException e) {
 			throw new GdxIoException(e);
 		}
 	}
 
-	/** Reads the entire file into a byte array.
-	 * @throws GdxRuntimeException if the file handle represents a directory, doesn't exist, or could not be read. */
-	public byte[] readBytes () throws IOException {
-		try (InputStream stream = read()) {
+	/**
+	 * Reads the entire file into a byte array.
+	 * @throws GdxRuntimeException if the file handle represents a directory, doesn't exist, or could not be read.
+	 */
+	public byte[] readBytes() throws IOException {
+		try(InputStream stream = read()) {
 			return StreamUtils.copyStreamToByteArray(stream, stream.available());
 		}
 	}

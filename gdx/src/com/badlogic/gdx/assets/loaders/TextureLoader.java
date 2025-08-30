@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,25 +25,27 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.TextureData;
 
-/** {@link AssetLoader} for {@link Texture} instances. The pixel data is loaded asynchronously. The texture is then created on the
+/**
+ * {@link AssetLoader} for {@link Texture} instances. The pixel data is loaded asynchronously. The texture is then created on the
  * rendering thread, synchronously. Passing a {@link TextureParameter} to
  * {@link AssetManager#load(String, Class, AssetLoaderParameters)} allows one to specify parameters as can be passed to the
  * various Texture constructors, e.g. filtering, whether to generate mipmaps and so on.
- * @author mzechner */
+ * @author mzechner
+ */
 public class TextureLoader extends AssetLoader<Texture, TextureLoader.TextureParameter> {
-	public TextureLoader (FileHandleResolver resolver) {
+	public TextureLoader(FileHandleResolver resolver) {
 		super(resolver);
 	}
 
 	@Override
-	public Texture load (String path, TextureParameter parameter, AssetLoadingContext<Texture> ctx) throws Exception {
+	public Texture load(String path, TextureParameter parameter, AssetLoadingContext<Texture> ctx) throws Exception {
 		Texture texture;
 		TextureData data;
-		if (parameter == null || parameter.textureData == null) {
+		if(parameter == null || parameter.textureData == null) {
 			Format format;
 			boolean genMipMaps;
 
-			if (parameter != null) {
+			if(parameter != null) {
 				format = parameter.format;
 				genMipMaps = parameter.genMipMaps;
 				texture = parameter.texture;
@@ -60,17 +62,17 @@ public class TextureLoader extends AssetLoader<Texture, TextureLoader.TexturePar
 			texture = parameter.texture;
 			data = parameter.textureData;
 		}
-		if (!data.isPrepared()) data.prepare();
+		if(!data.isPrepared()) data.prepare();
 
 		return ctx.awaitMainThread(() -> {
 			Texture result;
-			if (texture != null) {
+			if(texture != null) {
 				result = texture;
 				texture.load(data);
 			} else {
 				result = new Texture(data);
 			}
-			if (parameter != null) {
+			if(parameter != null) {
 				result.setFilter(parameter.minFilter, parameter.magFilter);
 				result.setWrap(parameter.wrapU, parameter.wrapV);
 			}

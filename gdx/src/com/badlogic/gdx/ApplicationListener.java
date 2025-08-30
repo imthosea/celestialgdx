@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,23 +22,24 @@ package com.badlogic.gdx;
  * All methods are called in a thread that has the OpenGL context current. You can thus safely create and manipulate graphics
  * resources.
  * </p>
- * 
+ *
  * <p>
  * The <code>ApplicationListener</code> interface follows the standard Android activity life-cycle and is emulated on the desktop
  * accordingly.
  * </p>
- * 
- * @author mzechner */
+ * @author mzechner
+ */
 public interface ApplicationListener {
-	/** Called when the {@link Application} is resized. This can happen at any point.
-	 *
+	/**
+	 * Called when the {@link Application} is resized. This can happen at any point.
 	 * @param width the new width in pixels
-	 * @param height the new height in pixels */
-	public void resize (int width, int height);
+	 * @param height the new height in pixels
+	 */
+	public void resize(int width, int height);
 
 	/** Called when the {@link Application} should render itself. */
-	public void render ();
+	public void render();
 
 	/** Called when the {@link Application} is destroyed. */
-	public void dispose ();
+	public void dispose();
 }

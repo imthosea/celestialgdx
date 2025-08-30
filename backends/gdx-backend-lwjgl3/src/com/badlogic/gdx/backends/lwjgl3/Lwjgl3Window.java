@@ -23,7 +23,13 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Os;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.*;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWDropCallback;
+import org.lwjgl.glfw.GLFWImage;
+import org.lwjgl.glfw.GLFWWindowCloseCallback;
+import org.lwjgl.glfw.GLFWWindowFocusCallback;
+import org.lwjgl.glfw.GLFWWindowIconifyCallback;
+import org.lwjgl.glfw.GLFWWindowMaximizeCallback;
 
 import java.nio.IntBuffer;
 
@@ -42,7 +48,7 @@ public class Lwjgl3Window implements Disposable {
 
 	private final GLFWWindowFocusCallback focusCallback = new GLFWWindowFocusCallback() {
 		@Override
-		public void invoke (long windowHandle, final boolean focused) {
+		public void invoke(long windowHandle, final boolean focused) {
 			Gdx.app.postRunnable(() -> {
 				Lwjgl3Window.this.focused = focused;
 			});
@@ -51,9 +57,9 @@ public class Lwjgl3Window implements Disposable {
 
 	private final GLFWWindowIconifyCallback iconifyCallback = new GLFWWindowIconifyCallback() {
 		@Override
-		public void invoke (long windowHandle, final boolean iconified) {
+		public void invoke(long windowHandle, final boolean iconified) {
 			Gdx.app.postRunnable(() -> {
-				if (windowListener != null) {
+				if(windowListener != null) {
 					windowListener.iconified(iconified);
 				}
 				Lwjgl3Window.this.iconified = iconified;
@@ -63,9 +69,9 @@ public class Lwjgl3Window implements Disposable {
 
 	private final GLFWWindowMaximizeCallback maximizeCallback = new GLFWWindowMaximizeCallback() {
 		@Override
-		public void invoke (long windowHandle, final boolean maximized) {
+		public void invoke(long windowHandle, final boolean maximized) {
 			Gdx.app.postRunnable(() -> {
-				if (windowListener != null) {
+				if(windowListener != null) {
 					windowListener.maximized(maximized);
 				}
 			});
@@ -75,10 +81,10 @@ public class Lwjgl3Window implements Disposable {
 
 	private final GLFWWindowCloseCallback closeCallback = new GLFWWindowCloseCallback() {
 		@Override
-		public void invoke (final long windowHandle) {
+		public void invoke(final long windowHandle) {
 			Gdx.app.postRunnable(() -> {
-				if (windowListener != null) {
-					if (!windowListener.closeRequested()) {
+				if(windowListener != null) {
+					if(!windowListener.closeRequested()) {
 						GLFW.glfwSetWindowShouldClose(windowHandle, false);
 					}
 				}
@@ -88,23 +94,23 @@ public class Lwjgl3Window implements Disposable {
 
 	private final GLFWDropCallback dropCallback = new GLFWDropCallback() {
 		@Override
-		public void invoke (final long windowHandle, final int count, final long names) {
+		public void invoke(final long windowHandle, final int count, final long names) {
 			final String[] files = new String[count];
-			for (int i = 0; i < count; i++) {
+			for(int i = 0; i < count; i++) {
 				files[i] = getName(names, i);
 			}
 			Gdx.app.postRunnable(() -> {
-				if (windowListener != null) {
+				if(windowListener != null) {
 					windowListener.filesDropped(files);
 				}
 			});
 		}
 	};
 
-	Lwjgl3Window (long windowHandle,
-	              ApplicationCreator listener,
-	              Lwjgl3ApplicationConfiguration config,
-	              Lwjgl3Application application) {
+	Lwjgl3Window(long windowHandle,
+	             ApplicationCreator listener,
+	             Lwjgl3ApplicationConfiguration config,
+	             Lwjgl3Application application) {
 		this.windowListener = config.windowListener;
 		this.config = config;
 		this.tmpBuffer = BufferUtils.createIntBuffer(1);
@@ -127,7 +133,7 @@ public class Lwjgl3Window implements Disposable {
 		GLFW.glfwSetWindowCloseCallback(windowHandle, closeCallback);
 		GLFW.glfwSetDropCallback(windowHandle, dropCallback);
 
-		if (windowListener != null) {
+		if(windowListener != null) {
 			windowListener.created(this);
 		}
 
@@ -137,18 +143,18 @@ public class Lwjgl3Window implements Disposable {
 	/**
 	 * @return the {@link ApplicationListener} associated with this window
 	 **/
-	public ApplicationListener getListener () {
+	public ApplicationListener getListener() {
 		return listener;
 	}
 
 	/**
 	 * @return the {@link Lwjgl3WindowListener} set on this window
 	 **/
-	public Lwjgl3WindowListener getWindowListener () {
+	public Lwjgl3WindowListener getWindowListener() {
 		return windowListener;
 	}
 
-	public void setWindowListener (Lwjgl3WindowListener listener) {
+	public void setWindowListener(Lwjgl3WindowListener listener) {
 		this.windowListener = listener;
 	}
 
@@ -156,8 +162,8 @@ public class Lwjgl3Window implements Disposable {
 	 * Sets the position of the window in logical coordinates. All monitors span a virtual surface together. The coordinates are
 	 * relative to the first monitor in the virtual surface.
 	 **/
-	public void setPosition (int x, int y) {
-		if (GLFW.glfwGetPlatform() == GLFW.GLFW_PLATFORM_WAYLAND) return;
+	public void setPosition(int x, int y) {
+		if(GLFW.glfwGetPlatform() == GLFW.GLFW_PLATFORM_WAYLAND) return;
 		GLFW.glfwSetWindowPos(windowHandle, x, y);
 	}
 
@@ -165,7 +171,7 @@ public class Lwjgl3Window implements Disposable {
 	 * @return the window position in logical coordinates. All monitors span a virtual surface together. The coordinates are
 	 * relative to the first monitor in the virtual surface.
 	 **/
-	public int getPositionX () {
+	public int getPositionX() {
 		GLFW.glfwGetWindowPos(windowHandle, tmpBuffer, tmpBuffer2);
 		return tmpBuffer.get(0);
 	}
@@ -174,7 +180,7 @@ public class Lwjgl3Window implements Disposable {
 	 * @return the window position in logical coordinates. All monitors span a virtual surface together. The coordinates are
 	 * relative to the first monitor in the virtual surface.
 	 **/
-	public int getPositionY () {
+	public int getPositionY() {
 		GLFW.glfwGetWindowPos(windowHandle, tmpBuffer, tmpBuffer2);
 		return tmpBuffer2.get(0);
 	}
@@ -182,8 +188,8 @@ public class Lwjgl3Window implements Disposable {
 	/**
 	 * Sets the visibility of the window. Invisible windows will still call their {@link ApplicationListener}
 	 */
-	public void setVisible (boolean visible) {
-		if (visible) {
+	public void setVisible(boolean visible) {
+		if(visible) {
 			GLFW.glfwShowWindow(windowHandle);
 		} else {
 			GLFW.glfwHideWindow(windowHandle);
@@ -193,7 +199,7 @@ public class Lwjgl3Window implements Disposable {
 	/**
 	 * Closes this window and pauses and disposes the associated {@link ApplicationListener}.
 	 */
-	public void closeWindow () {
+	public void closeWindow() {
 		GLFW.glfwSetWindowShouldClose(windowHandle, true);
 	}
 
@@ -201,39 +207,39 @@ public class Lwjgl3Window implements Disposable {
 	 * Minimizes (iconifies) the window. Iconified windows do not call their {@link ApplicationListener} until the window is
 	 * restored.
 	 */
-	public void iconifyWindow () {
+	public void iconifyWindow() {
 		GLFW.glfwIconifyWindow(windowHandle);
 	}
 
 	/**
 	 * Whether the window is iconfieid
 	 */
-	public boolean isIconified () {
+	public boolean isIconified() {
 		return iconified;
 	}
 
 	/**
 	 * De-minimizes (de-iconifies) and de-maximizes the window.
 	 */
-	public void restoreWindow () {
+	public void restoreWindow() {
 		GLFW.glfwRestoreWindow(windowHandle);
 	}
 
 	/**
 	 * Maximizes the window.
 	 */
-	public void maximizeWindow () {
+	public void maximizeWindow() {
 		GLFW.glfwMaximizeWindow(windowHandle);
 	}
 
 	/**
 	 * Brings the window to front and sets input focus. The window should already be visible and not iconified.
 	 */
-	public void focusWindow () {
+	public void focusWindow() {
 		GLFW.glfwFocusWindow(windowHandle);
 	}
 
-	public boolean isFocused () {
+	public boolean isFocused() {
 		return focused;
 	}
 
@@ -244,21 +250,21 @@ public class Lwjgl3Window implements Disposable {
 	 * the images will not have to be copied and converted. The chosen image is copied, and the provided Pixmaps are not
 	 * disposed.
 	 */
-	public void setIcon (Pixmap... image) {
+	public void setIcon(Pixmap... image) {
 		setIcon(windowHandle, image);
 	}
 
-	static void setIcon (long windowHandle, Pixmap[] images) {
-		if (SharedLibraryLoader.os == Os.MacOsX) return;
-		if (GLFW.glfwGetPlatform() == GLFW.GLFW_PLATFORM_WAYLAND) return;
+	static void setIcon(long windowHandle, Pixmap[] images) {
+		if(SharedLibraryLoader.os == Os.MacOsX) return;
+		if(GLFW.glfwGetPlatform() == GLFW.GLFW_PLATFORM_WAYLAND) return;
 
 		GLFWImage.Buffer buffer = GLFWImage.malloc(images.length);
 		Pixmap[] tmpPixmaps = new Pixmap[images.length];
 
-		for (int i = 0; i < images.length; i++) {
+		for(int i = 0; i < images.length; i++) {
 			Pixmap pixmap = images[i];
 
-			if (pixmap.getFormat() != Pixmap.Format.RGBA8888) {
+			if(pixmap.getFormat() != Pixmap.Format.RGBA8888) {
 				Pixmap rgba = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), Pixmap.Format.RGBA8888);
 				rgba.setBlending(Pixmap.Blending.None);
 				rgba.drawPixmap(pixmap, 0, 0);
@@ -277,15 +283,15 @@ public class Lwjgl3Window implements Disposable {
 		GLFW.glfwSetWindowIcon(windowHandle, buffer);
 
 		buffer.free();
-		for (Pixmap pixmap : tmpPixmaps) {
-			if (pixmap != null) {
+		for(Pixmap pixmap : tmpPixmaps) {
+			if(pixmap != null) {
 				pixmap.dispose();
 			}
 		}
 
 	}
 
-	public void setTitle (CharSequence title) {
+	public void setTitle(CharSequence title) {
 		GLFW.glfwSetWindowTitle(windowHandle, title);
 	}
 
@@ -293,46 +299,46 @@ public class Lwjgl3Window implements Disposable {
 	 * Sets minimum and maximum size limits for the window. If the window is full screen or not resizable, these limits are
 	 * ignored. Use -1 to indicate an unrestricted dimension.
 	 */
-	public void setSizeLimits (int minWidth, int minHeight, int maxWidth, int maxHeight) {
+	public void setSizeLimits(int minWidth, int minHeight, int maxWidth, int maxHeight) {
 		setSizeLimits(windowHandle, minWidth, minHeight, maxWidth, maxHeight);
 	}
 
-	static void setSizeLimits (long windowHandle, int minWidth, int minHeight, int maxWidth, int maxHeight) {
+	static void setSizeLimits(long windowHandle, int minWidth, int minHeight, int maxWidth, int maxHeight) {
 		GLFW.glfwSetWindowSizeLimits(windowHandle, minWidth > -1 ? minWidth : GLFW.GLFW_DONT_CARE,
 				minHeight > -1 ? minHeight : GLFW.GLFW_DONT_CARE, maxWidth > -1 ? maxWidth : GLFW.GLFW_DONT_CARE,
 				maxHeight > -1 ? maxHeight : GLFW.GLFW_DONT_CARE);
 	}
 
-	Lwjgl3Graphics getGraphics () {
+	Lwjgl3Graphics getGraphics() {
 		return graphics;
 	}
 
-	Lwjgl3Input getInput () {
+	Lwjgl3Input getInput() {
 		return input;
 	}
 
-	public long getWindowHandle () {
+	public long getWindowHandle() {
 		return windowHandle;
 	}
 
-	void update () {
+	void update() {
 		graphics.update();
 		listener.render();
 		GLFW.glfwSwapBuffers(windowHandle);
 
-		if (!iconified) input.prepareNext();
+		if(!iconified) input.prepareNext();
 	}
 
-	public boolean shouldClose () {
+	public boolean shouldClose() {
 		return GLFW.glfwWindowShouldClose(windowHandle);
 	}
 
-	public Lwjgl3ApplicationConfiguration getConfig () {
+	public Lwjgl3ApplicationConfiguration getConfig() {
 		return config;
 	}
 
 	@Override
-	public void dispose () {
+	public void dispose() {
 		listener.dispose();
 		Lwjgl3Cursor.dispose(this);
 		graphics.dispose();
@@ -351,7 +357,7 @@ public class Lwjgl3Window implements Disposable {
 	}
 
 	@Override
-	public int hashCode () {
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Long.hashCode(windowHandle);
@@ -359,16 +365,16 @@ public class Lwjgl3Window implements Disposable {
 	}
 
 	@Override
-	public boolean equals (Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		Lwjgl3Window other = (Lwjgl3Window)obj;
-		if (windowHandle != other.windowHandle) return false;
+	public boolean equals(Object obj) {
+		if(this == obj) return true;
+		if(obj == null) return false;
+		if(getClass() != obj.getClass()) return false;
+		Lwjgl3Window other = (Lwjgl3Window) obj;
+		if(windowHandle != other.windowHandle) return false;
 		return true;
 	}
 
-	public void flash () {
+	public void flash() {
 		GLFW.glfwRequestWindowAttention(windowHandle);
 	}
 }

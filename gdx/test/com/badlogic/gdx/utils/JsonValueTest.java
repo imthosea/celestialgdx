@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.utils;
 
 import org.junit.Assert;
@@ -7,7 +6,7 @@ import org.junit.Test;
 public class JsonValueTest {
 
 	@Test
-	public void testAddingRemovedValue () {
+	public void testAddingRemovedValue() {
 		// Prepare two JSON objects
 		JsonValue firstObject = new JsonValue(JsonValue.ValueType.object);
 		JsonValue secondObject = new JsonValue(JsonValue.ValueType.object);
@@ -31,7 +30,7 @@ public class JsonValueTest {
 	}
 
 	@Test
-	public void testReplaceValue () {
+	public void testReplaceValue() {
 		JsonValue object = new JsonValue(JsonValue.ValueType.object);
 
 		object.addChild("a", new JsonValue("A"));
@@ -60,7 +59,7 @@ public class JsonValueTest {
 	}
 
 	@Test
-	public void testCopyConstructor () {
+	public void testCopyConstructor() {
 		JsonValue b = new JsonValue(JsonValue.ValueType.object);
 		b.addChild("c", new JsonValue("C"));
 		b.addChild("d", new JsonValue("D"));

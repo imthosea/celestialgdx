@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,22 +23,26 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-/** Allows asynchronous execution of {@link AsyncTask} instances on a separate thread. Needs to be disposed via a call to
+/**
+ * Allows asynchronous execution of {@link AsyncTask} instances on a separate thread. Needs to be disposed via a call to
  * {@link #dispose()} when no longer used, in which case the executor waits for running tasks to finish. Scheduled but not yet
  * running tasks will not be executed.
- * @author badlogic */
+ * @author badlogic
+ */
 public class AsyncExecutor implements Disposable {
 	private final ExecutorService executor;
 
 	/** Creates a new AsyncExecutor with the name "AsyncExecutor-Thread". */
-	public AsyncExecutor (int maxConcurrent) {
+	public AsyncExecutor(int maxConcurrent) {
 		this(maxConcurrent, "AsyncExecutor-Thread");
 	}
 
-	/** Creates a new AsynchExecutor that allows maxConcurrent {@link Runnable} instances to run in parallel.
+	/**
+	 * Creates a new AsynchExecutor that allows maxConcurrent {@link Runnable} instances to run in parallel.
 	 * @param maxConcurrent
-	 * @param name The name of the threads. */
-	public AsyncExecutor (int maxConcurrent, final String name) {
+	 * @param name The name of the threads.
+	 */
+	public AsyncExecutor(int maxConcurrent, final String name) {
 		executor = Executors.newFixedThreadPool(maxConcurrent, action -> {
 			Thread thread = new Thread(action, name);
 			thread.setDaemon(true);
@@ -46,24 +50,28 @@ public class AsyncExecutor implements Disposable {
 		});
 	}
 
-	/** Submits a {@link Runnable} to be executed asynchronously. If maxConcurrent runnables are already running, the runnable will
+	/**
+	 * Submits a {@link Runnable} to be executed asynchronously. If maxConcurrent runnables are already running, the runnable will
 	 * be queued.
-	 * @param task the task to execute asynchronously */
-	public <T> AsyncResult<T> submit (final AsyncTask<T> task) {
-		if (executor.isShutdown()) {
+	 * @param task the task to execute asynchronously
+	 */
+	public <T> AsyncResult<T> submit(final AsyncTask<T> task) {
+		if(executor.isShutdown()) {
 			throw new GdxRuntimeException("Cannot run tasks on an executor that has been shutdown (disposed)");
 		}
 		return new AsyncResult<>(executor.submit(task::call));
 	}
 
-	/** Waits for running {@link AsyncTask} instances to finish, then destroys any resources like threads. Can not be used after
-	 * this method is called. */
+	/**
+	 * Waits for running {@link AsyncTask} instances to finish, then destroys any resources like threads. Can not be used after
+	 * this method is called.
+	 */
 	@Override
-	public void dispose () {
+	public void dispose() {
 		executor.shutdown();
 		try {
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
+		} catch(InterruptedException e) {
 			throw new GdxRuntimeException("Couldn't shutdown loading thread", e);
 		}
 	}

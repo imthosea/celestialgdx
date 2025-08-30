@@ -23,13 +23,14 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/** CpuSpriteBatch behaves like SpriteBatch, except it doesn't flush automatically whenever the transformation matrix changes.
+/**
+ * CpuSpriteBatch behaves like SpriteBatch, except it doesn't flush automatically whenever the transformation matrix changes.
  * Instead, the vertices get adjusted on subsequent draws to match the running batch. This can improve performance through longer
  * batches, for example when drawing Groups with transform enabled.
- *
+ * @author Valentin Milea
  * @see SpriteBatch#renderCalls
  * @see com.badlogic.gdx.scenes.scene2d.Group#setTransform(boolean) Group.setTransform()
- * @author Valentin Milea */
+ */
 public class CpuSpriteBatch extends SpriteBatch {
 
 	private final Matrix4 virtualMatrix = new Matrix4();
@@ -39,21 +40,27 @@ public class CpuSpriteBatch extends SpriteBatch {
 
 	private final Affine2 tmpAffine = new Affine2();
 
-	/** Constructs a CpuSpriteBatch with a size of 1000 and the default shader.
-	 * @see SpriteBatch#SpriteBatch() */
-	public CpuSpriteBatch () {
+	/**
+	 * Constructs a CpuSpriteBatch with a size of 1000 and the default shader.
+	 * @see SpriteBatch#SpriteBatch()
+	 */
+	public CpuSpriteBatch() {
 		this(1000);
 	}
 
-	/** Constructs a CpuSpriteBatch with the default shader.
-	 * @see SpriteBatch#SpriteBatch(int) */
-	public CpuSpriteBatch (int size) {
+	/**
+	 * Constructs a CpuSpriteBatch with the default shader.
+	 * @see SpriteBatch#SpriteBatch(int)
+	 */
+	public CpuSpriteBatch(int size) {
 		this(size, null);
 	}
 
-	/** Constructs a CpuSpriteBatch with a custom shader.
-	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram) */
-	public CpuSpriteBatch (int size, ShaderProgram defaultShader) {
+	/**
+	 * Constructs a CpuSpriteBatch with a custom shader.
+	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram)
+	 */
+	public CpuSpriteBatch(int size, ShaderProgram defaultShader) {
 		super(size, defaultShader);
 	}
 
@@ -66,15 +73,16 @@ public class CpuSpriteBatch extends SpriteBatch {
 	 * Note: The real transform matrix <em>must</em> be invertible. If a singular matrix is detected, GdxRuntimeException will be
 	 * thrown.
 	 * </p>
-	 * @see SpriteBatch#flush() */
-	public void flushAndSyncTransformMatrix () {
+	 * @see SpriteBatch#flush()
+	 */
+	public void flushAndSyncTransformMatrix() {
 		flush();
 
-		if (adjustNeeded) {
+		if(adjustNeeded) {
 			// vertices flushed, safe now to replace matrix
 			haveIdentityRealMatrix = checkIdt(virtualMatrix);
 
-			if (!haveIdentityRealMatrix && virtualMatrix.det() == 0)
+			if(!haveIdentityRealMatrix && virtualMatrix.det() == 0)
 				throw new GdxRuntimeException("Transform matrix is singular, can't sync");
 
 			adjustNeeded = false;
@@ -83,29 +91,31 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public Matrix4 getTransformMatrix () {
+	public Matrix4 getTransformMatrix() {
 		return (adjustNeeded ? virtualMatrix : super.getTransformMatrix());
 	}
 
-	/** Sets the transform matrix to be used by this Batch. Even if this is called inside a {@link #begin()}/{@link #end()} block,
+	/**
+	 * Sets the transform matrix to be used by this Batch. Even if this is called inside a {@link #begin()}/{@link #end()} block,
 	 * the current batch is <em>not</em> flushed to the GPU. Instead, for every subsequent draw() the vertices will be transformed
 	 * on the CPU to match the original batch matrix. This adjustment must be performed until the matrices are realigned by
-	 * restoring the original matrix, or by calling {@link #flushAndSyncTransformMatrix()}. */
+	 * restoring the original matrix, or by calling {@link #flushAndSyncTransformMatrix()}.
+	 */
 	@Override
-	public void setTransformMatrix (Matrix4 transform) {
+	public void setTransformMatrix(Matrix4 transform) {
 		Matrix4 realMatrix = super.getTransformMatrix();
 
-		if (checkEqual(realMatrix, transform)) {
+		if(checkEqual(realMatrix, transform)) {
 			adjustNeeded = false;
 		} else {
-			if (isDrawing()) {
+			if(isDrawing()) {
 				virtualMatrix.setAsAffine(transform);
 				adjustNeeded = true;
 
 				// adjust = inverse(real) x virtual
 				// real x adjust x vertex = virtual x vertex
 
-				if (haveIdentityRealMatrix) {
+				if(haveIdentityRealMatrix) {
 					adjustAffine.set(transform);
 				} else {
 					tmpAffine.set(transform);
@@ -118,25 +128,27 @@ public class CpuSpriteBatch extends SpriteBatch {
 		}
 	}
 
-	/** Sets the transform matrix to be used by this Batch. Even if this is called inside a {@link #begin()}/{@link #end()} block,
+	/**
+	 * Sets the transform matrix to be used by this Batch. Even if this is called inside a {@link #begin()}/{@link #end()} block,
 	 * the current batch is <em>not</em> flushed to the GPU. Instead, for every subsequent draw() the vertices will be transformed
 	 * on the CPU to match the original batch matrix. This adjustment must be performed until the matrices are realigned by
-	 * restoring the original matrix, or by calling {@link #flushAndSyncTransformMatrix()} or {@link #end()}. */
-	public void setTransformMatrix (Affine2 transform) {
+	 * restoring the original matrix, or by calling {@link #flushAndSyncTransformMatrix()} or {@link #end()}.
+	 */
+	public void setTransformMatrix(Affine2 transform) {
 		Matrix4 realMatrix = super.getTransformMatrix();
 
-		if (checkEqual(realMatrix, transform)) {
+		if(checkEqual(realMatrix, transform)) {
 			adjustNeeded = false;
 		} else {
 			virtualMatrix.setAsAffine(transform);
 
-			if (isDrawing()) {
+			if(isDrawing()) {
 				adjustNeeded = true;
 
 				// adjust = inverse(real) x virtual
 				// real x adjust x vertex = virtual x vertex
 
-				if (haveIdentityRealMatrix) {
+				if(haveIdentityRealMatrix) {
 					adjustAffine.set(transform);
 				} else {
 					adjustAffine.set(realMatrix).inv().mul(transform);
@@ -149,21 +161,21 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (Texture texture, float x, float y, float originX, float originY, float width, float height, float scaleX,
-		float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY) {
-		if (!adjustNeeded) {
+	public void draw(Texture texture, float x, float y, float originX, float originY, float width, float height, float scaleX,
+	                 float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY) {
+		if(!adjustNeeded) {
 			super.draw(texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth, srcHeight,
-				flipX, flipY);
+					flipX, flipY);
 		} else {
 			drawAdjusted(texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth, srcHeight,
-				flipX, flipY);
+					flipX, flipY);
 		}
 	}
 
 	@Override
-	public void draw (Texture texture, float x, float y, float width, float height, int srcX, int srcY, int srcWidth,
-		int srcHeight, boolean flipX, boolean flipY) {
-		if (!adjustNeeded) {
+	public void draw(Texture texture, float x, float y, float width, float height, int srcX, int srcY, int srcWidth,
+	                 int srcHeight, boolean flipX, boolean flipY) {
+		if(!adjustNeeded) {
 			super.draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
 		} else {
 			drawAdjusted(texture, x, y, 0, 0, width, height, 1, 1, 0, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
@@ -171,8 +183,8 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (Texture texture, float x, float y, int srcX, int srcY, int srcWidth, int srcHeight) {
-		if (!adjustNeeded) {
+	public void draw(Texture texture, float x, float y, int srcX, int srcY, int srcWidth, int srcHeight) {
+		if(!adjustNeeded) {
 			super.draw(texture, x, y, srcX, srcY, srcWidth, srcHeight);
 		} else {
 			drawAdjusted(texture, x, y, 0, 0, srcWidth, srcHeight, 1, 1, 0, srcX, srcY, srcWidth, srcHeight, false, false);
@@ -180,8 +192,8 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (Texture texture, float x, float y, float width, float height, float u, float v, float u2, float v2) {
-		if (!adjustNeeded) {
+	public void draw(Texture texture, float x, float y, float width, float height, float u, float v, float u2, float v2) {
+		if(!adjustNeeded) {
 			super.draw(texture, x, y, width, height, u, v, u2, v2);
 		} else {
 			drawAdjustedUV(texture, x, y, 0, 0, width, height, 1, 1, 0, u, v, u2, v2, false, false);
@@ -189,8 +201,8 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (Texture texture, float x, float y) {
-		if (!adjustNeeded) {
+	public void draw(Texture texture, float x, float y) {
+		if(!adjustNeeded) {
 			super.draw(texture, x, y);
 		} else {
 			drawAdjusted(texture, x, y, 0, 0, texture.getWidth(), texture.getHeight(), 1, 1, 0, 0, 1, 1, 0, false, false);
@@ -198,8 +210,8 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (Texture texture, float x, float y, float width, float height) {
-		if (!adjustNeeded) {
+	public void draw(Texture texture, float x, float y, float width, float height) {
+		if(!adjustNeeded) {
 			super.draw(texture, x, y, width, height);
 		} else {
 			drawAdjusted(texture, x, y, 0, 0, width, height, 1, 1, 0, 0, 1, 1, 0, false, false);
@@ -207,8 +219,8 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (TextureRegion region, float x, float y) {
-		if (!adjustNeeded) {
+	public void draw(TextureRegion region, float x, float y) {
+		if(!adjustNeeded) {
 			super.draw(region, x, y);
 		} else {
 			drawAdjusted(region, x, y, 0, 0, region.getRegionWidth(), region.getRegionHeight(), 1, 1, 0);
@@ -216,8 +228,8 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (TextureRegion region, float x, float y, float width, float height) {
-		if (!adjustNeeded) {
+	public void draw(TextureRegion region, float x, float y, float width, float height) {
+		if(!adjustNeeded) {
 			super.draw(region, x, y, width, height);
 		} else {
 			drawAdjusted(region, x, y, 0, 0, width, height, 1, 1, 0);
@@ -225,9 +237,9 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (TextureRegion region, float x, float y, float originX, float originY, float width, float height,
-		float scaleX, float scaleY, float rotation) {
-		if (!adjustNeeded) {
+	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
+	                 float scaleX, float scaleY, float rotation) {
+		if(!adjustNeeded) {
 			super.draw(region, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
 		} else {
 			drawAdjusted(region, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
@@ -235,9 +247,9 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (TextureRegion region, float x, float y, float originX, float originY, float width, float height,
-		float scaleX, float scaleY, float rotation, boolean clockwise) {
-		if (!adjustNeeded) {
+	public void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
+	                 float scaleX, float scaleY, float rotation, boolean clockwise) {
+		if(!adjustNeeded) {
 			super.draw(region, x, y, originX, originY, width, height, scaleX, scaleY, rotation, clockwise);
 		} else {
 			drawAdjusted(region, x, y, originX, originY, width, height, scaleX, scaleY, rotation, clockwise);
@@ -245,10 +257,10 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (Texture texture, float[] spriteVertices, int offset, int count) {
-		if (count % Sprite.SPRITE_SIZE != 0) throw new GdxRuntimeException("invalid vertex count");
+	public void draw(Texture texture, float[] spriteVertices, int offset, int count) {
+		if(count % Sprite.SPRITE_SIZE != 0) throw new GdxRuntimeException("invalid vertex count");
 
-		if (!adjustNeeded) {
+		if(!adjustNeeded) {
 			super.draw(texture, spriteVertices, offset, count);
 		} else {
 			drawAdjusted(texture, spriteVertices, offset, count);
@@ -256,23 +268,23 @@ public class CpuSpriteBatch extends SpriteBatch {
 	}
 
 	@Override
-	public void draw (TextureRegion region, float width, float height, Affine2 transform) {
-		if (!adjustNeeded) {
+	public void draw(TextureRegion region, float width, float height, Affine2 transform) {
+		if(!adjustNeeded) {
 			super.draw(region, width, height, transform);
 		} else {
 			drawAdjusted(region, width, height, transform);
 		}
 	}
 
-	private void drawAdjusted (TextureRegion region, float x, float y, float originX, float originY, float width, float height,
-		float scaleX, float scaleY, float rotation) {
+	private void drawAdjusted(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
+	                          float scaleX, float scaleY, float rotation) {
 		// v must be flipped
 		drawAdjustedUV(region.texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation, region.u, region.v2,
-			region.u2, region.v, false, false);
+				region.u2, region.v, false, false);
 	}
 
-	private void drawAdjusted (Texture texture, float x, float y, float originX, float originY, float width, float height,
-		float scaleX, float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY) {
+	private void drawAdjusted(Texture texture, float x, float y, float originX, float originY, float width, float height,
+	                          float scaleX, float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY) {
 		float invTexWidth = 1.0f / texture.getWidth();
 		float invTexHeight = 1.0f / texture.getHeight();
 
@@ -284,13 +296,13 @@ public class CpuSpriteBatch extends SpriteBatch {
 		drawAdjustedUV(texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation, u, v, u2, v2, flipX, flipY);
 	}
 
-	private void drawAdjustedUV (Texture texture, float x, float y, float originX, float originY, float width, float height,
-		float scaleX, float scaleY, float rotation, float u, float v, float u2, float v2, boolean flipX, boolean flipY) {
-		if (!drawing) throw new IllegalStateException("CpuSpriteBatch.begin must be called before draw.");
+	private void drawAdjustedUV(Texture texture, float x, float y, float originX, float originY, float width, float height,
+	                            float scaleX, float scaleY, float rotation, float u, float v, float u2, float v2, boolean flipX, boolean flipY) {
+		if(!drawing) throw new IllegalStateException("CpuSpriteBatch.begin must be called before draw.");
 
-		if (texture != lastTexture)
+		if(texture != lastTexture)
 			switchTexture(texture);
-		else if (idx == vertices.length) super.flush();
+		else if(idx == vertices.length) super.flush();
 
 		// bottom left and top right corner points relative to origin
 		final float worldOriginX = x + originX;
@@ -301,7 +313,7 @@ public class CpuSpriteBatch extends SpriteBatch {
 		float fy2 = height - originY;
 
 		// scale
-		if (scaleX != 1 || scaleY != 1) {
+		if(scaleX != 1 || scaleY != 1) {
 			fx *= scaleX;
 			fy *= scaleY;
 			fx2 *= scaleX;
@@ -328,7 +340,7 @@ public class CpuSpriteBatch extends SpriteBatch {
 		float y4;
 
 		// rotate
-		if (rotation != 0) {
+		if(rotation != 0) {
 			final float cos = MathUtils.cosDeg(rotation);
 			final float sin = MathUtils.sinDeg(rotation);
 
@@ -366,12 +378,12 @@ public class CpuSpriteBatch extends SpriteBatch {
 		x4 += worldOriginX;
 		y4 += worldOriginY;
 
-		if (flipX) {
+		if(flipX) {
 			float tmp = u;
 			u = u2;
 			u2 = tmp;
 		}
-		if (flipY) {
+		if(flipY) {
 			float tmp = v;
 			v = v2;
 			v2 = tmp;
@@ -406,13 +418,13 @@ public class CpuSpriteBatch extends SpriteBatch {
 		idx += Sprite.SPRITE_SIZE;
 	}
 
-	private void drawAdjusted (TextureRegion region, float x, float y, float originX, float originY, float width, float height,
-		float scaleX, float scaleY, float rotation, boolean clockwise) {
-		if (!drawing) throw new IllegalStateException("CpuSpriteBatch.begin must be called before draw.");
+	private void drawAdjusted(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
+	                          float scaleX, float scaleY, float rotation, boolean clockwise) {
+		if(!drawing) throw new IllegalStateException("CpuSpriteBatch.begin must be called before draw.");
 
-		if (region.texture != lastTexture)
+		if(region.texture != lastTexture)
 			switchTexture(region.texture);
-		else if (idx == vertices.length) super.flush();
+		else if(idx == vertices.length) super.flush();
 
 		// bottom left and top right corner points relative to origin
 		final float worldOriginX = x + originX;
@@ -423,7 +435,7 @@ public class CpuSpriteBatch extends SpriteBatch {
 		float fy2 = height - originY;
 
 		// scale
-		if (scaleX != 1 || scaleY != 1) {
+		if(scaleX != 1 || scaleY != 1) {
 			fx *= scaleX;
 			fy *= scaleY;
 			fx2 *= scaleX;
@@ -450,7 +462,7 @@ public class CpuSpriteBatch extends SpriteBatch {
 		float y4;
 
 		// rotate
-		if (rotation != 0) {
+		if(rotation != 0) {
 			final float cos = MathUtils.cosDeg(rotation);
 			final float sin = MathUtils.sinDeg(rotation);
 
@@ -489,7 +501,7 @@ public class CpuSpriteBatch extends SpriteBatch {
 		y4 += worldOriginY;
 
 		float u1, v1, u2, v2, u3, v3, u4, v4;
-		if (clockwise) {
+		if(clockwise) {
 			u1 = region.u2;
 			v1 = region.v2;
 			u2 = region.u;
@@ -538,12 +550,12 @@ public class CpuSpriteBatch extends SpriteBatch {
 		idx += Sprite.SPRITE_SIZE;
 	}
 
-	private void drawAdjusted (TextureRegion region, float width, float height, Affine2 transform) {
-		if (!drawing) throw new IllegalStateException("CpuSpriteBatch.begin must be called before draw.");
+	private void drawAdjusted(TextureRegion region, float width, float height, Affine2 transform) {
+		if(!drawing) throw new IllegalStateException("CpuSpriteBatch.begin must be called before draw.");
 
-		if (region.texture != lastTexture)
+		if(region.texture != lastTexture)
 			switchTexture(region.texture);
-		else if (idx == vertices.length) super.flush();
+		else if(idx == vertices.length) super.flush();
 
 		Affine2 t = transform;
 
@@ -592,17 +604,17 @@ public class CpuSpriteBatch extends SpriteBatch {
 		idx += Sprite.SPRITE_SIZE;
 	}
 
-	private void drawAdjusted (Texture texture, float[] spriteVertices, int offset, int count) {
-		if (!drawing) throw new IllegalStateException("CpuSpriteBatch.begin must be called before draw.");
+	private void drawAdjusted(Texture texture, float[] spriteVertices, int offset, int count) {
+		if(!drawing) throw new IllegalStateException("CpuSpriteBatch.begin must be called before draw.");
 
-		if (texture != lastTexture) switchTexture(texture);
+		if(texture != lastTexture) switchTexture(texture);
 
 		Affine2 t = adjustAffine;
 
 		int copyCount = Math.min(vertices.length - idx, count);
 		do {
 			count -= copyCount;
-			while (copyCount > 0) {
+			while(copyCount > 0) {
 				float x = spriteVertices[offset];
 				float y = spriteVertices[offset + 1];
 
@@ -617,35 +629,35 @@ public class CpuSpriteBatch extends SpriteBatch {
 				copyCount -= Sprite.VERTEX_SIZE;
 			}
 
-			if (count > 0) {
+			if(count > 0) {
 				super.flush();
 				copyCount = Math.min(vertices.length, count);
 			}
-		} while (count > 0);
+		} while(count > 0);
 	}
 
-	private static boolean checkEqual (Matrix4 a, Matrix4 b) {
-		if (a == b) return true;
+	private static boolean checkEqual(Matrix4 a, Matrix4 b) {
+		if(a == b) return true;
 
 		// matrices are assumed to be 2D transformations
 		return (a.val[Matrix4.M00] == b.val[Matrix4.M00] && a.val[Matrix4.M10] == b.val[Matrix4.M10]
-			&& a.val[Matrix4.M01] == b.val[Matrix4.M01] && a.val[Matrix4.M11] == b.val[Matrix4.M11]
-			&& a.val[Matrix4.M03] == b.val[Matrix4.M03] && a.val[Matrix4.M13] == b.val[Matrix4.M13]);
+				&& a.val[Matrix4.M01] == b.val[Matrix4.M01] && a.val[Matrix4.M11] == b.val[Matrix4.M11]
+				&& a.val[Matrix4.M03] == b.val[Matrix4.M03] && a.val[Matrix4.M13] == b.val[Matrix4.M13]);
 	}
 
-	private static boolean checkEqual (Matrix4 matrix, Affine2 affine) {
+	private static boolean checkEqual(Matrix4 matrix, Affine2 affine) {
 		final float[] val = matrix.getValues();
 
 		// matrix is assumed to be 2D transformation
 		return (val[Matrix4.M00] == affine.m00 && val[Matrix4.M10] == affine.m10 && val[Matrix4.M01] == affine.m01
-			&& val[Matrix4.M11] == affine.m11 && val[Matrix4.M03] == affine.m02 && val[Matrix4.M13] == affine.m12);
+				&& val[Matrix4.M11] == affine.m11 && val[Matrix4.M03] == affine.m02 && val[Matrix4.M13] == affine.m12);
 	}
 
-	private static boolean checkIdt (Matrix4 matrix) {
+	private static boolean checkIdt(Matrix4 matrix) {
 		final float[] val = matrix.getValues();
 
 		// matrix is assumed to be 2D transformation
 		return (val[Matrix4.M00] == 1 && val[Matrix4.M10] == 0 && val[Matrix4.M01] == 0 && val[Matrix4.M11] == 1
-			&& val[Matrix4.M03] == 0 && val[Matrix4.M13] == 0);
+				&& val[Matrix4.M03] == 0 && val[Matrix4.M13] == 0);
 	}
 }

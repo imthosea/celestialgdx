@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,83 +39,85 @@ public class StaticTiledMapTile implements TiledMapTile {
 	private float offsetY;
 
 	@Override
-	public int getId () {
+	public int getId() {
 		return id;
 	}
 
 	@Override
-	public void setId (int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	@Override
-	public BlendMode getBlendMode () {
+	public BlendMode getBlendMode() {
 		return blendMode;
 	}
 
 	@Override
-	public void setBlendMode (BlendMode blendMode) {
+	public void setBlendMode(BlendMode blendMode) {
 		this.blendMode = blendMode;
 	}
 
 	@Override
-	public MapProperties getProperties () {
-		if (properties == null) {
+	public MapProperties getProperties() {
+		if(properties == null) {
 			properties = new MapProperties();
 		}
 		return properties;
 	}
 
 	@Override
-	public MapObjects getObjects () {
-		if (objects == null) {
+	public MapObjects getObjects() {
+		if(objects == null) {
 			objects = new MapObjects();
 		}
 		return objects;
 	}
 
 	@Override
-	public TextureRegion getTextureRegion () {
+	public TextureRegion getTextureRegion() {
 		return textureRegion;
 	}
 
 	@Override
-	public void setTextureRegion (TextureRegion textureRegion) {
+	public void setTextureRegion(TextureRegion textureRegion) {
 		this.textureRegion = textureRegion;
 	}
 
 	@Override
-	public float getOffsetX () {
+	public float getOffsetX() {
 		return offsetX;
 	}
 
 	@Override
-	public void setOffsetX (float offsetX) {
+	public void setOffsetX(float offsetX) {
 		this.offsetX = offsetX;
 	}
 
 	@Override
-	public float getOffsetY () {
+	public float getOffsetY() {
 		return offsetY;
 	}
 
 	@Override
-	public void setOffsetY (float offsetY) {
+	public void setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
 	}
 
-	/** Creates a static tile with the given region
-	 * 
-	 * @param textureRegion the {@link TextureRegion} to use. */
-	public StaticTiledMapTile (TextureRegion textureRegion) {
+	/**
+	 * Creates a static tile with the given region
+	 * @param textureRegion the {@link TextureRegion} to use.
+	 */
+	public StaticTiledMapTile(TextureRegion textureRegion) {
 		this.textureRegion = textureRegion;
 	}
 
-	/** Copy constructor
-	 * 
-	 * @param copy the StaticTiledMapTile to copy. */
-	public StaticTiledMapTile (StaticTiledMapTile copy) {
-		if (copy.properties != null) {
+	/**
+	 * Copy constructor
+	 * @param copy the StaticTiledMapTile to copy.
+	 */
+	public StaticTiledMapTile(StaticTiledMapTile copy) {
+		if(copy.properties != null) {
 			getProperties().putAll(copy.properties);
 		}
 		this.objects = copy.objects;

@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.math;
 
 import com.badlogic.gdx.math.Intersector.SplitTriangle;
@@ -8,30 +7,32 @@ import static org.junit.Assert.*;
 
 public class IntersectorTest {
 
-	/** Compares two triangles for equality. Triangles must have the same winding, but may begin with different vertex. Values are
-	 * epsilon compared, with default tolerance. Triangles are assumed to be valid triangles - no duplicate vertices. */
-	private static boolean triangleEquals (float[] base, int baseOffset, int stride, float[] comp) {
+	/**
+	 * Compares two triangles for equality. Triangles must have the same winding, but may begin with different vertex. Values are
+	 * epsilon compared, with default tolerance. Triangles are assumed to be valid triangles - no duplicate vertices.
+	 */
+	private static boolean triangleEquals(float[] base, int baseOffset, int stride, float[] comp) {
 		assertTrue(stride >= 3);
 		assertTrue(base.length - baseOffset >= 9);
 		assertTrue(comp.length == 9);
 
 		int offset = -1;
 		// Find first comp vertex in base triangle
-		for (int i = 0; i < 3; i++) {
+		for(int i = 0; i < 3; i++) {
 			int b = baseOffset + i * stride;
-			if (MathUtils.isEqual(base[b], comp[0]) && MathUtils.isEqual(base[b + 1], comp[1])
-				&& MathUtils.isEqual(base[b + 2], comp[2])) {
+			if(MathUtils.isEqual(base[b], comp[0]) && MathUtils.isEqual(base[b + 1], comp[1])
+					&& MathUtils.isEqual(base[b + 2], comp[2])) {
 				offset = i;
 				break;
 			}
 		}
 		assertTrue("Triangles do not have common first vertex.", offset != -1);
 		// Compare vertices
-		for (int i = 0; i < 3; i++) {
+		for(int i = 0; i < 3; i++) {
 			int b = baseOffset + ((offset + i) * stride) % (3 * stride);
 			int c = i * stride;
-			if (!MathUtils.isEqual(base[b], comp[c]) || !MathUtils.isEqual(base[b + 1], comp[c + 1])
-				|| !MathUtils.isEqual(base[b + 2], comp[c + 2])) {
+			if(!MathUtils.isEqual(base[b], comp[c]) || !MathUtils.isEqual(base[b + 1], comp[c + 1])
+					|| !MathUtils.isEqual(base[b + 2], comp[c + 2])) {
 				return false;
 			}
 		}
@@ -39,7 +40,7 @@ public class IntersectorTest {
 	}
 
 	@Test
-	public void testSplitTriangle () {
+	public void testSplitTriangle() {
 		Plane plane = new Plane(new Vector3(1, 0, 0), 0);
 		SplitTriangle split = new SplitTriangle(3);
 
@@ -78,9 +79,9 @@ public class IntersectorTest {
 			float[][] secondWay = {{-10, 0, 10, 0, 0, 5, -10, 0, -10}, {0, 0, 5, 0, 0, -5, -10, 0, -10}};// ADC DEC
 			float[] base = split.back;
 			boolean first = (triangleEquals(base, 0, 3, firstWay[0]) && triangleEquals(base, 9, 3, firstWay[1]))
-				|| (triangleEquals(base, 0, 3, firstWay[1]) && triangleEquals(base, 9, 3, firstWay[0]));
+					|| (triangleEquals(base, 0, 3, firstWay[1]) && triangleEquals(base, 9, 3, firstWay[0]));
 			boolean second = (triangleEquals(base, 0, 3, secondWay[0]) && triangleEquals(base, 9, 3, secondWay[1]))
-				|| (triangleEquals(base, 0, 3, secondWay[1]) && triangleEquals(base, 9, 3, secondWay[0]));
+					|| (triangleEquals(base, 0, 3, secondWay[1]) && triangleEquals(base, 9, 3, secondWay[0]));
 			assertTrue("Either first or second way must be right (first: " + first + ", second: " + second + ")", first ^ second);
 		}
 
@@ -98,15 +99,15 @@ public class IntersectorTest {
 			float[][] secondWay = {{10, 0, 10, 0, 0, 5, 10, 0, -10}, {0, 0, 5, 0, 0, -5, 10, 0, -10}};// ADC DEC
 			float[] base = split.front;
 			boolean first = (triangleEquals(base, 0, 3, firstWay[0]) && triangleEquals(base, 9, 3, firstWay[1]))
-				|| (triangleEquals(base, 0, 3, firstWay[1]) && triangleEquals(base, 9, 3, firstWay[0]));
+					|| (triangleEquals(base, 0, 3, firstWay[1]) && triangleEquals(base, 9, 3, firstWay[0]));
 			boolean second = (triangleEquals(base, 0, 3, secondWay[0]) && triangleEquals(base, 9, 3, secondWay[1]))
-				|| (triangleEquals(base, 0, 3, secondWay[1]) && triangleEquals(base, 9, 3, secondWay[0]));
+					|| (triangleEquals(base, 0, 3, secondWay[1]) && triangleEquals(base, 9, 3, secondWay[0]));
 			assertTrue("Either first or second way must be right (first: " + first + ", second: " + second + ")", first ^ second);
 		}
 	}
 
 	@Test
-	public void intersectSegmentCircle () {
+	public void intersectSegmentCircle() {
 		Circle circle = new Circle(5f, 5f, 4f);
 		// Segment intersects, both segment points outside circle
 		boolean intersects = Intersector.intersectSegmentCircle(new Vector2(0, 1f), new Vector2(12f, 3f), circle, null);
@@ -139,7 +140,7 @@ public class IntersectorTest {
 	}
 
 	@Test
-	public void testIntersectPlanes () {
+	public void testIntersectPlanes() {
 		final int NEAR = 0;
 		final int FAR = 1;
 		final int LEFT = 2;
@@ -182,57 +183,57 @@ public class IntersectorTest {
 	}
 
 	@Test
-	public void testIsPointInTriangle2D () {
+	public void testIsPointInTriangle2D() {
 		assertFalse(Intersector.isPointInTriangle(new Vector2(0.1f, 0), new Vector2(0, 0), new Vector2(1, 1), new Vector2(-1, -1)));
 
 		assertTrue(Intersector.isPointInTriangle(new Vector2(0, 0.1f), new Vector2(-1, 1), new Vector2(1, 1), new Vector2(-1, -2)));
 	}
 
 	@Test
-	public void testIsPointInTriangle3D () {
+	public void testIsPointInTriangle3D() {
 		// 2D ---
 		assertFalse(Intersector.isPointInTriangle(new Vector3(0.1f, 0, 0), new Vector3(0, 0, 0), new Vector3(1, 1, 0),
-			new Vector3(-1, -1, 0)));
+				new Vector3(-1, -1, 0)));
 
 		assertTrue(Intersector.isPointInTriangle(new Vector3(0, 0.1f, 0), new Vector3(-1, 1, 0), new Vector3(1, 1, 0),
-			new Vector3(-1, -2, 0)));
+				new Vector3(-1, -2, 0)));
 
 		// 3D ---
 		assertTrue(Intersector.isPointInTriangle(new Vector3(0.2f, 0, 1.25f), new Vector3(-1, 1, 0), new Vector3(1.4f, 0.99f, 2.5f),
-			new Vector3(-1, -2, 0)));
+				new Vector3(-1, -2, 0)));
 		// 1.2f away.
 		assertFalse(Intersector.isPointInTriangle(new Vector3(2.6f, 0, 3.75f), new Vector3(-1, 1, 0),
-			new Vector3(1.4f, 0.99f, 2.5f), new Vector3(-1, -2, 0)));
+				new Vector3(1.4f, 0.99f, 2.5f), new Vector3(-1, -2, 0)));
 		// In an edge.
 		assertTrue(Intersector.isPointInTriangle(new Vector3(0, -0.5f, 0.5f), new Vector3(-1, 1, 0), new Vector3(1, 1, 1),
-			new Vector3(-1, -2, 0)));
+				new Vector3(-1, -2, 0)));
 		// Really close to the edge.
 		float epsilon = 0.0000001f; // One more 0 will fail.
 		float almost1 = 1 - epsilon;
 		assertFalse(Intersector.isPointInTriangle(new Vector3(0, -0.5f, 0.5f), new Vector3(-1, 1, 0), new Vector3(almost1, 1, 1),
-			new Vector3(-1, -2, 0)));
+				new Vector3(-1, -2, 0)));
 
 		// A really long distance away.
 		assertFalse(Intersector.isPointInTriangle(new Vector3(199f, 1f, 500f), new Vector3(-1, 1, 0), new Vector3(1, 1, 5f),
-			new Vector3(-1, -2, 0)));
+				new Vector3(-1, -2, 0)));
 
 		assertFalse(Intersector.isPointInTriangle(new Vector3(-5120.8345f, 8946.126f, -3270.5813f),
-			new Vector3(50.008057f, 22.20586f, 124.62208f), new Vector3(62.282288f, 22.205864f, 109.665924f),
-			new Vector3(70.92052f, 7.205861f, 115.437805f)));
+				new Vector3(50.008057f, 22.20586f, 124.62208f), new Vector3(62.282288f, 22.205864f, 109.665924f),
+				new Vector3(70.92052f, 7.205861f, 115.437805f)));
 	}
 
 	@Test
-	public void testIntersectPolygons () {
+	public void testIntersectPolygons() {
 		// Corner case with extremely small overlap polygon
 		Polygon intersectionPolygon = new Polygon();
 		assertFalse(
-			Intersector.intersectPolygons(new Polygon(new float[] {3200.1453f, 88.00839f, 3233.9087f, 190.34174f, 3266.2905f, 0.0f}),
-				new Polygon(new float[] {3213.0f, 131.0f, 3214.0f, 131.0f, 3214.0f, 130.0f, 3213.0f, 130.0f}), intersectionPolygon));
+				Intersector.intersectPolygons(new Polygon(new float[] {3200.1453f, 88.00839f, 3233.9087f, 190.34174f, 3266.2905f, 0.0f}),
+						new Polygon(new float[] {3213.0f, 131.0f, 3214.0f, 131.0f, 3214.0f, 130.0f, 3213.0f, 130.0f}), intersectionPolygon));
 		assertEquals(0, intersectionPolygon.getVertexCount());
 	}
 
 	@Test
-	public void testIntersectPolygonsWithVertexLyingOnEdge () {
+	public void testIntersectPolygonsWithVertexLyingOnEdge() {
 		Polygon p1 = new Polygon(new float[] {1, -1, 2, -1, 2, -2, 1, -2});
 		Polygon p2 = new Polygon(new float[] {0.5f, -1.5f, 1.5f, -1.5f, 1.5f, -2.5f});
 
@@ -248,7 +249,7 @@ public class IntersectorTest {
 	}
 
 	@Test
-	public void testIntersectPolygonsWithTransformationsOnProvidedResultPolygon () {
+	public void testIntersectPolygonsWithTransformationsOnProvidedResultPolygon() {
 		Polygon p1 = new Polygon(new float[] {1, -1, 2, -1, 2, -2, 1, -2});
 		Polygon p2 = new Polygon(new float[] {0.5f, -1.5f, 1.5f, -1.5f, 1.5f, -2.5f});
 		Polygon intersectionPolygon = new Polygon(new float[8]);
@@ -265,6 +266,6 @@ public class IntersectorTest {
 		// verify that the origin has also been reset
 		intersectionPolygon.setScale(2, 2);
 		assertArrayEquals(new float[] {2 * 1, 2 * -2, 2 * 1, 2 * -1.5f, 2 * 1.5f, 2 * -1.5f, 2 * 1.5f, 2 * -2},
-			intersectionPolygon.getTransformedVertices(), 0);
+				intersectionPolygon.getTransformedVertices(), 0);
 	}
 }

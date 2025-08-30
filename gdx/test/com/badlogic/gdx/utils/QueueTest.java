@@ -1,4 +1,3 @@
-
 package com.badlogic.gdx.utils;
 
 import static org.junit.Assert.*;
@@ -10,7 +9,7 @@ import org.junit.Test;
 
 public class QueueTest {
 	@Test
-	public void addFirstAndLastTest () {
+	public void addFirstAndLastTest() {
 		Queue<Integer> queue = new Queue<Integer>();
 		queue.addFirst(1);
 		queue.addLast(2);
@@ -24,7 +23,7 @@ public class QueueTest {
 	}
 
 	@Test
-	public void removeLastTest () {
+	public void removeLastTest() {
 		Queue<Integer> queue = new Queue<Integer>();
 		queue.addLast(1);
 		queue.addLast(2);
@@ -33,25 +32,25 @@ public class QueueTest {
 
 		assertEquals(4, queue.size);
 		assertEquals(3, queue.indexOf(4, true));
-		assertEquals(4, (Object)queue.removeLast());
+		assertEquals(4, (Object) queue.removeLast());
 
 		assertEquals(3, queue.size);
 		assertEquals(2, queue.indexOf(3, true));
-		assertEquals(3, (Object)queue.removeLast());
+		assertEquals(3, (Object) queue.removeLast());
 
 		assertEquals(2, queue.size);
 		assertEquals(1, queue.indexOf(2, true));
-		assertEquals(2, (Object)queue.removeLast());
+		assertEquals(2, (Object) queue.removeLast());
 
 		assertEquals(1, queue.size);
 		assertEquals(0, queue.indexOf(1, true));
-		assertEquals(1, (Object)queue.removeLast());
+		assertEquals(1, (Object) queue.removeLast());
 
 		assertEquals(0, queue.size);
 	}
 
 	@Test
-	public void removeFirstTest () {
+	public void removeFirstTest() {
 		Queue<Integer> queue = new Queue<Integer>();
 		queue.addLast(1);
 		queue.addLast(2);
@@ -60,35 +59,35 @@ public class QueueTest {
 
 		assertEquals(4, queue.size);
 		assertEquals(0, queue.indexOf(1, true));
-		assertEquals(1, (Object)queue.removeFirst());
+		assertEquals(1, (Object) queue.removeFirst());
 
 		assertEquals(3, queue.size);
 		assertEquals(0, queue.indexOf(2, true));
-		assertEquals(2, (Object)queue.removeFirst());
+		assertEquals(2, (Object) queue.removeFirst());
 
 		assertEquals(2, queue.size);
 		assertEquals(0, queue.indexOf(3, true));
-		assertEquals(3, (Object)queue.removeFirst());
+		assertEquals(3, (Object) queue.removeFirst());
 
 		assertEquals(1, queue.size);
 		assertEquals(0, queue.indexOf(4, true));
-		assertEquals(4, (Object)queue.removeFirst());
+		assertEquals(4, (Object) queue.removeFirst());
 
 		assertEquals(0, queue.size);
 	}
 
 	@Test
-	public void resizableQueueTest () {
+	public void resizableQueueTest() {
 		final Queue<Integer> q = new Queue<Integer>(8);
 
 		assertTrue("New queue is not empty!", q.size == 0);
 
-		for (int i = 0; i < 100; i++) {
+		for(int i = 0; i < 100; i++) {
 
-			for (int j = 0; j < i; j++) {
+			for(int j = 0; j < i; j++) {
 				try {
 					q.addLast(j);
-				} catch (IllegalStateException e) {
+				} catch(IllegalStateException e) {
 					fail("Failed to add element " + j + " (" + i + ")");
 				}
 				final Integer peeked = q.last();
@@ -97,12 +96,12 @@ public class QueueTest {
 				assertTrue("Size should be " + (j + 1) + " but is " + size + " (" + i + ")", size == j + 1);
 			}
 
-			if (i != 0) {
+			if(i != 0) {
 				final Integer peek = q.first();
 				assertTrue("First thing is not zero but " + peek + " (" + i + ")", peek == 0);
 			}
 
-			for (int j = 0; j < i; j++) {
+			for(int j = 0; j < i; j++) {
 				final Integer pop = q.removeFirst();
 				assertTrue("Popped should be " + j + " but is " + pop + " (" + i + ")", pop == j);
 
@@ -113,7 +112,7 @@ public class QueueTest {
 			assertTrue("Not empty after cycle " + i, q.size == 0);
 		}
 
-		for (int i = 0; i < 56; i++) {
+		for(int i = 0; i < 56; i++) {
 			q.addLast(42);
 		}
 		q.clear();
@@ -122,17 +121,17 @@ public class QueueTest {
 
 	/** Same as resizableQueueTest, but in reverse */
 	@Test
-	public void resizableDequeTest () {
+	public void resizableDequeTest() {
 		final Queue<Integer> q = new Queue<Integer>(8);
 
 		assertTrue("New deque is not empty!", q.size == 0);
 
-		for (int i = 0; i < 100; i++) {
+		for(int i = 0; i < 100; i++) {
 
-			for (int j = 0; j < i; j++) {
+			for(int j = 0; j < i; j++) {
 				try {
 					q.addFirst(j);
-				} catch (IllegalStateException e) {
+				} catch(IllegalStateException e) {
 					fail("Failed to add element " + j + " (" + i + ")");
 				}
 				final Integer peeked = q.first();
@@ -141,12 +140,12 @@ public class QueueTest {
 				assertTrue("Size should be " + (j + 1) + " but is " + size + " (" + i + ")", size == j + 1);
 			}
 
-			if (i != 0) {
+			if(i != 0) {
 				final Integer peek = q.last();
 				assertTrue("Last thing is not zero but " + peek + " (" + i + ")", peek == 0);
 			}
 
-			for (int j = 0; j < i; j++) {
+			for(int j = 0; j < i; j++) {
 				final Integer pop = q.removeLast();
 				assertTrue("Popped should be " + j + " but is " + pop + " (" + i + ")", pop == j);
 
@@ -157,7 +156,7 @@ public class QueueTest {
 			assertTrue("Not empty after cycle " + i, q.size == 0);
 		}
 
-		for (int i = 0; i < 56; i++) {
+		for(int i = 0; i < 56; i++) {
 			q.addFirst(42);
 		}
 		q.clear();
@@ -165,18 +164,18 @@ public class QueueTest {
 	}
 
 	@Test
-	public void getTest () {
+	public void getTest() {
 		final Queue<Integer> q = new Queue<Integer>(7);
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 4; j++) {
+		for(int i = 0; i < 5; i++) {
+			for(int j = 0; j < 4; j++) {
 				q.addLast(j);
 			}
 			assertEquals("get(0) is not equal to peek (" + i + ")", q.get(0), q.first());
 			assertEquals("get(size-1) is not equal to peekLast (" + i + ")", q.get(q.size - 1), q.last());
-			for (int j = 0; j < 4; j++) {
+			for(int j = 0; j < 4; j++) {
 				assertTrue(q.get(j) == j);
 			}
-			for (int j = 0; j < 4 - 1; j++) {
+			for(int j = 0; j < 4 - 1; j++) {
 				q.removeFirst();
 				assertEquals("get(0) is not equal to peek (" + i + ")", q.get(0), q.first());
 			}
@@ -185,18 +184,18 @@ public class QueueTest {
 			try {
 				q.get(0);
 				fail("get() on empty queue did not throw");
-			} catch (IndexOutOfBoundsException ignore) {
+			} catch(IndexOutOfBoundsException ignore) {
 				// Expected
 			}
 		}
 	}
 
 	@Test
-	public void removeTest () {
+	public void removeTest() {
 		final Queue<Integer> q = new Queue<Integer>();
 
 		// Test head < tail.
-		for (int j = 0; j <= 6; j++)
+		for(int j = 0; j <= 6; j++)
 			q.addLast(j);
 		assertValues(q, 0, 1, 2, 3, 4, 5, 6);
 		q.removeIndex(0);
@@ -210,9 +209,9 @@ public class QueueTest {
 
 		// Test head >= tail and index >= head.
 		q.clear();
-		for (int j = 2; j >= 0; j--)
+		for(int j = 2; j >= 0; j--)
 			q.addFirst(j);
-		for (int j = 3; j <= 6; j++)
+		for(int j = 3; j <= 6; j++)
 			q.addLast(j);
 		assertValues(q, 0, 1, 2, 3, 4, 5, 6);
 		q.removeIndex(1);
@@ -222,9 +221,9 @@ public class QueueTest {
 
 		// Test head >= tail and index < tail.
 		q.clear();
-		for (int j = 2; j >= 0; j--)
+		for(int j = 2; j >= 0; j--)
 			q.addFirst(j);
-		for (int j = 3; j <= 6; j++)
+		for(int j = 3; j <= 6; j++)
 			q.addLast(j);
 		assertValues(q, 0, 1, 2, 3, 4, 5, 6);
 		q.removeIndex(5);
@@ -234,34 +233,34 @@ public class QueueTest {
 	}
 
 	@Test
-	public void indexOfTest () {
+	public void indexOfTest() {
 		final Queue<Integer> q = new Queue<Integer>();
 
 		// Test head < tail.
-		for (int j = 0; j <= 6; j++)
+		for(int j = 0; j <= 6; j++)
 			q.addLast(j);
-		for (int j = 0; j <= 6; j++)
+		for(int j = 0; j <= 6; j++)
 			assertEquals(q.indexOf(j, false), j);
 
 		// Test head >= tail.
 		q.clear();
-		for (int j = 2; j >= 0; j--)
+		for(int j = 2; j >= 0; j--)
 			q.addFirst(j);
-		for (int j = 3; j <= 6; j++)
+		for(int j = 3; j <= 6; j++)
 			q.addLast(j);
-		for (int j = 0; j <= 6; j++)
+		for(int j = 0; j <= 6; j++)
 			assertEquals(q.indexOf(j, false), j);
 	}
 
 	@Test
-	public void iteratorTest () {
+	public void iteratorTest() {
 		final Queue<Integer> q = new Queue<Integer>();
 
 		// Test head < tail.
-		for (int j = 0; j <= 6; j++)
+		for(int j = 0; j <= 6; j++)
 			q.addLast(j);
 		Iterator<Integer> iter = q.iterator();
-		for (int j = 0; j <= 6; j++)
+		for(int j = 0; j <= 6; j++)
 			assertEquals(iter.next().intValue(), j);
 		iter = q.iterator();
 		iter.next();
@@ -282,12 +281,12 @@ public class QueueTest {
 
 		// Test head >= tail.
 		q.clear();
-		for (int j = 2; j >= 0; j--)
+		for(int j = 2; j >= 0; j--)
 			q.addFirst(j);
-		for (int j = 3; j <= 6; j++)
+		for(int j = 3; j <= 6; j++)
 			q.addLast(j);
 		iter = q.iterator();
-		for (int j = 0; j <= 6; j++)
+		for(int j = 0; j <= 6; j++)
 			assertEquals(iter.next().intValue(), j);
 		iter = q.iterator();
 		iter.next();
@@ -308,17 +307,17 @@ public class QueueTest {
 	}
 
 	@Test
-	public void iteratorRemoveEdgeCaseTest () {// See #4300
+	public void iteratorRemoveEdgeCaseTest() {// See #4300
 		Queue<Integer> queue = new Queue<Integer>();
 
 		// Simulate normal usage
-		for (int i = 0; i < 100; i++) {
+		for(int i = 0; i < 100; i++) {
 			queue.addLast(i);
-			if (i > 50) queue.removeFirst();
+			if(i > 50) queue.removeFirst();
 		}
 
 		Iterator<Integer> it = queue.iterator();
-		while (it.hasNext()) {
+		while(it.hasNext()) {
 			it.next();
 			it.remove();
 		}
@@ -326,11 +325,11 @@ public class QueueTest {
 		queue.addLast(1337);
 
 		Integer i = queue.first();
-		assertEquals(1337, (int)i);
+		assertEquals(1337, (int) i);
 	}
 
 	@Test
-	public void toStringTest () {
+	public void toStringTest() {
 		Queue<Integer> q = new Queue<Integer>(1);
 		assertTrue(q.toString().equals("[]"));
 		q.addLast(4);
@@ -342,7 +341,7 @@ public class QueueTest {
 	}
 
 	@Test
-	public void hashEqualsTest () {
+	public void hashEqualsTest() {
 		Queue<Integer> q1 = new Queue<Integer>();
 		Queue<Integer> q2 = new Queue<Integer>();
 
@@ -358,7 +357,7 @@ public class QueueTest {
 		q2.addLast(2);
 		assertEqualsAndHash(q1, q2);
 
-		for (int i = 0; i < 100; i++) {
+		for(int i = 0; i < 100; i++) {
 			q1.addLast(i);
 			q1.addLast(i);
 			q1.removeFirst();
@@ -373,13 +372,13 @@ public class QueueTest {
 		}
 	}
 
-	private void assertEqualsAndHash (Queue<?> q1, Queue<?> q2) {
+	private void assertEqualsAndHash(Queue<?> q1, Queue<?> q2) {
 		assertEquals(q1, q2);
 		assertEquals("Hash codes are not equal", q1.hashCode(), q2.hashCode());
 	}
 
-	private void assertValues (Queue<Integer> q, Integer... values) {
-		for (int i = 0, n = values.length; i < n; i++) {
+	private void assertValues(Queue<Integer> q, Integer... values) {
+		for(int i = 0, n = values.length; i < n; i++) {
 			Assert.assertEquals(values[i], q.get(i));
 		}
 	}

@@ -7,25 +7,25 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ClasspathFileHandle extends FileHandle {
-	public ClasspathFileHandle (String path) {
+	public ClasspathFileHandle(String path) {
 		super(path);
 	}
 
 	@Override
-	public boolean exists () {
+	public boolean exists() {
 		return FileHandle.class.getResource(path) != null;
 	}
 
 	@Override
-	public FileHandle parent () {
+	public FileHandle parent() {
 		return new ClasspathFileHandle(parentPath());
 	}
 	@Override
-	public FileHandle sibling (String name) {
+	public FileHandle sibling(String name) {
 		return new ClasspathFileHandle(parentPath() + '/' + name);
 	}
 	@Override
-	public FileHandle child (String name) {
+	public FileHandle child(String name) {
 		return new ClasspathFileHandle(path + '/' + name);
 	}
 
@@ -35,17 +35,17 @@ public class ClasspathFileHandle extends FileHandle {
 	}
 
 	@Override
-	public InputStream read () {
+	public InputStream read() {
 		InputStream input = FileHandle.class.getResourceAsStream(path);
-		if (input == null) throw new GdxIoException("File not found: " + path);
+		if(input == null) throw new GdxIoException("File not found: " + path);
 		return input;
 	}
 
 	@Override
-	public long length () {
-		try (InputStream stream = read()) {
+	public long length() {
+		try(InputStream stream = read()) {
 			return stream.available();
-		} catch (IOException e) {
+		} catch(IOException e) {
 			throw new GdxIoException(e);
 		}
 	}
