@@ -1,6 +1,6 @@
 ## CelestialGDX
 
-An esoteric fork of LibGDX to cut down on stuff and improve performance.
+An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 
 **This fork is completely undocumented, untested outside of my specific usecase, breaks ABI in more ways than I can count, and doesn't follow the upstream code style. Please don't use it.**
 
