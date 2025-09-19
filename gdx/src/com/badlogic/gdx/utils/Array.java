@@ -17,6 +17,7 @@
 package com.badlogic.gdx.utils;
 
 import com.badlogic.gdx.math.MathUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -235,7 +236,7 @@ public class Array<T> implements Iterable<T> {
 	 * @param replacement the first value will be replaced by this replacement if found
 	 * @return if value was found and replaced
 	 */
-	public boolean replaceFirst(@Null T value, boolean identity, T replacement) {
+	public boolean replaceFirst(@Nullable T value, boolean identity, T replacement) {
 		T[] items = this.items;
 		if(identity || value == null) {
 			for(int i = 0, n = size; i < n; i++) {
@@ -262,7 +263,7 @@ public class Array<T> implements Iterable<T> {
 	 * @param replacement all occurrences of value will be replaced by this replacement
 	 * @return the number of replacements done
 	 */
-	public int replaceAll(@Null T value, boolean identity, @Null T replacement) {
+	public int replaceAll(@Nullable T value, boolean identity, @Nullable T replacement) {
 		T[] items = this.items;
 		int replacements = 0;
 		if(identity || value == null) {
@@ -288,7 +289,7 @@ public class Array<T> implements Iterable<T> {
 	 * @param value May be null.
 	 * @param identity If true, == comparison will be used. If false, .equals() comparison will be used.
 	 */
-	public boolean contains(@Null T value, boolean identity) {
+	public boolean contains(@Nullable T value, boolean identity) {
 		T[] items = this.items;
 		int i = size - 1;
 		if(identity || value == null) {
@@ -331,7 +332,7 @@ public class Array<T> implements Iterable<T> {
 	 * @param identity If true, == comparison will be used. If false, .equals() comparison will be used.
 	 * @return An index of first occurrence of value in array or -1 if no such value exists
 	 */
-	public int indexOf(@Null T value, boolean identity) {
+	public int indexOf(@Nullable T value, boolean identity) {
 		T[] items = this.items;
 		if(identity || value == null) {
 			for(int i = 0, n = size; i < n; i++)
@@ -350,7 +351,7 @@ public class Array<T> implements Iterable<T> {
 	 * @param identity If true, == comparison will be used. If false, .equals() comparison will be used.
 	 * @return An index of last occurrence of value in array or -1 if no such value exists
 	 */
-	public int lastIndexOf(@Null T value, boolean identity) {
+	public int lastIndexOf(@Nullable T value, boolean identity) {
 		T[] items = this.items;
 		if(identity || value == null) {
 			for(int i = size - 1; i >= 0; i--)
@@ -368,7 +369,7 @@ public class Array<T> implements Iterable<T> {
 	 * @param identity If true, == comparison will be used. If false, .equals() comparison will be used.
 	 * @return true if value was found and removed, false otherwise
 	 */
-	public boolean removeValue(@Null T value, boolean identity) {
+	public boolean removeValue(@Nullable T value, boolean identity) {
 		T[] items = this.items;
 		if(identity || value == null) {
 			for(int i = 0, n = size; i < n; i++) {
@@ -634,7 +635,7 @@ public class Array<T> implements Iterable<T> {
 	}
 
 	/** Returns a random item from the array, or null if the array is empty. */
-	public @Null T random() {
+	public @Nullable T random() {
 		if(size == 0) return null;
 		return items[MathUtils.random(0, size - 1)];
 	}

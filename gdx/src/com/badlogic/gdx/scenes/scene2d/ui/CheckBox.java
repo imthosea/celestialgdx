@@ -21,8 +21,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.Scaling;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A checkbox is a button that contains an image indicating the checked or unchecked state and a label.
@@ -33,15 +33,15 @@ public class CheckBox extends TextButton {
 	private final Cell imageCell;
 	private CheckBoxStyle style;
 
-	public CheckBox(@Null String text, Skin skin) {
+	public CheckBox(@Nullable String text, Skin skin) {
 		this(text, skin.get(CheckBoxStyle.class));
 	}
 
-	public CheckBox(@Null String text, Skin skin, String styleName) {
+	public CheckBox(@Nullable String text, Skin skin, String styleName) {
 		this(text, skin.get(styleName, CheckBoxStyle.class));
 	}
 
-	public CheckBox(@Null String text, CheckBoxStyle style) {
+	public CheckBox(@Nullable String text, CheckBoxStyle style) {
 		super(text, style);
 
 		Label label = getLabel();
@@ -79,7 +79,7 @@ public class CheckBox extends TextButton {
 		super.draw(batch, parentAlpha);
 	}
 
-	protected @Null Drawable getImageDrawable() {
+	protected @Nullable Drawable getImageDrawable() {
 		if(isDisabled()) {
 			if(isChecked && style.checkboxOnDisabled != null) return style.checkboxOnDisabled;
 			return style.checkboxOffDisabled;
@@ -105,12 +105,12 @@ public class CheckBox extends TextButton {
 	 */
 	static public class CheckBoxStyle extends TextButtonStyle {
 		public Drawable checkboxOn, checkboxOff;
-		public @Null Drawable checkboxOnOver, checkboxOver, checkboxOnDisabled, checkboxOffDisabled;
+		public @Nullable Drawable checkboxOnOver, checkboxOver, checkboxOnDisabled, checkboxOffDisabled;
 
 		public CheckBoxStyle() {
 		}
 
-		public CheckBoxStyle(Drawable checkboxOff, Drawable checkboxOn, BitmapFont font, @Null Color fontColor) {
+		public CheckBoxStyle(Drawable checkboxOff, Drawable checkboxOn, BitmapFont font, @Nullable Color fontColor) {
 			this.checkboxOff = checkboxOff;
 			this.checkboxOn = checkboxOn;
 			this.font = font;

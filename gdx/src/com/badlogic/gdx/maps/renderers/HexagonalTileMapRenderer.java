@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.maps.tiled.renderers;
+package com.badlogic.gdx.maps.renderers;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -22,7 +22,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.TiledMap;
 import com.badlogic.gdx.maps.layers.ImageLayer;
 import com.badlogic.gdx.maps.layers.TileLayer;
-import com.badlogic.gdx.maps.renderers.BatchTileMapRenderer;
 import com.badlogic.gdx.maps.tiles.TiledMapTile;
 
 import static com.badlogic.gdx.graphics.g2d.Batch.*;
@@ -154,13 +153,13 @@ public class HexagonalTileMapRenderer extends BatchTileMapRenderer {
 			final float tileHeightUpperCorner = (layerTileHeight + layerHexLength) / 2;
 			final float layerTileWidth50 = layerTileWidth * 0.50f;
 
-			final int row1 = Math.max(0, (int)(((viewBounds.y - tileHeightLowerCorner - layerOffsetY) / tileHeightUpperCorner)));
+			final int row1 = Math.max(0, (int) (((viewBounds.y - tileHeightLowerCorner - layerOffsetY) / tileHeightUpperCorner)));
 			final int row2 = Math.min(layerHeight,
-					(int)((viewBounds.y + viewBounds.height + tileHeightUpperCorner - layerOffsetY) / tileHeightUpperCorner));
+					(int) ((viewBounds.y + viewBounds.height + tileHeightUpperCorner - layerOffsetY) / tileHeightUpperCorner));
 
-			final int col1 = Math.max(0, (int)(((viewBounds.x - layerTileWidth50 - layerOffsetX) / layerTileWidth)));
+			final int col1 = Math.max(0, (int) (((viewBounds.x - layerTileWidth50 - layerOffsetX) / layerTileWidth)));
 			final int col2 = Math.min(layerWidth,
-					(int)((viewBounds.x + viewBounds.width + layerTileWidth - layerOffsetX) / layerTileWidth));
+					(int) ((viewBounds.x + viewBounds.width + layerTileWidth - layerOffsetX) / layerTileWidth));
 
 			float shiftX = 0;
 			for(int row = row2 - 1; row >= row1; row--) {

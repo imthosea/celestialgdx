@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -300,7 +302,7 @@ public class ObjectIntMap<K> implements Iterable<ObjectIntMap.Entry<K>> {
 	 * Returns the key for the specified value, or null if it is not in the map. Note this traverses the entire map and compares
 	 * every value, which may be an expensive operation.
 	 */
-	public @Null K findKey(int value) {
+	public @Nullable K findKey(int value) {
 		K[] keyTable = this.keyTable;
 		int[] valueTable = this.valueTable;
 		for(int i = valueTable.length - 1; i >= 0; i--) {

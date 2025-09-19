@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -77,7 +79,7 @@ public class Queue<T> implements Iterable<T> {
 	 * Append given object to the tail. (enqueue to tail) Unless backing array needs resizing, operates in O(1) time.
 	 * @param object can be null
 	 */
-	public void addLast(@Null T object) {
+	public void addLast(@Nullable T object) {
 		T[] values = this.values;
 
 		if(size == values.length) {
@@ -97,7 +99,7 @@ public class Queue<T> implements Iterable<T> {
 	 * @param object can be null
 	 * @see #addLast(Object)
 	 */
-	public void addFirst(@Null T object) {
+	public void addFirst(@Nullable T object) {
 		T[] values = this.values;
 
 		if(size == values.length) {

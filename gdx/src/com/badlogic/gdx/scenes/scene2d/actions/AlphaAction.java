@@ -18,7 +18,7 @@ package com.badlogic.gdx.scenes.scene2d.actions;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.utils.Null;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Sets the alpha for an actor's color (or a specified color), from the current alpha to the new alpha. Note this action
@@ -27,7 +27,7 @@ import com.badlogic.gdx.utils.Null;
  */
 public class AlphaAction extends TemporalAction {
 	private float start, end;
-	private @Null Color color;
+	private @Nullable Color color;
 
 	protected void begin() {
 		if(color == null) color = target.getColor();
@@ -48,7 +48,7 @@ public class AlphaAction extends TemporalAction {
 		color = null;
 	}
 
-	public @Null Color getColor() {
+	public @Nullable Color getColor() {
 		return color;
 	}
 
@@ -56,7 +56,7 @@ public class AlphaAction extends TemporalAction {
 	 * Sets the color to modify. If null (the default), the {@link #getActor() actor's} {@link Actor#getColor() color} will be
 	 * used.
 	 */
-	public void setColor(@Null Color color) {
+	public void setColor(@Nullable Color color) {
 		this.color = color;
 	}
 

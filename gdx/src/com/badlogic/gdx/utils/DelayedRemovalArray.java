@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Comparator;
 
 /**
@@ -168,12 +170,12 @@ public class DelayedRemovalArray<T> extends Array<T> {
 		super.swap(first, second);
 	}
 
-	public boolean replaceFirst(@Null T value, boolean identity, T replacement) {
+	public boolean replaceFirst(@Nullable T value, boolean identity, T replacement) {
 		if(iterating > 0) throw new IllegalStateException("Invalid between begin/end.");
 		return super.replaceFirst(value, identity, replacement);
 	}
 
-	public int replaceAll(@Null T value, boolean identity, @Null T replacement) {
+	public int replaceAll(@Nullable T value, boolean identity, @Nullable T replacement) {
 		if(iterating > 0) throw new IllegalStateException("Invalid between begin/end.");
 		return super.replaceAll(value, identity, replacement);
 	}

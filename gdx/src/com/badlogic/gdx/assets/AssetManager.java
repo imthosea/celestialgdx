@@ -50,7 +50,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.Logger;
-import com.badlogic.gdx.utils.Null;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -174,7 +174,7 @@ public class AssetManager implements Disposable {
 	 * @param required true to throw GdxRuntimeException if the asset is not loaded, else null is returned
 	 * @return the asset or null if it is not loaded and required is false
 	 */
-	public @Null <T> T get(String fileName, boolean required) {
+	public @Nullable <T> T get(String fileName, boolean required) {
 		Asset asset = assets.get(fileName);
 		if(asset != null) {
 			return (T) asset.object;
@@ -189,7 +189,7 @@ public class AssetManager implements Disposable {
 	 * @param required true to throw GdxRuntimeException if the asset is not loaded, else null is returned
 	 * @return the asset or null if it is not loaded and required is false
 	 */
-	public @Null <T> T get(String fileName, Class<T> type, boolean required) {
+	public @Nullable <T> T get(String fileName, Class<T> type, boolean required) {
 		Asset asset = assets.get(fileName);
 		if(asset != null && asset.type == type) {
 			return (T) asset.object;

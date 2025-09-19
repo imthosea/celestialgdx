@@ -24,8 +24,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.Cullable;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.SnapshotArray;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 2D scene graph node that may contain other actors.
@@ -43,7 +43,7 @@ public class Group extends Actor implements Cullable {
 	private final Matrix4 computedTransform = new Matrix4();
 	private final Matrix4 oldTransform = new Matrix4();
 	boolean transform = true;
-	private @Null Rectangle cullingArea;
+	private @Nullable Rectangle cullingArea;
 
 	public void act(float delta) {
 		super.act(delta);
@@ -249,7 +249,7 @@ public class Group extends Actor implements Cullable {
 	 * actors.
 	 * @param cullingArea May be null.
 	 */
-	public void setCullingArea(@Null Rectangle cullingArea) {
+	public void setCullingArea(@Nullable Rectangle cullingArea) {
 		this.cullingArea = cullingArea;
 	}
 
@@ -257,11 +257,11 @@ public class Group extends Actor implements Cullable {
 	 * @return May be null.
 	 * @see #setCullingArea(Rectangle)
 	 */
-	public @Null Rectangle getCullingArea() {
+	public @Nullable Rectangle getCullingArea() {
 		return cullingArea;
 	}
 
-	public @Null Actor hit(float x, float y, boolean touchable) {
+	public @Nullable Actor hit(float x, float y, boolean touchable) {
 		if(touchable && getTouchable() == Touchable.disabled) return null;
 		if(!isVisible()) return null;
 		Vector2 point = tmp;
@@ -420,7 +420,7 @@ public class Group extends Actor implements Cullable {
 	 * Returns the first actor found with the specified name. Note this recursively compares the name of every actor in the
 	 * group.
 	 */
-	public @Null <T extends Actor> T findActor(String name) {
+	public @Nullable <T extends Actor> T findActor(String name) {
 		Array<Actor> children = this.children;
 		for(int i = 0, n = children.size; i < n; i++)
 			if(name.equals(children.get(i).getName())) return (T) children.get(i);

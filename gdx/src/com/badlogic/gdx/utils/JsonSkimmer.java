@@ -20,6 +20,7 @@
 package com.badlogic.gdx.utils;
 
 import com.badlogic.gdx.files.FileHandle;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -582,7 +583,7 @@ public class JsonSkimmer {
 	 * Called when an object or array is encountered in the JSON.
 	 * @param object True when an object was encountered, else it was an array.
 	 */
-	protected void push(@Null String name, boolean object) {
+	protected void push(@Nullable String name, boolean object) {
 	}
 
 	/** Called when the end of an object or array is encountered in the JSON. */
@@ -590,6 +591,6 @@ public class JsonSkimmer {
 	}
 
 	/** Called when a value is encountered in the JSON. */
-	protected void value(@Null String name, String value, boolean unquoted) {
+	protected void value(@Nullable String name, String value, boolean unquoted) {
 	}
 }

@@ -17,6 +17,7 @@
 package com.badlogic.gdx.utils;
 
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -61,7 +62,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	}
 
 	/** @param value May be null. */
-	public JsonValue(@Null String value) {
+	public JsonValue(@Nullable String value) {
 		set(value);
 	}
 
@@ -90,7 +91,7 @@ public class JsonValue implements Iterable<JsonValue> {
 		this(value, null);
 	}
 
-	private JsonValue(JsonValue value, @Null JsonValue parent) {
+	private JsonValue(JsonValue value, @Nullable JsonValue parent) {
 		type = value.type;
 		stringValue = value.stringValue;
 		doubleValue = value.doubleValue;
@@ -110,7 +111,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * {@link JsonValue} for how to iterate efficiently.
 	 * @return May be null.
 	 */
-	public @Null JsonValue get(int index) {
+	public @Nullable JsonValue get(int index) {
 		JsonValue current = child;
 		while(current != null && index > 0) {
 			index--;
@@ -123,7 +124,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Returns the child with the specified name.
 	 * @return May be null.
 	 */
-	public @Null JsonValue get(String name) {
+	public @Nullable JsonValue get(String name) {
 		JsonValue current = child;
 		while(current != null && (current.name == null || !current.name.equalsIgnoreCase(name)))
 			current = current.next;
@@ -172,7 +173,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * {@link JsonValue} for how to iterate efficiently.
 	 * @return May be null.
 	 */
-	public @Null JsonValue remove(int index) {
+	public @Nullable JsonValue remove(int index) {
 		JsonValue child = get(index);
 		if(child == null) return null;
 		if(child.prev == null) {
@@ -190,7 +191,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Removes the child with the specified name.
 	 * @return May be null.
 	 */
-	public @Null JsonValue remove(String name) {
+	public @Nullable JsonValue remove(String name) {
 		JsonValue child = get(name);
 		if(child == null) return null;
 		if(child.prev == null) {
@@ -238,7 +239,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * @return May be null if this value is null.
 	 * @throws IllegalStateException if this an array or object.
 	 */
-	public @Null String asString() {
+	public @Nullable String asString() {
 		switch(type) {
 			case stringValue:
 				return stringValue;
@@ -688,7 +689,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Finds the child with the specified name and returns its first child.
 	 * @return May be null.
 	 */
-	public @Null JsonValue getChild(String name) {
+	public @Nullable JsonValue getChild(String name) {
 		JsonValue child = get(name);
 		return child == null ? null : child.child;
 	}
@@ -697,7 +698,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Finds the child with the specified name and returns it as a string. Returns defaultValue if not found.
 	 * @param defaultValue May be null.
 	 */
-	public String getString(String name, @Null String defaultValue) {
+	public String getString(String name, @Nullable String defaultValue) {
 		JsonValue child = get(name);
 		return (child == null || !child.isValue() || child.isNull()) ? defaultValue : child.asString();
 	}
@@ -989,12 +990,12 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Returns the name for this object value.
 	 * @return May be null.
 	 */
-	public @Null String name() {
+	public @Nullable String name() {
 		return name;
 	}
 
 	/** @param name May be null. */
-	public void setName(@Null String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 
@@ -1002,7 +1003,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Returns the parent for this value.
 	 * @return May be null.
 	 */
-	public @Null JsonValue parent() {
+	public @Nullable JsonValue parent() {
 		return parent;
 	}
 
@@ -1010,7 +1011,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Returns the first child for this object or array.
 	 * @return May be null.
 	 */
-	public @Null JsonValue child() {
+	public @Nullable JsonValue child() {
 		return child;
 	}
 
@@ -1082,7 +1083,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Returns the next sibling of this value.
 	 * @return May be null.
 	 */
-	public @Null JsonValue next() {
+	public @Nullable JsonValue next() {
 		return next;
 	}
 
@@ -1090,7 +1091,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Sets the next sibling of this value. Does not change the parent {@link #size()}.
 	 * @param next May be null.
 	 */
-	public void setNext(@Null JsonValue next) {
+	public void setNext(@Nullable JsonValue next) {
 		this.next = next;
 	}
 
@@ -1098,7 +1099,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Returns the previous sibling of this value.
 	 * @return May be null.
 	 */
-	public @Null JsonValue prev() {
+	public @Nullable JsonValue prev() {
 		return prev;
 	}
 
@@ -1106,18 +1107,18 @@ public class JsonValue implements Iterable<JsonValue> {
 	 * Sets the next sibling of this value. Does not change the parent {@link #size()}.
 	 * @param prev May be null.
 	 */
-	public void setPrev(@Null JsonValue prev) {
+	public void setPrev(@Nullable JsonValue prev) {
 		this.prev = prev;
 	}
 
 	/** @param value May be null. */
-	public void set(@Null String value) {
+	public void set(@Nullable String value) {
 		stringValue = value;
 		type = value == null ? ValueType.nullValue : ValueType.stringValue;
 	}
 
 	/** @param stringValue May be null if the string representation is the string value of the double (eg, no leading zeros). */
-	public void set(double value, @Null String stringValue) {
+	public void set(double value, @Nullable String stringValue) {
 		doubleValue = value;
 		longValue = (long) value;
 		this.stringValue = stringValue;
@@ -1125,7 +1126,7 @@ public class JsonValue implements Iterable<JsonValue> {
 	}
 
 	/** @param stringValue May be null if the string representation is the string value of the long (eg, no leading zeros). */
-	public void set(long value, @Null String stringValue) {
+	public void set(long value, @Nullable String stringValue) {
 		longValue = value;
 		doubleValue = value;
 		this.stringValue = stringValue;

@@ -24,10 +24,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.IntArray;
-import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.Pools;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Stores {@link GlyphRun runs} of glyphs for a piece of text. The text may contain newlines and color markup tags.
@@ -122,7 +122,7 @@ public class GlyphLayout implements Poolable {
 	 * Truncate should not be used with text that contains multiple lines. Wrap is ignored if truncate is not null.
 	 */
 	public void setText(BitmapFont font, CharSequence str, int start, int end, Color color, float targetWidth, int halign,
-	                    boolean wrap, @Null String truncate) {
+	                    boolean wrap, @Nullable String truncate) {
 
 		reset();
 

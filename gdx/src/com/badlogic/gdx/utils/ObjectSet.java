@@ -17,6 +17,7 @@
 package com.badlogic.gdx.utils;
 
 import com.badlogic.gdx.math.MathUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -264,7 +265,7 @@ public class ObjectSet<T> implements Iterable<T> {
 		return locateKey(key) >= 0;
 	}
 
-	public @Null T get(T key) {
+	public @Nullable T get(T key) {
 		int i = locateKey(key);
 		return i < 0 ? null : keyTable[i];
 	}

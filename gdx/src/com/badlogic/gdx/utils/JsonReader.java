@@ -21,6 +21,7 @@ package com.badlogic.gdx.utils;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonValue.ValueType;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -682,7 +683,7 @@ public class JsonReader implements BaseJsonReader {
 		return stop;
 	}
 
-	private void addChild(@Null String name, JsonValue child) {
+	private void addChild(@Nullable String name, JsonValue child) {
 		child.setName(name);
 		if(current == null) {
 			current = child;
@@ -703,7 +704,7 @@ public class JsonReader implements BaseJsonReader {
 	}
 
 	/** Called when an object is encountered in the JSON. */
-	protected void startObject(@Null String name) {
+	protected void startObject(@Nullable String name) {
 		JsonValue value = new JsonValue(ValueType.object);
 		if(current != null) addChild(name, value);
 		elements.add(value);
@@ -711,7 +712,7 @@ public class JsonReader implements BaseJsonReader {
 	}
 
 	/** Called when an array is encountered in the JSON. */
-	protected void startArray(@Null String name) {
+	protected void startArray(@Nullable String name) {
 		JsonValue value = new JsonValue(ValueType.array);
 		if(current != null) addChild(name, value);
 		elements.add(value);
@@ -726,22 +727,22 @@ public class JsonReader implements BaseJsonReader {
 	}
 
 	/** Called when a string value is encountered in the JSON. */
-	protected void string(@Null String name, String value) {
+	protected void string(@Nullable String name, String value) {
 		addChild(name, new JsonValue(value));
 	}
 
 	/** Called when a double value is encountered in the JSON. */
-	protected void number(@Null String name, double value, String stringValue) {
+	protected void number(@Nullable String name, double value, String stringValue) {
 		addChild(name, new JsonValue(value, stringValue));
 	}
 
 	/** Called when a long value is encountered in the JSON. */
-	protected void number(@Null String name, long value, String stringValue) {
+	protected void number(@Nullable String name, long value, String stringValue) {
 		addChild(name, new JsonValue(value, stringValue));
 	}
 
 	/** Called when a boolean value is encountered in the JSON. */
-	protected void bool(@Null String name, boolean value) {
+	protected void bool(@Nullable String name, boolean value) {
 		addChild(name, new JsonValue(value));
 	}
 

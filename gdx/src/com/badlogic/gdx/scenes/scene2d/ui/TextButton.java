@@ -22,7 +22,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Null;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A button with a child {@link Label} to display text.
@@ -32,17 +32,17 @@ public class TextButton extends Button {
 	private Label label;
 	private TextButtonStyle style;
 
-	public TextButton(@Null String text, Skin skin) {
+	public TextButton(@Nullable String text, Skin skin) {
 		this(text, skin.get(TextButtonStyle.class));
 		setSkin(skin);
 	}
 
-	public TextButton(@Null String text, Skin skin, String styleName) {
+	public TextButton(@Nullable String text, Skin skin, String styleName) {
 		this(text, skin.get(styleName, TextButtonStyle.class));
 		setSkin(skin);
 	}
 
-	public TextButton(@Null String text, TextButtonStyle style) {
+	public TextButton(@Nullable String text, TextButtonStyle style) {
 		super();
 		setStyle(style);
 		label = newLabel(text, new LabelStyle(style.font, style.fontColor));
@@ -75,7 +75,7 @@ public class TextButton extends Button {
 	}
 
 	/** Returns the appropriate label font color from the style based on the current button state. */
-	protected @Null Color getFontColor() {
+	protected @Nullable Color getFontColor() {
 		if(isDisabled() && style.disabledFontColor != null) return style.disabledFontColor;
 		if(isPressed()) {
 			if(isChecked() && style.checkedDownFontColor != null) return style.checkedDownFontColor;
@@ -117,7 +117,7 @@ public class TextButton extends Button {
 		return getCell(label);
 	}
 
-	public void setText(@Null String text) {
+	public void setText(@Nullable String text) {
 		label.setText(text);
 	}
 
@@ -140,13 +140,13 @@ public class TextButton extends Button {
 	 */
 	static public class TextButtonStyle extends ButtonStyle {
 		public BitmapFont font;
-		public @Null Color fontColor, downFontColor, overFontColor, focusedFontColor, disabledFontColor;
-		public @Null Color checkedFontColor, checkedDownFontColor, checkedOverFontColor, checkedFocusedFontColor;
+		public @Nullable Color fontColor, downFontColor, overFontColor, focusedFontColor, disabledFontColor;
+		public @Nullable Color checkedFontColor, checkedDownFontColor, checkedOverFontColor, checkedFocusedFontColor;
 
 		public TextButtonStyle() {
 		}
 
-		public TextButtonStyle(@Null Drawable up, @Null Drawable down, @Null Drawable checked, @Null BitmapFont font) {
+		public TextButtonStyle(@Nullable Drawable up, @Nullable Drawable down, @Nullable Drawable checked, @Nullable BitmapFont font) {
 			super(up, down, checked);
 			this.font = font;
 		}

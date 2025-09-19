@@ -6,8 +6,8 @@ import com.badlogic.gdx.maps.loader.element.ClassElement;
 import com.badlogic.gdx.maps.loader.element.MapElement;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.XmlReader;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public final class TiledLoaderUtils {
 
 	@FunctionalInterface
 	public interface ClassSupplier {
-		@Null
+		@Nullable
 		Iterable<TiledLoaderUtils.ProjectClassMember> getClassMembers(String name);
 	}
 
@@ -66,7 +66,7 @@ public final class TiledLoaderUtils {
 	public static void loadPropertiesFor(
 			MapProperties properties,
 			XmlReader.Element xml,
-			@Null ClassSupplier classSupplier
+			@Nullable ClassSupplier classSupplier
 	) {
 		XmlReader.Element element = xml.getChildByName("properties");
 		if(element != null) {
@@ -77,7 +77,7 @@ public final class TiledLoaderUtils {
 	public static void loadProperties(
 			MapProperties properties,
 			MapElement element,
-			@Null ClassSupplier classSupplier
+			@Nullable ClassSupplier classSupplier
 	) {
 		if(element == null) return;
 
@@ -108,7 +108,7 @@ public final class TiledLoaderUtils {
 
 	private static MapProperties loadClassProperties(
 			String className,
-			@Null Map<String, ClassElement> elements,
+			@Nullable Map<String, ClassElement> elements,
 			ClassSupplier classSupplier
 	) {
 		Iterable<ProjectClassMember> members;

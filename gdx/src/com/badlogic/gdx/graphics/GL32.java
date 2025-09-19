@@ -262,15 +262,15 @@ public interface GL32 extends GL31 {
 	// GLboolean enabled )
 
 	void glDebugMessageControl(int source, int type, int severity,
-			// int count,
-			                   java.nio.IntBuffer ids, boolean enabled);
+	                           // int count,
+	                           java.nio.IntBuffer ids, boolean enabled);
 
 	// C function void glDebugMessageInsert ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar
 	// *buf )
 
 	void glDebugMessageInsert(int source, int type, int id, int severity,
-			// int length
-			                  String buf);
+	                          // int length
+	                          String buf);
 
 	// C function void glDebugMessageCallback ( GLDEBUGPROC callback, const void *userParam )
 
@@ -332,8 +332,8 @@ public interface GL32 extends GL31 {
 	// C function void glPushDebugGroup ( GLenum source, GLuint id, GLsizei length, const GLchar *message )
 
 	void glPushDebugGroup(int source, int id,
-			// int length,
-			              String message);
+	                      // int length,
+	                      String message);
 
 	// C function void glPopDebugGroup ( void )
 
@@ -342,8 +342,8 @@ public interface GL32 extends GL31 {
 	// C function void glObjectLabel ( GLenum identifier, GLuint name, GLsizei length, const GLchar *label )
 
 	void glObjectLabel(int identifier, int name,
-			// int length,
-			           String label);
+	                   // int length,
+	                   String label);
 
 	// C function void glGetObjectLabel ( GLenum identifier, GLuint name, GLsizei bufSize, GLsizei *length, GLchar *label )
 
@@ -454,8 +454,8 @@ public interface GL32 extends GL31 {
 	// C function void glGetnUniformfv ( GLuint program, GLint location, GLsizei bufSize, GLfloat *params )
 
 	void glGetnUniformfv(int program, int location,
-			// int bufSize,
-			             java.nio.FloatBuffer params);
+	                     // int bufSize,
+	                     java.nio.FloatBuffer params);
 
 	// C function void glGetnUniformiv ( GLuint program, GLint location, GLsizei bufSize, GLint *params )
 
@@ -470,8 +470,8 @@ public interface GL32 extends GL31 {
 	// C function void glGetnUniformiv ( GLuint program, GLint location, GLsizei bufSize, GLint *params )
 
 	void glGetnUniformiv(int program, int location,
-			// int bufSize,
-			             java.nio.IntBuffer params);
+	                     // int bufSize,
+	                     java.nio.IntBuffer params);
 
 	// C function void glGetnUniformuiv ( GLuint program, GLint location, GLsizei bufSize, GLuint *params )
 
@@ -486,8 +486,8 @@ public interface GL32 extends GL31 {
 	// C function void glGetnUniformuiv ( GLuint program, GLint location, GLsizei bufSize, GLuint *params )
 
 	void glGetnUniformuiv(int program, int location,
-			// int bufSize,
-			              java.nio.IntBuffer params);
+	                      // int bufSize,
+	                      java.nio.IntBuffer params);
 
 	// C function void glMinSampleShading ( GLfloat value )
 

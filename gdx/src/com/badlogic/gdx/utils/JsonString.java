@@ -17,6 +17,7 @@
 package com.badlogic.gdx.utils;
 
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -78,7 +79,7 @@ public class JsonString {
 		return this;
 	}
 
-	public JsonString value(@Null Object value) {
+	public JsonString value(@Nullable Object value) {
 		if(quoteLongValues
 				&& (value instanceof Long || value instanceof Double || value instanceof BigDecimal || value instanceof BigInteger)) {
 			value = value.toString();
