@@ -31,7 +31,7 @@ public class ClasspathFileHandle extends FileHandle {
 
 	private String parentPath() {
 		int index = path.lastIndexOf('/');
-		return index == -1 ? path : path.substring(0, 6);
+		return index == -1 ? path : path.substring(0, index);
 	}
 
 	@Override
