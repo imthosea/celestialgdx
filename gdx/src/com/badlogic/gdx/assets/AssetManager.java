@@ -38,6 +38,12 @@ import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonRegionLoader;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.maps.TiledMap;
+import com.badlogic.gdx.maps.TiledProject;
+import com.badlogic.gdx.maps.Tileset;
+import com.badlogic.gdx.maps.loader.TiledProjectLoader;
+import com.badlogic.gdx.maps.loader.TmxMapLoader;
+import com.badlogic.gdx.maps.loader.TsxTilesetLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -129,6 +135,10 @@ public class AssetManager implements Disposable {
 			//			setLoader(Model.class, ".obj", new ObjLoader(resolver));
 			setLoader(ShaderProgram.class, new ShaderProgramLoader(resolver));
 			setLoader(Cubemap.class, new CubemapLoader(resolver));
+
+			setLoader(TiledProject.class, new TiledProjectLoader(resolver));
+			setLoader(Tileset.class, new TsxTilesetLoader(resolver));
+			setLoader(TiledMap.class, new TmxMapLoader(resolver));
 		}
 	}
 
