@@ -116,6 +116,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - Map, use TiledMap
 - MapRenderer interface
 - OrthoCachedTileMapRenderer
+- Base64-related classes
 
 ### Notes
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
