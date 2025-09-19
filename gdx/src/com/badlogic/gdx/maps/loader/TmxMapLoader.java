@@ -36,7 +36,6 @@ import com.badlogic.gdx.maps.layers.TileLayer.Cell;
 import com.badlogic.gdx.maps.loader.TmxMapLoader.TmxLoadContext.TilesetEntry;
 import com.badlogic.gdx.maps.objects.MapObject;
 import com.badlogic.gdx.maps.tiles.TiledMapTile;
-import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.XmlReader;
@@ -47,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -399,7 +399,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 	}
 
 	private static InputStream getStream(String compression, String text) throws IOException {
-		byte[] bytes = Base64Coder.decode(text);
+		byte[] bytes = Base64.getDecoder().decode(text);
 
 		return switch(compression) {
 			case null -> new ByteArrayInputStream(bytes);
