@@ -118,6 +118,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - OrthoCachedTileMapRenderer
 - Base64-related classes
 - Nullability annotations - use jetbrains annotations instead
+- AssetDescriptor.file
 
 ### Notes
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
