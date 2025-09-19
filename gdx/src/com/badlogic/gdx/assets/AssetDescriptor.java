@@ -27,8 +27,6 @@ public class AssetDescriptor<T> {
 	public final String fileName;
 	public final Class<T> type;
 	public final AssetLoaderParameters<T> params;
-	/** The resolved file. May be null if the fileName has not been resolved yet. */
-	public FileHandle file;
 
 	public AssetDescriptor(String fileName, Class<T> assetType) {
 		this(fileName, assetType, null);
@@ -48,7 +46,6 @@ public class AssetDescriptor<T> {
 	/** Creates an AssetDescriptor with an already resolved name. */
 	public AssetDescriptor(FileHandle file, Class<T> assetType, AssetLoaderParameters<T> params) {
 		this.fileName = file.path();
-		this.file = file;
 		this.type = assetType;
 		this.params = params;
 	}
