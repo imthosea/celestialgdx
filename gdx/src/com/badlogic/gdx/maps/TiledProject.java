@@ -2,7 +2,7 @@ package com.badlogic.gdx.maps;
 
 import com.badlogic.gdx.maps.loader.TiledLoaderUtils;
 import com.badlogic.gdx.maps.loader.TiledLoaderUtils.ClassSupplier;
-import com.badlogic.gdx.utils.Null;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -25,7 +25,7 @@ public class TiledProject implements ClassSupplier {
 	}
 
 	@Override
-	@Null
+	@Nullable
 	public Iterable<TiledLoaderUtils.ProjectClassMember> getClassMembers(String className) {
 		return classes.get(className);
 	}

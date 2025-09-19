@@ -18,7 +18,7 @@ package com.badlogic.gdx.maps.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.utils.Null;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @brief Represents a changing {@link TiledMapTile}.
@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.Null;
 public record AnimatedMapTile(
 		int id,
 		boolean isBlended,
-		@Null MapProperties properties,
+		@Nullable MapProperties properties,
 		int animationLength, AnimationFrame[] frames
 ) implements TiledMapTile {
 	public record AnimationFrame(int duration, TextureRegion texture) {}

@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -149,7 +151,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	}
 
 	/** Returns the old value associated with the specified key, or null. */
-	public @Null V put(K key, @Null V value) {
+	public @Nullable V put(K key, @Nullable V value) {
 		int i = locateKey(key);
 		if(i >= 0) { // Existing key was found.
 			V oldValue = valueTable[i];
@@ -175,7 +177,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	}
 
 	/** Skips checks for existing keys, doesn't increment size. */
-	private void putResize(K key, @Null V value) {
+	private void putResize(K key, @Nullable V value) {
 		K[] keyTable = this.keyTable;
 		for(int i = place(key); ; i = (i + 1) & mask) {
 			if(keyTable[i] == null) {
@@ -187,19 +189,19 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	}
 
 	/** Returns the value for the specified key, or null if the key is not in the map. */
-	public @Null <T extends K> V get(T key) {
+	public @Nullable <T extends K> V get(T key) {
 		int i = locateKey(key);
 		return i < 0 ? null : valueTable[i];
 	}
 
 	/** Returns the value for the specified key, or the default value if the key is not in the map. */
-	public V get(K key, @Null V defaultValue) {
+	public V get(K key, @Nullable V defaultValue) {
 		int i = locateKey(key);
 		return i < 0 ? defaultValue : valueTable[i];
 	}
 
 	/** Returns the value for the removed key, or null if the key is not in the map. */
-	public @Null V remove(K key) {
+	public @Nullable V remove(K key) {
 		int i = locateKey(key);
 		if(i < 0) return null;
 		K[] keyTable = this.keyTable;
@@ -266,7 +268,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	 * @param identity If true, uses == to compare the specified value with values in the map. If false, uses
 	 * {@link #equals(Object)}.
 	 */
-	public boolean containsValue(@Null Object value, boolean identity) {
+	public boolean containsValue(@Nullable Object value, boolean identity) {
 		V[] valueTable = this.valueTable;
 		if(value == null) {
 			K[] keyTable = this.keyTable;
@@ -292,7 +294,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	 * @param identity If true, uses == to compare the specified value with values in the map. If false, uses
 	 * {@link #equals(Object)}.
 	 */
-	public @Null K findKey(@Null Object value, boolean identity) {
+	public @Nullable K findKey(@Nullable Object value, boolean identity) {
 		V[] valueTable = this.valueTable;
 		if(value == null) {
 			K[] keyTable = this.keyTable;
@@ -373,7 +375,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 	}
 
 	/** Uses == for comparison of each value. */
-	public boolean equalsIdentity(@Null Object obj) {
+	public boolean equalsIdentity(@Nullable Object obj) {
 		if(obj == this) return true;
 		if(!(obj instanceof ObjectMap other)) return false;
 		if(other.size != size) return false;
@@ -501,7 +503,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	static public class Entry<K, V> {
 		public K key;
-		public @Null V value;
+		public @Nullable V value;
 
 		public String toString() {
 			return key + "=" + value;
@@ -600,7 +602,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 			return hasNext;
 		}
 
-		public @Null V next() {
+		public @Nullable V next() {
 			if(!hasNext) throw new NoSuchElementException();
 			if(!valid) throw new GdxRuntimeException("#iterator() cannot be used nested.");
 			V value = map.valueTable[nextIndex];

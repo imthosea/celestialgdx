@@ -18,13 +18,13 @@ package com.badlogic.gdx.maps.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.utils.Null;
+import org.jetbrains.annotations.Nullable;
 
 /** @brief Represents a non changing {@link TiledMapTile} (can be cached) */
 public record StaticMapTile(
 		int id,
 		boolean isBlended,
-		@Null MapProperties properties,
+		@Nullable MapProperties properties,
 		TextureRegion texture
 ) implements TiledMapTile {
 	public StaticMapTile(TiledMapTile base, MapProperties prop) {

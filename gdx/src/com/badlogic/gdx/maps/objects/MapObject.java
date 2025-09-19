@@ -18,14 +18,14 @@ package com.badlogic.gdx.maps.objects;
 
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiles.TiledMapTile;
-import com.badlogic.gdx.utils.Null;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class MapObject {
 	public record ObjectProfile(
 			String name,
 			String theClass,
 			int id,
-			@Null TiledMapTile tile
+			@Nullable TiledMapTile tile
 	) {}
 
 	private final ObjectProfile profile;

@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -126,7 +128,7 @@ public final class StreamUtils {
 	 * @param charset May be null to use the platform's default charset.
 	 */
 	public static String copyStreamToString(InputStream input, int estimatedSize,
-	                                        @Null String charset) throws IOException {
+	                                        @Nullable String charset) throws IOException {
 		InputStreamReader reader = charset == null ? new InputStreamReader(input) : new InputStreamReader(input, charset);
 		StringWriter writer = new StringWriter(Math.max(0, estimatedSize));
 		char[] buffer = new char[DEFAULT_BUFFER_SIZE];

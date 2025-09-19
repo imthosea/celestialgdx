@@ -5,8 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Value.Fixed;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A cell for a {@link Table}.
@@ -32,7 +32,7 @@ public class Cell<T extends Actor> implements Poolable {
 	Integer colspan;
 	Boolean uniformX, uniformY;
 
-	@Null Actor actor;
+	@Nullable Actor actor;
 	float actorX, actorY;
 	float actorWidth, actorHeight;
 
@@ -53,7 +53,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** Sets the actor in this cell and adds the actor to the cell's table. If null, removes any current actor. */
-	public <A extends Actor> Cell<A> setActor(@Null A newActor) {
+	public <A extends Actor> Cell<A> setActor(@Nullable A newActor) {
 		if(actor != newActor) {
 			if(actor != null && actor.getParent() == table) actor.remove();
 			actor = newActor;
@@ -69,7 +69,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** Returns the actor for this cell, or null. */
-	public @Null T getActor() {
+	public @Nullable T getActor() {
 		return (T) actor;
 	}
 
@@ -699,7 +699,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this cell is row defaults. */
-	public @Null Value getMinWidthValue() {
+	public @Nullable Value getMinWidthValue() {
 		return minWidth;
 	}
 
@@ -708,7 +708,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this cell is row defaults. */
-	public @Null Value getMinHeightValue() {
+	public @Nullable Value getMinHeightValue() {
 		return minHeight;
 	}
 
@@ -717,7 +717,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this cell is row defaults. */
-	public @Null Value getPrefWidthValue() {
+	public @Nullable Value getPrefWidthValue() {
 		return prefWidth;
 	}
 
@@ -726,7 +726,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this cell is row defaults. */
-	public @Null Value getPrefHeightValue() {
+	public @Nullable Value getPrefHeightValue() {
 		return prefHeight;
 	}
 
@@ -735,7 +735,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this cell is row defaults. */
-	public @Null Value getMaxWidthValue() {
+	public @Nullable Value getMaxWidthValue() {
 		return maxWidth;
 	}
 
@@ -744,7 +744,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this cell is row defaults. */
-	public @Null Value getMaxHeightValue() {
+	public @Nullable Value getMaxHeightValue() {
 		return maxHeight;
 	}
 
@@ -753,7 +753,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this value is not set. */
-	public @Null Value getSpaceTopValue() {
+	public @Nullable Value getSpaceTopValue() {
 		return spaceTop;
 	}
 
@@ -762,7 +762,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this value is not set. */
-	public @Null Value getSpaceLeftValue() {
+	public @Nullable Value getSpaceLeftValue() {
 		return spaceLeft;
 	}
 
@@ -771,7 +771,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this value is not set. */
-	public @Null Value getSpaceBottomValue() {
+	public @Nullable Value getSpaceBottomValue() {
 		return spaceBottom;
 	}
 
@@ -780,7 +780,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this value is not set. */
-	public @Null Value getSpaceRightValue() {
+	public @Nullable Value getSpaceRightValue() {
 		return spaceRight;
 	}
 
@@ -789,7 +789,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this value is not set. */
-	public @Null Value getPadTopValue() {
+	public @Nullable Value getPadTopValue() {
 		return padTop;
 	}
 
@@ -798,7 +798,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this value is not set. */
-	public @Null Value getPadLeftValue() {
+	public @Nullable Value getPadLeftValue() {
 		return padLeft;
 	}
 
@@ -807,7 +807,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this value is not set. */
-	public @Null Value getPadBottomValue() {
+	public @Nullable Value getPadBottomValue() {
 		return padBottom;
 	}
 
@@ -816,7 +816,7 @@ public class Cell<T extends Actor> implements Poolable {
 	}
 
 	/** @return May be null if this value is not set. */
-	public @Null Value getPadRightValue() {
+	public @Nullable Value getPadRightValue() {
 		return padRight;
 	}
 
@@ -834,35 +834,35 @@ public class Cell<T extends Actor> implements Poolable {
 		return padTop.get(actor) + padBottom.get(actor);
 	}
 
-	public @Null Float getFillX() {
+	public @Nullable Float getFillX() {
 		return fillX;
 	}
 
-	public @Null Float getFillY() {
+	public @Nullable Float getFillY() {
 		return fillY;
 	}
 
-	public @Null Integer getAlign() {
+	public @Nullable Integer getAlign() {
 		return align;
 	}
 
-	public @Null Integer getExpandX() {
+	public @Nullable Integer getExpandX() {
 		return expandX;
 	}
 
-	public @Null Integer getExpandY() {
+	public @Nullable Integer getExpandY() {
 		return expandY;
 	}
 
-	public @Null Integer getColspan() {
+	public @Nullable Integer getColspan() {
 		return colspan;
 	}
 
-	public @Null Boolean getUniformX() {
+	public @Nullable Boolean getUniformX() {
 		return uniformX;
 	}
 
-	public @Null Boolean getUniformY() {
+	public @Nullable Boolean getUniformY() {
 		return uniformY;
 	}
 
@@ -959,7 +959,7 @@ public class Cell<T extends Actor> implements Poolable {
 		uniformY = cell.uniformY;
 	}
 
-	void merge(@Null Cell cell) {
+	void merge(@Nullable Cell cell) {
 		if(cell == null) return;
 		if(cell.minWidth != null) minWidth = cell.minWidth;
 		if(cell.minHeight != null) minHeight = cell.minHeight;

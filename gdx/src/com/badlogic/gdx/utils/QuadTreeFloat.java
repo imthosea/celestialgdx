@@ -18,6 +18,7 @@ package com.badlogic.gdx.utils;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -37,7 +38,7 @@ public class QuadTreeFloat implements Poolable {
 	public final int maxValues, maxDepth;
 	public float x, y, width, height;
 	public int depth;
-	public @Null QuadTreeFloat nw, ne, sw, se;
+	public @Nullable QuadTreeFloat nw, ne, sw, se;
 
 	/** For each entry, stores the value, x, and y. */
 	public float[] values;

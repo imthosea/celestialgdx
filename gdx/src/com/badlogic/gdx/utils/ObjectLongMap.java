@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -300,7 +302,7 @@ public class ObjectLongMap<K> implements Iterable<ObjectLongMap.Entry<K>> {
 	 * Returns the key for the specified value, or null if it is not in the map. Note this traverses the entire map and compares
 	 * every value, which may be an expensive operation.
 	 */
-	public @Null K findKey(long value) {
+	public @Nullable K findKey(long value) {
 		K[] keyTable = this.keyTable;
 		long[] valueTable = this.valueTable;
 		for(int i = valueTable.length - 1; i >= 0; i--) {

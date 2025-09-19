@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
@@ -79,7 +81,7 @@ public class JsonWriter extends Writer {
 		return this;
 	}
 
-	public JsonWriter value(@Null Object value) throws IOException {
+	public JsonWriter value(@Nullable Object value) throws IOException {
 		if(quoteLongValues
 				&& (value instanceof Long || value instanceof Double || value instanceof BigDecimal || value instanceof BigInteger)) {
 			value = value.toString();
@@ -187,7 +189,7 @@ public class JsonWriter extends Writer {
 		static private final Pattern minimalNamePattern = Pattern.compile("^[^\":,}/ ][^:]*$");
 		static private final Pattern minimalValuePattern = Pattern.compile("^[^\":,{\\[\\]/ ][^}\\],]*$");
 
-		public String quoteValue(@Null Object value) {
+		public String quoteValue(@Nullable Object value) {
 			if(value == null) return "null";
 			String string = value.toString();
 			if(value instanceof Number || value instanceof Boolean) return string;

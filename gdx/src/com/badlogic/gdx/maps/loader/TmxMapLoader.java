@@ -37,9 +37,9 @@ import com.badlogic.gdx.maps.loader.TmxMapLoader.TmxLoadContext.TilesetEntry;
 import com.badlogic.gdx.maps.objects.MapObject;
 import com.badlogic.gdx.maps.tiles.TiledMapTile;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -338,7 +338,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		return b & 0xFF;
 	}
 
-	private ObjectLayer loadObjectGroup(TmxMapLoader.TmxLoadContext ctx, @Null MapLayer parent, Element element) {
+	private ObjectLayer loadObjectGroup(TmxMapLoader.TmxLoadContext ctx, @Nullable MapLayer parent, Element element) {
 		ObjectLayer layer = new ObjectLayer(element.getAttribute("name"), parent, ctx.map);
 		loadLayerProperties(layer, element, ctx);
 

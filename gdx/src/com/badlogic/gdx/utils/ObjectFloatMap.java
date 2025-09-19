@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -321,7 +323,7 @@ public class ObjectFloatMap<K> implements Iterable<ObjectFloatMap.Entry<K>> {
 	 * Returns the key for the specified value, or null if it is not in the map. Note this traverses the entire map and compares
 	 * every value, which may be an expensive operation.
 	 */
-	public @Null K findKey(float value) {
+	public @Nullable K findKey(float value) {
 		K[] keyTable = this.keyTable;
 		float[] valueTable = this.valueTable;
 		for(int i = valueTable.length - 1; i >= 0; i--) {
@@ -335,7 +337,7 @@ public class ObjectFloatMap<K> implements Iterable<ObjectFloatMap.Entry<K>> {
 	 * Returns the key for the specified value, or null if it is not in the map. Note this traverses the entire map and compares
 	 * every value, which may be an expensive operation.
 	 */
-	public @Null K findKey(float value, float epsilon) {
+	public @Nullable K findKey(float value, float epsilon) {
 		K[] keyTable = this.keyTable;
 		float[] valueTable = this.valueTable;
 		for(int i = valueTable.length - 1; i >= 0; i--) {

@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -64,7 +66,7 @@ public class DataOutput extends DataOutputStream {
 	 * Writes a length and then the string as UTF8.
 	 * @param value May be null.
 	 */
-	public void writeString(@Null String value) throws IOException {
+	public void writeString(@Nullable String value) throws IOException {
 		if(value == null) {
 			write(0);
 			return;

@@ -23,7 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.utils.Null;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A listener that shows a tooltip actor when the mouse is over another actor.
@@ -38,12 +38,12 @@ public class Tooltip<T extends Actor> extends InputListener {
 	Actor targetActor;
 
 	/** @param contents May be null. */
-	public Tooltip(@Null T contents) {
+	public Tooltip(@Nullable T contents) {
 		this(contents, TooltipManager.getInstance());
 	}
 
 	/** @param contents May be null. */
-	public Tooltip(@Null T contents, TooltipManager manager) {
+	public Tooltip(@Nullable T contents, TooltipManager manager) {
 		this.manager = manager;
 
 		container = new Container(contents) {
@@ -63,11 +63,11 @@ public class Tooltip<T extends Actor> extends InputListener {
 		return container;
 	}
 
-	public void setActor(@Null T contents) {
+	public void setActor(@Nullable T contents) {
 		container.setActor(contents);
 	}
 
-	public @Null T getActor() {
+	public @Nullable T getActor() {
 		return container.getActor();
 	}
 
@@ -126,7 +126,7 @@ public class Tooltip<T extends Actor> extends InputListener {
 		container.setOrigin(point.x, point.y);
 	}
 
-	public void enter(InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
+	public void enter(InputEvent event, float x, float y, int pointer, @Nullable Actor fromActor) {
 		if(pointer != -1) return;
 		if(touchIndependent && Gdx.input.isTouched()) return;
 		Actor actor = event.getListenerActor();
@@ -135,7 +135,7 @@ public class Tooltip<T extends Actor> extends InputListener {
 		manager.enter(this);
 	}
 
-	public void exit(InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
+	public void exit(InputEvent event, float x, float y, int pointer, @Nullable Actor toActor) {
 		if(toActor != null && toActor.isDescendantOf(event.getListenerActor())) return;
 		hide();
 	}
