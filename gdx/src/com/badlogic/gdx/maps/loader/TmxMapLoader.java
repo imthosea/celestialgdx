@@ -45,6 +45,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -231,8 +232,11 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		TiledMap map = new TiledMap(prop, layers, mapWidth, mapHeight, tileWidth, tileHeight);
 		ctx.map = map;
 
-		for(Element element : root.getChildrenByName("layer")) {
-			layers.add(loadLayer(ctx, null, element));
+		for(Element element : root.getChildren()) {
+			MapLayer layer = loadLayer(ctx, null, element);
+			if(layer != null) {
+				layers.add(layer);
+			}
 		}
 
 		return new WorkResult(map, ctx.deferredTasks);
@@ -245,7 +249,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 			case "layer" -> loadTileLayer(element, parent, ctx);
 			case "objectgroup" -> loadObjectGroup(ctx, parent, element);
 			case "imagelayer" -> loadImageLayer(element, parent, ctx);
-			default -> throw new GdxRuntimeException("Unknown layer " + name);
+			default -> null;
 		};
 	}
 
@@ -255,7 +259,13 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 
 		for(int i = 0; i < element.getChildCount(); i++) {
 			Element child = element.getChild(i);
-			layer.getLayers().add(loadLayer(ctx, layer, child));
+
+			MapLayer childLayer = loadLayer(ctx, layer, child);
+			if(childLayer == null) {
+				throw new GdxRuntimeException("Unknown layer " + element.getName());
+			} else {
+				layer.getLayers().add(childLayer);
+			}
 		}
 
 		return layer;
@@ -386,10 +396,6 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		layer.setOffsetX(element.getFloatAttribute("offsetx", 0));
 		layer.setOffsetY(element.getFloatAttribute("offsety", 0));
 
-		if(ctx.parameter.flipY) {
-			layer.setOffsetY(ctx.heightInPixels - layer.getOffsetY());
-		}
-
 		layer.setParallaxX(element.getFloatAttribute("parallaxx", 1f));
 		layer.setParallaxY(element.getFloatAttribute("parallaxy", 1f));
 
@@ -399,7 +405,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 	}
 
 	private static InputStream getStream(String compression, String text) throws IOException {
-		byte[] bytes = Base64.getDecoder().decode(text);
+		byte[] bytes = Base64.getDecoder().decode(text.getBytes(StandardCharsets.UTF_8));
 
 		return switch(compression) {
 			case null -> new ByteArrayInputStream(bytes);

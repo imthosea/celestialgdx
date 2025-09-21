@@ -28,8 +28,8 @@ public final class TiledLoaderUtils {
 	 * </ul>
 	 */
 	public record ProjectClassMember(
-			String type,
 			String name,
+			String type,
 			String propertyType,
 			JsonValue defaultValue
 	) {}
@@ -87,7 +87,7 @@ public final class TiledLoaderUtils {
 
 			if("class".equals(type)) {
 				properties.put(name, loadClassProperties(
-						property.getAttribute("propertype"),
+						property.getAttribute("propertytype"),
 						property.getClassElements(),
 						classSupplier
 				));
@@ -124,9 +124,10 @@ public final class TiledLoaderUtils {
 		for(ProjectClassMember member : members) {
 			String name = member.name();
 			String type = member.type();
-			ClassElement prop = elements != null
-					? elements.get(name)
-					: ClassElement.json(member.defaultValue());
+
+			ClassElement prop = null;
+			if(elements != null) prop = elements.get(name);
+			if(prop == null) prop = ClassElement.json(member.defaultValue());
 
 			if("class".equals(type)) {
 				result.put(name, loadClassProperties(
