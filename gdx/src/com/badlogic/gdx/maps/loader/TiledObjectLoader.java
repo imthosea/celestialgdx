@@ -44,8 +44,8 @@ public final class TiledObjectLoader {
 				obj.underline = "1".equals(element.getAttribute("underline"));
 				obj.strikeout = "1".equals(element.getAttribute("strikeout"));
 				obj.kerning = !"0".equals(element.getAttribute("kerning")); // default: false
-				obj.horizontalAlign = TextHAlign.of(element.getAttribute("halign"));
-				obj.verticalAlign = TextVAlign.of(element.getAttribute("valign"));
+				obj.horizontalAlign = TextHAlign.of(element.getAttribute("halign", "left"));
+				obj.verticalAlign = TextVAlign.of(element.getAttribute("valign", "top"));
 				return obj;
 			}
 	));
@@ -115,7 +115,7 @@ public final class TiledObjectLoader {
 			parser = getParser("");
 		} else {
 			subElement = element.getChild(0);
-			parser = getParser(element.getName());
+			parser = getParser(subElement.getName());
 		}
 
 		MapObject result = parser.parse(new ObjectParseContext(

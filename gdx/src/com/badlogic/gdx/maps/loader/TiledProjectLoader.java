@@ -44,24 +44,28 @@ public final class TiledProjectLoader extends AssetLoader<TiledProject, TiledPro
 	public TiledProject load(String path, Parameters parameter, AssetLoadingContext<TiledProject> ctx) throws Exception {
 		char[] data = resolve(path).readString().toCharArray();
 		return ctx.awaitWork(() -> {
-			JsonValue json = new JsonReader().parse(data, 0, data.length);
-
-			Map<String, Iterable<TiledLoaderUtils.ProjectClassMember>> classes;
-			MapProperties properties;
-
-			if(parameter.loadCustomClasses) {
-				classes = loadClasses(json.get("propertyTypes"));
-			} else {
-				classes = Map.of();
-			}
-			if(parameter.loadProperties) {
-				properties = loadProperties(classes, json.get("properties"));
-			} else {
-				properties = new MapProperties();
-			}
-
-			return new TiledProject(classes, properties);
+			return load(parameter != null ? parameter : new Parameters(), data);
 		});
+	}
+
+	private TiledProject load(Parameters parameter, char[] data) {
+		JsonValue json = new JsonReader().parse(data, 0, data.length);
+
+		Map<String, Iterable<TiledLoaderUtils.ProjectClassMember>> classes;
+		MapProperties properties;
+
+		if(parameter.loadCustomClasses) {
+			classes = loadClasses(json.get("propertyTypes"));
+		} else {
+			classes = Map.of();
+		}
+		if(parameter.loadProperties) {
+			properties = loadProperties(classes, json.get("properties"));
+		} else {
+			properties = new MapProperties();
+		}
+
+		return new TiledProject(classes, properties);
 	}
 
 	private Map<String, Iterable<TiledLoaderUtils.ProjectClassMember>> loadClasses(JsonValue json) {
