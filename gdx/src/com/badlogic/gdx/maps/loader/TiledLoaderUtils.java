@@ -6,7 +6,7 @@ import com.badlogic.gdx.maps.loader.element.ClassElement;
 import com.badlogic.gdx.maps.loader.element.MapElement;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.XmlReader;
+import com.badlogic.gdx.utils.XmlElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -65,10 +65,10 @@ public final class TiledLoaderUtils {
 
 	public static void loadPropertiesFor(
 			MapProperties properties,
-			XmlReader.Element xml,
+			XmlElement xml,
 			@Nullable ClassSupplier classSupplier
 	) {
-		XmlReader.Element element = xml.getChildByName("properties");
+		XmlElement element = xml.getChildByName("properties");
 		if(element != null) {
 			loadProperties(properties, MapElement.xml(element), classSupplier);
 		}

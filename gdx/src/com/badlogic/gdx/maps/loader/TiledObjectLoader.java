@@ -13,9 +13,10 @@ import com.badlogic.gdx.maps.objects.TextObject;
 import com.badlogic.gdx.maps.objects.TextObject.TextHAlign;
 import com.badlogic.gdx.maps.objects.TextObject.TextVAlign;
 import com.badlogic.gdx.maps.tiles.TiledMapTile;
-import com.badlogic.gdx.utils.XmlReader.Element;
+import com.badlogic.gdx.utils.XmlElement;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -33,7 +34,7 @@ public final class TiledObjectLoader {
 			"polygon", ctx -> new PolygonObject(ctx.profile, parsePoints(ctx)),
 			"polyline", ctx -> new PolylineObject(ctx.profile, parsePoints(ctx)),
 			"text", ctx -> {
-				Element element = ctx.element;
+				XmlElement element = ctx.element;
 				TextObject obj = new TextObject(ctx.profile, ctx.x, ctx.y, ctx.width, ctx.height);
 				obj.text = element.getText();
 				obj.fontFamily = element.getAttribute("fontfamily");
@@ -53,7 +54,7 @@ public final class TiledObjectLoader {
 	@FunctionalInterface
 	public interface ObjectParser<T extends MapObject> {
 		record ObjectParseContext(
-				Element element, ObjectProfile profile,
+				XmlElement element, ObjectProfile profile,
 				boolean flipY, float scaleX, float scaleY,
 				float x, float y, float width, float height
 		) {}
@@ -65,7 +66,7 @@ public final class TiledObjectLoader {
 		 * @return vertices
 		 */
 		static float[] parsePoints(ObjectParseContext ctx) {
-			String[] points = ctx.element.getAttribute("points").split(" ");
+			String[] points = ctx.element.expectAttribute("points").split(" ");
 			float[] vertices = new float[points.length * 2];
 			for(int i = 0; i < points.length; i++) {
 				String[] point = points[i].split(",");
@@ -85,36 +86,37 @@ public final class TiledObjectLoader {
 	}
 
 	public static MapObject read(
-			Element element,
+			XmlElement xml,
 			float heightInPixels, boolean flipY,
 			float scaleX, float scaleY,
 			Function<Integer, TiledMapTile> tileSupplier
 	) {
-		int id = element.getIntAttribute("id");
-		String name = element.getAttribute("name", "");
-		String clazz = element.getAttribute("type", "");
+		int id = xml.getIntAttribute("id");
+		String name = xml.getAttribute("name", "");
+		String clazz = xml.getAttribute("type", "");
 
-		float x = element.getFloatAttribute("x", 0) * scaleX;
-		float y = element.getFloatAttribute("y", 0);
+		float x = xml.getFloatAttribute("x", 0) * scaleX;
+		float y = xml.getFloatAttribute("y", 0);
 		if(flipY) y = heightInPixels - y;
 		y *= scaleY;
 
-		float width = element.getFloatAttribute("width", 0) * scaleX;
-		float height = element.getFloatAttribute("height", 0) * scaleY;
+		float width = xml.getFloatAttribute("width", 0) * scaleX;
+		float height = xml.getFloatAttribute("height", 0) * scaleY;
 
-		int gid = element.getIntAttribute("gid", -1);
+		int gid = xml.getIntAttribute("gid", -1);
 		TiledMapTile tile = gid != -1 ? tileSupplier.apply(gid) : null;
 
 		// TODO template support
 
+		List<XmlElement> children = xml.getChildren();
 		ObjectParser<?> parser;
-		Element subElement;
-		if(element.getChildCount() <= 0) {
+		XmlElement subElement;
+		if(children.isEmpty()) {
 			// rectangles don't specify any ID
 			subElement = null;
 			parser = getParser("");
 		} else {
-			subElement = element.getChild(0);
+			subElement = children.getFirst();
 			parser = getParser(subElement.getName());
 		}
 
@@ -124,7 +126,7 @@ public final class TiledObjectLoader {
 				flipY, scaleX, scaleY,
 				x, y, width, height
 		));
-		result.setVisible(element.getAttribute("visible", "1").equals("1"));
+		result.setVisible(xml.getAttribute("visible", "1").equals("1"));
 		return result;
 	}
 }

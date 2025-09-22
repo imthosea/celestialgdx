@@ -132,7 +132,6 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - remove use of deprecated code
 - remove reflection entirely
 - remove Json class (it is a MESS) in favor of Jankson
-- remove XML parser in favor of stdlib
 - unspaghetify TextureAtlas
 - remove more useless stdlib replication classes
 - make TextureRegion and its subclasses immutable

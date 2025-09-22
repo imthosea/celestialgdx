@@ -1,7 +1,7 @@
 package com.badlogic.gdx.maps.loader.element;
 
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.XmlReader;
+import com.badlogic.gdx.utils.XmlElement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ public interface ClassElement {
 
 	Map<String, ClassElement> getClassElements();
 
-	static ClassElement xml(XmlReader.Element element) {
+	static ClassElement xml(XmlElement element) {
 		MapElement delegate = MapElement.xml(element);
 		return new ClassElement() {
 			@Override

@@ -1,13 +1,12 @@
 package com.badlogic.gdx.maps.loader.element;
 
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.XmlReader;
+import com.badlogic.gdx.utils.XmlElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * celestialgdx - abstraction between XML and JSON for tiled property loading
@@ -19,7 +18,7 @@ public interface MapElement {
 
 	Map<String, ClassElement> getClassElements();
 
-	static MapElement xml(XmlReader.Element element) {
+	static MapElement xml(XmlElement element) {
 		return element == null ? null : new MapElement() {
 			@Override
 			public String getAttribute(String name) {
@@ -28,7 +27,7 @@ public interface MapElement {
 
 			@Override
 			public List<MapElement> getChildren() {
-				return Stream.of(element.getChildren().items)
+				return element.getChildren().stream()
 						.map(MapElement::xml)
 						.toList();
 			}
@@ -38,10 +37,11 @@ public interface MapElement {
 				var properties = element.getChildByName("properties");
 				if(properties == null) return null;
 
-				var result = new HashMap<String, ClassElement>();
-				properties.getChildren().forEach(element -> {
-					result.put(element.getAttribute("name"), ClassElement.xml(element));
-				});
+				List<XmlElement> elements = properties.getChildren();
+				var result = new HashMap<String, ClassElement>(elements.size());
+				for(XmlElement element : elements) {
+					result.put(element.expectAttribute("name"), ClassElement.xml(element));
+				}
 				return result;
 			}
 		};
@@ -64,6 +64,8 @@ public interface MapElement {
 			@Override
 			public Map<String, ClassElement> getClassElements() {
 				JsonValue value = element.get("value");
+				if(value == null) return Map.of();
+
 				var result = new HashMap<String, ClassElement>();
 				value.iterator().forEach(element -> {
 					result.put(element.name, ClassElement.json(element));
