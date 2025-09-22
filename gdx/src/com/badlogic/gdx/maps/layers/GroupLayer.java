@@ -26,8 +26,8 @@ import java.util.List;
 public class GroupLayer extends MapLayer {
 	private final List<MapLayer> layers = new ArrayList<>();
 
-	public GroupLayer(String name, MapLayer parent, TiledMap map) {
-		super(name, parent, map);
+	public GroupLayer(MapLayer parent, TiledMap map) {
+		super(parent, map);
 	}
 
 	/** @return the {@link MapLayer}s owned by this group */

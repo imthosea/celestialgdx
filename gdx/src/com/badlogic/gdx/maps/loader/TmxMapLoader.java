@@ -38,7 +38,6 @@ import com.badlogic.gdx.maps.objects.MapObject;
 import com.badlogic.gdx.maps.tiles.TiledMapTile;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.XmlElement;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -255,7 +254,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 	}
 
 	private MapLayer loadGroupLayer(XmlElement xml, MapLayer parent, TmxMapLoader.TmxLoadContext ctx) {
-		GroupLayer layer = new GroupLayer(xml.expectAttribute("name"), parent, ctx.map);
+		GroupLayer layer = new GroupLayer(parent, ctx.map);
 		loadLayerProperties(layer, xml, ctx);
 
 		for(XmlElement child : xml.getChildren()) {
@@ -275,7 +274,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		int height = xml.getIntAttribute("height", 0);
 
 		TileLayer layer = new TileLayer(
-				xml.expectAttribute("name"), parent, ctx.map,
+				parent, ctx.map,
 				width, height, ctx.tileWidth, ctx.tileHeight
 		);
 		loadLayerProperties(layer, xml, ctx);
@@ -348,10 +347,10 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 	}
 
 	private ObjectLayer loadObjectGroup(
-			TmxMapLoader.TmxLoadContext ctx, @Nullable MapLayer parent,
+			TmxMapLoader.TmxLoadContext ctx, MapLayer parent,
 			XmlElement xml
 	) {
-		ObjectLayer layer = new ObjectLayer(xml.expectAttribute("name"), parent, ctx.map);
+		ObjectLayer layer = new ObjectLayer(parent, ctx.map);
 		loadLayerProperties(layer, xml, ctx);
 
 		Function<Integer, TiledMapTile> tileSupplier = ctx::tile;
@@ -372,7 +371,6 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 
 	private MapLayer loadImageLayer(XmlElement xml, MapLayer parent, TmxLoadContext ctx) {
 		ImageLayer layer = new ImageLayer(
-				xml.expectAttribute("name"),
 				parent, ctx.map,
 				xml.getIntAttribute("repeatx", 0) == 1,
 				xml.getIntAttribute("repeaty", 0) == 1
@@ -391,8 +389,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 	}
 
 	private void loadLayerProperties(MapLayer layer, XmlElement xml, TmxMapLoader.TmxLoadContext ctx) {
-		TiledLoaderUtils.loadPropertiesFor(layer.getProperties(), xml, ctx.project);
-
+		layer.setName(xml.expectAttribute("name"));
 		layer.setVisible(xml.getIntAttribute("visible", 1) == 1);
 		layer.setOpacity(xml.getFloatAttribute("opacity", 1.0f));
 		layer.setOffsetX(xml.getFloatAttribute("offsetx", 0));
@@ -404,6 +401,8 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		// set layer tint color after converting from #AARRGGBB to #RRGGBBAA
 		String tintColor = xml.getAttribute("tintcolor", "#ffffffff");
 		layer.setTint(Color.valueOf(TiledLoaderUtils.tiledToGdxColor(tintColor)));
+
+		TiledLoaderUtils.loadPropertiesFor(layer.getProperties(), xml, ctx.project);
 	}
 
 	private static InputStream getStream(String compression, String text) throws IOException {
