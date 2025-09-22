@@ -13,7 +13,9 @@ import com.badlogic.gdx.maps.loader.element.MapElement;
 import com.badlogic.gdx.maps.tiles.AnimatedMapTile;
 import com.badlogic.gdx.maps.tiles.StaticMapTile;
 import com.badlogic.gdx.maps.tiles.TiledMapTile;
-import com.badlogic.gdx.utils.XmlReader;
+import com.badlogic.gdx.utils.XmlElement;
+
+import java.io.InputStream;
 
 /*
  TODO celestialgdx this code is kinda unreadable but i really dont wanna fix it
@@ -25,22 +27,24 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 
 	@Override
 	public Tileset load(String path, Parameters param, AssetLoadingContext<Tileset> ctx) throws Exception {
-		String data = resolve(path).readString("UTF-8");
-		XmlReader.Element element = new XmlReader().parse(data);
+		XmlElement xml;
+		try(InputStream stream = resolve(path).read()) {
+			xml = XmlElement.parse(stream);
+		}
 		if(param == null) param = new Parameters();
-		return load(path, element, param, ctx);
+		return load(path, xml, param, ctx);
 	}
 
 	private Tileset load(
 			String path,
-			XmlReader.Element root,
+			XmlElement root,
 			Parameters param,
 			AssetLoadingContext<Tileset> ctx
 	) {
 		int tileCount = root.getIntAttribute("tilecount");
 		TiledMapTile[] tiles = new TiledMapTile[tileCount];
 
-		XmlReader.Element imageElement = root.getChildByName("image");
+		XmlElement imageElement = root.getChildByName("image");
 		if(imageElement != null) {
 			readSingleImage(root, imageElement, tiles, param.imageResolver, ctx);
 		} else {
@@ -50,7 +54,7 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 		MapProperties setProp = new MapProperties();
 		ctx.awaitWork(() -> {
 			TiledLoaderUtils.loadPropertiesFor(setProp, root, param.project);
-			for(XmlReader.Element tileElement : root.getChildrenByName("tile")) {
+			for(XmlElement tileElement : root.getChildrenByName("tile")) {
 				readTileProperties(tileElement, tiles, param.project);
 			}
 		});
@@ -59,7 +63,7 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 	}
 
 	private void readTileProperties(
-			XmlReader.Element element,
+			XmlElement element,
 			TiledMapTile[] tiles,
 			TiledProject project
 	) {
@@ -69,7 +73,7 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 		AnimatedMapTile.AnimationFrame[] frames;
 		MapProperties prop;
 
-		XmlReader.Element propElement = element.getChildByName("properties");
+		XmlElement propElement = element.getChildByName("properties");
 		if(propElement != null) {
 			prop = new MapProperties();
 			TiledLoaderUtils.loadProperties(
@@ -81,10 +85,10 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 			prop = null;
 		}
 
-		XmlReader.Element animElement = element.getChildByName("animation");
+		XmlElement animElement = element.getChildByName("animation");
 		if(animElement != null) {
 			var frameElements = animElement.getChildren();
-			frames = new AnimatedMapTile.AnimationFrame[frameElements.size];
+			frames = new AnimatedMapTile.AnimationFrame[frameElements.size()];
 
 			for(int i = 0; i < frames.length; i++) {
 				var frameElement = frameElements.get(i);
@@ -109,16 +113,16 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 
 	private Tileset createTileset(
 			String paramName, String path,
-			XmlReader.Element root,
+			XmlElement root,
 			TiledMapTile[] tiles, MapProperties properties
 	) {
 		String name = paramName;
-		if(name == null) name = root.get("name");
+		if(name == null) name = root.getAttribute("name", null);
 		if(name == null) name = path;
 
 		int offsetX = 0;
 		int offsetY = 0;
-		XmlReader.Element offset = root.getChildByName("tileoffset");
+		XmlElement offset = root.getChildByName("tileoffset");
 		if(offset != null) {
 			offsetX = offset.getIntAttribute("x", 0);
 			offsetY = offset.getIntAttribute("y", 0);
@@ -128,15 +132,15 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 	}
 
 	private void readSingleImage(
-			XmlReader.Element root,
-			XmlReader.Element imageElement,
+			XmlElement root,
+			XmlElement imageElement,
 			TiledMapTile[] tiles,
 			ImageResolver imageResolver,
 			AssetLoadingContext<Tileset> ctx
 	) {
 		// One image for the whole tileSet
 
-		String source = imageElement.getAttribute("source");
+		String source = imageElement.expectAttribute("source");
 		TextureRegion texture = imageResolver.getImage(ctx, source);
 
 		int tileWidth = root.getIntAttribute("tilewidth", 0);
@@ -160,15 +164,15 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 	}
 
 	private void readMultiImage(
-			XmlReader.Element root,
+			XmlElement root,
 			TiledMapTile[] tiles,
 			ImageResolver imageResolver,
 			AssetLoadingContext<Tileset> ctx
 	) {
 		// Every tile has its own image source
-		for(XmlReader.Element tileElement : root.getChildrenByName("tile")) {
-			XmlReader.Element imageElement = tileElement.getChildByName("image");
-			String source = imageElement.getAttribute("source");
+		for(XmlElement tileElement : root.getChildrenByName("tile")) {
+			XmlElement imageElement = tileElement.expectChildByName("image");
+			String source = imageElement.expectAttribute("source");
 			TextureRegion texture = imageResolver.getImage(ctx, source);
 
 			int id = tileElement.getIntAttribute("id");

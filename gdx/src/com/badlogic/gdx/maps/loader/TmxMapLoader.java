@@ -37,8 +37,7 @@ import com.badlogic.gdx.maps.loader.TmxMapLoader.TmxLoadContext.TilesetEntry;
 import com.badlogic.gdx.maps.objects.MapObject;
 import com.badlogic.gdx.maps.tiles.TiledMapTile;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.XmlReader;
-import com.badlogic.gdx.utils.XmlReader.Element;
+import com.badlogic.gdx.utils.XmlElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedInputStream;
@@ -110,7 +109,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 	static final class TmxLoadContext {
 		record TilesetEntry(int firstgid, Tileset tileset) {}
 
-		final Element root;
+		final XmlElement root;
 		final List<TilesetEntry> tilesets;
 		final Parameters parameter;
 		final TiledProject project;
@@ -129,7 +128,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 
 		TiledMap map;
 
-		TmxLoadContext(Element root, List<TilesetEntry> tilesets, Parameters parameter) {
+		TmxLoadContext(XmlElement root, List<TilesetEntry> tilesets, Parameters parameter) {
 			this.root = root;
 			this.tilesets = tilesets;
 			this.parameter = parameter;
@@ -151,20 +150,22 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 
 	@Override
 	public TiledMap load(String path, TmxMapLoader.Parameters parameter, AssetLoadingContext<TiledMap> ctx) throws Exception {
-		char[] data = resolve(path).readString().toCharArray();
-		Element root = new XmlReader().parse(data, 0, data.length);
+		XmlElement root;
+		try(InputStream stream = resolve(path).read()) {
+			root = XmlElement.parse(stream);
+		}
 		return load(root, parameter, ctx);
 	}
 
 	private TiledMap load(
-			Element root,
+			XmlElement root,
 			Parameters parameter,
 			AssetLoadingContext<?> ctx
 	) {
 		List<TilesetEntry> tilesets = new ArrayList<>(3);
 
-		for(Element entry : root.getChildrenByName("tileset")) {
-			String source = entry.getAttribute("source");
+		for(XmlElement entry : root.getChildrenByName("tileset")) {
+			String source = entry.expectAttribute("source");
 			int firstgid = entry.getIntAttribute("firstgid");
 
 			Tileset tileset = parameter.tilesetResolver.apply(source, ctx);
@@ -179,7 +180,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 	}
 
 	private TmxMapLoader.WorkResult loadMap(TmxMapLoader.TmxLoadContext ctx) {
-		Element root = ctx.root;
+		XmlElement root = ctx.root;
 		MapProperties prop = new MapProperties();
 
 		String mapOrientation = root.getAttribute("orientation", null);
@@ -232,7 +233,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		TiledMap map = new TiledMap(prop, layers, mapWidth, mapHeight, tileWidth, tileHeight);
 		ctx.map = map;
 
-		for(Element element : root.getChildren()) {
+		for(XmlElement element : root.getChildren()) {
 			MapLayer layer = loadLayer(ctx, null, element);
 			if(layer != null) {
 				layers.add(layer);
@@ -242,7 +243,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		return new WorkResult(map, ctx.deferredTasks);
 	}
 
-	private MapLayer loadLayer(TmxMapLoader.TmxLoadContext ctx, MapLayer parent, Element element) {
+	private MapLayer loadLayer(TmxMapLoader.TmxLoadContext ctx, MapLayer parent, XmlElement element) {
 		String name = element.getName();
 		return switch(name) {
 			case "group" -> loadGroupLayer(element, parent, ctx);
@@ -253,16 +254,14 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		};
 	}
 
-	private MapLayer loadGroupLayer(Element element, MapLayer parent, TmxMapLoader.TmxLoadContext ctx) {
-		GroupLayer layer = new GroupLayer(element.getAttribute("name"), parent, ctx.map);
-		loadLayerProperties(layer, element, ctx);
+	private MapLayer loadGroupLayer(XmlElement xml, MapLayer parent, TmxMapLoader.TmxLoadContext ctx) {
+		GroupLayer layer = new GroupLayer(xml.expectAttribute("name"), parent, ctx.map);
+		loadLayerProperties(layer, xml, ctx);
 
-		for(int i = 0; i < element.getChildCount(); i++) {
-			Element child = element.getChild(i);
-
+		for(XmlElement child : xml.getChildren()) {
 			MapLayer childLayer = loadLayer(ctx, layer, child);
 			if(childLayer == null) {
-				throw new GdxRuntimeException("Unknown layer " + element.getName());
+				throw new GdxRuntimeException("Unknown layer " + child.getName());
 			} else {
 				layer.getLayers().add(childLayer);
 			}
@@ -271,17 +270,17 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		return layer;
 	}
 
-	private TileLayer loadTileLayer(Element element, MapLayer parent, TmxMapLoader.TmxLoadContext ctx) {
-		int width = element.getIntAttribute("width", 0);
-		int height = element.getIntAttribute("height", 0);
+	private TileLayer loadTileLayer(XmlElement xml, MapLayer parent, TmxMapLoader.TmxLoadContext ctx) {
+		int width = xml.getIntAttribute("width", 0);
+		int height = xml.getIntAttribute("height", 0);
 
 		TileLayer layer = new TileLayer(
-				element.getAttribute("name"), parent, ctx.map,
+				xml.expectAttribute("name"), parent, ctx.map,
 				width, height, ctx.tileWidth, ctx.tileHeight
 		);
-		loadLayerProperties(layer, element, ctx);
+		loadLayerProperties(layer, xml, ctx);
 
-		int[] ids = readTileIds(element, width, height);
+		int[] ids = readTileIds(xml, width, height);
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
 				int id = ids[y * width + x];
@@ -302,8 +301,8 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		return layer;
 	}
 
-	private static int[] readTileIds(Element element, int width, int height) {
-		Element data = element.getChildByName("data");
+	private static int[] readTileIds(XmlElement xml, int width, int height) {
+		XmlElement data = xml.expectChildByName("data");
 		String encoding = data.getAttribute("encoding", null);
 		if(encoding == null) { // no 'encoding' attribute means that the encoding is XML
 			throw new GdxRuntimeException("Unsupported encoding (XML) for TMX Layer Data");
@@ -323,7 +322,7 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		return ids;
 	}
 
-	private static void readBase64(int width, int height, Element data, int[] ids) {
+	private static void readBase64(int width, int height, XmlElement data, int[] ids) {
 		try(InputStream stream = getStream(data.getAttribute("compression", null), data.getText())) {
 			byte[] buf = new byte[4];
 			for(int y = 0; y < height; y++) {
@@ -348,13 +347,16 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		return b & 0xFF;
 	}
 
-	private ObjectLayer loadObjectGroup(TmxMapLoader.TmxLoadContext ctx, @Nullable MapLayer parent, Element element) {
-		ObjectLayer layer = new ObjectLayer(element.getAttribute("name"), parent, ctx.map);
-		loadLayerProperties(layer, element, ctx);
+	private ObjectLayer loadObjectGroup(
+			TmxMapLoader.TmxLoadContext ctx, @Nullable MapLayer parent,
+			XmlElement xml
+	) {
+		ObjectLayer layer = new ObjectLayer(xml.expectAttribute("name"), parent, ctx.map);
+		loadLayerProperties(layer, xml, ctx);
 
 		Function<Integer, TiledMapTile> tileSupplier = ctx::tile;
 		List<MapObject> objects = layer.getObjects();
-		for(Element objectElement : element.getChildrenByName("object")) {
+		for(XmlElement objectElement : xml.getChildrenByName("object")) {
 			MapObject object = TiledObjectLoader.read(
 					objectElement,
 					ctx.heightInPixels,
@@ -368,39 +370,39 @@ public final class TmxMapLoader extends AssetLoader<TiledMap, TmxMapLoader.Param
 		return layer;
 	}
 
-	private MapLayer loadImageLayer(Element element, MapLayer parent, TmxLoadContext ctx) {
+	private MapLayer loadImageLayer(XmlElement xml, MapLayer parent, TmxLoadContext ctx) {
 		ImageLayer layer = new ImageLayer(
-				element.getAttribute("name"),
+				xml.expectAttribute("name"),
 				parent, ctx.map,
-				element.getIntAttribute("repeatx", 0) == 1,
-				element.getIntAttribute("repeaty", 0) == 1
+				xml.getIntAttribute("repeatx", 0) == 1,
+				xml.getIntAttribute("repeaty", 0) == 1
 		);
 
-		Element image = element.getChildByName("image");
+		XmlElement image = xml.getChildByName("image");
 		if(image != null) {
-			String source = image.getAttribute("source");
+			String source = image.expectAttribute("source");
 			ctx.deferredTasks.add(assetCtx -> {
 				layer.setTexture(ctx.parameter.imageResolver.apply(source, assetCtx));
 			});
 		}
 
-		loadLayerProperties(layer, element, ctx);
+		loadLayerProperties(layer, xml, ctx);
 		return layer;
 	}
 
-	private void loadLayerProperties(MapLayer layer, Element element, TmxMapLoader.TmxLoadContext ctx) {
-		TiledLoaderUtils.loadPropertiesFor(layer.getProperties(), element, ctx.project);
+	private void loadLayerProperties(MapLayer layer, XmlElement xml, TmxMapLoader.TmxLoadContext ctx) {
+		TiledLoaderUtils.loadPropertiesFor(layer.getProperties(), xml, ctx.project);
 
-		layer.setVisible(element.getIntAttribute("visible", 1) == 1);
-		layer.setOpacity(element.getFloatAttribute("opacity", 1.0f));
-		layer.setOffsetX(element.getFloatAttribute("offsetx", 0));
-		layer.setOffsetY(element.getFloatAttribute("offsety", 0));
+		layer.setVisible(xml.getIntAttribute("visible", 1) == 1);
+		layer.setOpacity(xml.getFloatAttribute("opacity", 1.0f));
+		layer.setOffsetX(xml.getFloatAttribute("offsetx", 0));
+		layer.setOffsetY(xml.getFloatAttribute("offsety", 0));
 
-		layer.setParallaxX(element.getFloatAttribute("parallaxx", 1f));
-		layer.setParallaxY(element.getFloatAttribute("parallaxy", 1f));
+		layer.setParallaxX(xml.getFloatAttribute("parallaxx", 1f));
+		layer.setParallaxY(xml.getFloatAttribute("parallaxy", 1f));
 
 		// set layer tint color after converting from #AARRGGBB to #RRGGBBAA
-		String tintColor = element.getAttribute("tintcolor", "#ffffffff");
+		String tintColor = xml.getAttribute("tintcolor", "#ffffffff");
 		layer.setTint(Color.valueOf(TiledLoaderUtils.tiledToGdxColor(tintColor)));
 	}
 
