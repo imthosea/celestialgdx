@@ -57,10 +57,10 @@ public class TileLayer extends MapLayer {
 	 * @param tileHeight tile height in pixels
 	 */
 	public TileLayer(
-			String name, MapLayer parent, TiledMap map,
+			MapLayer parent, TiledMap map,
 			int width, int height, int tileWidth, int tileHeight
 	) {
-		super(name, parent, map);
+		super(parent, map);
 		this.width = width;
 		this.height = height;
 		this.tileWidth = tileWidth;

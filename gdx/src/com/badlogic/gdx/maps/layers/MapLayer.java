@@ -20,9 +20,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.TiledMap;
 
+import java.util.Objects;
+
 /** Map layer containing a set of objects and properties */
 public class MapLayer {
-	private final String name;
+	private String name = "";
 	private final MapLayer parent;
 	private final TiledMap map;
 
@@ -39,15 +41,18 @@ public class MapLayer {
 	private float parallaxX = 1;
 	private float parallaxY = 1;
 
-	public MapLayer(String name, MapLayer parent, TiledMap map) {
-		this.name = name;
+	public MapLayer(MapLayer parent, TiledMap map) {
 		this.parent = parent;
 		this.map = map;
 	}
 
-	/** @return layer's name */
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		Objects.requireNonNull(name);
+		this.name = name;
 	}
 
 	/** @return layer's opacity */

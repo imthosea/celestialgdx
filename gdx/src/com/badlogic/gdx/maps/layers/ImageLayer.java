@@ -27,10 +27,10 @@ public final class ImageLayer extends MapLayer {
 	private boolean supportsTransparency;
 
 	public ImageLayer(
-			String name, MapLayer parent, TiledMap map,
+			MapLayer parent, TiledMap map,
 			boolean repeatX, boolean repeatY
 	) {
-		super(name, parent, map);
+		super(parent, map);
 		this.repeatX = repeatX;
 		this.repeatY = repeatY;
 	}
