@@ -28,8 +28,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.UiList.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ArraySelection;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -287,7 +287,7 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 	}
 
 	/**
-	 * Sets the alignment of the selected item in the select box. See {@link #getList()} and {@link List#setAlignment(int)} to set
+	 * Sets the alignment of the selected item in the select box. See {@link #getList()} and {@link UiList#setAlignment(int)} to set
 	 * the alignment in the list shown when the select box is open.
 	 * @param alignment See {@link Align}.
 	 */
@@ -400,7 +400,7 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 	}
 
 	/** Returns the list shown when the select box is open. */
-	public List<T> getList() {
+	public UiList<T> getList() {
 		return scrollPane.list;
 	}
 
@@ -441,7 +441,7 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 		final SelectBox<T> selectBox;
 		int maxListCount;
 		private final Vector2 stagePosition = new Vector2();
-		final List<T> list;
+		final UiList<T> list;
 		private final InputListener hideListener;
 		private Actor previousScrollFocus;
 
@@ -510,10 +510,10 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 
 		/**
 		 * Allows a subclass to customize the select box list. The default implementation returns a list that delegates
-		 * {@link List#toString(Object)} to {@link SelectBox#toString(Object)}.
+		 * {@link UiList#toString(Object)} to {@link SelectBox#toString(Object)}.
 		 */
-		protected List<T> newList() {
-			return new List<>(selectBox.style.listStyle) {
+		protected UiList<T> newList() {
+			return new UiList<>(selectBox.style.listStyle) {
 				public String toString(T obj) {
 					return selectBox.toString(obj);
 				}
@@ -618,7 +618,7 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 			super.setStage(stage);
 		}
 
-		public List<T> getList() {
+		public UiList<T> getList() {
 			return list;
 		}
 
