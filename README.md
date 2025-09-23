@@ -72,6 +72,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - The default SpriteBatch shader is no longer LOWP and no longer uses deprecated GLSL features
     - Also it only works on GL 3, don't use GL 2
 - The layout attribute a_texCoord0 was renamed to a_texCoord
+- List has been renamed to UiList to prevent conflicts
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader

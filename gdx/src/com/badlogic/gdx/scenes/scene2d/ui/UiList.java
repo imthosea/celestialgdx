@@ -46,7 +46,7 @@ import org.jetbrains.annotations.Nullable;
  * @author mzechner
  * @author Nathan Sweet
  */
-public class List<T> extends Widget implements Cullable, Styleable<List.ListStyle> {
+public class UiList<T> extends Widget implements Cullable, Styleable<UiList.ListStyle> {
 	ListStyle style;
 	final Array<T> items = new Array();
 	ArraySelection<T> selection = new ArraySelection(items);
@@ -58,15 +58,15 @@ public class List<T> extends Widget implements Cullable, Styleable<List.ListStyl
 	private final InputListener keyListener;
 	boolean typeToSelect;
 
-	public List(Skin skin) {
+	public UiList(Skin skin) {
 		this(skin.get(ListStyle.class));
 	}
 
-	public List(Skin skin, String styleName) {
+	public UiList(Skin skin, String styleName) {
 		this(skin.get(styleName, ListStyle.class));
 	}
 
-	public List(ListStyle style) {
+	public UiList(ListStyle style) {
 		selection.setActor(this);
 		selection.setRequired(true);
 
@@ -118,7 +118,7 @@ public class List<T> extends Widget implements Cullable, Styleable<List.ListStyl
 				typeTimeout = time + 300;
 				prefix += Character.toLowerCase(character);
 				for(int i = 0, n = items.size; i < n; i++) {
-					if(List.this.toString(items.get(i)).toLowerCase().startsWith(prefix)) {
+					if(UiList.this.toString(items.get(i)).toLowerCase().startsWith(prefix)) {
 						setSelectedIndex(i);
 						break;
 					}
@@ -131,7 +131,7 @@ public class List<T> extends Widget implements Cullable, Styleable<List.ListStyl
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				if(pointer != 0 || button != 0) return true;
 				if(selection.isDisabled()) return true;
-				if(getStage() != null) getStage().setKeyboardFocus(List.this);
+				if(getStage() != null) getStage().setKeyboardFocus(UiList.this);
 				if(items.size == 0) return true;
 				int index = getItemIndexAt(y);
 				if(index == -1) return true;
@@ -337,7 +337,7 @@ public class List<T> extends Widget implements Cullable, Styleable<List.ListStyl
 	/** @return -1 if not over an item. */
 	public int getItemIndexAt(float y) {
 		float height = getHeight();
-		Drawable background = List.this.style.background;
+		Drawable background = UiList.this.style.background;
 		if(background != null) {
 			height -= background.getTopHeight() + background.getBottomHeight();
 			y -= background.getBottomHeight();
@@ -447,7 +447,7 @@ public class List<T> extends Widget implements Cullable, Styleable<List.ListStyl
 	}
 
 	/**
-	 * The style for a list, see {@link List}.
+	 * The style for a list, see {@link UiList}.
 	 * @author mzechner
 	 * @author Nathan Sweet
 	 */
