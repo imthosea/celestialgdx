@@ -48,7 +48,6 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
     - Object reference properties are no longer resolved, the property will now remain an int; you must resolve the
       object yourself later
     - You can now register custom types by TiledLoaderUtils.registerParser
-    - Tile layers now cache a render state containing all their vertices
     - Tiled maps made in 0.15 will no longer work (deprecated features removed)
     - MapLayer no longer contains object, its now only in ObjectLayer
     - MapObject is now abstract
@@ -135,7 +134,6 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - unspaghetify TextureAtlas
 - remove more useless stdlib replication classes
 - make TextureRegion and its subclasses immutable
-- replace @Null with jetbrains annotations @Nullable
 - try CachedThreadPool instead of virtual threads for asset loader
 - optimize tiled renderer by turning the entire layer into one mesh
 
