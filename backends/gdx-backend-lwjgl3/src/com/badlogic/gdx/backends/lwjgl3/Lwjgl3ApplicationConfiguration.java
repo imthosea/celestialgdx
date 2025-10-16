@@ -39,9 +39,9 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 		ANGLE_GLES20, GL20, GL30, GL31, GL32
 	}
 
-	GLEmulation glEmulation = GLEmulation.GL20;
+	GLEmulation glEmulation = GLEmulation.GL32;
 	int gles30ContextMajorVersion = 3;
-	int gles30ContextMinorVersion = 2;
+	int gles30ContextMinorVersion = 3;
 
 	int r = 8, g = 8, b = 8, a = 8;
 	int depth = 16, stencil = 0;
