@@ -333,8 +333,8 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		if(config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL30
 				|| config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL31
 				|| config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL32) {
-			// GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, config.gles30ContextMajorVersion);
-			// GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, config.gles30ContextMinorVersion);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, config.gles30ContextMajorVersion);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, config.gles30ContextMinorVersion);
 			if(SharedLibraryLoader.os == Os.MacOsX) {
 				// hints mandatory on OS X for GL 3.2+ context creation, but fail on Windows if the
 				// WGL_ARB_create_context extension is not available

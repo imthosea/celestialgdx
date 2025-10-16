@@ -162,7 +162,7 @@ public class SpriteBatch implements Batch {
 	static public ShaderProgram createDefaultShader() {
 		// TODO celestialgdx - replace uniforms and make the position 2d
 		String vertexShader = """
-				#version 320 es
+				#version 330
 				precision mediump float;
 				
 				layout (location = 0) in vec4 a_position;
@@ -182,7 +182,7 @@ public class SpriteBatch implements Batch {
 				}
 				""";
 		String fragmentShader = """
-				#version 320 es
+				#version 330
 				precision mediump float;
 				
 				out vec4 FragColor;
