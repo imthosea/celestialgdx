@@ -9,6 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -26,6 +27,14 @@ import java.util.function.Function;
 // if project valhalla comes in my lifetime, this can become a value record
 public record XmlElement(Element delegate) {
 	private static final DocumentBuilderFactory FACTORY = DocumentBuilderFactory.newInstance();
+
+	static {
+		try {
+			FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		} catch(ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	public XmlElement {
 		Objects.requireNonNull(delegate, "cannot have null delegate");
