@@ -24,9 +24,9 @@ import com.badlogic.gdx.graphics.Pixmap.Blending;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.LongMap;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.badlogic.gdx.utils.StreamUtils;
 
 import java.io.IOException;
@@ -921,7 +921,11 @@ public class FreeType {
 	public static final int FT_STROKER_LINEJOIN_MITER_FIXED = 3;
 
 	public static Library initFreeType() {
-		new SharedLibraryLoader().load("gdx-freetype");
+		try {
+			GdxNativesLoader.load("gdx-freetype");
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
 		long address = initFreeTypeJni();
 		if(address == 0)
 			throw new GdxRuntimeException("Couldn't initialize FreeType library, FreeType error code: " + getLastErrorCode());

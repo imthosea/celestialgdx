@@ -1,0 +1,13 @@
+[versions]
+# Plugins
+
+# Dependencies
+jbannotations = "26.0.2"
+# (handled by buildSrc task)
+#noinspection UnusedVersionCatalogEntry
+lwjgl = "3.3.3"
+
+[libraries]
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jbannotations" }
+
+[bundles]

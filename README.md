@@ -7,7 +7,6 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 ### Changes
 - Nuke everything except desktop LWJGL3 backend
 - Remove tests
-- ANGLE is now always included with the LWJGL module
 - LOTS of code cleanup
 - Update to Java 21
 - Lwjgl3Application addLifecycleListener/removeLifecycleListener is no longer thread safe
@@ -70,9 +69,9 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
         - Probably more, I lost track
 - AssetManager's default log level is now ERROR instead of NONE
 - The default SpriteBatch shader is no longer LOWP and no longer uses deprecated GLSL features
-    - Also it only works on GL 3, don't use GL 2
 - The layout attribute a_texCoord0 was renamed to a_texCoord
 - List has been renamed to UiList to prevent conflicts
+- Only GL 3.2 is supported now. This is also the default
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader
@@ -119,12 +118,16 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - Base64-related classes
 - Nullability annotations - use jetbrains annotations instead
 - AssetDescriptor.file
+- GLDebugMessageSeverity and related methods
+- SharedLibraryLoader - use LWJGL Platform.get()
+- Seamless cubemaps, since it's not supported by GLES
+- ANGLE GL2 backend
 
 ### Notes
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
 - The Gdx class remains for compatibility, but please don't use them - mutable static constants are questionable for
   maintainability. Use the function constructor in Lwjgl3Application and get the window to initialize your constants
-- GDX GL classes are deprecated. Use GL classes from GLFW instead
+- GDX GL classes are deprecated. Use GL classes from GLFW instead ()
 
 ### TODO maybe
 - rewrite Sync (fps cap) implementation
@@ -137,6 +140,8 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - make TextureRegion and its subclasses immutable
 - try CachedThreadPool instead of virtual threads for asset loader
 - optimize tiled renderer by turning the entire layer into one mesh
+- support angle with GLES3
+- remove all libgdx GL classes and replace internal code to directly use LWJGL
 
 This isn't a full code cleanup because I want to make my game. I'm only modifying stuff that affects me.
 
@@ -154,10 +159,13 @@ maven {
 
 ```kotlin
 configurations.all {
-	val version = "1.0.0-SNAPSHOT"
+    // celestialgdx bundles the LWJGL backend
+    exclude(group = "com.badlogicgames.gdx", module = "gdx-backend-lwjgl3")
+    
+    val version = "1.0.0-SNAPSHOT"
 	// if using version catalogue:
 	// val version = libs.versions.celestialgdx.get()
-
+    
 	resolutionStrategy.dependencySubstitution {
 		fun sub(artifact: String) = substitute(
 			module("com.badlogicgames.gdx:$artifact")
@@ -167,9 +175,7 @@ configurations.all {
 
 		sub("gdx")
 		sub("gdx-freetype")
-		sub("gdx-backend-lwjgl3")
-		sub("gdx-lwjgl3-angle")
-	}
+    }
 }
 ```
 
@@ -187,14 +193,16 @@ maven {
 ```groovy
 configurations.all {
     val version = "1.0.0-SNAPSHOT"
+
+    // celestialgdx bundles the LWJGL backend
+    exclude(group: "com.badlogicgames.gdx", module: "gdx-backend-lwjgl3")
+
     resolutionStrategy.dependencySubstitution {
         def sub = { String artifact ->
             substitute module("com.badlogicgames.gdx:$artifact") using module("me.thosea.celestialgdx:$artifact:$version") because "fork"
         }
         sub("gdx")
         sub("gdx-freetype")
-        sub("gdx-backend-lwjgl3")
-        sub("gdx-lwjgl3-angle")
     }
 }
 ```
