@@ -122,6 +122,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - SharedLibraryLoader - use LWJGL Platform.get()
 - Seamless cubemaps, since it's not supported by GLES
 - ANGLE GL2 backend
+- GL profiling classes
 
 ### Notes
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
@@ -141,7 +142,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - try CachedThreadPool instead of virtual threads for asset loader
 - optimize tiled renderer by turning the entire layer into one mesh
 - support angle with GLES3
-- remove all libgdx GL classes and replace internal code to directly use LWJGL
+- finish replacing internal code to directly use LWJGL and remove all libgdx GL classes
 
 This isn't a full code cleanup because I want to make my game. I'm only modifying stuff that affects me.
 

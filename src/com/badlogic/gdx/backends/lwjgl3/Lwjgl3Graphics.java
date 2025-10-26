@@ -20,10 +20,6 @@ import com.badlogic.gdx.AbstractGraphics;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.GL31;
-import com.badlogic.gdx.graphics.GL32;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
@@ -33,16 +29,13 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
-import org.lwjgl.opengles.GLES32;
 
 import java.nio.IntBuffer;
 
+import static org.lwjgl.opengles.GLES32.*;
+
 public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 	final Lwjgl3Window window;
-	GL20 gl20;
-	private GL30 gl30;
-	private GL31 gl31;
-	private GL32 gl32;
 	private GLVersion glVersion;
 	private volatile int backBufferWidth;
 	private volatile int backBufferHeight;
@@ -69,7 +62,7 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 		@Override
 		public void invoke(long windowHandle, final int width, final int height) {
 			updateFramebufferInfo();
-			gl32.glViewport(0, 0, backBufferWidth, backBufferHeight);
+			glViewport(0, 0, backBufferWidth, backBufferHeight);
 			window.getListener().resize(getWidth(), getHeight());
 			update();
 			window.getListener().render();
@@ -79,16 +72,15 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 
 	public Lwjgl3Graphics(Lwjgl3Window window) {
 		this.window = window;
-		this.gl20 = this.gl30 = this.gl31 = this.gl32 = new Lwjgl3GL32();
 		updateFramebufferInfo();
 		initiateGL();
 		GLFW.glfwSetFramebufferSizeCallback(window.getWindowHandle(), resizeCallback);
 	}
 
 	private void initiateGL() {
-		String versionString = gl20.glGetString(GLES32.GL_VERSION);
-		String vendorString = gl20.glGetString(GLES32.GL_VENDOR);
-		String rendererString = gl20.glGetString(GLES32.GL_RENDERER);
+		String versionString = glGetString(GL_VERSION);
+		String vendorString = glGetString(GL_VENDOR);
+		String rendererString = glGetString(GL_RENDERER);
 		glVersion = new GLVersion(Application.ApplicationType.Desktop, versionString, vendorString, rendererString);
 	}
 
@@ -125,61 +117,6 @@ public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
 		}
 		frames++;
 		frameId++;
-	}
-
-	@Override
-	public boolean isGL30Available() {
-		return gl30 != null;
-	}
-
-	@Override
-	public boolean isGL31Available() {
-		return gl31 != null;
-	}
-
-	@Override
-	public boolean isGL32Available() {
-		return gl32 != null;
-	}
-
-	@Override
-	public GL20 getGL20() {
-		return gl20;
-	}
-
-	@Override
-	public GL30 getGL30() {
-		return gl30;
-	}
-
-	@Override
-	public GL31 getGL31() {
-		return gl31;
-	}
-
-	@Override
-	public GL32 getGL32() {
-		return gl32;
-	}
-
-	@Override
-	public void setGL20(GL20 gl20) {
-		this.gl20 = gl20;
-	}
-
-	@Override
-	public void setGL30(GL30 gl30) {
-		this.gl30 = gl30;
-	}
-
-	@Override
-	public void setGL31(GL31 gl31) {
-		this.gl31 = gl31;
-	}
-
-	@Override
-	public void setGL32(GL32 gl32) {
-		this.gl32 = gl32;
 	}
 
 	@Override

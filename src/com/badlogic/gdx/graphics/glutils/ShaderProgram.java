@@ -39,6 +39,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static org.lwjgl.opengles.GLES32.*;
+
 /**
  * <p>
  * A shader program encapsulates a vertex and fragment shader pair linked to form a shader program.
@@ -169,6 +171,7 @@ public class ShaderProgram implements Disposable {
 			fetchUniforms();
 			addManagedShader(Gdx.app, this);
 		}
+
 	}
 
 	public ShaderProgram(FileHandle vertexShader, FileHandle fragmentShader) {
@@ -181,8 +184,8 @@ public class ShaderProgram implements Disposable {
 	 * @param fragmentShader
 	 */
 	private void compileShaders(String vertexShader, String fragmentShader) {
-		vertexShaderHandle = loadShader(GL20.GL_VERTEX_SHADER, vertexShader);
-		fragmentShaderHandle = loadShader(GL20.GL_FRAGMENT_SHADER, fragmentShader);
+		vertexShaderHandle = loadShader(GL_VERTEX_SHADER, vertexShader);
+		fragmentShaderHandle = loadShader(GL_FRAGMENT_SHADER, fragmentShader);
 
 		if(vertexShaderHandle == -1 || fragmentShaderHandle == -1) {
 			isCompiled = false;
@@ -199,23 +202,17 @@ public class ShaderProgram implements Disposable {
 	}
 
 	private int loadShader(int type, String source) {
-		GL20 gl = Gdx.gl20;
-		IntBuffer intbuf = BufferUtils.newIntBuffer(1);
-
-		int shader = gl.glCreateShader(type);
+		int shader = glCreateShader(type);
 		if(shader == 0) return -1;
 
-		gl.glShaderSource(shader, source);
-		gl.glCompileShader(shader);
-		gl.glGetShaderiv(shader, GL20.GL_COMPILE_STATUS, intbuf);
-
-		int compiled = intbuf.get(0);
-		if(compiled == 0) {
-			// gl.glGetShaderiv(shader, GL20.GL_INFO_LOG_LENGTH, intbuf);
+		glShaderSource(shader, source);
+		glCompileShader(shader);
+		if(glGetShaderi(shader, GL_COMPILE_STATUS) == 0) {
+			// gl.glGetShaderiv(shader, GL_INFO_LOG_LENGTH, intbuf);
 			// int infoLogLength = intbuf.get(0);
 			// if (infoLogLength > 1) {
-			String infoLog = gl.glGetShaderInfoLog(shader);
-			log += type == GL20.GL_VERTEX_SHADER ? "Vertex shader\n" : "Fragment shader:\n";
+			String infoLog = glGetShaderInfoLog(shader);
+			log += type == GL_VERTEX_SHADER ? "Vertex shader\n" : "Fragment shader:\n";
 			log += infoLog;
 			// }
 			return -1;
@@ -225,30 +222,25 @@ public class ShaderProgram implements Disposable {
 	}
 
 	protected int createProgram() {
-		GL20 gl = Gdx.gl20;
-		int program = gl.glCreateProgram();
+		int program = glCreateProgram();
 		return program != 0 ? program : -1;
 	}
 
 	private int linkProgram(int program) {
-		GL20 gl = Gdx.gl20;
 		if(program == -1) return -1;
 
-		gl.glAttachShader(program, vertexShaderHandle);
-		gl.glAttachShader(program, fragmentShaderHandle);
-		gl.glLinkProgram(program);
+		glAttachShader(program, vertexShaderHandle);
+		glAttachShader(program, fragmentShaderHandle);
+		glLinkProgram(program);
 
 		ByteBuffer tmp = ByteBuffer.allocateDirect(4);
 		tmp.order(ByteOrder.nativeOrder());
-		IntBuffer intbuf = tmp.asIntBuffer();
 
-		gl.glGetProgramiv(program, GL20.GL_LINK_STATUS, intbuf);
-		int linked = intbuf.get(0);
-		if(linked == 0) {
-			// Gdx.gl20.glGetProgramiv(program, GL20.GL_INFO_LOG_LENGTH, intbuf);
+		if(glGetProgrami(program, GL_LINK_STATUS) == 0) {
+			// glGetProgramiv(program, GL_INFO_LOG_LENGTH, intbuf);
 			// int infoLogLength = intbuf.get(0);
 			// if (infoLogLength > 1) {
-			log = Gdx.gl20.glGetProgramInfoLog(program);
+			log = glGetProgramInfoLog(program);
 			// }
 			return -1;
 		}
@@ -256,18 +248,16 @@ public class ShaderProgram implements Disposable {
 		return program;
 	}
 
-	final static IntBuffer intbuf = BufferUtils.newIntBuffer(1);
-
 	/**
 	 * @return the log info for the shader compilation and program linking stage. The shader needs to be bound for this method to
 	 * have an effect.
 	 */
 	public String getLog() {
 		if(isCompiled) {
-			// Gdx.gl20.glGetProgramiv(program, GL20.GL_INFO_LOG_LENGTH, intbuf);
+			// glGetProgramiv(program, GL_INFO_LOG_LENGTH, intbuf);
 			// int infoLogLength = intbuf.get(0);
 			// if (infoLogLength > 1) {
-			log = Gdx.gl20.glGetProgramInfoLog(program);
+			log = glGetProgramInfoLog(program);
 			// }
 			return log;
 		} else {
@@ -281,12 +271,11 @@ public class ShaderProgram implements Disposable {
 	}
 
 	private int fetchAttributeLocation(String name) {
-		GL20 gl = Gdx.gl20;
 		// -2 == not yet cached
 		// -1 == cached but not found
 		int location;
 		if((location = attributes.get(name, -2)) == -2) {
-			location = gl.glGetAttribLocation(program, name);
+			location = glGetAttribLocation(program, name);
 			attributes.put(name, location);
 		}
 		return location;
@@ -301,7 +290,7 @@ public class ShaderProgram implements Disposable {
 		// -1 == cached but not found
 		int location;
 		if((location = uniforms.get(name, -2)) == -2) {
-			location = Gdx.gl20.glGetUniformLocation(program, name);
+			location = glGetUniformLocation(program, name);
 			if(location == -1 && pedantic) {
 				if(isCompiled) throw new IllegalArgumentException("No uniform with name '" + name + "' in shader");
 				throw new IllegalStateException("An attempted fetch uniform from uncompiled shader \n" + getLog());
@@ -723,8 +712,8 @@ public class ShaderProgram implements Disposable {
 	 * Sets the vertex attribute with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * @param name the attribute name
 	 * @param size the number of components, must be >= 1 and <= 4
-	 * @param type the type, must be one of GL20.GL_BYTE, GL20.GL_UNSIGNED_BYTE, GL20.GL_SHORT,
-	 * GL20.GL_UNSIGNED_SHORT,GL20.GL_FIXED, or GL20.GL_FLOAT. GL_FIXED will not work on the desktop
+	 * @param type the type, must be one of GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT,
+	 * GL_UNSIGNED_SHORT,GL_FIXED, or GL_FLOAT. GL_FIXED will not work on the desktop
 	 * @param normalize whether fixed point data should be normalized. Will not work on the desktop
 	 * @param stride the stride in bytes between successive attributes
 	 * @param buffer the buffer containing the vertex attributes.
@@ -747,11 +736,11 @@ public class ShaderProgram implements Disposable {
 	 * Sets the vertex attribute with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * @param name the attribute name
 	 * @param size the number of components, must be >= 1 and <= 4
-	 * @param type the type, must be one of GL20.GL_BYTE, GL20.GL_UNSIGNED_BYTE, GL20.GL_SHORT,
-	 * GL20.GL_UNSIGNED_SHORT,GL20.GL_FIXED, or GL20.GL_FLOAT. GL_FIXED will not work on the desktop
+	 * @param type the type, must be one of GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT,
+	 * GL_UNSIGNED_SHORT,GL_FIXED, or GL_FLOAT. GL_FIXED will not work on the desktop
 	 * @param normalize whether fixed point data should be normalized. Will not work on the desktop
 	 * @param stride the stride in bytes between successive attributes
-	 * @param offset byte offset into the vertex buffer object bound to GL20.GL_ARRAY_BUFFER.
+	 * @param offset byte offset into the vertex buffer object bound to GL_ARRAY_BUFFER.
 	 */
 	public void setVertexAttribute(String name, int size, int type, boolean normalize, int stride, int offset) {
 		GL20 gl = Gdx.gl20;
@@ -900,7 +889,7 @@ public class ShaderProgram implements Disposable {
 
 	private void fetchUniforms() {
 		((Buffer) params).clear();
-		Gdx.gl20.glGetProgramiv(program, GL20.GL_ACTIVE_UNIFORMS, params);
+		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, params);
 		int numUniforms = params.get(0);
 
 		uniformNames = new String[numUniforms];
@@ -909,8 +898,8 @@ public class ShaderProgram implements Disposable {
 			((Buffer) params).clear();
 			params.put(0, 1);
 			((Buffer) type).clear();
-			String name = Gdx.gl20.glGetActiveUniform(program, i, params, type);
-			int location = Gdx.gl20.glGetUniformLocation(program, name);
+			String name = glGetActiveUniform(program, i, params, type);
+			int location = glGetUniformLocation(program, name);
 			uniforms.put(name, location);
 			uniformTypes.put(name, type.get(0));
 			uniformSizes.put(name, params.get(0));
@@ -920,7 +909,7 @@ public class ShaderProgram implements Disposable {
 
 	private void fetchAttributes() {
 		((Buffer) params).clear();
-		Gdx.gl20.glGetProgramiv(program, GL20.GL_ACTIVE_ATTRIBUTES, params);
+		glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, params);
 		int numAttributes = params.get(0);
 
 		attributeNames = new String[numAttributes];
@@ -929,8 +918,8 @@ public class ShaderProgram implements Disposable {
 			((Buffer) params).clear();
 			params.put(0, 1);
 			((Buffer) type).clear();
-			String name = Gdx.gl20.glGetActiveAttrib(program, i, params, type);
-			int location = Gdx.gl20.glGetAttribLocation(program, name);
+			String name = glGetActiveAttrib(program, i, params, type);
+			int location = glGetAttribLocation(program, name);
 			attributes.put(name, location);
 			attributeTypes.put(name, type.get(0));
 			attributeSizes.put(name, params.get(0));

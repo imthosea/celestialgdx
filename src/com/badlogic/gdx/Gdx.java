@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx;
 
+
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3GL32;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.GL31;
@@ -28,9 +30,9 @@ import com.badlogic.gdx.graphics.GL32;
  * <p>
  * This is normally a design faux pas but in this case is better than the alternatives.
  * @author mzechner
- * @deprecated celestialgdx - mutable static constants aren't good for maintainability, kept for compat
+ * @deprecated celestialgdx - mutable static constants aren't good for maintainability, kept for compat, will be removed
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class Gdx {
 	public static Application app;
 	public static Graphics graphics;
@@ -42,4 +44,8 @@ public class Gdx {
 	public static GL30 gl30;
 	public static GL31 gl31;
 	public static GL32 gl32;
+
+	static {
+		gl = gl20 = gl30 = gl31 = gl32 = new Lwjgl3GL32();
+	}
 }
