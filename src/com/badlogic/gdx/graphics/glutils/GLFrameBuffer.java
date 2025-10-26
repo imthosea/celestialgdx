@@ -311,37 +311,8 @@ public abstract class GLFrameBuffer<T extends GLTexture> implements Disposable {
 	}
 
 	private void checkValidBuilder() {
-
-		if(bufferBuilder.samples > 0 && !Gdx.graphics.isGL31Available()) {
-			throw new GdxRuntimeException("Framebuffer multisample requires GLES 3.1+");
-		}
 		if(bufferBuilder.samples > 0 && bufferBuilder.textureAttachmentSpecs.size > 0) {
 			throw new GdxRuntimeException("Framebuffer multisample with texture attachments not yet supported");
-		}
-
-		boolean runningGL30 = Gdx.graphics.isGL30Available();
-
-		if(!runningGL30) {
-			final boolean supportsPackedDepthStencil = Gdx.graphics.supportsExtension("GL_OES_packed_depth_stencil")
-					|| Gdx.graphics.supportsExtension("GL_EXT_packed_depth_stencil");
-
-			if(bufferBuilder.hasPackedStencilDepthRenderBuffer && !supportsPackedDepthStencil) {
-				throw new GdxRuntimeException("Packed Stencil/Render render buffers are not available on GLES 2.0");
-			}
-			if(bufferBuilder.textureAttachmentSpecs.size > 1) {
-				throw new GdxRuntimeException("Multiple render targets not available on GLES 2.0");
-			}
-			for(FrameBufferTextureAttachmentSpec spec : bufferBuilder.textureAttachmentSpecs) {
-				if(spec.isDepth)
-					throw new GdxRuntimeException("Depth texture FrameBuffer Attachment not available on GLES 2.0");
-				if(spec.isStencil)
-					throw new GdxRuntimeException("Stencil texture FrameBuffer Attachment not available on GLES 2.0");
-				if(spec.isFloat) {
-					if(!Gdx.graphics.supportsExtension("OES_texture_float")) {
-						throw new GdxRuntimeException("Float texture FrameBuffer Attachment not available on GLES 2.0");
-					}
-				}
-			}
 		}
 
 		if(bufferBuilder.hasPackedStencilDepthRenderBuffer) {

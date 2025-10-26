@@ -121,8 +121,6 @@ public class Lwjgl3Window implements Disposable {
 
 		Gdx.input = input;
 		Gdx.graphics = graphics;
-		Gdx.gl = Gdx.gl20 = graphics.gl20;
-		Gdx.gl30 = Gdx.gl31 = Gdx.gl32 = graphics.getGL32();
 
 		this.listener = listener.create(application, this);
 
