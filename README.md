@@ -123,6 +123,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - Seamless cubemaps, since it's not supported by GLES
 - ANGLE GL2 backend
 - GL profiling classes
+- FPSLogger
 
 ### Notes
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
