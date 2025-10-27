@@ -29,11 +29,12 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Clipboard;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengles.GLES;
-import org.lwjgl.opengles.GLES32;
 import org.lwjgl.system.Platform;
+
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengles.GLES32.*;
 
 public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	public final Lwjgl3ApplicationConfiguration config;
@@ -70,11 +71,11 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 
 		Lwjgl3NativesLoader.load();
 		this.errorCallback = GLFWErrorCallback.createPrint(Lwjgl3ApplicationConfiguration.errorStream);
-		GLFW.glfwSetErrorCallback(this.errorCallback);
+		glfwSetErrorCallback(this.errorCallback);
 		if(Platform.get() == Platform.MACOSX)
-			GLFW.glfwInitHint(GLFW.GLFW_ANGLE_PLATFORM_TYPE, GLFW.GLFW_ANGLE_PLATFORM_TYPE_METAL);
-		GLFW.glfwInitHint(GLFW.GLFW_JOYSTICK_HAT_BUTTONS, GLFW.GLFW_FALSE);
-		if(!GLFW.glfwInit()) {
+			glfwInitHint(GLFW_ANGLE_PLATFORM_TYPE, GLFW_ANGLE_PLATFORM_TYPE_METAL);
+		glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
+		if(!glfwInit()) {
 			throw new GdxRuntimeException("Unable to initialize GLFW");
 		}
 
@@ -94,9 +95,9 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		long windowHandle = createGlfwWindow(config);
 		this.glVersion = new GLVersion(
 				ApplicationType.Desktop,
-				GLES32.glGetString(GLES32.GL_VERSION),
-				GLES32.glGetString(GLES32.GL_VENDOR),
-				GLES32.glGetString(GLES32.GL_RENDERER)
+				glGetString(GL_VERSION),
+				glGetString(GL_VENDOR),
+				glGetString(GL_RENDERER)
 		);
 		this.window = new Lwjgl3Window(windowHandle, creator, config, this);
 
@@ -117,7 +118,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 
 	protected void loop() {
 		while(running && !window.shouldClose()) {
-			GLFW.glfwPollEvents();
+			glfwPollEvents();
 			window.update();
 
 			pollRunnables();
@@ -132,7 +133,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	protected void cleanup() {
 		Lwjgl3Cursor.disposeSystemCursors();
 		errorCallback.free();
-		GLFW.glfwTerminate();
+		glfwTerminate();
 	}
 
 	@Override
@@ -282,71 +283,71 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 	}
 
 	static long createGlfwWindow(Lwjgl3ApplicationConfiguration config) {
-		GLFW.glfwDefaultWindowHints();
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, config.windowResizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_MAXIMIZED, config.windowMaximized ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_AUTO_ICONIFY, config.autoIconify ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+		glfwDefaultWindowHints();
+		glfwWindowHint(GLFW_RESIZABLE, config.windowResizable ? GLFW_TRUE : GLFW_FALSE);
+		glfwWindowHint(GLFW_MAXIMIZED, config.windowMaximized ? GLFW_TRUE : GLFW_FALSE);
+		glfwWindowHint(GLFW_AUTO_ICONIFY, config.autoIconify ? GLFW_TRUE : GLFW_FALSE);
 
-		GLFW.glfwWindowHint(GLFW.GLFW_RED_BITS, config.r);
-		GLFW.glfwWindowHint(GLFW.GLFW_GREEN_BITS, config.g);
-		GLFW.glfwWindowHint(GLFW.GLFW_BLUE_BITS, config.b);
-		GLFW.glfwWindowHint(GLFW.GLFW_ALPHA_BITS, config.a);
-		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, config.stencil);
-		GLFW.glfwWindowHint(GLFW.GLFW_DEPTH_BITS, config.depth);
-		GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, config.samples);
+		glfwWindowHint(GLFW_RED_BITS, config.r);
+		glfwWindowHint(GLFW_GREEN_BITS, config.g);
+		glfwWindowHint(GLFW_BLUE_BITS, config.b);
+		glfwWindowHint(GLFW_ALPHA_BITS, config.a);
+		glfwWindowHint(GLFW_STENCIL_BITS, config.stencil);
+		glfwWindowHint(GLFW_DEPTH_BITS, config.depth);
+		glfwWindowHint(GLFW_SAMPLES, config.samples);
 
 		if(config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL30
 				|| config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL31
 				|| config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.GL32) {
-			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, config.gles30ContextMajorVersion);
-			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, config.gles30ContextMinorVersion);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config.gles30ContextMajorVersion);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, config.gles30ContextMinorVersion);
 			if(Platform.get() == Platform.MACOSX) {
 				// hints mandatory on OS X for GL 3.2+ context creation, but fail on Windows if the
 				// WGL_ARB_create_context extension is not available
-				// see: http://www.glfw.org/docs/latest/compat.html
-				GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
-				GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+				// see: http://www.org/docs/latest/compat.html
+				glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+				glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 			}
 		} else {
 			if(config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20) {
-				GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_CREATION_API, GLFW.GLFW_EGL_CONTEXT_API);
-				GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_OPENGL_ES_API);
-				GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 2);
-				GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
+				glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+				glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 			}
 		}
 
 		if(config.transparentFramebuffer) {
-			GLFW.glfwWindowHint(GLFW.GLFW_TRANSPARENT_FRAMEBUFFER, GLFW.GLFW_TRUE);
+			glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 		}
 
 		if(config.debug) {
-			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 		}
 
 		long windowHandle;
 
 		if(config.fullscreenMode != null) {
-			GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, config.fullscreenMode.refreshRate);
-			windowHandle = GLFW.glfwCreateWindow(config.fullscreenMode.width, config.fullscreenMode.height, config.title,
+			glfwWindowHint(GLFW_REFRESH_RATE, config.fullscreenMode.refreshRate);
+			windowHandle = glfwCreateWindow(config.fullscreenMode.width, config.fullscreenMode.height, config.title,
 					config.fullscreenMode.getMonitor(), 0);
 
 			// On Ubuntu >= 22.04 with Nvidia GPU drivers and X11 display server there's a bug with EGL Context API
 			// If the windows creation has failed for this reason try to create it again with the native context
 			if(windowHandle == 0 && config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20) {
-				GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_CREATION_API, GLFW.GLFW_NATIVE_CONTEXT_API);
-				windowHandle = GLFW.glfwCreateWindow(config.fullscreenMode.width, config.fullscreenMode.height, config.title,
+				glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+				windowHandle = glfwCreateWindow(config.fullscreenMode.width, config.fullscreenMode.height, config.title,
 						config.fullscreenMode.getMonitor(), 0);
 			}
 		} else {
-			// GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, config.windowDecorated ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
-			windowHandle = GLFW.glfwCreateWindow(config.windowWidth, config.windowHeight, config.title, 0, 0);
+			// glfwWindowHint(GLFW_DECORATED, config.windowDecorated ? GLFW_TRUE : GLFW_FALSE);
+			windowHandle = glfwCreateWindow(config.windowWidth, config.windowHeight, config.title, 0, 0);
 
 			// On Ubuntu >= 22.04 with Nvidia GPU drivers and X11 display server there's a bug with EGL Context API
 			// If the windows creation has failed for this reason try to create it again with the native context
 			if(windowHandle == 0 && config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20) {
-				GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_CREATION_API, GLFW.GLFW_NATIVE_CONTEXT_API);
-				windowHandle = GLFW.glfwCreateWindow(config.windowWidth, config.windowHeight, config.title, 0, 0);
+				glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+				windowHandle = glfwCreateWindow(config.windowWidth, config.windowHeight, config.title, 0, 0);
 			}
 		}
 		if(windowHandle == 0) {
@@ -355,44 +356,41 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		Lwjgl3Window.setSizeLimits(windowHandle, config.windowMinWidth, config.windowMinHeight, config.windowMaxWidth,
 				config.windowMaxHeight);
 		if(config.fullscreenMode == null) {
-			if(GLFW.glfwGetPlatform() != GLFW.GLFW_PLATFORM_WAYLAND) {
+			if(glfwGetPlatform() != GLFW_PLATFORM_WAYLAND) {
 				if(config.windowX == -1 && config.windowY == -1) { // i.e., center the window
 					int windowWidth = Math.max(config.windowWidth, config.windowMinWidth);
 					int windowHeight = Math.max(config.windowHeight, config.windowMinHeight);
 					if(config.windowMaxWidth > -1) windowWidth = Math.min(windowWidth, config.windowMaxWidth);
 					if(config.windowMaxHeight > -1) windowHeight = Math.min(windowHeight, config.windowMaxHeight);
 
-					long monitorHandle = GLFW.glfwGetPrimaryMonitor();
+					long monitorHandle = glfwGetPrimaryMonitor();
 					if(config.windowMaximized && config.maximizedMonitor != null) {
 						monitorHandle = config.maximizedMonitor.monitorHandle;
 					}
 
 					GridPoint2 newPos = Lwjgl3ApplicationConfiguration.calculateCenteredWindowPosition(
 							Lwjgl3ApplicationConfiguration.toLwjgl3Monitor(monitorHandle), windowWidth, windowHeight);
-					GLFW.glfwSetWindowPos(windowHandle, newPos.x, newPos.y);
+					glfwSetWindowPos(windowHandle, newPos.x, newPos.y);
 				} else {
-					GLFW.glfwSetWindowPos(windowHandle, config.windowX, config.windowY);
+					glfwSetWindowPos(windowHandle, config.windowX, config.windowY);
 				}
 			}
 
 			if(config.windowMaximized) {
-				GLFW.glfwMaximizeWindow(windowHandle);
+				glfwMaximizeWindow(windowHandle);
 			}
 		}
 		if(config.pixmaps != null) {
 			Lwjgl3Window.setIcon(windowHandle, config.pixmaps);
 		}
-		GLFW.glfwMakeContextCurrent(windowHandle);
-		GLFW.glfwSwapInterval(config.vSyncEnabled ? 1 : 0);
-		if(config.glEmulation == Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20) {
-			try {
-				GLES.createCapabilities();
-			} catch(Throwable e) {
-				throw new GdxRuntimeException("Couldn't initialize GLES", e);
-			}
-		} else {
-			GLES.createCapabilities();
-		}
+		glfwMakeContextCurrent(windowHandle);
+		glfwSwapInterval(config.vSyncEnabled ? 1 : 0);
+
+		// some platforms (notably macOS) don't support creating an GLES context
+		// instead, we setup GLES using a desktop GL context
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+		glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+		GLES.createCapabilities();
 
 		if(config.debug) {
 			// TODO celestialgdx find GLES replacement for what GDX had
