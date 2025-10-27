@@ -14,3 +14,6 @@ dependencies {
 		artifact { classifier = "natives-desktop" }
 	}
 }
+
+// TODO: enable when this engine works
+tasks.javadoc { enabled = false }
