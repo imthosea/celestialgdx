@@ -236,4 +236,6 @@ configurations.all {
 ```
 
 </details>
-Currently, the version is 1.0.0-SNAPSHOT.
+Currently, the version is 1.0.0-SNAPSHOT.<br><br>
+
+*This repo was initially made in late July 2025, but was deleted and reuploaded in November so it'd be disconnected from the fork network.*
