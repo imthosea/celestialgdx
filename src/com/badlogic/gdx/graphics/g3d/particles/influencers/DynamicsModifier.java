@@ -54,7 +54,7 @@ public abstract class DynamicsModifier extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 			for(int i = 0, accelOffset = 0, c = i + controller.particles.size
 					* rotationChannel.strideSize; i < c; i += rotationChannel.strideSize, accelOffset += accellerationChannel.strideSize) {
 
@@ -205,7 +205,7 @@ public abstract class DynamicsModifier extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 			for(int i = 0, l = ParticleChannels.LifePercentOffset, s = 0, c = i + controller.particles.size
 					* rotationalVelocity2dChannel.strideSize; i < c; s += strengthChannel.strideSize, i += rotationalVelocity2dChannel.strideSize, l += lifeChannel.strideSize) {
 				rotationalVelocity2dChannel.data[i] += strengthChannel.data[s + ParticleChannels.VelocityStrengthStartOffset]
@@ -238,7 +238,7 @@ public abstract class DynamicsModifier extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 
 			// Matrix3 I_t = defined by the shape, it's the inertia tensor
 			// Vector3 r = position vector
@@ -313,7 +313,7 @@ public abstract class DynamicsModifier extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 			float cx = 0, cy = 0, cz = 0;
 			if(!isGlobal) {
 				float[] val = controller.transform.val;
@@ -361,7 +361,7 @@ public abstract class DynamicsModifier extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 			for(int i = 0, l = ParticleChannels.LifePercentOffset, s = 0, a = 0, c = i + controller.particles.size
 					* directionalVelocityChannel.strideSize; i < c; s += strengthChannel.strideSize, i += directionalVelocityChannel.strideSize, a += angularChannel.strideSize, l += lifeChannel.strideSize) {
 
@@ -412,7 +412,7 @@ public abstract class DynamicsModifier extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 			for(int i = 0, l = ParticleChannels.LifePercentOffset, s = 0, a = 0, positionOffset = 0,
 			    c = i + controller.particles.size
 					    * directionalVelocityChannel.strideSize; i < c; s += strengthChannel.strideSize, i += directionalVelocityChannel.strideSize, a += angularChannel.strideSize, l += lifeChannel.strideSize, positionOffset += positionChannel.strideSize) {
@@ -467,7 +467,7 @@ public abstract class DynamicsModifier extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 			int lifeOffset = ParticleChannels.LifePercentOffset, strengthOffset = 0, forceOffset = 0;
 			for(int i = 0,
 			    c = controller.particles.size; i < c; ++i, strengthOffset += strengthChannel.strideSize, forceOffset += accelerationChannel.strideSize, lifeOffset += lifeChannel.strideSize) {

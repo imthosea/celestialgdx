@@ -104,7 +104,7 @@ public abstract class ColorInfluencer extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 			for(int i = 0, a = 0, l = ParticleChannels.LifePercentOffset, c = i + controller.particles.size
 					* colorChannel.strideSize; i < c; i += colorChannel.strideSize, a += alphaInterpolationChannel.strideSize, l += lifeChannel.strideSize) {
 

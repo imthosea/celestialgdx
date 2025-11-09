@@ -34,12 +34,12 @@ public class Lwjgl3Cursor implements Cursor {
 
 	private static int inputModeBeforeNoneCursor = -1;
 
-	final Lwjgl3Window window;
+	final Window window;
 	private Pixmap pixmapCopy;
 	private final GLFWImage glfwImage;
 	public final long glfwCursor;
 
-	Lwjgl3Cursor(Lwjgl3Window window, Pixmap pixmap, int xHotspot, int yHotspot) {
+	Lwjgl3Cursor(Window window, Pixmap pixmap, int xHotspot, int yHotspot) {
 		this.window = window;
 		if(pixmap.getFormat() != Format.RGBA8888) {
 			throw new GdxRuntimeException("Cursor image pixmap is not in RGBA8888 format.");
@@ -89,7 +89,7 @@ public class Lwjgl3Cursor implements Cursor {
 		GLFW.glfwDestroyCursor(glfwCursor);
 	}
 
-	static void dispose(Lwjgl3Window window) {
+	static void dispose(Window window) {
 		for(int i = cursors.size - 1; i >= 0; i--) {
 			Lwjgl3Cursor cursor = cursors.get(i);
 			if(cursor.window.equals(window)) {

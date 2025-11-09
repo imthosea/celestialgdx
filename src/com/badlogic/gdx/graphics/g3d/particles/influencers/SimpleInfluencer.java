@@ -81,7 +81,7 @@ public abstract class SimpleInfluencer extends Influencer {
 	}
 
 	@Override
-	public void update() {
+	public void update(float deltaTime) {
 		for(int i = 0, a = 0, l = ParticleChannels.LifePercentOffset, c = i + controller.particles.size
 				* valueChannel.strideSize; i < c; i += valueChannel.strideSize, a += interpolationChannel.strideSize, l += lifeChannel.strideSize) {
 

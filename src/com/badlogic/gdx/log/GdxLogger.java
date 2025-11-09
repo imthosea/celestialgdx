@@ -14,30 +14,20 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx.backends.lwjgl3;
+package com.badlogic.gdx.log;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Clipboard;
-import org.lwjgl.glfw.GLFW;
+import com.badlogic.gdx.backends.lwjgl3.CelestialGdx;
 
 /**
- * Clipboard implementation for desktop that uses the system clipboard via GLFW.
- * @author mzechner
+ * The GdxLogger provides an interface for a libGDX Application to log messages and exceptions.
+ * The default implementation prints to System.out/System.err
+ * {@link CelestialGdx#setApplicationLogger(GdxLogger) }
  */
-public class Lwjgl3Clipboard implements Clipboard {
-	@Override
-	public boolean hasContents() {
-		String contents = getContents();
-		return contents != null && !contents.isEmpty();
-	}
-
-	@Override
-	public String getContents() {
-		return GLFW.glfwGetClipboardString(((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle());
-	}
-
-	@Override
-	public void setContents(String content) {
-		GLFW.glfwSetClipboardString(((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle(), content);
-	}
+public interface GdxLogger {
+	void info(String message);
+	void info(String message, Throwable exception);
+	void error(String message);
+	void error(String message, Throwable exception);
+	void debug(String message);
+	void debug(String message, Throwable exception);
 }

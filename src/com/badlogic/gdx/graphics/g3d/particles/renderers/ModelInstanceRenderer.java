@@ -59,7 +59,7 @@ public class ModelInstanceRenderer
 	}
 
 	@Override
-	public void update() {
+	public void update(float deltaTime) {
 		for(int i = 0, positionOffset = 0,
 		    c = controller.particles.size; i < c; ++i, positionOffset += renderData.positionChannel.strideSize) {
 			ModelInstance instance = renderData.modelInstanceChannel.data[i];
@@ -87,7 +87,7 @@ public class ModelInstanceRenderer
 					blendingAttribute.opacity = renderData.colorChannel.data[colorOffset + ParticleChannels.AlphaOffset];
 			}
 		}
-		super.update();
+		super.update(deltaTime);
 	}
 
 	@Override

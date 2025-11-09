@@ -39,12 +39,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Clipboard;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import org.jetbrains.annotations.Nullable;
+
+import java.awt.datatransfer.Clipboard;
+
+import static org.lwjgl.glfw.GLFW.glfwGetClipboardString;
+import static org.lwjgl.glfw.GLFW.glfwSetClipboardString;
 
 /**
  * A single-line text input field.
@@ -136,7 +140,6 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 	public TextField(@Nullable String text, TextFieldStyle style) {
 		setStyle(style);
-		clipboard = Gdx.app.getClipboard();
 		initialize();
 		setText(text);
 		setSize(getPrefWidth(), getPrefHeight());
@@ -458,7 +461,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 	/** Copies the contents of this TextField to the {@link Clipboard} implementation set on this TextField. */
 	public void copy() {
 		if(hasSelection && !passwordMode) {
-			clipboard.setContents(text.substring(Math.min(cursor, selectionStart), Math.max(cursor, selectionStart)));
+			glfwSetClipboardString(getStage().window.handle, text.substring(Math.min(cursor, selectionStart), Math.max(cursor, selectionStart)));
 		}
 	}
 
@@ -936,7 +939,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 			if(ctrl) {
 				switch(keycode) {
 					case Keys.V:
-						paste(clipboard.getContents(), true);
+						paste(glfwGetClipboardString(getStage().window.handle), true);
 						repeat = true;
 						break;
 					case Keys.C:
@@ -963,7 +966,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 			if(UIUtils.shift()) {
 				switch(keycode) {
 					case Keys.INSERT:
-						paste(clipboard.getContents(), true);
+						paste(glfwGetClipboardString(getStage().window.handle), true);
 						break;
 					case Keys.FORWARD_DEL:
 						cut(true);

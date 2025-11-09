@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.g3d.particles;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.emitters.Emitter;
@@ -231,22 +230,17 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 	}
 
 	/** Updates the particles data */
-	public void update() {
-		update(Gdx.graphics.getDeltaTime());
-	}
-
-	/** Updates the particles data */
 	public void update(float deltaTime) {
 		setTimeStep(deltaTime);
-		emitter.update();
+		emitter.update(deltaTime);
 		for(Influencer influencer : influencers)
-			influencer.update();
+			influencer.update(deltaTime);
 	}
 
 	/** Updates the renderer used by this controller, usually this means the particles will be draw inside a batch. */
-	public void draw() {
+	public void draw(float deltaTime) {
 		if(particles.size > 0) {
-			renderer.update();
+			renderer.update(deltaTime);
 		}
 	}
 
