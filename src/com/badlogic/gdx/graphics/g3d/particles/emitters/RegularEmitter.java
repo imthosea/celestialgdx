@@ -123,7 +123,7 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		}
 	}
 
-	public void update() {
+	public void update(float deltaTime) {
 		float deltaMillis = controller.deltaTime * 1000;
 
 		if(delayTimer < delay) {

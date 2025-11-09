@@ -18,10 +18,10 @@ package com.badlogic.gdx.scenes.scene2d;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.backends.lwjgl3.Window;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -69,6 +69,8 @@ public class Stage extends InputAdapter implements Disposable {
 	/** True if any actor has ever had debug enabled. */
 	static boolean debug;
 
+	public final Window window;
+
 	private Viewport viewport;
 	private final Batch batch;
 	private boolean ownsBatch;
@@ -91,8 +93,8 @@ public class Stage extends InputAdapter implements Disposable {
 	 * Creates a stage with a {@link ScalingViewport} set to {@link Scaling#stretch}. The stage will use its own {@link Batch}
 	 * which will be disposed when the stage is disposed.
 	 */
-	public Stage() {
-		this(new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera()),
+	public Stage(Window window) {
+		this(window, new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera()),
 				new SpriteBatch());
 		ownsBatch = true;
 	}
@@ -101,8 +103,8 @@ public class Stage extends InputAdapter implements Disposable {
 	 * Creates a stage with the specified viewport. The stage will use its own {@link Batch} which will be disposed when the stage
 	 * is disposed.
 	 */
-	public Stage(Viewport viewport) {
-		this(viewport, new SpriteBatch());
+	public Stage(Window window, Viewport viewport) {
+		this(window, viewport, new SpriteBatch());
 		ownsBatch = true;
 	}
 
@@ -111,9 +113,10 @@ public class Stage extends InputAdapter implements Disposable {
 	 * batch implementation is used.
 	 * @param batch Will not be disposed if {@link #dispose()} is called, handle disposal yourself.
 	 */
-	public Stage(Viewport viewport, Batch batch) {
+	public Stage(Window window, Viewport viewport, Batch batch) {
 		if(viewport == null) throw new IllegalArgumentException("viewport cannot be null.");
 		if(batch == null) throw new IllegalArgumentException("batch cannot be null.");
+		this.window = window;
 		this.viewport = viewport;
 		this.batch = batch;
 
@@ -186,11 +189,6 @@ public class Stage extends InputAdapter implements Disposable {
 			for(int i = 0, n = children.size; i < n; i++)
 				disableDebug(children.get(i), except);
 		}
-	}
-
-	/** Calls {@link #act(float)} with {@link Graphics#getDeltaTime()}, limited to a minimum of 30fps. */
-	public void act() {
-		act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 	}
 
 	/**

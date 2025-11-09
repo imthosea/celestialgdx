@@ -19,12 +19,13 @@ package com.badlogic.gdx.scenes.scene2d.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.Nullable;
+
+import static org.lwjgl.opengles.GLES32.glScissor;
 
 /**
  * A stack of {@link Rectangle} objects to be used for clipping via {@link GL20#glScissor(int, int, int, int)}. When a new
@@ -32,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * the real top of the stack.
  * @author mzechner
  */
+@Deprecated(forRemoval = true) // TODO celestialgdx
 public class ScissorStack {
 	private static final Array<Rectangle> scissors = new Array<>();
 	static final Vector3 tmp = new Vector3();
@@ -70,7 +72,7 @@ public class ScissorStack {
 			scissor.height = Math.max(1, maxY - minY);
 		}
 		scissors.add(scissor);
-		HdpiUtils.glScissor((int) scissor.x, (int) scissor.y, (int) scissor.width, (int) scissor.height);
+		glScissor((int) scissor.x, (int) scissor.y, (int) scissor.width, (int) scissor.height);
 		return true;
 	}
 
@@ -86,7 +88,7 @@ public class ScissorStack {
 			Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
 		else {
 			Rectangle scissor = scissors.peek();
-			HdpiUtils.glScissor((int) scissor.x, (int) scissor.y, (int) scissor.width, (int) scissor.height);
+			glScissor((int) scissor.x, (int) scissor.y, (int) scissor.width, (int) scissor.height);
 		}
 		return old;
 	}

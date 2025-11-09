@@ -133,7 +133,7 @@ public class DynamicsInfluencer extends Influencer {
 		}
 	}
 
-	public void update() {
+	public void update(float deltaTime) {
 		// Clean previouse frame velocities
 		if(hasAcceleration)
 			Arrays.fill(accellerationChannel.data, 0, controller.particles.size * accellerationChannel.strideSize, 0);
@@ -142,7 +142,7 @@ public class DynamicsInfluencer extends Influencer {
 
 		// Sum all the forces/accelerations
 		for(int k = 0; k < velocities.size; ++k) {
-			velocities.items[k].update();
+			velocities.items[k].update(deltaTime);
 		}
 
 		// Apply the forces

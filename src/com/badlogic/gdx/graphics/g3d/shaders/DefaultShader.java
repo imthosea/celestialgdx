@@ -794,7 +794,8 @@ public class DefaultShader extends BaseShader {
 			spotLight.set(0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0);
 		lightsSet = false;
 
-		if(has(u_time)) set(u_time, time += Gdx.graphics.getDeltaTime());
+		// TODO celestialgdx: remove this class probably
+		// if(has(u_time)) set(u_time, time += Gdx.graphics.getDeltaTime());
 
 		// set generic vertex attribute value for all bone weights in case a mesh has missing attributes.
 		if(boneWeightsLocations != null) {

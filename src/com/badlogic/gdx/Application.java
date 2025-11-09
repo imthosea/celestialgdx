@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx;
 
-import com.badlogic.gdx.utils.Clipboard;
-
 /**
  * <p>
  * An <code>Application</code> is the main entry point of your project. It sets up a window and rendering surface and manages the
@@ -100,118 +98,32 @@ public interface Application {
 	 * Enumeration of possible {@link Application} types
 	 * @author mzechner
 	 */
-	public enum ApplicationType {
+	enum ApplicationType { // TODO remove
 		Android, Desktop, HeadlessDesktop, Applet, WebGL, iOS
 	}
 
-	public static final int LOG_NONE = 0;
-	public static final int LOG_DEBUG = 3;
-	public static final int LOG_INFO = 2;
-	public static final int LOG_ERROR = 1;
-
-	/** @return the {@link ApplicationListener} instance */
-	public ApplicationListener getApplicationListener();
-
-	/** @return the {@link Graphics} instance */
-	public Graphics getGraphics();
+	Graphics getGraphics();
 
 	/** @return the {@link Input} instance */
-	public Input getInput();
-
-	/** @return the {@link Files} instance */
-	public Files getFiles();
-
-	/** Logs a message to the console or logcat */
-	public void log(String tag, String message);
-
-	/** Logs a message to the console or logcat */
-	public void log(String tag, String message, Throwable exception);
-
-	/** Logs an error message to the console or logcat */
-	public void error(String tag, String message);
-
-	/** Logs an error message to the console or logcat */
-	public void error(String tag, String message, Throwable exception);
-
-	/** Logs a debug message to the console or logcat */
-	public void debug(String tag, String message);
-
-	/** Logs a debug message to the console or logcat */
-	public void debug(String tag, String message, Throwable exception);
-
-	/**
-	 * Sets the log level. {@link #LOG_NONE} will mute all log output. {@link #LOG_ERROR} will only let error messages through.
-	 * {@link #LOG_INFO} will let all non-debug messages through, and {@link #LOG_DEBUG} will let all messages through.
-	 * @param logLevel {@link #LOG_NONE}, {@link #LOG_ERROR}, {@link #LOG_INFO}, {@link #LOG_DEBUG}.
-	 */
-	public void setLogLevel(int logLevel);
-
-	/** Gets the log level. */
-	public int getLogLevel();
-
-	/**
-	 * Sets the current Application logger. Calls to {@link #log(String, String)} are delegated to this
-	 * {@link ApplicationLogger}
-	 */
-	public void setApplicationLogger(ApplicationLogger applicationLogger);
-
-	/** @return the current {@link ApplicationLogger} */
-	public ApplicationLogger getApplicationLogger();
+	Input getInput();
 
 	/** @return what {@link ApplicationType} this application has, e.g. Android or Desktop */
-	public ApplicationType getType();
-
-	/** @return the Android API level on Android, the major OS version on iOS (5, 6, 7, ..), or 0 on the desktop. */
-	public int getVersion();
-
-	/** @return the Java heap memory use in bytes */
-	public long getJavaHeap();
-
-	/** @return the Native heap memory use in bytes */
-	public long getNativeHeap();
-
-	public Clipboard getClipboard();
+	ApplicationType getType();
 
 	/**
-	 * Posts a {@link Runnable} on the main loop thread.
-	 *
-	 * In a multi-window application, the {@linkplain Gdx#graphics} and {@linkplain Gdx#input} values may be unpredictable at the
-	 * time the Runnable is executed. If graphics or input are needed, they can be copied to a variable to be used in the Runnable.
-	 * For example:
-	 * <p>
-	 * <code> final Graphics graphics = Gdx.graphics;
-	 * @param runnable the runnable.
+	 * posts a {@link Runnable} on the main loop thread.
+	 * must be polled with {@link #pollRunnables()}
 	 */
-	public void postRunnable(Runnable runnable);
+	void postRunnable(Runnable runnable);
 
 	/**
 	 * celestialgdx - returns true if you are running on the thread that created the application
 	 */
-	public boolean isGameThread();
+	boolean isGameThread();
 
 	/**
 	 * celestialgdx - polls runnables from {@link #postRunnable(Runnable)}<br>
-	 * called at the start of every frame
+	 * call this at the start of every frame!
 	 */
-	public void pollRunnables();
-
-	/**
-	 * Schedule an exit from the application. On android, this will cause a call to pause() and dispose() some time in the future,
-	 * it will not immediately finish your application. On iOS this should be avoided in production as it breaks Apples
-	 * guidelines
-	 */
-	public void exit();
-
-	/**
-	 * Adds a new {@link LifecycleListener} to the application. This can be used by extensions to hook into the lifecycle more
-	 * easily. The {@link ApplicationListener} methods are sufficient for application level development.
-	 * @param listener
-	 */
-	public void addLifecycleListener(LifecycleListener listener);
-
-	/**
-	 * Removes the {@link LifecycleListener}.
-	 * @param listener
-	 */
-	public void removeLifecycleListener(LifecycleListener listener);
+	void pollRunnables();
 }

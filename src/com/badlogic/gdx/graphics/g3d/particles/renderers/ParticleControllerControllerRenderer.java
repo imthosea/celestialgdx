@@ -39,9 +39,9 @@ public class ParticleControllerControllerRenderer extends ParticleControllerRend
 	}
 
 	@Override
-	public void update() {
+	public void update(float deltaTime) {
 		for(int i = 0, c = controller.particles.size; i < c; ++i) {
-			controllerChannel.data[i].draw();
+			controllerChannel.data[i].draw(deltaTime);
 		}
 	}
 

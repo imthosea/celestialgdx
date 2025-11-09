@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.assets;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.CubemapLoader;
@@ -29,6 +28,7 @@ import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.backends.lwjgl3.CelestialGdx;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -38,6 +38,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonRegionLoader;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.log.GdxLogger;
 import com.badlogic.gdx.maps.TiledMap;
 import com.badlogic.gdx.maps.TiledProject;
 import com.badlogic.gdx.maps.Tileset;
@@ -49,7 +50,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.I18NBundle;
-import com.badlogic.gdx.utils.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -90,7 +90,11 @@ public class AssetManager implements Disposable {
 	private final Map<Class<?>, AssetLoader<?, ?>> loaders = new ConcurrentHashMap<>();
 	final Map<String, AssetLoadingContext<?>> tasks = new ConcurrentHashMap<>();
 
-	final ExecutorService workExecutor = Executors.newFixedThreadPool(2);
+	final ExecutorService workExecutor = Executors.newFixedThreadPool(2, runnable -> {
+		Thread thread = Executors.defaultThreadFactory().newThread(runnable);
+		thread.setDaemon(true);
+		return thread;
+	});
 	volatile AssetErrorListener listener;
 
 	private final ReadWriteLock countLock = new ReentrantReadWriteLock();
@@ -99,16 +103,17 @@ public class AssetManager implements Disposable {
 
 	private final FileHandleResolver resolver;
 
-	public final Logger log = new Logger("AssetManager", Application.LOG_ERROR);
+	public final CelestialGdx gdx;
+	public final GdxLogger logger;
 
 	/** Creates a new AssetManager with all default loaders. */
-	public AssetManager() {
-		this(new InternalFileHandleResolver());
+	public AssetManager(CelestialGdx gdx) {
+		this(gdx, new InternalFileHandleResolver());
 	}
 
 	/** Creates a new AssetManager with all default loaders. */
-	public AssetManager(FileHandleResolver resolver) {
-		this(resolver, true);
+	public AssetManager(CelestialGdx gdx, FileHandleResolver resolver) {
+		this(gdx, resolver, true);
 	}
 
 	/**
@@ -116,8 +121,10 @@ public class AssetManager implements Disposable {
 	 * manually add the loaders you need, including any loaders they might depend on.
 	 * @param defaultLoaders whether to add the default loaders
 	 */
-	public AssetManager(FileHandleResolver resolver, boolean defaultLoaders) {
+	public AssetManager(CelestialGdx gdx, FileHandleResolver resolver, boolean defaultLoaders) {
+		this.gdx = gdx;
 		this.resolver = resolver;
+		this.logger = gdx.createLogger("AssetManager");
 		if(defaultLoaders) {
 			setLoader(BitmapFont.class, new BitmapFontLoader(resolver));
 			setLoader(Pixmap.class, new PixmapLoader(resolver));
@@ -245,7 +252,7 @@ public class AssetManager implements Disposable {
 	public synchronized void unload(String fileName) {
 		AssetLoadingContext<?> ctx = tasks.remove(fileName);
 		if(ctx != null) {
-			log.info("Unload (from tasks): " + fileName);
+			logger.info("Unload (from tasks): " + fileName);
 			ctx.cancel();
 			writeCount(() -> toLoad--);
 			return;
@@ -264,7 +271,7 @@ public class AssetManager implements Disposable {
 
 		// if it is reference counted, decrement ref count and check if we can really get rid of it.
 		if(asset.refCount.decrementAndGet() <= 0) {
-			log.info("Unload (dispose): " + fileName);
+			logger.info("Unload (dispose): " + fileName);
 
 			// if it is disposable dispose it
 			if(asset.object instanceof Disposable disposable) disposable.dispose();
@@ -273,7 +280,7 @@ public class AssetManager implements Disposable {
 			assets.remove(fileName);
 			assetDependencies.remove(fileName);
 		} else {
-			log.info("Unload (decrement): " + fileName);
+			logger.info("Unload (decrement): " + fileName);
 		}
 	}
 
@@ -379,7 +386,7 @@ public class AssetManager implements Disposable {
 		tasks.put(fileName, ctx);
 
 		ctx.schedule();
-		log.debug("Queued: " + desc);
+		logger.debug("Queued: " + desc);
 	}
 
 	/**
@@ -396,14 +403,14 @@ public class AssetManager implements Disposable {
 
 	/** Blocks until all assets are loaded. */
 	public void finishLoading() {
-		log.debug("Waiting for loading to complete...");
+		logger.debug("Waiting for loading to complete...");
 		AssetLoadingContext<?> ctx = null;
 		while(true) {
 			if(!tasks.isEmpty()) {
 				ctx = tasks.values().iterator().next();
 			}
 			if(ctx == null) {
-				log.debug("Loading complete.");
+				logger.debug("Loading complete.");
 				return;
 			}
 			try {
@@ -426,7 +433,7 @@ public class AssetManager implements Disposable {
 	 * @param fileName the file name (interpretation depends on {@link AssetLoader})
 	 */
 	public <T> T finishLoadingAsset(String fileName) {
-		log.debug("Waiting for asset to be loaded: " + fileName);
+		logger.debug("Waiting for asset to be loaded: " + fileName);
 		AssetLoadingContext<?> ctx = tasks.get(fileName);
 		if(ctx != null) {
 			return (T) ctx.awaitResult();
@@ -447,7 +454,7 @@ public class AssetManager implements Disposable {
 	public <T, P extends AssetLoaderParameters<T>> void setLoader(Class<T> type, AssetLoader<T, P> loader) {
 		if(type == null) throw new IllegalArgumentException("type cannot be null.");
 		if(loader == null) throw new IllegalArgumentException("loader cannot be null.");
-		log.debug("Loader set: " + type.getSimpleName() + " -> " + loader.getClass().getSimpleName());
+		logger.debug("Loader set: " + type.getSimpleName() + " -> " + loader.getClass().getSimpleName());
 		loaders.put(type, loader);
 	}
 
@@ -474,7 +481,7 @@ public class AssetManager implements Disposable {
 	 */
 	@Override
 	public void dispose() {
-		log.debug("Disposing.");
+		logger.debug("Disposing.");
 		clear();
 	}
 
@@ -494,10 +501,10 @@ public class AssetManager implements Disposable {
 	}
 
 	/**
-	 * @return the {@link Logger} used by the {@link AssetManager}
+	 * @return the {@link GdxLogger} used by the {@link AssetManager}
 	 */
-	public Logger getLogger() {
-		return log;
+	public GdxLogger getLogger() {
+		return logger;
 	}
 
 	/**

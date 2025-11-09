@@ -497,45 +497,6 @@ public interface Input {
 	public int getY();
 
 	/**
-	 * Returns the y coordinate in screen coordinates of the given pointer. Pointers are indexed from 0 to n. The pointer id
-	 * identifies the order in which the fingers went down on the screen, e.g. 0 is the first finger, 1 is the second and so on.
-	 * When two fingers are touched down and the first one is lifted the second one keeps its index. If another finger is placed on
-	 * the touch screen the first free index will be used.
-	 * @param pointer the pointer id.
-	 * @return the y coordinate
-	 */
-	public int getY(int pointer);
-
-	/** @return whether the screen is currently touched. */
-	public boolean isTouched();
-
-	/** @return whether a new touch down event just occurred. */
-	public boolean justTouched();
-
-	/**
-	 * Whether the screen is currently touched by the pointer with the given index. Pointers are indexed from 0 to n. The pointer
-	 * id identifies the order in which the fingers went down on the screen, e.g. 0 is the first finger, 1 is the second and so on.
-	 * When two fingers are touched down and the first one is lifted the second one keeps its index. If another finger is placed on
-	 * the touch screen the first free index will be used.
-	 * @param pointer the pointer
-	 * @return whether the screen is touched by the pointer
-	 */
-	public boolean isTouched(int pointer);
-
-	/** @return the pressure of the first pointer */
-	public float getPressure();
-
-	/**
-	 * Returns the pressure of the given pointer, where 0 is untouched. On Android it should be up to 1.0, but it can go above
-	 * that slightly and its not consistent between devices. On iOS 1.0 is the normal touch and significantly more of hard touch.
-	 * Check relevant manufacturer documentation for details. Check availability with
-	 * {@link Input#isPeripheralAvailable(Peripheral)}. If not supported, returns 1.0 when touched.
-	 * @param pointer the pointer id.
-	 * @return the pressure
-	 */
-	public float getPressure(int pointer);
-
-	/**
 	 * Whether a given button is pressed or not. Button constants can be found in {@link Buttons}. On Android only the
 	 * Buttons#LEFT constant is meaningful before version 4.0.
 	 * @param button the button to check.

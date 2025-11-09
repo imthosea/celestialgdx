@@ -137,7 +137,7 @@ public abstract class RegionInfluencer extends Influencer {
 		}
 
 		@Override
-		public void update() {
+		public void update(float deltaTime) {
 			for(int i = 0, l = ParticleChannels.LifePercentOffset, c = controller.particles.size
 					* regionChannel.strideSize; i < c; i += regionChannel.strideSize, l += lifeChannel.strideSize) {
 				AspectTextureRegion region = regions.get((int) (lifeChannel.data[l] * (regions.size - 1)));

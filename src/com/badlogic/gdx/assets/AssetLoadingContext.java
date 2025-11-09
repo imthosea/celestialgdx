@@ -19,8 +19,8 @@ package com.badlogic.gdx.assets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.log.GdxLogger;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +75,7 @@ public class AssetLoadingContext<T> {
 		} catch(TaskNotActiveException e) {
 			future.completeExceptionally(e);
 		} catch(Exception e) {
-			manager.log.error("Error loading " + desc.fileName, e);
+			manager.logger.error("Error loading " + desc.fileName, e);
 			future.completeExceptionally(e);
 
 			if(manager.listener != null)
@@ -158,7 +158,7 @@ public class AssetLoadingContext<T> {
 			try {
 				future.complete(supplier.get());
 			} catch(Exception e) {
-				manager.log.error("Error performing sync task for " + desc.fileName, e);
+				manager.logger.error("Error performing sync task for " + desc.fileName, e);
 				future.completeExceptionally(e);
 			}
 		});
@@ -228,7 +228,7 @@ public class AssetLoadingContext<T> {
 		createdDependencies.forEach(manager::unload);
 	}
 
-	public Logger logger() {
+	public GdxLogger logger() {
 		return manager.getLogger();
 	}
 

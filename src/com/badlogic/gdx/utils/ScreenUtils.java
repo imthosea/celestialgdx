@@ -76,8 +76,6 @@ public final class ScreenUtils {
 		Gdx.gl.glClearColor(r, g, b, a);
 		int mask = GL20.GL_COLOR_BUFFER_BIT;
 		if(clearDepth) mask = mask | GL20.GL_DEPTH_BUFFER_BIT;
-		if(applyAntialiasing && Gdx.graphics.getBufferFormat().coverageSampling)
-			mask = mask | GL20.GL_COVERAGE_BUFFER_BIT_NV;
 		Gdx.gl.glClear(mask);
 	}
 
@@ -88,8 +86,8 @@ public final class ScreenUtils {
 	 * The returned TextureRegion is flipped along the Y axis by default.
 	 */
 	public static TextureRegion getFrameBufferTexture() {
-		final int w = Gdx.graphics.getBackBufferWidth();
-		final int h = Gdx.graphics.getBackBufferHeight();
+		final int w = Gdx.graphics.getWidth();
+		final int h = Gdx.graphics.getHeight();
 		return getFrameBufferTexture(0, 0, w, h);
 	}
 
@@ -134,8 +132,8 @@ public final class ScreenUtils {
 	 * @param flipY whether to flip pixels along Y axis
 	 */
 	public static byte[] getFrameBufferPixels(boolean flipY) {
-		final int w = Gdx.graphics.getBackBufferWidth();
-		final int h = Gdx.graphics.getBackBufferHeight();
+		final int w = Gdx.graphics.getWidth();
+		final int h = Gdx.graphics.getHeight();
 		return getFrameBufferPixels(0, 0, w, h, flipY);
 	}
 

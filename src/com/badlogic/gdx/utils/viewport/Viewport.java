@@ -16,17 +16,17 @@
 
 package com.badlogic.gdx.utils.viewport;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
+
+import static org.lwjgl.opengles.GLES32.glViewport;
 
 /**
  * Manages a {@link Camera} and determines how world coordinates are mapped to and from the screen.
@@ -50,7 +50,7 @@ public abstract class Viewport {
 	 * @param centerCamera If true, the camera position is set to the center of the world.
 	 */
 	public void apply(boolean centerCamera) {
-		HdpiUtils.glViewport(screenX, screenY, screenWidth, screenHeight);
+		glViewport(screenX, screenY, screenWidth, screenHeight);
 		camera.viewportWidth = worldWidth;
 		camera.viewportHeight = worldHeight;
 		if(centerCamera) camera.position.set(worldWidth / 2, worldHeight / 2, 0);

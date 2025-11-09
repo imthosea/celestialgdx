@@ -49,7 +49,7 @@ public abstract class ParticleControllerComponent implements Disposable, Json.Se
 	;
 
 	/** Called to execute the component behavior. */
-	public void update() {
+	public void update(float deltaTime) {
 	}
 	;
 

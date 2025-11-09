@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d.freetype;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -515,7 +514,8 @@ public class FreeTypeFontGenerator implements Disposable {
 			mainGlyph.toBitmap(parameter.mono ? FreeType.FT_RENDER_MODE_MONO : FreeType.FT_RENDER_MODE_NORMAL);
 		} catch(GdxRuntimeException e) {
 			mainGlyph.dispose();
-			Gdx.app.log("FreeTypeFontGenerator", "Couldn't render char: " + c);
+			// TODO celestialgdx:
+			// Gdx.app.log("FreeTypeFontGenerator", "Couldn't render char: " + c);
 			return null;
 		}
 		Bitmap mainBitmap = mainGlyph.getBitmap();

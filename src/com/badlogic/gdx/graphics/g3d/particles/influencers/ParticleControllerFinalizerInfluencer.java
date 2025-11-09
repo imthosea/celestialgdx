@@ -52,7 +52,7 @@ public class ParticleControllerFinalizerInfluencer extends Influencer {
 	}
 
 	@Override
-	public void update() {
+	public void update(float deltaTime) {
 		for(int i = 0, positionOffset = 0,
 		    c = controller.particles.size; i < c; ++i, positionOffset += positionChannel.strideSize) {
 			ParticleController particleController = controllerChannel.data[i];
@@ -68,7 +68,7 @@ public class ParticleControllerFinalizerInfluencer extends Influencer {
 			particleController.setTransform(positionChannel.data[positionOffset + ParticleChannels.XOffset],
 					positionChannel.data[positionOffset + ParticleChannels.YOffset],
 					positionChannel.data[positionOffset + ParticleChannels.ZOffset], qx, qy, qz, qw, scale);
-			particleController.update();
+			particleController.update(deltaTime);
 		}
 	}
 

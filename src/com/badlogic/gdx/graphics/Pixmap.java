@@ -388,7 +388,8 @@ public class Pixmap implements Disposable {
 	/** Releases all resources associated with this Pixmap. */
 	public void dispose() {
 		if(disposed) {
-			Gdx.app.error("Pixmap", "Pixmap already disposed!");
+			// celestialgdx: why is this a thing?
+			// Gdx.app.error("Pixmap", "Pixmap already disposed!");
 			return;
 		}
 		pixmap.dispose();

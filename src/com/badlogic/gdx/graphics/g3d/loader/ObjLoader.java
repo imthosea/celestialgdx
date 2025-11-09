@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.g3d.loader;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
@@ -68,12 +67,6 @@ import java.io.InputStreamReader;
  * @author mzechner, espitz, xoppa
  */
 public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
-	/**
-	 * Set to false to prevent a warning from being logged when this class is used. Do not change this value, unless you are
-	 * absolutely sure what you are doing. Consult the documentation for more information.
-	 */
-	public static final boolean logWarning = false;
-
 	public static class ObjLoaderParameters extends ModelLoader.ModelParameters {
 		public boolean flipV;
 
@@ -109,8 +102,6 @@ public class ObjLoader extends ModelLoader<ObjLoader.ObjLoaderParameters> {
 	}
 
 	protected ModelData loadModelData(FileHandle file, boolean flipV) {
-		if(logWarning)
-			Gdx.app.error("ObjLoader", "Wavefront (OBJ) is not fully supported, consult the documentation for more information");
 		String line;
 		String[] tokens;
 		char firstChar;

@@ -14,22 +14,31 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.badlogic.gdx;
+package com.badlogic.gdx.backends.lwjgl3;
 
 /**
- * Convenience implementation of {@link ApplicationListener}. Derive from this and only override what you need.
- * @author mzechner
+ * @see CelestialGdx#postRunnable(Runnable)
  */
-public abstract class ApplicationAdapter implements ApplicationListener {
-	@Override
-	public void resize(int width, int height) {
-	}
+public interface WindowListener {
+	/**
+	 * called when the window is minimized or unminimized
+	 */
+	void minimized(Window window, boolean isMinimized);
 
-	@Override
-	public void render() {
-	}
+	/**
+	 * called when the window is maximized or unmazimized
+	 */
+	void maximized(Window window, boolean isMaximized);
 
-	@Override
-	public void dispose() {
-	}
+	/**
+	 * invoked when the window is resized
+	 */
+	void resized(Window window, int width, int height);
+
+	/**
+	 * called when the user requested to close the window.
+	 * by default, {@link CelestialGdx#markShouldClose()} will be called
+	 * @see CelestialGdx#markShouldClose()
+	 */
+	void closeRequested(Window window);
 }

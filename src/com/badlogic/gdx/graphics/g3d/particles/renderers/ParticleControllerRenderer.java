@@ -38,7 +38,7 @@ public abstract class ParticleControllerRenderer<D extends ParticleControllerRen
 	}
 
 	@Override
-	public void update() {
+	public void update(float deltaTime) {
 		batch.draw(renderData);
 	}
 
