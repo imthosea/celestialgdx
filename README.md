@@ -123,30 +123,30 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 ### Example initialization
 ```java
 CelestialGdx gdx = CelestialGdx.init(config -> {
-	// these are all the defaults
+  // these are all the defaults
   config.title = "game";
   config.windowResizable = false;
   config.windowWidth = 720;
   config.windowHeight = 540;
   config.vsync = true;
-	config.stencil = 8;
-	config.defaultWindowListener = new WindowListener() {
-		@Override public void minimized(Window window, boolean isMinimized) {}
-		@Override public void maximized(Window window, boolean isMaximized) {}
-		@Override public void resized(Window window, int width, int height) {}
+  config.stencil = 8;
+  config.defaultWindowListener = new WindowListener() {
+  	@Override public void minimized(Window window, boolean isMinimized) {}
+  	@Override public void maximized(Window window, boolean isMaximized) {}
+  	@Override public void resized(Window window, int width, int height) {}
     @Override 
     public void closeRequested(Window window) {
       window.gdx.markShouldClose();
-		}
-	};
-	config.loggerFactory = name -> new PrintLogger(name);
+  	}
+  };
+  config.loggerFactory = name -> new PrintLogger(name);
 });
 
 while(!gdx.shouldClose()) {
-	gdx.pollEvents();
-	float deltaTime = gdx.updateDeltaTime();
+  gdx.pollEvents();
+  float deltaTime = gdx.updateDeltaTime();
   render(deltaTime);
-	gdx.window.swapBuffers();
+  gdx.window.swapBuffers();
 }
 gdx.terminate();
 ```
