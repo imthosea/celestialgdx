@@ -62,7 +62,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - The default SpriteBatch shader is no longer LOWP and no longer uses deprecated GLSL features
 - The layout attribute a_texCoord0 was renamed to a_texCoord
 - List has been renamed to UiList to prevent conflicts
-- Only GL 3.2 is supported now. This is also the default
+- Only GL 3.3 is supported now. This is also the default
 - glViewport will no longer be automatically called when the window is resized
 
 ### Removed
@@ -112,13 +112,14 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - AssetDescriptor.file
 - GLDebugMessageSeverity and related methods
 - SharedLibraryLoader - use LWJGL Platform.get()
-- Seamless cubemaps, since it's not supported by GLES
+- Seamless cubemaps
 - ANGLE GL2 backend
 - GL profiling classes
 - FPSLogger
 - Clipboard module
 - Graphics
 - Lwjgl3Application
+- GL(ES)32 wrapper class
 
 ### Example initialization
 ```java
@@ -155,7 +156,7 @@ gdx.terminate();
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
 - The Gdx class remains for compatibility, but please don't use them - mutable static constants are questionable for
   maintainability. Use the function constructor in Lwjgl3Application and get the window to initialize your constants
-- GDX GL classes are deprecated. Use GL classes from GLFW instead
+- GDX GL classes are deprecated. Use GL classes from GLFW instead (`import static org.lwjgl.opengl.GL31.*;`)
 
 ### TODO maybe
 - rewrite Sync (fps cap) implementation

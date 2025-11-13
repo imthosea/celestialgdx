@@ -25,7 +25,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.Nullable;
 
-import static org.lwjgl.opengles.GLES32.glScissor;
+import static org.lwjgl.opengl.GL33.glScissor;
 
 /**
  * A stack of {@link Rectangle} objects to be used for clipping via {@link GL20#glScissor(int, int, int, int)}. When a new

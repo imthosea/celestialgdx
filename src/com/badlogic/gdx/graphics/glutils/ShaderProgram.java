@@ -39,7 +39,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengles.GLES32.*;
+import static org.lwjgl.opengl.GL33.*;
 
 /**
  * <p>

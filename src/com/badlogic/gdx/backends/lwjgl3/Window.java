@@ -28,7 +28,7 @@ import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 import org.lwjgl.glfw.GLFWWindowMaximizeCallback;
-import org.lwjgl.opengles.GLES;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -137,7 +137,7 @@ public class Window implements Disposable {
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 		glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
 
-		GLES.createCapabilities();
+		GL.createCapabilities();
 
 		glfwSwapInterval(config.vsync ? 1 : 0);
 		return handle;

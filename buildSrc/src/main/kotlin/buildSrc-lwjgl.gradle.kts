@@ -18,7 +18,7 @@ dependencies {
 	api("org.lwjgl:lwjgl-assimp")
 	api("org.lwjgl:lwjgl-egl")
 	api("org.lwjgl:lwjgl-glfw")
-	api("org.lwjgl:lwjgl-opengles")
+	api("org.lwjgl:lwjgl-opengl")
 	api("org.lwjgl:lwjgl-stb")
 
 	for(platform in listOf(
@@ -30,8 +30,7 @@ dependencies {
 		api("org.lwjgl:lwjgl-assimp") { artifact { classifier = platform } }
 //	api("org.lwjgl:lwjgl-freetype") { artifact { classifier = natives } }
 		api("org.lwjgl:lwjgl-glfw") { artifact { classifier = platform } }
-		// TODO: macos is broken, fix this
-		api("org.lwjgl:lwjgl-opengles") { artifact { classifier = platform } }
+		api("org.lwjgl:lwjgl-opengl") { artifact { classifier = platform } }
 		api("org.lwjgl:lwjgl-stb") { artifact { classifier = platform } }
 	}
 }
