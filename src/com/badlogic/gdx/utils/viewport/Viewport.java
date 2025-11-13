@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 
-import static org.lwjgl.opengles.GLES32.glViewport;
+import static org.lwjgl.opengl.GL33.glViewport;
 
 /**
  * Manages a {@link Camera} and determines how world coordinates are mapped to and from the screen.

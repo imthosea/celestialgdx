@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import static org.lwjgl.opengles.GLES32.*;
+import static org.lwjgl.opengl.GL33.*;
 
 /** @author mzechner */
 public class Gdx2DPixmap implements Disposable {
