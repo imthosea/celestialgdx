@@ -1,2 +1,2 @@
 rootProject.name = "celestialgdx"
-include(":extensions:gdx-freetype")
+include(":gdx-freetype")
