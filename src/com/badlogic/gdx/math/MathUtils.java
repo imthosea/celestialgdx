@@ -600,10 +600,10 @@ public final class MathUtils {
 	}
 
 	/**
-	 * Linearly map a value from one range to another. Input range must not be empty. This is the same as chaining
+	 * Linearly map a value from one range to another. InputController range must not be empty. This is the same as chaining
 	 * {@link #norm(float, float, float)} from input range and {@link #lerp(float, float, float)} to output range.
-	 * @param inRangeStart Input range start
-	 * @param inRangeEnd Input range end
+	 * @param inRangeStart InputController range start
+	 * @param inRangeEnd InputController range end
 	 * @param outRangeStart Output range start
 	 * @param outRangeEnd Output range end
 	 * @param value Value to map

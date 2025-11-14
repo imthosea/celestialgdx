@@ -64,6 +64,10 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - List has been renamed to UiList to prevent conflicts
 - Only GL 3.3 is supported now. This is also the default
 - glViewport will no longer be automatically called when the window is resized
+- Inputs:
+  - InputProcessor was renamed to InputHandler and now more closely mirrors GLFW callbacks
+  - Inputs no longer has its own input constants. It will directly pass GLFW key inputs instead (i.e. GLFW.GLFW_KEY_E)
+  - To set callbacks or query a key, use a window's InputController (available by window.input)
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader
@@ -142,7 +146,14 @@ CelestialGdx gdx = CelestialGdx.init(config -> {
   };
   config.loggerFactory = name -> new PrintLogger(name);
 });
-
+gdx.window.input.setInputHandler(new InputAdapter() { // InputAdapter implements InputHandler
+	@Override
+	public void onKeyEvent(int key, int scancode, int action, int mods) {
+		if(key == GLFW_KEY_ESCAPE) {
+			gdx.markShouldClose();
+		}
+	}
+});
 while(!gdx.shouldClose()) {
   gdx.pollEvents();
   float deltaTime = gdx.updateDeltaTime();

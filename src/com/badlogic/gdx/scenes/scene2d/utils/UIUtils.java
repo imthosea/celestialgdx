@@ -1,9 +1,9 @@
 package com.badlogic.gdx.scenes.scene2d.utils;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.Input.Keys;
 import org.lwjgl.system.Platform;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 // TODO celestialgdx wtf is this
 public final class UIUtils {
@@ -17,56 +17,21 @@ public final class UIUtils {
 	static public boolean isIos = false; // TODO remove
 
 	static public boolean left() {
-		return Gdx.input.isButtonPressed(Buttons.LEFT);
-	}
-
-	static public boolean left(int button) {
-		return button == Buttons.LEFT;
+		return Gdx.input.isButtonPressed(GLFW_MOUSE_BUTTON_1);
 	}
 
 	static public boolean right() {
-		return Gdx.input.isButtonPressed(Buttons.RIGHT);
-	}
-
-	static public boolean right(int button) {
-		return button == Buttons.RIGHT;
-	}
-
-	static public boolean middle() {
-		return Gdx.input.isButtonPressed(Buttons.MIDDLE);
-	}
-
-	static public boolean middle(int button) {
-		return button == Buttons.MIDDLE;
+		return Gdx.input.isButtonPressed(GLFW_MOUSE_BUTTON_2);
 	}
 
 	static public boolean shift() {
-		return Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT);
-	}
-
-	static public boolean shift(int keycode) {
-		return keycode == Keys.SHIFT_LEFT || keycode == Keys.SHIFT_RIGHT;
+		return Gdx.input.isKeyPressed(GLFW_KEY_LEFT_SHIFT) || Gdx.input.isKeyPressed(GLFW_KEY_RIGHT_SHIFT);
 	}
 
 	static public boolean ctrl() {
 		if(isMac)
-			return Gdx.input.isKeyPressed(Keys.SYM);
+			return Gdx.input.isKeyPressed(GLFW_KEY_LEFT_SUPER) || Gdx.input.isKeyPressed(GLFW_KEY_RIGHT_SUPER);
 		else
-			return Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT);
-	}
-
-	static public boolean ctrl(int keycode) {
-		if(isMac)
-			return keycode == Keys.SYM;
-		else
-			return keycode == Keys.CONTROL_LEFT || keycode == Keys.CONTROL_RIGHT;
-	}
-
-	static public boolean alt() {
-		return Gdx.input.isKeyPressed(Keys.ALT_LEFT) || Gdx.input.isKeyPressed(Keys.ALT_RIGHT);
-	}
-
-	static public boolean alt(int keycode) {
-		return keycode == Keys.ALT_LEFT || keycode == Keys.ALT_RIGHT;
+			return Gdx.input.isKeyPressed(GLFW_KEY_LEFT_CONTROL) || Gdx.input.isKeyPressed(GLFW_KEY_RIGHT);
 	}
 }

@@ -17,8 +17,6 @@
 package com.badlogic.gdx.scenes.scene2d.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -47,8 +45,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.datatransfer.Clipboard;
 
-import static org.lwjgl.glfw.GLFW.glfwGetClipboardString;
-import static org.lwjgl.glfw.GLFW.glfwSetClipboardString;
+import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * A single-line text input field.
@@ -549,7 +546,6 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 				textField = current.findNextTextField(stage.getActors(), null, bestCoords, currentCoords, up);
 			}
 			if(textField == null) {
-				Gdx.input.setOnscreenKeyboardVisible(false);
 				break;
 			}
 			if(stage.setKeyboardFocus(textField)) {
@@ -867,7 +863,6 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 	 */
 	static public class DefaultOnscreenKeyboard implements OnscreenKeyboard {
 		public void show(boolean visible) {
-			Gdx.input.setOnscreenKeyboardVisible(visible);
 		}
 	}
 
@@ -938,21 +933,21 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 			if(ctrl) {
 				switch(keycode) {
-					case Keys.V:
+					case GLFW_KEY_V:
 						paste(glfwGetClipboardString(getStage().window.handle), true);
 						repeat = true;
 						break;
-					case Keys.C:
-					case Keys.INSERT:
+					case GLFW_KEY_C:
+					case GLFW_KEY_INSERT:
 						copy();
 						return true;
-					case Keys.X:
+					case GLFW_KEY_X:
 						cut(true);
 						return true;
-					case Keys.A:
+					case GLFW_KEY_A:
 						selectAll();
 						return true;
-					case Keys.Z:
+					case GLFW_KEY_Z:
 						String oldText = text;
 						setText(undoText);
 						undoText = oldText;
@@ -965,10 +960,10 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 			if(UIUtils.shift()) {
 				switch(keycode) {
-					case Keys.INSERT:
+					case GLFW_KEY_INSERT:
 						paste(glfwGetClipboardString(getStage().window.handle), true);
 						break;
-					case Keys.FORWARD_DEL:
+					case GLFW_KEY_DELETE:
 						cut(true);
 						break;
 				}
@@ -979,21 +974,21 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 					keys:
 					{
 						switch(keycode) {
-							case Keys.LEFT:
+							case GLFW_KEY_LEFT:
 								moveCursor(false, jump);
 								repeat = true;
 								handled = true;
 								break keys;
-							case Keys.RIGHT:
+							case GLFW_KEY_RIGHT:
 								moveCursor(true, jump);
 								repeat = true;
 								handled = true;
 								break keys;
-							case Keys.HOME:
+							case GLFW_KEY_HOME:
 								goHome(jump);
 								handled = true;
 								break keys;
-							case Keys.END:
+							case GLFW_KEY_END:
 								goEnd(jump);
 								handled = true;
 								break keys;
@@ -1008,24 +1003,24 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 			} else {
 				// Cursor movement or other keys (kills selection).
 				switch(keycode) {
-					case Keys.LEFT:
+					case GLFW_KEY_LEFT:
 						moveCursor(false, jump);
 						clearSelection();
 						repeat = true;
 						handled = true;
 						break;
-					case Keys.RIGHT:
+					case GLFW_KEY_RIGHT:
 						moveCursor(true, jump);
 						clearSelection();
 						repeat = true;
 						handled = true;
 						break;
-					case Keys.HOME:
+					case GLFW_KEY_HOME:
 						goHome(jump);
 						clearSelection();
 						handled = true;
 						break;
-					case Keys.END:
+					case GLFW_KEY_END:
 						goEnd(jump);
 						clearSelection();
 						handled = true;
@@ -1080,7 +1075,7 @@ public class TextField extends Widget implements Disableable, Styleable<TextFiel
 
 			if(!hasKeyboardFocus()) return false;
 
-			if(UIUtils.isMac && Gdx.input.isKeyPressed(Keys.SYM)) return true;
+			if(UIUtils.isMac && Gdx.input.isKeyPressed(GLFW_KEY_LEFT_SUPER)) return true;
 
 			if(checkFocusTraversal(character))
 				next(UIUtils.shift());

@@ -20,6 +20,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Files;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3GL30;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.input.InputController;
 
 /**
  * Environment class holding references to the {@link Application}, {@link Graphics}, {@link Audio}, {@link Files} and
@@ -34,7 +35,7 @@ import com.badlogic.gdx.graphics.GL30;
 public class Gdx {
 	public static Application app;
 	public static Graphics graphics;
-	public static Input input;
+	public static InputController input;
 	public static final Files files = new Lwjgl3Files();
 
 	public static final GL20 gl;

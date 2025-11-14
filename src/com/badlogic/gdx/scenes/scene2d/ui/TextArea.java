@@ -17,7 +17,6 @@
 package com.badlogic.gdx.scenes.scene2d.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -29,6 +28,8 @@ import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 import org.jetbrains.annotations.Nullable;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 /** A text input field with multiple lines. */
 public class TextArea extends TextField {
@@ -388,7 +389,7 @@ public class TextArea extends TextField {
 		return -(cursorLine - firstLineShowing + 1) * font.getLineHeight();
 	}
 
-	/** Input listener for the text area **/
+	/** InputController listener for the text area **/
 	public class TextAreaListener extends TextFieldClickListener {
 		protected void setCursorPosition(float x, float y) {
 			moveOffset = -1;
@@ -418,8 +419,8 @@ public class TextArea extends TextField {
 			boolean result = super.keyDown(event, keycode);
 			if(hasKeyboardFocus()) {
 				boolean repeat = false;
-				boolean shift = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
-				if(keycode == Input.Keys.DOWN) {
+				boolean shift = Gdx.input.isKeyPressed(GLFW_KEY_LEFT_SHIFT) || Gdx.input.isKeyPressed(GLFW_KEY_RIGHT_SHIFT);
+				if(keycode == GLFW_KEY_DOWN) {
 					if(shift) {
 						if(!hasSelection) {
 							selectionStart = cursor;
@@ -431,7 +432,7 @@ public class TextArea extends TextField {
 					moveCursorLine(cursorLine + 1);
 					repeat = true;
 
-				} else if(keycode == Input.Keys.UP) {
+				} else if(keycode == GLFW_KEY_UP) {
 					if(shift) {
 						if(!hasSelection) {
 							selectionStart = cursor;

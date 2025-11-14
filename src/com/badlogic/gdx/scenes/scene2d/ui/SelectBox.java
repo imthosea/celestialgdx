@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.scenes.scene2d.ui;
 
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -42,10 +41,10 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 import org.jetbrains.annotations.Nullable;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_NUM_LOCK;
 
 /**
  * A select box (aka a drop-down list) allows a user to choose one of a number of values from a list. When inactive, the selected
@@ -494,11 +493,11 @@ public class SelectBox<T> extends Widget implements Disableable, Styleable<Selec
 
 				public boolean keyDown(InputEvent event, int keycode) {
 					switch(keycode) {
-						case Keys.NUMPAD_ENTER:
-						case Keys.ENTER:
+						case GLFW_KEY_ENTER:
+						case GLFW_KEY_NUM_LOCK:
 							selectBox.selection.choose(list.getSelected());
 							// Fall thru.
-						case Keys.ESCAPE:
+						case GLFW_KEY_ESCAPE:
 							hide();
 							event.stop();
 							return true;
