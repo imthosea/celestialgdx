@@ -132,14 +132,8 @@ public class AssetManager implements Disposable {
 			setLoader(Texture.class, new TextureLoader(resolver));
 			setLoader(Skin.class, new SkinLoader(resolver));
 			setLoader(ParticleEffect.class, new ParticleEffectLoader(resolver));
-			setLoader(com.badlogic.gdx.graphics.g3d.particles.ParticleEffect.class,
-					new com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader(resolver));
 			setLoader(PolygonRegion.class, new PolygonRegionLoader(resolver));
 			setLoader(I18NBundle.class, new I18NBundleLoader(resolver));
-			// TODO celestialgdx - what do i do with these??
-			//			setLoader(Model.class, ".g3dj", new G3dModelLoader(new JsonReader(), resolver));
-			//			setLoader(Model.class, ".g3db", new G3dModelLoader(new UBJsonReader(), resolver));
-			//			setLoader(Model.class, ".obj", new ObjLoader(resolver));
 			setLoader(ShaderProgram.class, new ShaderProgramLoader(resolver));
 			setLoader(Cubemap.class, new CubemapLoader(resolver));
 
