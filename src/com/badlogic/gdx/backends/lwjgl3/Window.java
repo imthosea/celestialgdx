@@ -32,15 +32,20 @@ import org.lwjgl.glfw.GLFWWindowMaximizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
+import java.util.function.Consumer;
+
 import static org.lwjgl.glfw.GLFW.*;
 
+/**
+ * A GLFW window.
+ * When using multiple windows, call {@link #bind()} to change the active OpenGL context
+ */
 public class Window implements Disposable {
 	public final long handle;
 	public final Lwjgl3Graphics graphics;
 	public final InputController input;
 
 	public final CelestialGdx gdx;
-	public final CelestialGdxConfig config;
 
 	@Nullable
 	public WindowListener windowListener;
@@ -73,10 +78,9 @@ public class Window implements Disposable {
 		}
 	});
 
-	public Window(CelestialGdx gdx, CelestialGdxConfig config) {
+	protected Window(CelestialGdx gdx, WindowConfig config) {
 		this.gdx = gdx;
-		this.windowListener = config.defaultWindowListener;
-		this.config = config;
+		this.windowListener = config.listener;
 		this.handle = createWindow(config);
 
 		this.graphics = new Lwjgl3Graphics(this);
@@ -88,18 +92,24 @@ public class Window implements Disposable {
 
 		this.input = Gdx.input = new InputController(this);
 		Gdx.graphics = graphics;
-
-		setVisible(config.windowVisible);
+		setVisible(config.initialVisible);
 	}
 
 	public void bind() {
 		glfwMakeContextCurrent(this.handle);
 	}
 
-	private static long createWindow(CelestialGdxConfig config) {
-		glfwWindowHint(GLFW_RESIZABLE, config.windowResizable ? GLFW_TRUE : GLFW_FALSE);
-		glfwWindowHint(GLFW_MAXIMIZED, config.maximized ? GLFW_TRUE : GLFW_FALSE);
-		glfwWindowHint(GLFW_AUTO_ICONIFY, config.autoIconify ? GLFW_TRUE : GLFW_FALSE);
+	private static long createWindow(WindowConfig config) {
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config.glMajorVersion);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, config.glMinorVersion);
+
+		glfwWindowHint(GLFW_RESIZABLE, glfwBool(config.windowResizable));
+		glfwWindowHint(GLFW_MAXIMIZED, glfwBool(config.maximized));
+		glfwWindowHint(GLFW_AUTO_ICONIFY, glfwBool(config.autoIconify));
+		glfwWindowHint(GLFW_DECORATED, glfwBool(config.windowDecorated));
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, glfwBool(config.transparentFramebuffer));
+
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, glfwBool(config.debugContext));
 
 		glfwWindowHint(GLFW_RED_BITS, config.r);
 		glfwWindowHint(GLFW_GREEN_BITS, config.g);
@@ -109,38 +119,31 @@ public class Window implements Disposable {
 		glfwWindowHint(GLFW_DEPTH_BITS, config.depth);
 		glfwWindowHint(GLFW_SAMPLES, config.samples);
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config.glMajorVersion);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, config.glMinorVersion);
 		if(Platform.get() == Platform.MACOSX) {
-			// hints mandatory on OS X for GL 3.2+ context creation, but fail on Windows if the
-			// WGL_ARB_create_context extension is not available
+			// hints mandatory on macOS for GL 3.2+ context creation
 			// see: http://www.org/docs/latest/compat.html
 			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		}
 
-		if(config.transparentFramebuffer) {
-			glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-		}
-
-		if(config.debugContext) {
-			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-		}
-
-		glfwWindowHint(GLFW_DECORATED, config.windowDecorated ? GLFW_TRUE : GLFW_FALSE);
-		long handle = glfwCreateWindow(config.windowWidth, config.windowHeight, config.title, 0, 0);
+		long handle = glfwCreateWindow(
+				config.windowWidth, config.windowHeight,
+				config.title, 0, config.shareWindow == null ? 0 : config.shareWindow.handle
+		);
 		if(handle == 0) {
 			throw new GdxRuntimeException("Couldn't create window");
 		}
 
 		glfwMakeContextCurrent(handle);
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-		glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
-
 		GL.createCapabilities();
 
 		glfwSwapInterval(config.vsync ? 1 : 0);
+
 		return handle;
+	}
+
+	private static int glfwBool(boolean value) {
+		return value ? GLFW_TRUE : GLFW_FALSE;
 	}
 
 	public void setWindowListener(WindowListener listener) {
@@ -283,11 +286,6 @@ public class Window implements Disposable {
 		glfwRequestWindowAttention(handle);
 	}
 
-
-	public CelestialGdxConfig getConfig() {
-		return config;
-	}
-
 	@Override
 	public void dispose() {
 		Lwjgl3Cursor.dispose(this);
@@ -299,5 +297,19 @@ public class Window implements Disposable {
 		maximizeCallback.free();
 		closeCallback.free();
 		resizeCallback.free();
+	}
+
+	public static Window create(CelestialGdx gdx) {
+		return create(gdx, new WindowConfig());
+	}
+
+	public static Window create(CelestialGdx gdx, Consumer<WindowConfig> configurator) {
+		WindowConfig config = new WindowConfig();
+		configurator.accept(config);
+		return create(gdx, config);
+	}
+
+	public static Window create(CelestialGdx gdx, WindowConfig config) {
+		return new Window(gdx, config);
 	}
 }

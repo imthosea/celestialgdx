@@ -10,7 +10,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - LOTS of code cleanup
 - Update to Java 21
 - Many uses of reflection were removed
-- Lwjgl3Application has been replaced with CelestialGdx, you are now responsible for your own game loop 
+- Lwjgl3Application has been replaced with CelestialGdx, you are now responsible for your own game loop
 - InputProcessor.scrolled now takes doubles and is no longer flipped
 - FileHandle is now abstract and isn't bound to system files
     - FileType has been removed. Gdx.files methods will still work (except the FileType one), but they now return
@@ -127,7 +127,8 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 
 ### Example initialization
 ```java
-CelestialGdx gdx = CelestialGdx.init(config -> {
+CelestialGdx gdx = CelestialGdx.init(); // optionally specify a GdxLoggerFactory and/or GLFWErrorCallback supplier
+Window window = gdx.createWindow(config -> {
   // these are all the defaults
   config.title = "game";
   config.windowResizable = false;
@@ -135,7 +136,7 @@ CelestialGdx gdx = CelestialGdx.init(config -> {
   config.windowHeight = 540;
   config.vsync = true;
   config.stencil = 8;
-  config.defaultWindowListener = new WindowListener() {
+  config.listener = new WindowListener() {
   	@Override public void minimized(Window window, boolean isMinimized) {}
   	@Override public void maximized(Window window, boolean isMaximized) {}
   	@Override public void resized(Window window, int width, int height) {}
@@ -144,9 +145,11 @@ CelestialGdx gdx = CelestialGdx.init(config -> {
       window.gdx.markShouldClose();
   	}
   };
-  config.loggerFactory = name -> new PrintLogger(name);
 });
-gdx.window.input.setInputHandler(new InputAdapter() { // InputAdapter implements InputHandler
+// if you use multiple windows, be sure to call Window.bind to change the active OpenGL context
+
+InputController input = window.input;
+input.setInputHandler(new InputAdapter() { // InputAdapter implements InputHandler
 	@Override
 	public void onKeyEvent(int key, int scancode, int action, int mods) {
 		if(key == GLFW_KEY_ESCAPE) {
@@ -158,8 +161,9 @@ while(!gdx.shouldClose()) {
   gdx.pollEvents();
   float deltaTime = gdx.updateDeltaTime();
   render(deltaTime);
-  gdx.window.swapBuffers();
+  window.swapBuffers();
 }
+window.dispose();
 gdx.terminate();
 ```
 

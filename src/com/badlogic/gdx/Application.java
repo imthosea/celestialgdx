@@ -16,6 +16,8 @@
 
 package com.badlogic.gdx;
 
+import com.badlogic.gdx.input.InputHandler;
+
 /**
  * <p>
  * An <code>Application</code> is the main entry point of your project. It sets up a window and rendering surface and manages the
@@ -101,8 +103,6 @@ public interface Application {
 	enum ApplicationType { // TODO remove
 		Android, Desktop, HeadlessDesktop, Applet, WebGL, iOS
 	}
-
-	Graphics getGraphics();
 
 	/** @return what {@link ApplicationType} this application has, e.g. Android or Desktop */
 	ApplicationType getType();
