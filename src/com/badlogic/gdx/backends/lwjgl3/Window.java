@@ -19,6 +19,7 @@ package com.badlogic.gdx.backends.lwjgl3;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.input.InputController;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +37,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Window implements Disposable {
 	public final long handle;
 	public final Lwjgl3Graphics graphics;
-	public final Lwjgl3Input input;
+	public final InputController input;
 
 	public final CelestialGdx gdx;
 	public final CelestialGdxConfig config;
@@ -78,7 +79,6 @@ public class Window implements Disposable {
 		this.config = config;
 		this.handle = createWindow(config);
 
-		this.input = new DefaultLwjgl3Input(this);
 		this.graphics = new Lwjgl3Graphics(this);
 
 		glfwSetWindowFocusCallback(handle, focusCallback);
@@ -86,7 +86,7 @@ public class Window implements Disposable {
 		glfwSetWindowMaximizeCallback(handle, maximizeCallback);
 		glfwSetWindowCloseCallback(handle, closeCallback);
 
-		Gdx.input = this.input;
+		this.input = Gdx.input = new InputController(this);
 		Gdx.graphics = graphics;
 
 		setVisible(config.windowVisible);
@@ -291,7 +291,7 @@ public class Window implements Disposable {
 	@Override
 	public void dispose() {
 		Lwjgl3Cursor.dispose(this);
-		input.dispose();
+		Gdx.input.dispose();
 		glfwDestroyWindow(handle);
 
 		focusCallback.free();

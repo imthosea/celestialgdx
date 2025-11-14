@@ -17,7 +17,6 @@
 package com.badlogic.gdx.scenes.scene2d.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -28,6 +27,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Pools;
 import org.jetbrains.annotations.Nullable;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT;
 
 /**
  * A slider is a horizontal indicator that allows a user to set a value. The slider has a range (min, max) and a stepping between
@@ -178,7 +180,7 @@ public class Slider extends ProgressBar {
 		}
 
 		float oldValue = value;
-		if(!Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) && !Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT)) value = snap(value);
+		if(!Gdx.input.isKeyPressed(GLFW_KEY_LEFT_SHIFT) && !Gdx.input.isKeyPressed(GLFW_KEY_RIGHT_SHIFT)) value = snap(value);
 		boolean valueSet = setValue(value);
 		if(value == oldValue) position = oldPosition;
 		return valueSet;

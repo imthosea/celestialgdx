@@ -18,13 +18,9 @@ package com.badlogic.gdx.scenes.scene2d;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.backends.lwjgl3.Window;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,7 +29,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Table.Debug;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
@@ -55,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
  * stage coordinates and screen coordinates.
  * <p>
  * A stage must receive input events so it can distribute them to actors. This is typically done by passing the stage to
- * {@link Input#setInputProcessor(com.badlogic.gdx.InputProcessor) Gdx.input.setInputProcessor}. An {@link InputMultiplexer} may
+ * {@link Input#setInputProcessor(InputHandler) Gdx.input.setInputProcessor}. An {@link InputMultiplexer} may
  * be used to handle input events before or after the stage does. If an actor handles an event by returning true from the input
  * method, then the stage's input method will also return true, causing subsequent InputProcessors to not receive the event.
  * <p>
@@ -65,7 +60,7 @@ import org.jetbrains.annotations.Nullable;
  * @author mzechner
  * @author Nathan Sweet
  */
-public class Stage extends InputAdapter implements Disposable {
+public class Stage implements Disposable {
 	/** True if any actor has ever had debug enabled. */
 	static boolean debug;
 
@@ -138,9 +133,10 @@ public class Stage extends InputAdapter implements Disposable {
 		root.draw(batch, 1);
 		batch.end();
 
-		if(debug) drawDebug();
+		// if(debug) drawDebug();
 	}
 
+	/* TODO celestialgdx
 	private void drawDebug() {
 		if(debugShapes == null) {
 			debugShapes = new ShapeRenderer();
@@ -179,6 +175,7 @@ public class Stage extends InputAdapter implements Disposable {
 		debugShapes.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 	}
+	 */
 
 	/** Disables debug on all actors recursively except the specified actor and any children. */
 	private void disableDebug(Actor actor, Actor except) {
@@ -813,7 +810,7 @@ public class Stage extends InputAdapter implements Disposable {
 
 	/**
 	 * Transforms the screen coordinates to stage coordinates.
-	 * @param screenCoords Input screen coordinates and output for resulting stage coordinates.
+	 * @param screenCoords InputController screen coordinates and output for resulting stage coordinates.
 	 */
 	public Vector2 screenToStageCoordinates(Vector2 screenCoords) {
 		viewport.unproject(screenCoords);
@@ -822,7 +819,7 @@ public class Stage extends InputAdapter implements Disposable {
 
 	/**
 	 * Transforms the stage coordinates to screen coordinates.
-	 * @param stageCoords Input stage coordinates and output for resulting screen coordinates.
+	 * @param stageCoords InputController stage coordinates and output for resulting screen coordinates.
 	 */
 	public Vector2 stageToScreenCoordinates(Vector2 stageCoords) {
 		viewport.project(stageCoords);

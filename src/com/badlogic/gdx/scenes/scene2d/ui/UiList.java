@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.scenes.scene2d.ui;
 
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -36,6 +35,8 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 import org.jetbrains.annotations.Nullable;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * A list (aka list box) displays textual items and highlights the currently selected item.
@@ -81,30 +82,30 @@ public class UiList<T> extends Widget implements Cullable, Styleable<UiList.List
 				if(items.isEmpty()) return false;
 				int index;
 				switch(keycode) {
-					case Keys.A:
+					case GLFW_KEY_A:
 						if(UIUtils.ctrl() && selection.getMultiple()) {
 							selection.clear();
 							selection.addAll(items);
 							return true;
 						}
 						break;
-					case Keys.HOME:
+					case GLFW_KEY_HOME:
 						setSelectedIndex(0);
 						return true;
-					case Keys.END:
+					case GLFW_KEY_END:
 						setSelectedIndex(items.size - 1);
 						return true;
-					case Keys.DOWN:
+					case GLFW_KEY_DOWN:
 						index = items.indexOf(getSelected(), false) + 1;
 						if(index >= items.size) index = 0;
 						setSelectedIndex(index);
 						return true;
-					case Keys.UP:
+					case GLFW_KEY_UP:
 						index = items.indexOf(getSelected(), false) - 1;
 						if(index < 0) index = items.size - 1;
 						setSelectedIndex(index);
 						return true;
-					case Keys.ESCAPE:
+					case GLFW_KEY_ESCAPE:
 						if(getStage() != null) getStage().setKeyboardFocus(null);
 						return true;
 				}

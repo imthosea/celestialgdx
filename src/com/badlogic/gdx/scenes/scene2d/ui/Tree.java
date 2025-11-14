@@ -361,7 +361,7 @@ public class Tree<N extends Node, V> extends WidgetGroup implements Styleable<Tr
 				&& Gdx.app.getType() == ApplicationType.Desktop //
 				&& (!selection.getMultiple() || (!UIUtils.ctrl() && !UIUtils.shift())) //
 		) {
-			float mouseX = screenToLocalCoordinates(tmp.set(Gdx.input.getX(), 0)).x + getX();
+			float mouseX = screenToLocalCoordinates(tmp.set((float) Gdx.input.getMousePos().x(), 0)).x + getX();
 			if(mouseX >= 0 && mouseX < iconX) {
 				Drawable icon = node.expanded ? style.minusOver : style.plusOver;
 				if(icon != null) return icon;

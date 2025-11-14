@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.scenes.scene2d;
 
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
 /**
@@ -46,7 +45,7 @@ public class Event implements Poolable {
 
 	/**
 	 * Marks this event as handled. This does not affect event propagation inside scene2d, but causes the {@link Stage}
-	 * {@link InputProcessor} methods to return true, which will eat the event so it is not passed on to the application under the
+	 * {@link InputHandler} methods to return true, which will eat the event so it is not passed on to the application under the
 	 * stage.
 	 */
 	public void handle() {

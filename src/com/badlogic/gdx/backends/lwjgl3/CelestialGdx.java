@@ -19,7 +19,6 @@ package com.badlogic.gdx.backends.lwjgl3;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.log.GdxLogger;
 import com.badlogic.gdx.log.GdxLoggerFactory;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -90,11 +89,6 @@ public class CelestialGdx implements Application {
 	@Override
 	public Graphics getGraphics() {
 		return window.graphics;
-	}
-
-	@Override
-	public Input getInput() {
-		return window.input;
 	}
 
 	@Override
