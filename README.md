@@ -124,6 +124,9 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - Graphics
 - Lwjgl3Application
 - GL(ES)32 wrapper class
+- All 3D utility classes
+  - I don't want to maintain them and my game is 2D
+  - However, you still have access to all OpenGL methods and can still make 3D stuff
 
 ### Example initialization
 ```java
@@ -174,7 +177,6 @@ gdx.terminate();
 
 ### TODO maybe
 - rewrite Sync (fps cap) implementation
-- possibly remove 3D
 - remove use of deprecated code
 - remove reflection entirely
 - remove Json class (it is a MESS) in favor of Jankson
