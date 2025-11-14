@@ -18,20 +18,22 @@ package com.badlogic.gdx.backends.lwjgl3;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.log.GdxLogger;
 import com.badlogic.gdx.log.GdxLoggerFactory;
+import com.badlogic.gdx.log.PrintLogger;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class CelestialGdx implements Application {
-	public final Window window;
+	private static boolean initializedGlfw = false;
+
 	public final Thread gameThread;
 
 	private final GdxLoggerFactory loggerFactory;
@@ -45,36 +47,47 @@ public class CelestialGdx implements Application {
 
 	private long lastFrameTime = -1;
 
-	protected CelestialGdx(CelestialGdxConfig config) {
+	protected CelestialGdx(GdxLoggerFactory loggerFactory, Supplier<GLFWErrorCallback> errorCallbackSupplier) {
 		if(Gdx.app != null) {
 			throw new IllegalStateException("Cannot make multiple Lwjgl3Applications");
 		}
 
-		this.loggerFactory = config.loggerFactory;
-		this.errorCallback = config.errorCallbackSupplier.get();
-		glfwSetErrorCallback(this.errorCallback);
-
-		this.initGlfw();
-
+		this.loggerFactory = loggerFactory;
+		this.errorCallback = errorCallbackSupplier.get();
 		this.gameThread = Thread.currentThread();
 
-		this.window = new Window(this, config);
+		this.initGlfw();
 
 		Gdx.app = this;
 	}
 
-	protected void initGlfw() {
+	private void initGlfw() {
+		if(initializedGlfw) return;
 		Lwjgl3NativesLoader.load();
-		glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
+		glfwSetErrorCallback(this.errorCallback);
 		if(!glfwInit()) {
 			throw new GdxRuntimeException("Unable to initialize GLFW");
 		}
+		initializedGlfw = true;
+	}
+
+	public Window createWindow() {
+		return Window.create(this, new WindowConfig());
+	}
+
+	public Window createWindow(Consumer<WindowConfig> configurator) {
+		WindowConfig config = new WindowConfig();
+		configurator.accept(config);
+		return Window.create(this, config);
+	}
+
+	public Window createWindow(CelestialGdx gdx, WindowConfig config) {
+		return Window.create(gdx, config);
 	}
 
 	public void terminate() {
 		Lwjgl3Cursor.disposeSystemCursors();
 		errorCallback.free();
-		window.dispose();
 		glfwTerminate();
 	}
 
@@ -84,11 +97,6 @@ public class CelestialGdx implements Application {
 	public void pollEvents() {
 		glfwPollEvents();
 		pollRunnables();
-	}
-
-	@Override
-	public Graphics getGraphics() {
-		return window.graphics;
 	}
 
 	@Override
@@ -156,10 +164,26 @@ public class CelestialGdx implements Application {
 		return deltaTime;
 	}
 
-	public static CelestialGdx init(Consumer<CelestialGdxConfig> configurator) {
-		CelestialGdxConfig config = new CelestialGdxConfig();
-		configurator.accept(config);
-		CelestialGdx gdx = new CelestialGdx(config);
+	public static CelestialGdx init() {
+		return init(null, null);
+	}
+
+	public static CelestialGdx init(Supplier<GLFWErrorCallback> errorCallbackSupplier) {
+		return init(null, errorCallbackSupplier);
+	}
+
+	public static CelestialGdx init(GdxLoggerFactory loggerFactory) {
+		return init(loggerFactory, null);
+	}
+
+	public static CelestialGdx init(
+			GdxLoggerFactory loggerFactory,
+			Supplier<GLFWErrorCallback> errorCallbackSupplier
+	) {
+		if(loggerFactory == null) loggerFactory = PrintLogger::new;
+		if(errorCallbackSupplier == null) errorCallbackSupplier = () -> GLFWErrorCallback.createPrint(System.err);
+
+		CelestialGdx gdx = new CelestialGdx(loggerFactory, errorCallbackSupplier);
 		gdx.initGlfw();
 		return gdx;
 	}
