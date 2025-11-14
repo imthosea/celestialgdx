@@ -147,7 +147,6 @@ Window window = gdx.createWindow(config -> {
   };
 });
 // if you use multiple windows, be sure to call Window.bind to change the active OpenGL context
-
 InputController input = window.input;
 input.setInputHandler(new InputAdapter() { // InputAdapter implements InputHandler
 	@Override
