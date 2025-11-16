@@ -20,7 +20,6 @@ import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.CubemapLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.I18NBundleLoader;
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
 import com.badlogic.gdx.assets.loaders.PixmapLoader;
 import com.badlogic.gdx.assets.loaders.ShaderProgramLoader;
@@ -49,7 +48,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.I18NBundle;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -133,7 +131,6 @@ public class AssetManager implements Disposable {
 			setLoader(Skin.class, new SkinLoader(resolver));
 			setLoader(ParticleEffect.class, new ParticleEffectLoader(resolver));
 			setLoader(PolygonRegion.class, new PolygonRegionLoader(resolver));
-			setLoader(I18NBundle.class, new I18NBundleLoader(resolver));
 			setLoader(ShaderProgram.class, new ShaderProgramLoader(resolver));
 			setLoader(Cubemap.class, new CubemapLoader(resolver));
 

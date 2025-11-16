@@ -129,6 +129,8 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
   - However, you still have access to all OpenGL methods and can still make 3D stuff
 - Async utils
 - Compression utils
+- Many more utility classes
+- DelaunayTriangulator
 
 ### Example initialization
 ```java
