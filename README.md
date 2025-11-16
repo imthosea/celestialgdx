@@ -127,6 +127,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - All 3D utility classes
   - I don't want to maintain them and my game is 2D
   - However, you still have access to all OpenGL methods and can still make 3D stuff
+- Async utils
 
 ### Example initialization
 ```java
