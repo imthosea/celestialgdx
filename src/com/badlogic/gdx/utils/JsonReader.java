@@ -36,7 +36,7 @@ import java.util.Arrays;
  * methods to perform event driven parsing. When this is done, the parse methods will return null.
  * @author Nathan Sweet
  */
-public class JsonReader implements BaseJsonReader {
+public class JsonReader {
 	public JsonValue parse(String json) {
 		char[] data = json.toCharArray();
 		return parse(data, 0, data.length);
