@@ -2,6 +2,7 @@
 # Dependencies
 jbannotations = "26.0.2"
 gdx-platform = "1.14.0"
+joml = "1.10.8"
 
 # (handled by buildSrc task)
 #noinspection UnusedVersionCatalogEntry
@@ -10,3 +11,4 @@ lwjgl = "3.3.3"
 [libraries]
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jbannotations" }
 gdx-natives = { module = "com.badlogicgames.gdx:gdx-platform", version.ref = "gdx-platform" }
+joml = { module = "org.joml:joml", version.ref = "joml" }
