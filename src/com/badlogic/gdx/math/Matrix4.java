@@ -27,6 +27,7 @@ import java.io.Serializable;
  * </pre>
  * @author badlogicgames@gmail.com
  */
+@Deprecated(forRemoval = true) // celestialgdx - use joml
 public class Matrix4 implements Serializable {
 	private static final long serialVersionUID = -2717655254359579617L;
 	/**

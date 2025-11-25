@@ -25,6 +25,7 @@ import java.io.Serializable;
  * transforms.
  * @author mzechner
  */
+@Deprecated(forRemoval = true) // celestialgdx - use joml
 public class Matrix3 implements Serializable {
 	private static final long serialVersionUID = 7907569533774959788L;
 	public static final int M00 = 0;
