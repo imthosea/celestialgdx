@@ -77,8 +77,12 @@ public interface VertexData extends Disposable {
 	/** Binds this VertexData for rendering via glDrawArrays or glDrawElements. */
 	public void bind(Shader shader);
 
+	public void bind(Shader shader, int[] locations);
+
 	/** Unbinds this VertexData. */
 	public void unbind(Shader shader);
+
+	public void unbind(Shader shader, int[] locations);
 
 	/** Invalidates the VertexData if applicable. Use this in case of a context loss. */
 	public void invalidate();

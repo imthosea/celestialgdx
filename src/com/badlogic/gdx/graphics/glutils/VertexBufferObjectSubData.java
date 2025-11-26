@@ -155,8 +155,17 @@ public class VertexBufferObjectSubData implements VertexData {
 		bufferChanged();
 	}
 
+	/**
+	 * Binds this VertexBufferObject for rendering via glDrawArrays or glDrawElements
+	 * @param shader the shader
+	 */
 	@Override
 	public void bind(final Shader shader) {
+		bind(shader, null);
+	}
+
+	@Override
+	public void bind(final Shader shader, final int[] locations) {
 		final GL20 gl = Gdx.gl20;
 
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, bufferHandle);
@@ -166,14 +175,54 @@ public class VertexBufferObjectSubData implements VertexData {
 			isDirty = false;
 		}
 
+		final int numAttributes = attributes.size();
+		if(locations == null) {
+			for(int i = 0; i < numAttributes; i++) {
+				final VertexAttribute attribute = attributes.get(i);
+				final int location = shader.fetchAttributeLocation(attribute.alias);
+				if(location < 0) continue;
+				shader.enableVertexAttribute(location);
+
+				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
+						attributes.vertexSize, attribute.offset);
+			}
+		} else {
+			for(int i = 0; i < numAttributes; i++) {
+				final VertexAttribute attribute = attributes.get(i);
+				final int location = locations[i];
+				if(location < 0) continue;
+				shader.enableVertexAttribute(location);
+
+				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
+						attributes.vertexSize, attribute.offset);
+			}
+		}
 		isBound = true;
 	}
 
-
+	/**
+	 * Unbinds this VertexBufferObject.
+	 * @param shader the shader
+	 */
 	@Override
 	public void unbind(final Shader shader) {
+		unbind(shader, null);
+	}
+
+	@Override
+	public void unbind(final Shader shader, final int[] locations) {
 		final GL20 gl = Gdx.gl20;
 		final int numAttributes = attributes.size();
+		if(locations == null) {
+			for(int i = 0; i < numAttributes; i++) {
+				shader.disableVertexAttribute(attributes.get(i).alias);
+			}
+		} else {
+			for(int i = 0; i < numAttributes; i++) {
+				final int location = locations[i];
+				if(location >= 0) shader.disableVertexAttribute(location);
+			}
+		}
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		isBound = false;
 	}
