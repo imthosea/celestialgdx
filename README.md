@@ -1,8 +1,9 @@
 ## CelestialGDX
 
-An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
+A highly opinionated fork of LibGDX to cut down on stuff and improve maintainability.
 
-**This fork is completely undocumented, untested outside of my specific usecase, breaks ABI in more ways than I can count, and doesn't follow the upstream code style. Please don't use it.**
+**This fork is completely undocumented, untested outside of my specific usecase, breaks ABI in more ways than I can count, and doesn't follow the upstream code style. Please don't use it.**  
+Additionally, it's far from production ready as of now, though this may change is the future.
 
 ### Changes
 - Nuke everything except desktop LWJGL3 backend
