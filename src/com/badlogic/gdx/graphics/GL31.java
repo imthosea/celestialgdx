@@ -290,13 +290,13 @@ public interface GL31 extends GL30 {
 
 	void glUseProgramStages(int pipeline, int stages, int program);
 
-	// C function void glActiveShaderProgram ( GLuint pipeline, GLuint program )
+	// C function void glActiveShader ( GLuint pipeline, GLuint program )
 
-	void glActiveShaderProgram(int pipeline, int program);
+	void glActiveShader(int pipeline, int program);
 
-	// C function GLuint glCreateShaderProgramv ( GLenum type, GLsizei count, const GLchar *const *strings )
+	// C function GLuint glCreateShaderv ( GLenum type, GLsizei count, const GLchar *const *strings )
 
-	int glCreateShaderProgramv(int type, String[] strings);
+	int glCreateShaderv(int type, String[] strings);
 
 	// C function void glBindProgramPipeline ( GLuint pipeline )
 

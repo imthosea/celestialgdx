@@ -22,7 +22,7 @@ import com.badlogic.gdx.assets.loaders.CubemapLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
 import com.badlogic.gdx.assets.loaders.PixmapLoader;
-import com.badlogic.gdx.assets.loaders.ShaderProgramLoader;
+import com.badlogic.gdx.assets.loaders.ShaderLoader;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
@@ -36,7 +36,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonRegionLoader;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.log.GdxLogger;
 import com.badlogic.gdx.maps.TiledMap;
 import com.badlogic.gdx.maps.TiledProject;
@@ -131,7 +131,7 @@ public class AssetManager implements Disposable {
 			setLoader(Skin.class, new SkinLoader(resolver));
 			setLoader(ParticleEffect.class, new ParticleEffectLoader(resolver));
 			setLoader(PolygonRegion.class, new PolygonRegionLoader(resolver));
-			setLoader(ShaderProgram.class, new ShaderProgramLoader(resolver));
+			setLoader(Shader.class, new ShaderLoader(resolver));
 			setLoader(Cubemap.class, new CubemapLoader(resolver));
 
 			setLoader(TiledProject.class, new TiledProjectLoader(resolver));

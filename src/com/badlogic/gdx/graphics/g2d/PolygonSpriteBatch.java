@@ -24,7 +24,8 @@ import com.badlogic.gdx.graphics.Mesh.VertexDataType;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch.SpriteBatchShader;
+import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
@@ -51,7 +52,7 @@ import static com.badlogic.gdx.graphics.g2d.Sprite.VERTEX_SIZE;
  * A PolygonSpriteBatch is a pretty heavy object so you should only ever have one in your program.
  * <p>
  * A PolygonSpriteBatch works with OpenGL ES 1.x and 2.0. In the case of a 2.0 context it will use its own custom shader to draw
- * all provided sprites. You can set your own custom shader via {@link #setShader(ShaderProgram)}.
+ * all provided sprites. You can set your own custom shader via {@link #setShader(Shader)}.
  * <p>
  * A PolygonSpriteBatch has to be disposed if it is no longer used.
  * @author mzechner
@@ -78,9 +79,8 @@ public class PolygonSpriteBatch implements PolygonBatch {
 	private int blendSrcFuncAlpha = GL20.GL_SRC_ALPHA;
 	private int blendDstFuncAlpha = GL20.GL_ONE_MINUS_SRC_ALPHA;
 
-	private final ShaderProgram shader;
-	private ShaderProgram customShader;
-	private boolean ownsShader;
+	private final SpriteBatchShader shader;
+	private Shader customShader;
 
 	private final Color color = new Color(1, 1, 1, 1);
 	float colorPacked = Color.WHITE_FLOAT_BITS;
@@ -96,7 +96,7 @@ public class PolygonSpriteBatch implements PolygonBatch {
 
 	/**
 	 * Constructs a PolygonSpriteBatch with the default shader, 2000 vertices, and 4000 triangles.
-	 * @see #PolygonSpriteBatch(int, int, ShaderProgram)
+	 * @see #PolygonSpriteBatch(int, int, Shader)
 	 */
 	public PolygonSpriteBatch() {
 		this(2000, null);
@@ -105,7 +105,7 @@ public class PolygonSpriteBatch implements PolygonBatch {
 	/**
 	 * Constructs a PolygonSpriteBatch with the default shader, size vertices, and size * 2 triangles.
 	 * @param size The max number of vertices and number of triangles in a single batch. Max of 32767.
-	 * @see #PolygonSpriteBatch(int, int, ShaderProgram)
+	 * @see #PolygonSpriteBatch(int, int, Shader)
 	 */
 	public PolygonSpriteBatch(int size) {
 		this(size, size * 2, null);
@@ -114,9 +114,9 @@ public class PolygonSpriteBatch implements PolygonBatch {
 	/**
 	 * Constructs a PolygonSpriteBatch with the specified shader, size vertices and size * 2 triangles.
 	 * @param size The max number of vertices and number of triangles in a single batch. Max of 32767.
-	 * @see #PolygonSpriteBatch(int, int, ShaderProgram)
+	 * @see #PolygonSpriteBatch(int, int, Shader)
 	 */
-	public PolygonSpriteBatch(int size, ShaderProgram defaultShader) {
+	public PolygonSpriteBatch(int size, Shader defaultShader) {
 		this(size, size * 2, defaultShader);
 	}
 
@@ -126,13 +126,13 @@ public class PolygonSpriteBatch implements PolygonBatch {
 	 * with respect to the current screen resolution.
 	 * <p>
 	 * The defaultShader specifies the shader to use. Note that the names for uniforms for this default shader are different than
-	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}. See {@link SpriteBatch#createDefaultShader()}.
+	 * the ones expect for shaders set with {@link #setShader(Shader)}. See {@link SpriteBatch#createDefaultShader()}.
 	 * @param maxVertices The max number of vertices in a single batch. Max of 32767.
 	 * @param maxTriangles The max number of triangles in a single batch.
 	 * @param defaultShader The default shader to use. This is not owned by the PolygonSpriteBatch and must be disposed separately.
 	 * May be null to use the default shader.
 	 */
-	public PolygonSpriteBatch(int maxVertices, int maxTriangles, ShaderProgram defaultShader) {
+	public PolygonSpriteBatch(int maxVertices, int maxTriangles, Shader defaultShader) {
 		// 32767 is max vertex index.
 		if(maxVertices > 32767)
 			throw new IllegalArgumentException("Can't have more than 32767 vertices per batch: " + maxVertices);
@@ -142,18 +142,15 @@ public class PolygonSpriteBatch implements PolygonBatch {
 			vertexDataType = VertexDataType.VertexBufferObjectWithVAO;
 		}
 		mesh = new Mesh(vertexDataType, false, maxVertices, maxTriangles * 3,
-				new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-				new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-				new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				new VertexAttribute(Usage.Position, 2, "a_position"),
+				new VertexAttribute(Usage.ColorPacked, 4, "a_color"),
+				new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoord0"));
 
 		vertices = new float[maxVertices * VERTEX_SIZE];
 		triangles = new short[maxTriangles * 3];
 
-		if(defaultShader == null) {
-			shader = SpriteBatch.createDefaultShader();
-			ownsShader = true;
-		} else
-			shader = defaultShader;
+		shader = SpriteBatch.createDefaultShader();
+		customShader = defaultShader;
 
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
@@ -1281,7 +1278,7 @@ public class PolygonSpriteBatch implements PolygonBatch {
 	@Override
 	public void dispose() {
 		mesh.dispose();
-		if(ownsShader && shader != null) shader.dispose();
+		shader.dispose();
 	}
 
 	@Override
@@ -1311,11 +1308,11 @@ public class PolygonSpriteBatch implements PolygonBatch {
 	protected void setupMatrices() {
 		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
 		if(customShader != null) {
-			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			customShader.setUniformi("u_texture", 0);
+			// customShader.setUniformMatrix("u_projTrans", combinedMatrix);
+			// customShader.setUniformi("u_texture", 0);
 		} else {
-			shader.setUniformMatrix("u_projTrans", combinedMatrix);
-			shader.setUniformi("u_texture", 0);
+			shader.projection.set(combinedMatrix.val, false);
+			shader.texture.set(0);
 		}
 	}
 
@@ -1327,7 +1324,7 @@ public class PolygonSpriteBatch implements PolygonBatch {
 	}
 
 	@Override
-	public void setShader(ShaderProgram shader) {
+	public void setShader(Shader shader) {
 		if(drawing) {
 			flush();
 		}
@@ -1342,7 +1339,7 @@ public class PolygonSpriteBatch implements PolygonBatch {
 	}
 
 	@Override
-	public ShaderProgram getShader() {
+	public Shader getShader() {
 		if(customShader == null) {
 			return shader;
 		}

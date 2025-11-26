@@ -17,7 +17,7 @@
 package com.badlogic.gdx.graphics.g2d;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
@@ -58,9 +58,9 @@ public class CpuSpriteBatch extends SpriteBatch {
 
 	/**
 	 * Constructs a CpuSpriteBatch with a custom shader.
-	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram)
+	 * @see SpriteBatch#SpriteBatch(int, Shader)
 	 */
-	public CpuSpriteBatch(int size, ShaderProgram defaultShader) {
+	public CpuSpriteBatch(int size, Shader defaultShader) {
 		super(size, defaultShader);
 	}
 

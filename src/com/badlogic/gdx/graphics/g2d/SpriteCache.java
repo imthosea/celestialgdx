@@ -23,13 +23,13 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
+import org.joml.Matrix3x2f;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -72,12 +72,12 @@ public class SpriteCache implements Disposable {
 
 	private final Mesh mesh;
 	private boolean drawing;
-	private final Matrix4 transformMatrix = new Matrix4();
-	private final Matrix4 projectionMatrix = new Matrix4();
+
+	public final Matrix3x2f transform = new Matrix3x2f();
+
 	private final Array<Cache> caches = new Array();
 
-	private final Matrix4 combinedMatrix = new Matrix4();
-	private final ShaderProgram shader;
+	private final CacheShader shader = new CacheShader();
 
 	private Cache currentCache;
 	private final Array<Texture> textures = new Array(8);
@@ -86,7 +86,7 @@ public class SpriteCache implements Disposable {
 	private final Color color = new Color(1, 1, 1, 1);
 	private float colorPacked = Color.WHITE_FLOAT_BITS;
 
-	private ShaderProgram customShader = null;
+	private Shader customShader = null;
 
 	/** Number of render calls since the last {@link #begin()}. **/
 	public int renderCalls = 0;
@@ -100,31 +100,19 @@ public class SpriteCache implements Disposable {
 	}
 
 	/**
-	 * Creates a cache with the specified size, using a default shader if OpenGL ES 2.0 is being used.
-	 * @param size The maximum number of images this cache can hold. The memory required to hold the images is allocated up front.
-	 * Max of 8191 if indices are used.
-	 * @param useIndices If true, indexed geometry will be used.
-	 */
-	public SpriteCache(int size, boolean useIndices) {
-		this(size, createDefaultShader(), useIndices);
-	}
-
-	/**
 	 * Creates a cache with the specified size and OpenGL ES 2.0 shader.
 	 * @param size The maximum number of images this cache can hold. The memory required to hold the images is allocated up front.
 	 * Max of 8191 if indices are used.
 	 * @param useIndices If true, indexed geometry will be used.
 	 */
-	public SpriteCache(int size, ShaderProgram shader, boolean useIndices) {
-		this.shader = shader;
-
+	public SpriteCache(int size, boolean useIndices) {
 		if(useIndices && size > 8191)
 			throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
 		mesh = new Mesh(true, size * (useIndices ? 4 : 6), useIndices ? size * 6 : 0,
-				new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-				new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-				new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				new VertexAttribute(Usage.Position, 2, Shader.POSITION_ATTRIBUTE),
+				new VertexAttribute(Usage.ColorPacked, 4, Shader.COLOR_ATTRIBUTE),
+				new VertexAttribute(Usage.TextureCoordinates, 2, Shader.TEXCOORD_ATTRIBUTE + "0"));
 		mesh.setAutoBind(false);
 
 		if(useIndices) {
@@ -141,8 +129,6 @@ public class SpriteCache implements Disposable {
 			}
 			mesh.setIndices(indices);
 		}
-
-		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	/** Sets the color used to tint images when they are added to the SpriteCache. Default is {@link Color#WHITE}. */
@@ -865,21 +851,16 @@ public class SpriteCache implements Disposable {
 		if(drawing) throw new IllegalStateException("end must be called before begin.");
 		if(currentCache != null) throw new IllegalStateException("endCache must be called before begin");
 		renderCalls = 0;
-		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
 
 		Gdx.gl20.glDepthMask(false);
 
 		if(customShader != null) {
 			customShader.bind();
-			customShader.setUniformMatrix("u_proj", projectionMatrix);
-			customShader.setUniformMatrix("u_trans", transformMatrix);
-			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			customShader.setUniformi("u_texture", 0);
 			mesh.bind(customShader);
 		} else {
 			shader.bind();
-			shader.setUniformMatrix("u_projectionViewMatrix", combinedMatrix);
-			shader.setUniformi("u_texture", 0);
+			shader.transform.set(this.transform, /*transpose*/ false);
+			shader.texture.set(0);
 			mesh.bind(shader);
 		}
 		drawing = true;
@@ -960,24 +941,6 @@ public class SpriteCache implements Disposable {
 		if(shader != null) shader.dispose();
 	}
 
-	public Matrix4 getProjectionMatrix() {
-		return projectionMatrix;
-	}
-
-	public void setProjectionMatrix(Matrix4 projection) {
-		if(drawing) throw new IllegalStateException("Can't set the matrix within begin/end.");
-		projectionMatrix.set(projection);
-	}
-
-	public Matrix4 getTransformMatrix() {
-		return transformMatrix;
-	}
-
-	public void setTransformMatrix(Matrix4 transform) {
-		if(drawing) throw new IllegalStateException("Can't set the matrix within begin/end.");
-		transformMatrix.set(transform);
-	}
-
 	static private class Cache {
 		final int id;
 		final int offset;
@@ -992,34 +955,49 @@ public class SpriteCache implements Disposable {
 		}
 	}
 
-	static ShaderProgram createDefaultShader() {
-		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "uniform mat4 u_projectionViewMatrix;\n" //
-				+ "varying vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "\n" //
-				+ "void main()\n" //
-				+ "{\n" //
-				+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-				+ "   v_color.a = v_color.a * (255.0/254.0);\n" //
-				+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "   gl_Position =  u_projectionViewMatrix * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ "}\n";
-		String fragmentShader = "#ifdef GL_ES\n" //
-				+ "precision mediump float;\n" //
-				+ "#endif\n" //
-				+ "varying vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "uniform sampler2D u_texture;\n" //
-				+ "void main()\n"//
-				+ "{\n" //
-				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
-				+ "}";
-		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
-		if(!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
-		return shader;
+	public static class CacheShader extends Shader {
+		public final Mat3x2fUniform transform = uMat3x2f("a_position");
+		public final IntUniform texture = uInt("u_texture");
+
+		protected CacheShader() {
+			super(
+					"""
+							#version 330
+							precision mediump float;
+							
+							layout (location = 0) in vec4 a_position;
+							layout (location = 1) in vec4 a_color;
+							layout (location = 2) in vec2 a_texCoord;
+							
+							uniform mat4 u_projTrans;
+							out vec4 v_color;
+							out vec2 v_texCoords;
+							
+							void main()
+							{
+							   v_color = a_color;
+							   v_texCoords = a_texCoord;
+							   gl_Position =  u_projTrans * a_position;
+							}
+							""",
+					"""
+							#version 330
+							precision mediump float;
+							
+							out vec4 FragColor;
+							
+							in vec4 v_color;
+							in vec2 v_texCoords;
+							
+							uniform sampler2D u_texture;
+							
+							void main()
+							{
+							  FragColor = v_color * texture(u_texture, v_texCoords);
+							}
+							"""
+			);
+		}
 	}
 
 	/**
@@ -1030,14 +1008,14 @@ public class SpriteCache implements Disposable {
 	 * uniform called "u_texture".
 	 *
 	 * Call this method with a null argument to use the default shader.
-	 * @param shader the {@link ShaderProgram} or null to use the default shader.
+	 * @param shader the {@link Shader} or null to use the default shader.
 	 */
-	public void setShader(ShaderProgram shader) {
+	public void setShader(Shader shader) {
 		customShader = shader;
 	}
 
 	/** Returns the custom shader, or null if the default shader is being used. */
-	public ShaderProgram getCustomShader() {
+	public Shader getCustomShader() {
 		return customShader;
 	}
 

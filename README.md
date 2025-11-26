@@ -68,6 +68,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
   - InputProcessor was renamed to InputHandler and now more closely mirrors GLFW callbacks
   - Inputs no longer has its own input constants. It will directly pass GLFW key inputs instead (i.e. GLFW.GLFW_KEY_E)
   - To set callbacks or query a key, use a window's InputController (available by window.input)
+- Shaders are now abstract classes that use objects for their uniforms. See SpriteBatch shader for an example (proper docs will be written eventually)
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader
@@ -131,6 +132,7 @@ An esoteric fork of LibGDX to cut down on stuff and improve maintainability.
 - Compression utils
 - Many more utility classes
 - DelaunayTriangulator
+- DistanceFieldFont
 
 ### Example initialization
 ```java
