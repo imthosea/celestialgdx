@@ -115,7 +115,7 @@ public class ShapeRenderer implements Disposable {
 		this(maxVertices, null);
 	}
 
-	public ShapeRenderer(int maxVertices, ShaderProgram defaultShader) {
+	public ShapeRenderer(int maxVertices, Shader defaultShader) {
 		if(defaultShader == null) {
 			renderer = new ImmediateModeRenderer20(maxVertices, false, true, 0);
 		} else {

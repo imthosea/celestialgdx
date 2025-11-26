@@ -24,7 +24,7 @@ import com.badlogic.gdx.graphics.Mesh.VertexDataType;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
@@ -72,9 +72,8 @@ public class SpriteBatch implements Batch {
 	private int blendSrcFuncAlpha = GL20.GL_SRC_ALPHA;
 	private int blendDstFuncAlpha = GL20.GL_ONE_MINUS_SRC_ALPHA;
 
-	private final ShaderProgram shader;
-	private ShaderProgram customShader = null;
-	private boolean ownsShader;
+	private final SpriteBatchShader shader;
+	private Shader customShader = null;
 
 	private final Color color = new Color(1, 1, 1, 1);
 	float colorPacked = Color.WHITE_FLOAT_BITS;
@@ -87,7 +86,7 @@ public class SpriteBatch implements Batch {
 
 	/**
 	 * Constructs a new SpriteBatch with a size of 1000, one buffer, and the default shader.
-	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram)
+	 * @see SpriteBatch#SpriteBatch(int, Shader)
 	 */
 	public SpriteBatch() {
 		this(1000, null);
@@ -95,7 +94,7 @@ public class SpriteBatch implements Batch {
 
 	/**
 	 * Constructs a SpriteBatch with one buffer and the default shader.
-	 * @see SpriteBatch#SpriteBatch(int, ShaderProgram)
+	 * @see SpriteBatch#SpriteBatch(int, Shader)
 	 */
 	public SpriteBatch(int size) {
 		this(size, null);
@@ -107,11 +106,11 @@ public class SpriteBatch implements Batch {
 	 * respect to the current screen resolution.
 	 * <p>
 	 * The defaultShader specifies the shader to use. Note that the names for uniforms for this default shader are different than
-	 * the ones expect for shaders set with {@link #setShader(ShaderProgram)}. See {@link #createDefaultShader()}.
+	 * the ones expect for shaders set with {@link #setShader(Shader)}. See {@link #createDefaultShader()}.
 	 * @param size The max number of sprites in a single batch. Max of 8191.
 	 * @param defaultShader The default shader to use. This is not owned by the SpriteBatch and must be disposed separately.
 	 */
-	public SpriteBatch(int size, ShaderProgram defaultShader) {
+	public SpriteBatch(int size, Shader defaultShader) {
 		// 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
 		if(size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
@@ -124,9 +123,9 @@ public class SpriteBatch implements Batch {
 		currentDataType = vertexDataType;
 
 		mesh = new Mesh(currentDataType, false, size * 4, size * 6,
-				new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-				new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-				new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE));
+				new VertexAttribute(Usage.Position, 2, Shader.POSITION_ATTRIBUTE),
+				new VertexAttribute(Usage.ColorPacked, 4, Shader.COLOR_ATTRIBUTE),
+				new VertexAttribute(Usage.TextureCoordinates, 2, Shader.TEXCOORD_ATTRIBUTE));
 
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -145,11 +144,8 @@ public class SpriteBatch implements Batch {
 		}
 		mesh.setIndices(indices);
 
-		if(defaultShader == null) {
-			shader = createDefaultShader();
-			ownsShader = true;
-		} else
-			shader = defaultShader;
+		shader = createDefaultShader();
+		customShader = defaultShader;
 
 		// Pre bind the mesh to force the upload of indices data.
 		if(vertexDataType != VertexDataType.VertexArray) {
@@ -158,48 +154,54 @@ public class SpriteBatch implements Batch {
 		}
 	}
 
+	public static class SpriteBatchShader extends Shader {
+		public final Mat4fUniform projection = uMat4f("u_projTrans");
+		public final IntUniform texture = uInt("u_texture");
 
-	static public ShaderProgram createDefaultShader() {
-		// TODO celestialgdx - replace uniforms and make the position 2d
-		String vertexShader = """
-				#version 330
-				precision mediump float;
-				
-				layout (location = 0) in vec4 a_position;
-				layout (location = 1) in vec4 a_color;
-				layout (location = 2) in vec2 a_texCoord;
-				
-				uniform mat4 u_projTrans;
-				out vec4 v_color;
-				out vec2 v_texCoords;
-				
-				void main()
-				{
-				   v_color = a_color;
-				   v_color.a = v_color.a * (255.0/254.0);
-				   v_texCoords = a_texCoord;
-				   gl_Position =  u_projTrans * a_position;
-				}
-				""";
-		String fragmentShader = """
-				#version 330
-				precision mediump float;
-				
-				out vec4 FragColor;
-				
-				in vec4 v_color;
-				in vec2 v_texCoords;
-				
-				uniform sampler2D u_texture;
-				
-				void main()
-				{
-				  FragColor = v_color * texture(u_texture, v_texCoords);
-				}""";
+		public SpriteBatchShader() {
+			// TODO celestialgdx - replace uniforms and make the position 2d
+			super(
+					"""
+							#version 330
+							precision mediump float;
+							
+							layout (location = 0) in vec4 a_position;
+							layout (location = 1) in vec4 a_color;
+							layout (location = 2) in vec2 a_texCoord;
+							
+							uniform mat4 u_projTrans;
+							out vec4 v_color;
+							out vec2 v_texCoords;
+							
+							void main()
+							{
+							   v_color = a_color;
+							   v_color.a = v_color.a * (255.0/254.0);
+							   v_texCoords = a_texCoord;
+							   gl_Position =  u_projTrans * a_position;
+							}
+							""",
+					"""
+							#version 330
+							precision mediump float;
+							
+							out vec4 FragColor;
+							
+							in vec4 v_color;
+							in vec2 v_texCoords;
+							
+							uniform sampler2D u_texture;
+							
+							void main()
+							{
+								FragColor = v_color * texture(u_texture, v_texCoords);
+							}"""
+			);
+		}
+	}
 
-		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
-		if(!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
-		return shader;
+	static public SpriteBatchShader createDefaultShader() {
+		return new SpriteBatchShader();
 	}
 
 	@Override
@@ -1065,7 +1067,7 @@ public class SpriteBatch implements Batch {
 	@Override
 	public void dispose() {
 		mesh.dispose();
-		if(ownsShader && shader != null) shader.dispose();
+		shader.dispose();
 	}
 
 	@Override
@@ -1095,11 +1097,11 @@ public class SpriteBatch implements Batch {
 	protected void setupMatrices() {
 		combinedMatrix.set(projectionMatrix).mul(transformMatrix);
 		if(customShader != null) {
-			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			customShader.setUniformi("u_texture", 0);
+			// customShader.setUniformMatrix("u_projTrans", combinedMatrix);
+			// customShader.setUniformi("u_texture", 0);
 		} else {
-			shader.setUniformMatrix("u_projTrans", combinedMatrix);
-			shader.setUniformi("u_texture", 0);
+			shader.projection.set(combinedMatrix.val, false);
+			shader.texture.set(0);
 		}
 	}
 
@@ -1111,7 +1113,7 @@ public class SpriteBatch implements Batch {
 	}
 
 	@Override
-	public void setShader(ShaderProgram shader) {
+	public void setShader(Shader shader) {
 		if(shader == customShader) // avoid unnecessary flushing in case we are drawing
 			return;
 		if(drawing) {
@@ -1128,7 +1130,7 @@ public class SpriteBatch implements Batch {
 	}
 
 	@Override
-	public ShaderProgram getShader() {
+	public Shader getShader() {
 		if(customShader == null) {
 			return shader;
 		}

@@ -148,22 +148,13 @@ public class VertexBufferObjectWithVAO implements VertexData {
 		bufferChanged();
 	}
 
-	/**
-	 * Binds this VertexBufferObject for rendering via glDrawArrays or glDrawElements
-	 * @param shader the shader
-	 */
 	@Override
-	public void bind(ShaderProgram shader) {
-		bind(shader, null);
-	}
-
-	@Override
-	public void bind(ShaderProgram shader, int[] locations) {
+	public void bind(Shader shader) {
 		GL30 gl = Gdx.gl30;
 
 		gl.glBindVertexArray(vaoHandle);
 
-		bindAttributes(shader, locations);
+		bindAttributes(shader);
 
 		// if our data has changed upload it:
 		bindData(gl);
@@ -171,51 +162,18 @@ public class VertexBufferObjectWithVAO implements VertexData {
 		isBound = true;
 	}
 
-	private void bindAttributes(ShaderProgram shader, int[] locations) {
+	private void bindAttributes(Shader shader) {
 		boolean stillValid = this.cachedLocations.size != 0;
 		final int numAttributes = attributes.size();
-
-		if(stillValid) {
-			if(locations == null) {
-				for(int i = 0; stillValid && i < numAttributes; i++) {
-					VertexAttribute attribute = attributes.get(i);
-					int location = shader.getAttributeLocation(attribute.alias);
-					stillValid = location == this.cachedLocations.get(i);
-				}
-			} else {
-				stillValid = locations.length == this.cachedLocations.size;
-				for(int i = 0; stillValid && i < numAttributes; i++) {
-					stillValid = locations[i] == this.cachedLocations.get(i);
-				}
-			}
-		}
 
 		if(!stillValid) {
 			Gdx.gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, bufferHandle);
 			unbindAttributes(shader);
 			this.cachedLocations.clear();
-
-			for(int i = 0; i < numAttributes; i++) {
-				VertexAttribute attribute = attributes.get(i);
-				if(locations == null) {
-					this.cachedLocations.add(shader.getAttributeLocation(attribute.alias));
-				} else {
-					this.cachedLocations.add(locations[i]);
-				}
-
-				int location = this.cachedLocations.get(i);
-				if(location < 0) {
-					continue;
-				}
-
-				shader.enableVertexAttribute(location);
-				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
-						attributes.vertexSize, attribute.offset);
-			}
 		}
 	}
 
-	private void unbindAttributes(ShaderProgram shaderProgram) {
+	private void unbindAttributes(Shader Shader) {
 		if(cachedLocations.size == 0) {
 			return;
 		}
@@ -225,7 +183,6 @@ public class VertexBufferObjectWithVAO implements VertexData {
 			if(location < 0) {
 				continue;
 			}
-			shaderProgram.disableVertexAttribute(location);
 		}
 	}
 
@@ -238,17 +195,8 @@ public class VertexBufferObjectWithVAO implements VertexData {
 		}
 	}
 
-	/**
-	 * Unbinds this VertexBufferObject.
-	 * @param shader the shader
-	 */
 	@Override
-	public void unbind(final ShaderProgram shader) {
-		unbind(shader, null);
-	}
-
-	@Override
-	public void unbind(final ShaderProgram shader, final int[] locations) {
+	public void unbind(final Shader shader) {
 		GL30 gl = Gdx.gl30;
 		gl.glBindVertexArray(0);
 		isBound = false;

@@ -25,7 +25,7 @@ import com.badlogic.gdx.graphics.glutils.IndexBufferObjectSubData;
 import com.badlogic.gdx.graphics.glutils.IndexData;
 import com.badlogic.gdx.graphics.glutils.InstanceBufferObject;
 import com.badlogic.gdx.graphics.glutils.InstanceData;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.graphics.glutils.VertexArray;
 import com.badlogic.gdx.graphics.glutils.VertexBufferObject;
 import com.badlogic.gdx.graphics.glutils.VertexBufferObjectSubData;
@@ -546,43 +546,17 @@ public class Mesh implements Disposable {
 	 * Binds the underlying {@link VertexBufferObject} and {@link IndexBufferObject} if indices where given. Use this with OpenGL
 	 * ES 2.0 and when auto-bind is disabled.
 	 * @param shader the shader (does not bind the shader)
-	 */
-	public void bind(final ShaderProgram shader) {
-		bind(shader, null, null);
-	}
-
-	/**
-	 * Binds the underlying {@link VertexBufferObject} and {@link IndexBufferObject} if indices where given. Use this with OpenGL
-	 * ES 2.0 and when auto-bind is disabled.
-	 * @param shader the shader (does not bind the shader)
 	 * @param locations array containing the vertex attribute locations.
 	 * @param instanceLocations array containing the instance attribute locations.
 	 */
-	public void bind(final ShaderProgram shader, final int[] locations, final int[] instanceLocations) {
-		vertices.bind(shader, locations);
-		if(instances != null && instances.getNumInstances() > 0) instances.bind(shader, instanceLocations);
+	public void bind(final Shader shader) {
+		vertices.bind(shader);
+		if(instances != null && instances.getNumInstances() > 0) instances.bind(shader);
 		if(indices.getNumIndices() > 0) indices.bind();
 	}
-
-	/**
-	 * Unbinds the underlying {@link VertexBufferObject} and {@link IndexBufferObject} is indices were given. Use this with OpenGL
-	 * ES 1.x and when auto-bind is disabled.
-	 * @param shader the shader (does not unbind the shader)
-	 */
-	public void unbind(final ShaderProgram shader) {
-		unbind(shader, null, null);
-	}
-
-	/**
-	 * Unbinds the underlying {@link VertexBufferObject} and {@link IndexBufferObject} is indices were given. Use this with OpenGL
-	 * ES 1.x and when auto-bind is disabled.
-	 * @param shader the shader (does not unbind the shader)
-	 * @param locations array containing the vertex attribute locations.
-	 * @param instanceLocations array containing the instance attribute locations.
-	 */
-	public void unbind(final ShaderProgram shader, final int[] locations, final int[] instanceLocations) {
-		vertices.unbind(shader, locations);
-		if(instances != null && instances.getNumInstances() > 0) instances.unbind(shader, instanceLocations);
+	public void unbind(final Shader shader) {
+		vertices.unbind(shader);
+		if(instances != null && instances.getNumInstances() > 0) instances.unbind(shader);
 		if(indices.getNumIndices() > 0) indices.unbind();
 	}
 
@@ -598,7 +572,7 @@ public class Mesh implements Disposable {
 	 * </p>
 	 *
 	 * <p>
-	 * This method must only be called after the {@link ShaderProgram#bind()} method has been called!
+	 * This method must only be called after the {@link Shader#bind()} method has been called!
 	 * </p>
 	 *
 	 * <p>
@@ -606,7 +580,7 @@ public class Mesh implements Disposable {
 	 * </p>
 	 * @param primitiveType the primitive type
 	 */
-	public void render(ShaderProgram shader, int primitiveType) {
+	public void render(Shader shader, int primitiveType) {
 		render(shader, primitiveType, 0, indices.getNumMaxIndices() > 0 ? getNumIndices() : getNumVertices(), autoBind);
 	}
 
@@ -623,7 +597,7 @@ public class Mesh implements Disposable {
 	 * </p>
 	 *
 	 * <p>
-	 * This method must only be called after the {@link ShaderProgram#bind()} method has been called!
+	 * This method must only be called after the {@link Shader#bind()} method has been called!
 	 * </p>
 	 *
 	 * <p>
@@ -634,7 +608,7 @@ public class Mesh implements Disposable {
 	 * @param offset the offset into the vertex or index buffer
 	 * @param count number of vertices or indices to use
 	 */
-	public void render(ShaderProgram shader, int primitiveType, int offset, int count) {
+	public void render(Shader shader, int primitiveType, int offset, int count) {
 		render(shader, primitiveType, offset, count, autoBind);
 	}
 
@@ -651,7 +625,7 @@ public class Mesh implements Disposable {
 	 * </p>
 	 *
 	 * <p>
-	 * This method must only be called after the {@link ShaderProgram#bind()} method has been called!
+	 * This method must only be called after the {@link Shader#bind()} method has been called!
 	 * </p>
 	 *
 	 * <p>
@@ -663,7 +637,7 @@ public class Mesh implements Disposable {
 	 * @param count number of vertices or indices to use
 	 * @param autoBind overrides the autoBind member of this Mesh
 	 */
-	public void render(ShaderProgram shader, int primitiveType, int offset, int count, boolean autoBind) {
+	public void render(Shader shader, int primitiveType, int offset, int count, boolean autoBind) {
 		if(count == 0) return;
 
 		if(autoBind) bind(shader);

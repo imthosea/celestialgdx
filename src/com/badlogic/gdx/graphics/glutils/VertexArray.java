@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.glutils;
 
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.utils.BufferUtils;
@@ -106,74 +105,15 @@ public class VertexArray implements VertexData {
 	}
 
 	@Override
-	public void bind(final ShaderProgram shader) {
-		bind(shader, null);
-	}
-
-	@Override
-	public void bind(final ShaderProgram shader, final int[] locations) {
+	public void bind(final Shader shader) {
 		final int numAttributes = attributes.size();
 		((Buffer) byteBuffer).limit(buffer.limit() * 4);
-		if(locations == null) {
-			for(int i = 0; i < numAttributes; i++) {
-				final VertexAttribute attribute = attributes.get(i);
-				final int location = shader.getAttributeLocation(attribute.alias);
-				if(location < 0) continue;
-				shader.enableVertexAttribute(location);
-
-				if(attribute.type == GL20.GL_FLOAT) {
-					((Buffer) buffer).position(attribute.offset / 4);
-					shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
-							attributes.vertexSize, buffer);
-				} else {
-					((Buffer) byteBuffer).position(attribute.offset);
-					shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
-							attributes.vertexSize, byteBuffer);
-				}
-			}
-		} else {
-			for(int i = 0; i < numAttributes; i++) {
-				final VertexAttribute attribute = attributes.get(i);
-				final int location = locations[i];
-				if(location < 0) continue;
-				shader.enableVertexAttribute(location);
-
-				if(attribute.type == GL20.GL_FLOAT) {
-					((Buffer) buffer).position(attribute.offset / 4);
-					shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
-							attributes.vertexSize, buffer);
-				} else {
-					((Buffer) byteBuffer).position(attribute.offset);
-					shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
-							attributes.vertexSize, byteBuffer);
-				}
-			}
-		}
 		isBound = true;
 	}
 
-	/**
-	 * Unbinds this VertexBufferObject.
-	 * @param shader the shader
-	 */
-	@Override
-	public void unbind(ShaderProgram shader) {
-		unbind(shader, null);
-	}
 
 	@Override
-	public void unbind(ShaderProgram shader, int[] locations) {
-		final int numAttributes = attributes.size();
-		if(locations == null) {
-			for(int i = 0; i < numAttributes; i++) {
-				shader.disableVertexAttribute(attributes.get(i).alias);
-			}
-		} else {
-			for(int i = 0; i < numAttributes; i++) {
-				final int location = locations[i];
-				if(location >= 0) shader.disableVertexAttribute(location);
-			}
-		}
+	public void unbind(Shader shader) {
 		isBound = false;
 	}
 

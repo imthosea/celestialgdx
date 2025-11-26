@@ -177,17 +177,8 @@ public class InstanceBufferObject implements InstanceData {
 		usage = value;
 	}
 
-	/**
-	 * Binds this InstanceBufferObject for rendering via glDrawArraysInstanced or glDrawElementsInstanced
-	 * @param shader the shader
-	 */
 	@Override
-	public void bind(ShaderProgram shader) {
-		bind(shader, null);
-	}
-
-	@Override
-	public void bind(ShaderProgram shader, int[] locations) {
+	public void bind(Shader shader) {
 		final GL20 gl = Gdx.gl20;
 
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, bufferHandle);
@@ -196,67 +187,12 @@ public class InstanceBufferObject implements InstanceData {
 			gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
-
-		final int numAttributes = attributes.size();
-		if(locations == null) {
-			for(int i = 0; i < numAttributes; i++) {
-				final VertexAttribute attribute = attributes.get(i);
-				final int location = shader.getAttributeLocation(attribute.alias);
-				if(location < 0) continue;
-				int unitOffset = +attribute.unit;
-				shader.enableVertexAttribute(location + unitOffset);
-
-				shader.setVertexAttribute(location + unitOffset, attribute.numComponents, attribute.type, attribute.normalized,
-						attributes.vertexSize, attribute.offset);
-				Gdx.gl30.glVertexAttribDivisor(location + unitOffset, 1);
-			}
-
-		} else {
-			for(int i = 0; i < numAttributes; i++) {
-				final VertexAttribute attribute = attributes.get(i);
-				final int location = locations[i];
-				if(location < 0) continue;
-				int unitOffset = +attribute.unit;
-				shader.enableVertexAttribute(location + unitOffset);
-
-				shader.setVertexAttribute(location + unitOffset, attribute.numComponents, attribute.type, attribute.normalized,
-						attributes.vertexSize, attribute.offset);
-				Gdx.gl30.glVertexAttribDivisor(location + unitOffset, 1);
-			}
-		}
 		isBound = true;
 	}
 
-	/**
-	 * Unbinds this InstanceBufferObject.
-	 * @param shader the shader
-	 */
 	@Override
-	public void unbind(final ShaderProgram shader) {
-		unbind(shader, null);
-	}
-
-	@Override
-	public void unbind(final ShaderProgram shader, final int[] locations) {
+	public void unbind(final Shader shader) {
 		final GL20 gl = Gdx.gl20;
-		final int numAttributes = attributes.size();
-		if(locations == null) {
-			for(int i = 0; i < numAttributes; i++) {
-				final VertexAttribute attribute = attributes.get(i);
-				final int location = shader.getAttributeLocation(attribute.alias);
-				if(location < 0) continue;
-				int unitOffset = +attribute.unit;
-				shader.disableVertexAttribute(location + unitOffset);
-			}
-		} else {
-			for(int i = 0; i < numAttributes; i++) {
-				final VertexAttribute attribute = attributes.get(i);
-				final int location = locations[i];
-				if(location < 0) continue;
-				int unitOffset = +attribute.unit;
-				shader.disableVertexAttribute(location + unitOffset);
-			}
-		}
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		isBound = false;
 	}

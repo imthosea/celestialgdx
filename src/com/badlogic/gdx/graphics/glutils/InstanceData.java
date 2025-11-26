@@ -95,22 +95,10 @@ public interface InstanceData extends Disposable {
 	public FloatBuffer getBuffer(boolean forWriting);
 
 	/** Binds this InstanceData for rendering via glDrawArraysInstanced or glDrawElementsInstanced. */
-	public void bind(ShaderProgram shader);
-
-	/**
-	 * Binds this InstanceData for rendering via glDrawArraysInstanced or glDrawElementsInstanced.
-	 * @param locations array containing the attribute locations.
-	 */
-	public void bind(ShaderProgram shader, int[] locations);
+	public void bind(Shader shader);
 
 	/** Unbinds this InstanceData. */
-	public void unbind(ShaderProgram shader);
-
-	/**
-	 * Unbinds this InstanceData.
-	 * @param locations array containing the attribute locations.
-	 */
-	public void unbind(ShaderProgram shader, int[] locations);
+	public void unbind(Shader shader);
 
 	/** Invalidates the InstanceData if applicable. Use this in case of a context loss. */
 	public void invalidate();

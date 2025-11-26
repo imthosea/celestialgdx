@@ -22,7 +22,10 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import static org.lwjgl.opengl.GL33.glGetUniformLocation;
+import static org.lwjgl.opengl.GL33.glUniform1i;
+import static org.lwjgl.opengl.GL33.glUniformMatrix4fv;
 
 /**
  * Immediate mode rendering class for GLES 2.0. The renderer will allow you to specify vertices on the fly and provides a default
@@ -37,7 +40,7 @@ public class ImmediateModeRenderer20 implements ImmediateModeRenderer {
 	private int numVertices;
 
 	private final Mesh mesh;
-	private ShaderProgram shader;
+	private Shader shader;
 	private boolean ownsShader;
 	private final int numTexCoords;
 	private final int vertexSize;
@@ -59,7 +62,7 @@ public class ImmediateModeRenderer20 implements ImmediateModeRenderer {
 	}
 
 	public ImmediateModeRenderer20(int maxVertices, boolean hasNormals, boolean hasColors, int numTexCoords,
-	                               ShaderProgram shader) {
+	                               Shader shader) {
 		this.maxVertices = maxVertices;
 		this.numTexCoords = numTexCoords;
 		this.shader = shader;
@@ -84,11 +87,11 @@ public class ImmediateModeRenderer20 implements ImmediateModeRenderer {
 
 	private VertexAttribute[] buildVertexAttributes(boolean hasNormals, boolean hasColor, int numTexCoords) {
 		Array<VertexAttribute> attribs = new Array<>();
-		attribs.add(new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE));
-		if(hasNormals) attribs.add(new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE));
-		if(hasColor) attribs.add(new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE));
+		attribs.add(new VertexAttribute(Usage.Position, 3, Shader.POSITION_ATTRIBUTE));
+		if(hasNormals) attribs.add(new VertexAttribute(Usage.Normal, 3, Shader.NORMAL_ATTRIBUTE));
+		if(hasColor) attribs.add(new VertexAttribute(Usage.ColorPacked, 4, Shader.COLOR_ATTRIBUTE));
 		for(int i = 0; i < numTexCoords; i++) {
-			attribs.add(new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + i));
+			attribs.add(new VertexAttribute(Usage.TextureCoordinates, 2, Shader.TEXCOORD_ATTRIBUTE + i));
 		}
 		VertexAttribute[] array = new VertexAttribute[attribs.size];
 		for(int i = 0; i < attribs.size; i++)
@@ -96,13 +99,13 @@ public class ImmediateModeRenderer20 implements ImmediateModeRenderer {
 		return array;
 	}
 
-	public void setShader(ShaderProgram shader) {
+	public void setShader(Shader shader) {
 		if(ownsShader) this.shader.dispose();
 		this.shader = shader;
 		ownsShader = false;
 	}
 
-	public ShaderProgram getShader() {
+	public Shader getShader() {
 		return shader;
 	}
 
@@ -151,9 +154,11 @@ public class ImmediateModeRenderer20 implements ImmediateModeRenderer {
 	public void flush() {
 		if(numVertices == 0) return;
 		shader.bind();
-		shader.setUniformMatrix("u_projModelView", projModelView);
+		// TODO celestialgdx this is a hack unless I can remove this class
+		int handle = shader.getHandle();
+		glUniformMatrix4fv(glGetUniformLocation(handle, "u_projModelView"), false, projModelView.val);
 		for(int i = 0; i < numTexCoords; i++)
-			shader.setUniformi(shaderUniformNames[i], i);
+			glUniform1i(glGetUniformLocation(handle, shaderUniformNames[i]), i);
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.render(shader, primitiveType);
 
@@ -181,12 +186,12 @@ public class ImmediateModeRenderer20 implements ImmediateModeRenderer {
 	}
 
 	static private String createVertexShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
-		StringBuilder shader = new StringBuilder("attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
-				+ (hasNormals ? "attribute vec3 " + ShaderProgram.NORMAL_ATTRIBUTE + ";\n" : "")
-				+ (hasColors ? "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" : ""));
+		StringBuilder shader = new StringBuilder("attribute vec4 " + Shader.POSITION_ATTRIBUTE + ";\n"
+				+ (hasNormals ? "attribute vec3 " + Shader.NORMAL_ATTRIBUTE + ";\n" : "")
+				+ (hasColors ? "attribute vec4 " + Shader.COLOR_ATTRIBUTE + ";\n" : ""));
 
 		for(int i = 0; i < numTexCoords; i++) {
-			shader.append("attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE).append(i).append(";\n");
+			shader.append("attribute vec2 " + Shader.TEXCOORD_ATTRIBUTE).append(i).append(";\n");
 		}
 
 		shader.append("uniform mat4 u_projModelView;\n" //
@@ -196,14 +201,14 @@ public class ImmediateModeRenderer20 implements ImmediateModeRenderer {
 			shader.append("varying vec2 v_tex").append(i).append(";\n");
 		}
 
-		shader.append("void main() {\n" + "   gl_Position = u_projModelView * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n");
+		shader.append("void main() {\n" + "   gl_Position = u_projModelView * " + Shader.POSITION_ATTRIBUTE + ";\n");
 		if(hasColors) {
-			shader.append("   v_col = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+			shader.append("   v_col = " + Shader.COLOR_ATTRIBUTE + ";\n" //
 					+ "   v_col.a *= 255.0 / 254.0;\n");
 		}
 
 		for(int i = 0; i < numTexCoords; i++) {
-			shader.append("   v_tex").append(i).append(" = ").append(ShaderProgram.TEXCOORD_ATTRIBUTE).append(i).append(";\n");
+			shader.append("   v_tex").append(i).append(" = ").append(Shader.TEXCOORD_ATTRIBUTE).append(i).append(";\n");
 		}
 		shader.append("   gl_PointSize = 1.0;\n" //
 				+ "}\n");
@@ -241,11 +246,10 @@ public class ImmediateModeRenderer20 implements ImmediateModeRenderer {
 	}
 
 	/** Returns a new instance of the default shader used by SpriteBatch for GL2 when no shader is specified. */
-	static public ShaderProgram createDefaultShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
+	static public Shader createDefaultShader(boolean hasNormals, boolean hasColors, int numTexCoords) {
 		String vertexShader = createVertexShader(hasNormals, hasColors, numTexCoords);
 		String fragmentShader = createFragmentShader(hasNormals, hasColors, numTexCoords);
-		ShaderProgram program = new ShaderProgram(vertexShader, fragmentShader);
-		if(!program.isCompiled()) throw new GdxRuntimeException("Error compiling shader: " + program.getLog());
+		Shader program = new Shader(vertexShader, fragmentShader) {};
 		return program;
 	}
 }

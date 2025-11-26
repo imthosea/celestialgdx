@@ -18,7 +18,8 @@ package com.badlogic.gdx.graphics.g2d;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.Shader;
+import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Disposable;
@@ -41,7 +42,7 @@ import com.badlogic.gdx.utils.Disposable;
  * A Batch is a pretty heavy object so you should only ever have one in your program.
  * <p>
  * A Batch works with OpenGL ES 2.0. It will use its own custom shader to draw all provided sprites. You can set your own custom
- * shader via {@link #setShader(ShaderProgram)}.
+ * shader via {@link #setShader(Shader)}.
  * <p>
  * A Batch has to be disposed if it is no longer used.
  * @author mzechner
@@ -258,7 +259,7 @@ public interface Batch extends Disposable {
 	/**
 	 * Sets the shader to be used in a GLES 2.0 environment. Vertex position attribute is called "a_position", the texture
 	 * coordinates attribute is called "a_texCoord0", the color attribute is called "a_color". See
-	 * {@link ShaderProgram#POSITION_ATTRIBUTE}, {@link ShaderProgram#COLOR_ATTRIBUTE} and {@link ShaderProgram#TEXCOORD_ATTRIBUTE}
+	 * {@link Shader#POSITION_ATTRIBUTE}, {@link Shader#COLOR_ATTRIBUTE} and {@link Shader#TEXCOORD_ATTRIBUTE}
 	 * which gets "0" appended to indicate the use of the first texture unit. The combined transform and projection matrx is
 	 * uploaded via a mat4 uniform called "u_projTrans". The texture sampler is passed via a uniform called "u_texture".
 	 * <p>
@@ -266,12 +267,12 @@ public interface Batch extends Disposable {
 	 * <p>
 	 * This method will flush the batch before setting the new shader, you can call it in between {@link #begin()} and
 	 * {@link #end()}.
-	 * @param shader the {@link ShaderProgram} or null to use the default shader.
+	 * @param shader the {@link Shader} or null to use the default shader.
 	 */
-	public void setShader(ShaderProgram shader);
+	public void setShader(Shader shader);
 
-	/** @return the current {@link ShaderProgram} set by {@link #setShader(ShaderProgram)} or the defaultShader */
-	public ShaderProgram getShader();
+	/** @return the current {@link Shader} set by {@link #setShader(Shader)} or the defaultShader */
+	public Shader getShader();
 
 	/** @return true if blending for sprites is enabled */
 	public boolean isBlendingEnabled();

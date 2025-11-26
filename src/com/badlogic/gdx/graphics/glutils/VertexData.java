@@ -75,22 +75,10 @@ public interface VertexData extends Disposable {
 	public FloatBuffer getBuffer(boolean forWriting);
 
 	/** Binds this VertexData for rendering via glDrawArrays or glDrawElements. */
-	public void bind(ShaderProgram shader);
-
-	/**
-	 * Binds this VertexData for rendering via glDrawArrays or glDrawElements.
-	 * @param locations array containing the attribute locations.
-	 */
-	public void bind(ShaderProgram shader, int[] locations);
+	public void bind(Shader shader);
 
 	/** Unbinds this VertexData. */
-	public void unbind(ShaderProgram shader);
-
-	/**
-	 * Unbinds this VertexData.
-	 * @param locations array containing the attribute locations.
-	 */
-	public void unbind(ShaderProgram shader, int[] locations);
+	public void unbind(Shader shader);
 
 	/** Invalidates the VertexData if applicable. Use this in case of a context loss. */
 	public void invalidate();
