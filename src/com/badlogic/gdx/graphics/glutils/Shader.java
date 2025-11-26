@@ -16,7 +16,9 @@
 
 package com.badlogic.gdx.graphics.glutils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.Disposable;
 import org.joml.Matrix2fc;
 import org.joml.Matrix3fc;
@@ -25,6 +27,7 @@ import org.joml.Matrix4fc;
 import org.joml.Matrix4x3fc;
 import org.lwjgl.system.MemoryStack;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Objects;
@@ -131,6 +134,69 @@ public abstract class Shader implements Disposable {
 		public int getLocation() {
 			return location;
 		}
+	}
+
+	/* These methods are hacks to keep meshes and batches working until I can rework those */
+
+	@Deprecated(forRemoval = true)
+	public int fetchAttributeLocation(String name) {
+		return glGetAttribLocation(id, name);
+	}
+
+	@Deprecated(forRemoval = true)
+	public void setVertexAttribute(String name, int size, int type, boolean normalize, int stride, Buffer buffer) {
+		GL20 gl = Gdx.gl20;
+		int location = fetchAttributeLocation(name);
+		if(location == -1) return;
+		gl.glVertexAttribPointer(location, size, type, normalize, stride, buffer);
+	}
+
+	@Deprecated(forRemoval = true)
+	public void setVertexAttribute(int location, int size, int type, boolean normalize, int stride, Buffer buffer) {
+		GL20 gl = Gdx.gl20;
+		gl.glVertexAttribPointer(location, size, type, normalize, stride, buffer);
+	}
+
+	@Deprecated(forRemoval = true)
+	public void disableVertexAttribute(String name) {
+		GL20 gl = Gdx.gl20;
+		int location = glGetAttribLocation(id, name);
+		if(location == -1) return;
+		gl.glDisableVertexAttribArray(location);
+	}
+
+	@Deprecated(forRemoval = true)
+	public void setVertexAttribute(String name, int size, int type, boolean normalize, int stride, int offset) {
+		GL20 gl = Gdx.gl20;
+		int location = fetchAttributeLocation(name);
+		if(location == -1) return;
+		gl.glVertexAttribPointer(location, size, type, normalize, stride, offset);
+	}
+
+	@Deprecated(forRemoval = true)
+	public void setVertexAttribute(int location, int size, int type, boolean normalize, int stride, int offset) {
+		GL20 gl = Gdx.gl20;
+		gl.glVertexAttribPointer(location, size, type, normalize, stride, offset);
+	}
+
+	@Deprecated(forRemoval = true)
+	public void disableVertexAttribute(int location) {
+		GL20 gl = Gdx.gl20;
+		gl.glDisableVertexAttribArray(location);
+	}
+
+	@Deprecated(forRemoval = true)
+	public void enableVertexAttribute(String name) {
+		GL20 gl = Gdx.gl20;
+		int location = glGetAttribLocation(id, name);
+		if(location == -1) return;
+		gl.glEnableVertexAttribArray(location);
+	}
+
+	@Deprecated(forRemoval = true)
+	public void enableVertexAttribute(int location) {
+		GL20 gl = Gdx.gl20;
+		gl.glEnableVertexAttribArray(location);
 	}
 
 	// region float uniforms
