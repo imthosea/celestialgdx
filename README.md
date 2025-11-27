@@ -180,7 +180,7 @@ gdx.terminate();
 - For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
 - The Gdx class remains for compatibility, but please don't use them - mutable static constants are questionable for
   maintainability. Use the function constructor in Lwjgl3Application and get the window to initialize your constants
-- GDX GL classes are deprecated. Use GL classes from GLFW instead (`import static org.lwjgl.opengl.GL31.*;`)
+- GDX GL classes are deprecated. Use GL classes from GLFW instead (`import static org.lwjgl.opengl.GL33.*;`)
 
 ### TODO maybe
 - rewrite Sync (fps cap) implementation
