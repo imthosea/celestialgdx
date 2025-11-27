@@ -87,6 +87,10 @@ public class ShaderLoader extends AssetLoader<Shader, ShaderParameter> {
 			Shader create(String vert, String frag);
 		}
 
+		public ShaderParameter(ShaderCreator creator) {
+			this.creator = creator;
+		}
+
 		/**
 		 * Creator to use once the vertex and fragment files have been loaded in memory.
 		 * This will always be called on the main thread.
