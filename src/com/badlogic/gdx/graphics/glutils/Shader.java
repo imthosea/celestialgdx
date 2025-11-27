@@ -81,8 +81,8 @@ public abstract class Shader implements Disposable {
 	}
 
 	public void compile(String vertexShader, String fragmentShader) {
-		int vertexId = compile("vertex", GL_VERTEX_SHADER, vertexShader);
-		int fragmentId = compile("fragment", GL_FRAGMENT_SHADER, fragmentShader);
+		int vertexId = compile("vertex", GL_VERTEX_SHADER, vertexShader, /*deleteOnFail*/ -1);
+		int fragmentId = compile("fragment", GL_FRAGMENT_SHADER, fragmentShader, /*deleteOnFail*/ vertexId);
 
 		int programId = glCreateProgram();
 		glAttachShader(programId, vertexId);
@@ -98,12 +98,14 @@ public abstract class Shader implements Disposable {
 		this.id = programId;
 	}
 
-	private int compile(String name, int type, String source) {
+	private int compile(String name, int type, String source, int deleteOnFail) {
 		int shader = glCreateShader(type);
 		glShaderSource(shader, source);
 		glCompileShader(shader);
 		if(glGetShaderi(shader, GL_COMPILE_STATUS) == 0) {
 			String log = glGetShaderInfoLog(shader);
+			glDeleteShader(shader);
+			if(deleteOnFail != -1) glDeleteShader(deleteOnFail);
 			throw new IllegalStateException("Failed to compile " + name + " shader\n" + log);
 		}
 		return shader;
