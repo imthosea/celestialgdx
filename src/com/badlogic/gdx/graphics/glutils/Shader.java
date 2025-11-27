@@ -41,6 +41,13 @@ import static org.lwjgl.system.MemoryStack.stackPush;
  * When a shader is bound, you can use fields exposed by the superclass to set uniforms.
  *
  * <p>
+ * Shaders are compiled when constructed and can be recompiled using {@link #compile(String, String)}.
+ * If compilation fails, an exception will be thrown, and, in the case of recompiling, will not
+ * update the current {@link Shader} to point to the new program. This means a {@link Shader} can never
+ * represent a shader which isn't compiled.
+ * </p>
+ *
+ * <p>
  * A shader must be disposed via a call to {@link Shader#dispose()} when it is no longer needed
  * </p>
  * @author thosea
