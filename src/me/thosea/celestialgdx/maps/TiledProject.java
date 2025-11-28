@@ -1,0 +1,36 @@
+package me.thosea.celestialgdx.maps;
+
+import me.thosea.celestialgdx.maps.loader.TiledLoaderUtils;
+import me.thosea.celestialgdx.maps.loader.TiledLoaderUtils.ClassSupplier;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * celestialgdx - a tiled project file. contains class definitions and properties
+ */
+public class TiledProject implements ClassSupplier {
+	private final Map<String, Iterable<TiledLoaderUtils.ProjectClassMember>> classes;
+	private final MapProperties properties;
+
+	public TiledProject(
+			Map<String, Iterable<TiledLoaderUtils.ProjectClassMember>> classes,
+			MapProperties properties
+	) {
+		Objects.requireNonNull(classes);
+		Objects.requireNonNull(properties);
+		this.classes = classes;
+		this.properties = properties;
+	}
+
+	@Override
+	@Nullable
+	public Iterable<TiledLoaderUtils.ProjectClassMember> getClassMembers(String className) {
+		return classes.get(className);
+	}
+
+	public MapProperties getProperties() {
+		return properties;
+	}
+}

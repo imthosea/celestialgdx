@@ -16,8 +16,8 @@
 
 package com.badlogic.gdx.graphics;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.FileTextureArrayData;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * Used by a {@link TextureArray} to load the pixel data. The TextureArray will request the TextureArrayData to prepare itself

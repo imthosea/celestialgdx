@@ -16,15 +16,16 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetLoadingContext;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Page;
+import me.thosea.celestialgdx.assets.AssetLoader;
+import me.thosea.celestialgdx.assets.AssetLoaderParameters;
+import me.thosea.celestialgdx.assets.AssetLoadingContext;
+import me.thosea.celestialgdx.assets.AssetManager;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * {@link AssetLoader} to load {@link TextureAtlas} instances. Passing a {@link TextureAtlasParameter} to

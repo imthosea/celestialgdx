@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d.freetype;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Blending;
@@ -44,6 +43,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import me.thosea.celestialgdx.files.FileHandle;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;

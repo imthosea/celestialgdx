@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx;
 
-import com.badlogic.gdx.input.InputHandler;
+import me.thosea.celestialgdx.input.InputHandler;
 
 /**
  * <p>

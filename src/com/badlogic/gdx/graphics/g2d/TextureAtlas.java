@@ -17,7 +17,6 @@
 package com.badlogic.gdx.graphics.g2d;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -29,6 +28,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
+import me.thosea.celestialgdx.files.FileHandle;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;

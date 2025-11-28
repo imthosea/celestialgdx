@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx.maps.renderers;
 
-import com.badlogic.gdx.maps.layers.MapLayer;
+import me.thosea.celestialgdx.maps.layers.MapLayer;
 
 @SuppressWarnings("InterfaceMayBeAnnotatedFunctional")
 public interface TileMapRenderer {

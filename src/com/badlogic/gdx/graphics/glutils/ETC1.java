@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.graphics.glutils;
 
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.files.WriteableFileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.math.MathUtils;
@@ -26,6 +24,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxIoException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
+import me.thosea.celestialgdx.files.FileHandle;
+import me.thosea.celestialgdx.files.WriteableFileHandle;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

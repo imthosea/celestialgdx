@@ -1,7 +1,6 @@
 package com.badlogic.gdx.graphics.glutils;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.Cubemap.CubemapSide;
 import com.badlogic.gdx.graphics.CubemapData;
@@ -11,6 +10,7 @@ import com.badlogic.gdx.graphics.Pixmap.Blending;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * A FacedCubemapData holds a cubemap data definition based on a {@link TextureData} per face.

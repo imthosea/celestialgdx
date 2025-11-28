@@ -19,8 +19,8 @@
 
 package com.badlogic.gdx.utils;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonValue.ValueType;
+import me.thosea.celestialgdx.files.FileHandle;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;

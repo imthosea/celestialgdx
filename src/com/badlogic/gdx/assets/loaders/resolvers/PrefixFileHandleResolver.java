@@ -17,7 +17,7 @@
 package com.badlogic.gdx.assets.loaders.resolvers;
 
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * {@link FileHandleResolver} that adds a prefix to the filename before passing it to the base resolver. Can be used e.g. to use

@@ -19,10 +19,10 @@ package com.badlogic.gdx.maps.renderers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.TiledMap;
-import com.badlogic.gdx.maps.layers.ImageLayer;
-import com.badlogic.gdx.maps.layers.TileLayer;
-import com.badlogic.gdx.maps.tiles.TiledMapTile;
+import me.thosea.celestialgdx.maps.TiledMap;
+import me.thosea.celestialgdx.maps.layers.ImageLayer;
+import me.thosea.celestialgdx.maps.layers.TileLayer;
+import me.thosea.celestialgdx.maps.tiles.TiledMapTile;
 
 import static com.badlogic.gdx.graphics.g2d.Batch.*;
 
