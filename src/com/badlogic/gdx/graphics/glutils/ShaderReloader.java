@@ -1,7 +1,7 @@
 package com.badlogic.gdx.graphics.glutils;
 
-import com.badlogic.gdx.backends.lwjgl3.CelestialGdx;
-import com.badlogic.gdx.log.GdxLogger;
+import me.thosea.celestialgdx.core.CelestialGdx;
+import me.thosea.celestialgdx.log.GdxLogger;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;

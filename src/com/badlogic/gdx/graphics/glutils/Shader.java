@@ -17,9 +17,9 @@
 package com.badlogic.gdx.graphics.glutils;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.Disposable;
+import me.thosea.celestialgdx.files.FileHandle;
 import org.joml.Matrix2fc;
 import org.joml.Matrix3fc;
 import org.joml.Matrix3x2fc;

@@ -16,9 +16,6 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetLoadingContext;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.CubemapData;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -26,6 +23,10 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.glutils.KTXTextureData;
+import me.thosea.celestialgdx.assets.AssetLoader;
+import me.thosea.celestialgdx.assets.AssetLoaderParameters;
+import me.thosea.celestialgdx.assets.AssetLoadingContext;
+import me.thosea.celestialgdx.assets.AssetManager;
 
 /**
  * {@link AssetLoader} for {@link Cubemap} instances. The pixel data is loaded asynchronously. The texture is then created on the

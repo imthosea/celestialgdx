@@ -16,12 +16,12 @@
 
 package com.badlogic.gdx.utils;
 
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.files.WriteableFileHandle;
 import com.badlogic.gdx.utils.IntSet.IntSetIterator;
 import com.badlogic.gdx.utils.JsonValue.PrettyPrintSettings;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
+import me.thosea.celestialgdx.files.FileHandle;
+import me.thosea.celestialgdx.files.WriteableFileHandle;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;

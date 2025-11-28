@@ -19,7 +19,7 @@ package com.badlogic.gdx.backends.lwjgl3;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl3.file.ClasspathFileHandle;
 import com.badlogic.gdx.backends.lwjgl3.file.SystemFileHandle;
-import com.badlogic.gdx.files.FileHandle;
+import me.thosea.celestialgdx.files.FileHandle;
 
 import java.io.File;
 

@@ -16,10 +16,6 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetLoadingContext;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -30,6 +26,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import me.thosea.celestialgdx.assets.AssetLoader;
+import me.thosea.celestialgdx.assets.AssetLoaderParameters;
+import me.thosea.celestialgdx.assets.AssetLoadingContext;
+import me.thosea.celestialgdx.assets.AssetManager;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * {@link AssetLoader} for {@link BitmapFont} instances. Loads the font description file (.fnt) asynchronously, loads the

@@ -16,9 +16,10 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetLoadingContext;
 import com.badlogic.gdx.graphics.Pixmap;
+import me.thosea.celestialgdx.assets.AssetLoader;
+import me.thosea.celestialgdx.assets.AssetLoaderParameters;
+import me.thosea.celestialgdx.assets.AssetLoadingContext;
 
 /**
  * {@link AssetLoader} for {@link Pixmap} instances. The Pixmap is loaded asynchronously.

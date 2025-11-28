@@ -16,9 +16,9 @@
 
 package com.badlogic.gdx.backends.lwjgl3.file;
 
-import com.badlogic.gdx.files.MappableFile;
-import com.badlogic.gdx.files.WriteableFileHandle;
 import com.badlogic.gdx.utils.GdxIoException;
+import me.thosea.celestialgdx.files.MappableFile;
+import me.thosea.celestialgdx.files.WriteableFileHandle;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -19,7 +19,7 @@
 
 package com.badlogic.gdx.utils;
 
-import com.badlogic.gdx.files.FileHandle;
+import me.thosea.celestialgdx.files.FileHandle;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;

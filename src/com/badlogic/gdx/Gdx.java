@@ -20,7 +20,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Files;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3GL30;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.input.InputController;
+import me.thosea.celestialgdx.input.InputController;
 
 /**
  * Environment class holding references to the {@link Application}, {@link Graphics}, {@link Audio}, {@link Files} and

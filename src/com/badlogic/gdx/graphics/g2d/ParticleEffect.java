@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
@@ -24,6 +23,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.StreamUtils;
+import me.thosea.celestialgdx.files.FileHandle;
 
 import java.io.BufferedReader;
 import java.io.File;

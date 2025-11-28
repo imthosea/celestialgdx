@@ -1,7 +1,6 @@
 package com.badlogic.gdx.graphics.glutils;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.CubemapData;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,6 +13,7 @@ import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.GdxIoException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
+import me.thosea.celestialgdx.files.FileHandle;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

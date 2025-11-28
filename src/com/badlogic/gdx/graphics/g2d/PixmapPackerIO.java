@@ -1,9 +1,9 @@
 package com.badlogic.gdx.graphics.g2d;
 
-import com.badlogic.gdx.files.WriteableFileHandle;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker.Page;
+import me.thosea.celestialgdx.files.WriteableFileHandle;
 
 import java.io.IOException;
 import java.io.Writer;

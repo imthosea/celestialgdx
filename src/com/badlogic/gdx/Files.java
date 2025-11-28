@@ -16,7 +16,7 @@
 
 package com.badlogic.gdx;
 
-import com.badlogic.gdx.files.FileHandle;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * Provides standard access to the filesystem, classpath, Android app storage (internal and external), and Android assets

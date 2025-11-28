@@ -18,7 +18,6 @@ package com.badlogic.gdx.scenes.scene2d;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl3.Window;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -41,6 +40,8 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import me.thosea.celestialgdx.input.InputHandler;
+import me.thosea.celestialgdx.window.Window;
 import org.jetbrains.annotations.Nullable;
 
 /**

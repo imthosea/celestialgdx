@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d.freetype;
 
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.files.MappableFile;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Blending;
@@ -28,6 +26,8 @@ import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.LongMap;
 import com.badlogic.gdx.utils.StreamUtils;
+import me.thosea.celestialgdx.files.FileHandle;
+import me.thosea.celestialgdx.files.MappableFile;
 
 import java.io.IOException;
 import java.io.InputStream;

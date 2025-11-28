@@ -20,12 +20,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.layers.GroupLayer;
-import com.badlogic.gdx.maps.layers.ImageLayer;
-import com.badlogic.gdx.maps.layers.MapLayer;
-import com.badlogic.gdx.maps.layers.TileLayer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
+import me.thosea.celestialgdx.maps.layers.GroupLayer;
+import me.thosea.celestialgdx.maps.layers.ImageLayer;
+import me.thosea.celestialgdx.maps.layers.MapLayer;
+import me.thosea.celestialgdx.maps.layers.TileLayer;
 
 import static com.badlogic.gdx.graphics.g2d.Batch.*;
 

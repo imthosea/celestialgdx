@@ -17,11 +17,11 @@
 package com.badlogic.gdx.graphics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import me.thosea.celestialgdx.files.FileHandle;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

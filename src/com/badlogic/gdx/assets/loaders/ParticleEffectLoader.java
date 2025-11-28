@@ -16,12 +16,13 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetLoadingContext;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import me.thosea.celestialgdx.assets.AssetLoader;
+import me.thosea.celestialgdx.assets.AssetLoaderParameters;
+import me.thosea.celestialgdx.assets.AssetLoadingContext;
+import me.thosea.celestialgdx.assets.AssetManager;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * {@link AssetLoader} to load {@link ParticleEffect} instances. Passing a {@link ParticleEffectParameter} to

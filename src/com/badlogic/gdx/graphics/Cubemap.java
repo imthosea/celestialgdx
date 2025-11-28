@@ -17,12 +17,12 @@
 package com.badlogic.gdx.graphics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.glutils.FacedCubemapData;
 import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * Wraps a standard OpenGL ES Cubemap. Must be disposed when it is no longer used.

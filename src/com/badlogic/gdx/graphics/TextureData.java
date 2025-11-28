@@ -16,12 +16,12 @@
 
 package com.badlogic.gdx.graphics;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.glutils.ETC1TextureData;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.graphics.glutils.KTXTextureData;
 import com.badlogic.gdx.graphics.glutils.MipMapGenerator;
+import me.thosea.celestialgdx.files.FileHandle;
 
 /**
  * Used by a {@link Texture} to load the pixel data. A TextureData can either return a {@link Pixmap} or upload the pixel data

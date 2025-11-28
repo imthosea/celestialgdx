@@ -22,6 +22,8 @@ import com.badlogic.gdx.graphics.Pixmap.Blending;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import me.thosea.celestialgdx.window.Window;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWImage;
 
@@ -89,7 +91,7 @@ public class Lwjgl3Cursor implements Cursor {
 		GLFW.glfwDestroyCursor(glfwCursor);
 	}
 
-	static void dispose(Window window) {
+	public static void dispose(Window window) {
 		for(int i = cursors.size - 1; i >= 0; i--) {
 			Lwjgl3Cursor cursor = cursors.get(i);
 			if(cursor.window.equals(window)) {
@@ -98,7 +100,8 @@ public class Lwjgl3Cursor implements Cursor {
 		}
 	}
 
-	static void disposeSystemCursors() {
+	@Internal
+	public static void disposeSystemCursors() {
 		for(long systemCursor : systemCursors.values()) {
 			GLFW.glfwDestroyCursor(systemCursor);
 		}

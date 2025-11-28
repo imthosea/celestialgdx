@@ -20,6 +20,7 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
 import com.badlogic.gdx.graphics.Pixmap;
+import me.thosea.celestialgdx.window.Window;
 
 import static org.lwjgl.glfw.GLFW.glfwExtensionSupported;
 import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
