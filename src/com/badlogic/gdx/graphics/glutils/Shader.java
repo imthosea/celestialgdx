@@ -63,7 +63,7 @@ public abstract class Shader implements Disposable {
 	/** default name for texcoords attributes, append texture unit number **/
 	public static final String TEXCOORD_ATTRIBUTE = "a_texCoord";
 
-	private int id;
+	private int id = -1;
 
 	protected Shader(FileHandle vertexFile, FileHandle fragmentFile) {
 		this(vertexFile.readString(), fragmentFile.readString());
@@ -94,6 +94,10 @@ public abstract class Shader implements Disposable {
 		if(glGetProgrami(programId, GL_LINK_STATUS) == 0) {
 			String error = glGetProgramInfoLog(programId);
 			throw new IllegalStateException("Failed to link shaders\n" + error);
+		}
+
+		if(id != -1) {
+			glDeleteProgram(this.id);
 		}
 		this.id = programId;
 	}
