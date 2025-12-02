@@ -17,7 +17,6 @@
 package me.thosea.celestialgdx.assets;
 
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
-import com.badlogic.gdx.assets.loaders.CubemapLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
 import com.badlogic.gdx.assets.loaders.PixmapLoader;
@@ -26,7 +25,6 @@ import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -131,7 +129,6 @@ public class AssetManager implements Disposable {
 			setLoader(ParticleEffect.class, new ParticleEffectLoader(resolver));
 			setLoader(PolygonRegion.class, new PolygonRegionLoader(resolver));
 			setLoader(Shader.class, new ShaderLoader(resolver));
-			setLoader(Cubemap.class, new CubemapLoader(resolver));
 
 			setLoader(TiledProject.class, new TiledProjectLoader(resolver));
 			setLoader(Tileset.class, new TsxTilesetLoader(resolver));

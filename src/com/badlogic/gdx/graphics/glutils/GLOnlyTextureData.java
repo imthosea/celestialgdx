@@ -108,11 +108,6 @@ public class GLOnlyTextureData implements TextureData {
 	}
 
 	@Override
-	public boolean useMipMaps() {
-		return false;
-	}
-
-	@Override
 	public boolean isManaged() {
 		return false;
 	}

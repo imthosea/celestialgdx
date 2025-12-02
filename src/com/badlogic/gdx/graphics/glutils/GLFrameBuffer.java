@@ -678,34 +678,4 @@ public abstract class GLFrameBuffer<T extends GLTexture> implements Disposable {
 			return new FrameBuffer(this);
 		}
 	}
-
-	public static class FloatFrameBufferBuilder extends GLFrameBufferBuilder<FloatFrameBuffer> {
-		public FloatFrameBufferBuilder(int width, int height) {
-			super(width, height);
-		}
-
-		public FloatFrameBufferBuilder(int width, int height, int samples) {
-			super(width, height, samples);
-		}
-
-		@Override
-		public FloatFrameBuffer build() {
-			return new FloatFrameBuffer(this);
-		}
-	}
-
-	public static class FrameBufferCubemapBuilder extends GLFrameBufferBuilder<FrameBufferCubemap> {
-		public FrameBufferCubemapBuilder(int width, int height) {
-			super(width, height);
-		}
-
-		public FrameBufferCubemapBuilder(int width, int height, int samples) {
-			super(width, height, samples);
-		}
-
-		@Override
-		public FrameBufferCubemap build() {
-			return new FrameBufferCubemap(this);
-		}
-	}
 }

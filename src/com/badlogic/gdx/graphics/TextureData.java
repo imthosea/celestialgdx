@@ -17,10 +17,7 @@
 package com.badlogic.gdx.graphics;
 
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.glutils.ETC1TextureData;
 import com.badlogic.gdx.graphics.glutils.FileTextureData;
-import com.badlogic.gdx.graphics.glutils.KTXTextureData;
-import com.badlogic.gdx.graphics.glutils.MipMapGenerator;
 import me.thosea.celestialgdx.files.FileHandle;
 
 /**
@@ -88,9 +85,6 @@ public interface TextureData {
 	/** @return the {@link Format} of the pixel data */
 	public Format getFormat();
 
-	/** @return whether to generate mipmaps or not. */
-	public boolean useMipMaps();
-
 	/** @return whether this implementation can cope with a EGL context loss. */
 	public boolean isManaged();
 
@@ -108,9 +102,6 @@ public interface TextureData {
 			if(file == null) return null;
 			if(file.name().endsWith(".cim"))
 				return new FileTextureData(file, PixmapIO.readCIM(file), format, useMipMaps);
-			if(file.name().endsWith(".etc1")) return new ETC1TextureData(file, useMipMaps);
-			if(file.name().endsWith(".ktx") || file.name().endsWith(".zktx"))
-				return new KTXTextureData(file, useMipMaps);
 			return new FileTextureData(file, new Pixmap(file), format, useMipMaps);
 		}
 
