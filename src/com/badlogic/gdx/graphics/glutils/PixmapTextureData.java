@@ -66,11 +66,6 @@ public class PixmapTextureData implements TextureData {
 	}
 
 	@Override
-	public boolean useMipMaps() {
-		return useMipMaps;
-	}
-
-	@Override
 	public boolean isManaged() {
 		return managed;
 	}

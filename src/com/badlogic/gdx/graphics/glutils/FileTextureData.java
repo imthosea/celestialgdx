@@ -95,11 +95,6 @@ public class FileTextureData implements TextureData {
 	}
 
 	@Override
-	public boolean useMipMaps() {
-		return useMipMaps;
-	}
-
-	@Override
 	public boolean isManaged() {
 		return true;
 	}

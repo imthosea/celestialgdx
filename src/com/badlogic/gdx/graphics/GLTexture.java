@@ -21,7 +21,6 @@ import com.badlogic.gdx.graphics.Pixmap.Blending;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.TextureData.TextureDataType;
-import com.badlogic.gdx.graphics.glutils.MipMapGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Disposable;
@@ -293,12 +292,8 @@ public abstract class GLTexture implements Disposable {
 		}
 
 		Gdx.gl.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 1);
-		if(data.useMipMaps()) {
-			MipMapGenerator.generateMipMap(target, pixmap, pixmap.getWidth(), pixmap.getHeight());
-		} else {
-			Gdx.gl.glTexImage2D(target, miplevel, pixmap.getGLInternalFormat(), pixmap.getWidth(), pixmap.getHeight(), 0,
-					pixmap.getGLFormat(), pixmap.getGLType(), pixmap.getPixels());
-		}
+		Gdx.gl.glTexImage2D(target, miplevel, pixmap.getGLInternalFormat(), pixmap.getWidth(), pixmap.getHeight(), 0,
+				pixmap.getGLFormat(), pixmap.getGLType(), pixmap.getPixels());
 		if(disposePixmap) pixmap.dispose();
 	}
 }
