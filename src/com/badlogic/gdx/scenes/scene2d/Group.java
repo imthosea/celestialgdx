@@ -17,7 +17,6 @@
 package com.badlogic.gdx.scenes.scene2d;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
@@ -138,57 +137,6 @@ public class Group extends Actor implements Cullable {
 		children.end();
 	}
 
-	/**
-	 * Draws this actor's debug lines if {@link #getDebug()} is true and, regardless of {@link #getDebug()}, calls
-	 * {@link Actor#drawDebug(ShapeRenderer)} on each child.
-	 */
-	public void drawDebug(ShapeRenderer shapes) {
-		drawDebugBounds(shapes);
-		if(transform) applyTransform(shapes, computeTransform());
-		drawDebugChildren(shapes);
-		if(transform) resetTransform(shapes);
-	}
-
-	/**
-	 * Draws all children. {@link #applyTransform(Batch, Matrix4)} should be called before and {@link #resetTransform(Batch)}
-	 * after this method if {@link #setTransform(boolean) transform} is true. If {@link #setTransform(boolean) transform} is false
-	 * these methods don't need to be called, children positions are temporarily offset by the group position when drawn. This
-	 * method avoids drawing children completely outside the {@link #setCullingArea(Rectangle) culling area}, if set.
-	 */
-	protected void drawDebugChildren(ShapeRenderer shapes) {
-		SnapshotArray<Actor> children = this.children;
-		Actor[] actors = children.begin();
-		// No culling, draw all children.
-		if(transform) {
-			for(int i = 0, n = children.size; i < n; i++) {
-				Actor child = actors[i];
-				if(!child.isVisible()) continue;
-				if(!child.getDebug() && !(child instanceof Group)) continue;
-				child.drawDebug(shapes);
-			}
-			shapes.flush();
-		} else {
-			// No transform for this group, offset each child.
-			float offsetX = x, offsetY = y;
-			x = 0;
-			y = 0;
-			for(int i = 0, n = children.size; i < n; i++) {
-				Actor child = actors[i];
-				if(!child.isVisible()) continue;
-				if(!child.getDebug() && !(child instanceof Group)) continue;
-				float cx = child.x, cy = child.y;
-				child.x = cx + offsetX;
-				child.y = cy + offsetY;
-				child.drawDebug(shapes);
-				child.x = cx;
-				child.y = cy;
-			}
-			x = offsetX;
-			y = offsetY;
-		}
-		children.end();
-	}
-
 	/** Returns the transform for this group's coordinate system. */
 	protected Matrix4 computeTransform() {
 		Affine2 worldTransform = this.worldTransform;
@@ -223,25 +171,6 @@ public class Group extends Actor implements Cullable {
 	 */
 	protected void resetTransform(Batch batch) {
 		batch.setTransformMatrix(oldTransform);
-	}
-
-	/**
-	 * Set the shape renderer transformation matrix, often with the result of {@link #computeTransform()}. Note this causes the
-	 * shape renderer to be flushed. {@link #resetTransform(ShapeRenderer)} will restore the transform to what it was before this
-	 * call.
-	 */
-	protected void applyTransform(ShapeRenderer shapes, Matrix4 transform) {
-		oldTransform.set(shapes.getTransformMatrix());
-		shapes.setTransformMatrix(transform);
-		shapes.flush();
-	}
-
-	/**
-	 * Restores the shape renderer transform to what it was before {@link #applyTransform(Batch, Matrix4)}. Note this causes the
-	 * shape renderer to be flushed.
-	 */
-	protected void resetTransform(ShapeRenderer shapes) {
-		shapes.setTransformMatrix(oldTransform);
 	}
 
 	/**

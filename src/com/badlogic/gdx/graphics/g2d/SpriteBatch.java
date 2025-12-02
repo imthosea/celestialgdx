@@ -19,17 +19,21 @@ package com.badlogic.gdx.graphics.g2d;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Mesh.VertexDataType;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import me.thosea.celestialgdx.graphics.Mesh;
+import me.thosea.celestialgdx.graphics.Mesh.BufferUsage;
+import me.thosea.celestialgdx.graphics.Mesh.VxAttrib;
+import org.lwjgl.system.MemoryUtil;
 
-import java.nio.Buffer;
+import java.nio.FloatBuffer;
+
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL32.GL_FLOAT;
+import static org.lwjgl.opengl.GL32.GL_UNSIGNED_BYTE;
 
 /**
  * Draws batched quads using indices.
@@ -38,24 +42,9 @@ import java.nio.Buffer;
  * @see Batch
  */
 public class SpriteBatch implements Batch {
-	/**
-	 * @deprecated Do not use, this field is for testing only and is likely to be removed. Sets the {@link VertexDataType} to be
-	 * used when gles 3 is not available, defaults to {@link VertexDataType#VertexArray}.
-	 */
-	@Deprecated public static VertexDataType defaultVertexDataType = VertexDataType.VertexBufferObject;
-
-	/**
-	 * Used to completely override the vertex type used by SpriteBatch. This is useful for picking a specific vertex data type on
-	 * construction of the sprite batch. Recommended to reset this back to defaultVertexDataType Once the batch has been created
-	 * with this flag
-	 */
-	@Deprecated public static VertexDataType overrideVertexType = null;
-
-	private final VertexDataType currentDataType;
-
 	private final Mesh mesh;
 
-	final float[] vertices;
+	final FloatBuffer vertices;
 	int idx = 0;
 	Texture lastTexture = null;
 	float invTexWidth = 0, invTexHeight = 0;
@@ -73,7 +62,7 @@ public class SpriteBatch implements Batch {
 	private int blendDstFuncAlpha = GL20.GL_ONE_MINUS_SRC_ALPHA;
 
 	private final SpriteBatchShader shader;
-	private Shader customShader = null;
+	private Shader customShader;
 
 	private final Color color = new Color(1, 1, 1, 1);
 	float colorPacked = Color.WHITE_FLOAT_BITS;
@@ -114,22 +103,18 @@ public class SpriteBatch implements Batch {
 		// 32767 is max vertex index, so 32767 / 4 vertices per sprite = 8191 sprites max.
 		if(size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
-		VertexDataType vertexDataType = (Gdx.gl30 != null) ? VertexDataType.VertexBufferObjectWithVAO : defaultVertexDataType;
-
-		if(overrideVertexType != null) {
-			vertexDataType = overrideVertexType;
-		}
-
-		currentDataType = vertexDataType;
-
-		mesh = new Mesh(currentDataType, false, size * 4, size * 6,
-				new VertexAttribute(Usage.Position, 2, Shader.POSITION_ATTRIBUTE),
-				new VertexAttribute(Usage.ColorPacked, 4, Shader.COLOR_ATTRIBUTE),
-				new VertexAttribute(Usage.TextureCoordinates, 2, Shader.TEXCOORD_ATTRIBUTE));
+		// size * 4, size * 6
+		mesh = new Mesh(
+				BufferUsage.DYNAMIC, BufferUsage.DYNAMIC,
+				VxAttrib.of(2, GL_FLOAT),
+				VxAttrib.of(4, GL_UNSIGNED_BYTE, /*normalize*/true),
+				VxAttrib.of(2, GL_FLOAT)
+		);
 
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		vertices = new float[size * Sprite.SPRITE_SIZE];
+		vertices = MemoryUtil.memAllocFloat(size * Sprite.SPRITE_SIZE);
+		vertices.position(0);
 
 		int len = size * 6;
 		short[] indices = new short[len];
@@ -142,16 +127,10 @@ public class SpriteBatch implements Batch {
 			indices[i + 4] = (short) (j + 3);
 			indices[i + 5] = j;
 		}
-		mesh.setIndices(indices);
+		mesh.uploadIndices(indices);
 
 		shader = createDefaultShader();
-		customShader = defaultShader;
-
-		// Pre bind the mesh to force the upload of indices data.
-		if(vertexDataType != VertexDataType.VertexArray) {
-			mesh.getIndexData().bind();
-			mesh.getIndexData().unbind();
-		}
+		// customShader = defaultShader;
 	}
 
 	public static class SpriteBatchShader extends Shader {
@@ -264,11 +243,9 @@ public class SpriteBatch implements Batch {
 	                 float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		if(texture != lastTexture)
 			switchTexture(texture);
-		else if(idx == vertices.length) //
+		else if(idx == vertices.limit()) //
 			flush();
 
 		// bottom left and top right corner points relative to origin
@@ -363,31 +340,30 @@ public class SpriteBatch implements Batch {
 		}
 
 		float color = this.colorPacked;
-		int idx = this.idx;
-		vertices[idx] = x1;
-		vertices[idx + 1] = y1;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u;
-		vertices[idx + 4] = v;
+		vertices.put(x1);
+		vertices.put(y1);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v);
 
-		vertices[idx + 5] = x2;
-		vertices[idx + 6] = y2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u;
-		vertices[idx + 9] = v2;
+		vertices.put(x2);
+		vertices.put(y2);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v2);
 
-		vertices[idx + 10] = x3;
-		vertices[idx + 11] = y3;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u2;
-		vertices[idx + 14] = v2;
+		vertices.put(x3);
+		vertices.put(y3);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 15] = x4;
-		vertices[idx + 16] = y4;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u2;
-		vertices[idx + 19] = v;
-		this.idx = idx + 20;
+		vertices.put(x4);
+		vertices.put(y4);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v);
+		this.idx += 20;
 	}
 
 	@Override
@@ -395,11 +371,9 @@ public class SpriteBatch implements Batch {
 	                 int srcHeight, boolean flipX, boolean flipY) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		if(texture != lastTexture)
 			switchTexture(texture);
-		else if(idx == vertices.length) //
+		else if(idx == vertices.limit())
 			flush();
 
 		float u = srcX * invTexWidth;
@@ -423,29 +397,29 @@ public class SpriteBatch implements Batch {
 
 		float color = this.colorPacked;
 		int idx = this.idx;
-		vertices[idx] = x;
-		vertices[idx + 1] = y;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u;
-		vertices[idx + 4] = v;
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v);
 
-		vertices[idx + 5] = x;
-		vertices[idx + 6] = fy2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u;
-		vertices[idx + 9] = v2;
+		vertices.put(x);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v2);
 
-		vertices[idx + 10] = fx2;
-		vertices[idx + 11] = fy2;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u2;
-		vertices[idx + 14] = v2;
+		vertices.put(fx2);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 15] = fx2;
-		vertices[idx + 16] = y;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u2;
-		vertices[idx + 19] = v;
+		vertices.put(fx2);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v);
 		this.idx = idx + 20;
 	}
 
@@ -453,11 +427,9 @@ public class SpriteBatch implements Batch {
 	public void draw(Texture texture, float x, float y, int srcX, int srcY, int srcWidth, int srcHeight) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		if(texture != lastTexture)
 			switchTexture(texture);
-		else if(idx == vertices.length) //
+		else if(idx == vertices.limit()) //
 			flush();
 
 		final float u = srcX * invTexWidth;
@@ -469,29 +441,29 @@ public class SpriteBatch implements Batch {
 
 		float color = this.colorPacked;
 		int idx = this.idx;
-		vertices[idx] = x;
-		vertices[idx + 1] = y;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u;
-		vertices[idx + 4] = v;
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v);
 
-		vertices[idx + 5] = x;
-		vertices[idx + 6] = fy2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u;
-		vertices[idx + 9] = v2;
+		vertices.put(x);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v2);
 
-		vertices[idx + 10] = fx2;
-		vertices[idx + 11] = fy2;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u2;
-		vertices[idx + 14] = v2;
+		vertices.put(fx2);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 15] = fx2;
-		vertices[idx + 16] = y;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u2;
-		vertices[idx + 19] = v;
+		vertices.put(fx2);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v);
 		this.idx = idx + 20;
 	}
 
@@ -499,11 +471,9 @@ public class SpriteBatch implements Batch {
 	public void draw(Texture texture, float x, float y, float width, float height, float u, float v, float u2, float v2) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		if(texture != lastTexture)
 			switchTexture(texture);
-		else if(idx == vertices.length) //
+		else if(idx == vertices.limit()) //
 			flush();
 
 		final float fx2 = x + width;
@@ -511,29 +481,29 @@ public class SpriteBatch implements Batch {
 
 		float color = this.colorPacked;
 		int idx = this.idx;
-		vertices[idx] = x;
-		vertices[idx + 1] = y;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u;
-		vertices[idx + 4] = v;
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v);
 
-		vertices[idx + 5] = x;
-		vertices[idx + 6] = fy2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u;
-		vertices[idx + 9] = v2;
+		vertices.put(x);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v2);
 
-		vertices[idx + 10] = fx2;
-		vertices[idx + 11] = fy2;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u2;
-		vertices[idx + 14] = v2;
+		vertices.put(fx2);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 15] = fx2;
-		vertices[idx + 16] = y;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u2;
-		vertices[idx + 19] = v;
+		vertices.put(fx2);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v);
 		this.idx = idx + 20;
 	}
 
@@ -546,11 +516,9 @@ public class SpriteBatch implements Batch {
 	public void draw(Texture texture, float x, float y, float width, float height) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		if(texture != lastTexture)
 			switchTexture(texture);
-		else if(idx == vertices.length) //
+		else if(idx == vertices.limit()) //
 			flush();
 
 		final float fx2 = x + width;
@@ -562,37 +530,38 @@ public class SpriteBatch implements Batch {
 
 		float color = this.colorPacked;
 		int idx = this.idx;
-		vertices[idx] = x;
-		vertices[idx + 1] = y;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u;
-		vertices[idx + 4] = v;
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v);
 
-		vertices[idx + 5] = x;
-		vertices[idx + 6] = fy2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u;
-		vertices[idx + 9] = v2;
+		vertices.put(x);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v2);
 
-		vertices[idx + 10] = fx2;
-		vertices[idx + 11] = fy2;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u2;
-		vertices[idx + 14] = v2;
+		vertices.put(fx2);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 15] = fx2;
-		vertices[idx + 16] = y;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u2;
-		vertices[idx + 19] = v;
+		vertices.put(fx2);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v);
 		this.idx = idx + 20;
 	}
 
 	@Override
+	// FIXME celestialgdx
 	public void draw(Texture texture, float[] spriteVertices, int offset, int count) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		int verticesLength = vertices.length;
+		int verticesLength = vertices.limit();
 		int remainingVertices = verticesLength;
 		if(texture != lastTexture)
 			switchTexture(texture);
@@ -627,12 +596,10 @@ public class SpriteBatch implements Batch {
 	public void draw(TextureRegion region, float x, float y, float width, float height) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		Texture texture = region.texture;
 		if(texture != lastTexture) {
 			switchTexture(texture);
-		} else if(idx == vertices.length) //
+		} else if(idx == vertices.limit()) //
 			flush();
 
 		final float fx2 = x + width;
@@ -644,29 +611,29 @@ public class SpriteBatch implements Batch {
 
 		float color = this.colorPacked;
 		int idx = this.idx;
-		vertices[idx] = x;
-		vertices[idx + 1] = y;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u;
-		vertices[idx + 4] = v;
+		vertices.put(x);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v);
 
-		vertices[idx + 5] = x;
-		vertices[idx + 6] = fy2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u;
-		vertices[idx + 9] = v2;
+		vertices.put(x);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v2);
 
-		vertices[idx + 10] = fx2;
-		vertices[idx + 11] = fy2;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u2;
-		vertices[idx + 14] = v2;
+		vertices.put(fx2);
+		vertices.put(fy2);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 15] = fx2;
-		vertices[idx + 16] = y;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u2;
-		vertices[idx + 19] = v;
+		vertices.put(fx2);
+		vertices.put(y);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v);
 		this.idx = idx + 20;
 	}
 
@@ -675,12 +642,10 @@ public class SpriteBatch implements Batch {
 	                 float scaleX, float scaleY, float rotation) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		Texture texture = region.texture;
 		if(texture != lastTexture) {
 			switchTexture(texture);
-		} else if(idx == vertices.length) //
+		} else if(idx == vertices.limit()) //
 			flush();
 
 		// bottom left and top right corner points relative to origin
@@ -764,29 +729,29 @@ public class SpriteBatch implements Batch {
 
 		float color = this.colorPacked;
 		int idx = this.idx;
-		vertices[idx] = x1;
-		vertices[idx + 1] = y1;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u;
-		vertices[idx + 4] = v;
+		vertices.put(x1);
+		vertices.put(y1);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v);
 
-		vertices[idx + 5] = x2;
-		vertices[idx + 6] = y2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u;
-		vertices[idx + 9] = v2;
+		vertices.put(x2);
+		vertices.put(y2);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v2);
 
-		vertices[idx + 10] = x3;
-		vertices[idx + 11] = y3;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u2;
-		vertices[idx + 14] = v2;
+		vertices.put(x3);
+		vertices.put(y3);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 15] = x4;
-		vertices[idx + 16] = y4;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u2;
-		vertices[idx + 19] = v;
+		vertices.put(x4);
+		vertices.put(y4);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v);
 		this.idx = idx + 20;
 	}
 
@@ -795,12 +760,10 @@ public class SpriteBatch implements Batch {
 	                 float scaleX, float scaleY, float rotation, boolean clockwise) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		Texture texture = region.texture;
 		if(texture != lastTexture) {
 			switchTexture(texture);
-		} else if(idx == vertices.length) //
+		} else if(idx == vertices.limit()) //
 			flush();
 
 		// bottom left and top right corner points relative to origin
@@ -900,29 +863,29 @@ public class SpriteBatch implements Batch {
 
 		float color = this.colorPacked;
 		int idx = this.idx;
-		vertices[idx] = x1;
-		vertices[idx + 1] = y1;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u1;
-		vertices[idx + 4] = v1;
+		vertices.put(x1);
+		vertices.put(y1);
+		vertices.put(color);
+		vertices.put(u1);
+		vertices.put(v1);
 
-		vertices[idx + 5] = x2;
-		vertices[idx + 6] = y2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u2;
-		vertices[idx + 9] = v2;
+		vertices.put(x2);
+		vertices.put(y2);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 10] = x3;
-		vertices[idx + 11] = y3;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u3;
-		vertices[idx + 14] = v3;
+		vertices.put(x3);
+		vertices.put(y3);
+		vertices.put(color);
+		vertices.put(u3);
+		vertices.put(v3);
 
-		vertices[idx + 15] = x4;
-		vertices[idx + 16] = y4;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u4;
-		vertices[idx + 19] = v4;
+		vertices.put(x4);
+		vertices.put(y4);
+		vertices.put(color);
+		vertices.put(u4);
+		vertices.put(v4);
 		this.idx = idx + 20;
 	}
 
@@ -930,12 +893,10 @@ public class SpriteBatch implements Batch {
 	public void draw(TextureRegion region, float width, float height, Affine2 transform) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
-		float[] vertices = this.vertices;
-
 		Texture texture = region.texture;
 		if(texture != lastTexture) {
 			switchTexture(texture);
-		} else if(idx == vertices.length) {
+		} else if(idx == vertices.limit()) {
 			flush();
 		}
 
@@ -956,29 +917,29 @@ public class SpriteBatch implements Batch {
 
 		float color = this.colorPacked;
 		int idx = this.idx;
-		vertices[idx] = x1;
-		vertices[idx + 1] = y1;
-		vertices[idx + 2] = color;
-		vertices[idx + 3] = u;
-		vertices[idx + 4] = v;
+		vertices.put(x1);
+		vertices.put(y1);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v);
 
-		vertices[idx + 5] = x2;
-		vertices[idx + 6] = y2;
-		vertices[idx + 7] = color;
-		vertices[idx + 8] = u;
-		vertices[idx + 9] = v2;
+		vertices.put(x2);
+		vertices.put(y2);
+		vertices.put(color);
+		vertices.put(u);
+		vertices.put(v2);
 
-		vertices[idx + 10] = x3;
-		vertices[idx + 11] = y3;
-		vertices[idx + 12] = color;
-		vertices[idx + 13] = u2;
-		vertices[idx + 14] = v2;
+		vertices.put(x3);
+		vertices.put(y3);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v2);
 
-		vertices[idx + 15] = x4;
-		vertices[idx + 16] = y4;
-		vertices[idx + 17] = color;
-		vertices[idx + 18] = u2;
-		vertices[idx + 19] = v;
+		vertices.put(x4);
+		vertices.put(y4);
+		vertices.put(color);
+		vertices.put(u2);
+		vertices.put(v);
 		this.idx = idx + 20;
 	}
 
@@ -988,18 +949,18 @@ public class SpriteBatch implements Batch {
 
 		renderCalls++;
 		totalRenderCalls++;
+
+		vertices.position(0);
 		int spritesInBatch = idx / 20;
 		int count = spritesInBatch * 6;
 
 		lastTexture.bind();
-		mesh.setVertices(vertices, 0, idx);
 
-		// Only upload indices for the vertex array type
-		if(currentDataType == VertexDataType.VertexArray) {
-			Buffer indicesBuffer = mesh.getIndicesBuffer(true);
-			indicesBuffer.position(0);
-			indicesBuffer.limit(count);
-		}
+		mesh.bind();
+
+		vertices.limit(idx);
+		mesh.uploadVertices(vertices);
+		vertices.limit(vertices.capacity());
 
 		if(blendingDisabled) {
 			Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -1009,7 +970,12 @@ public class SpriteBatch implements Batch {
 				Gdx.gl.glBlendFuncSeparate(blendSrcFunc, blendDstFunc, blendSrcFuncAlpha, blendDstFuncAlpha);
 		}
 
-		mesh.render(customShader != null ? customShader : shader, GL20.GL_TRIANGLES, 0, count);
+		if(customShader != null) {
+			customShader.bind();
+		} else {
+			shader.bind();
+		}
+		mesh.render(GL_TRIANGLES, count);
 
 		idx = 0;
 	}

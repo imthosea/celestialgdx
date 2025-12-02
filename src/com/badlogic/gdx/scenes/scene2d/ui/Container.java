@@ -2,7 +2,6 @@ package com.badlogic.gdx.scenes.scene2d.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -775,24 +774,4 @@ public class Container<T extends Actor> extends WidgetGroup {
 		return super.hit(x, y, touchable);
 	}
 
-	public void drawDebug(ShapeRenderer shapes) {
-		validate();
-		if(isTransform()) {
-			applyTransform(shapes, computeTransform());
-			if(clip) {
-				shapes.flush();
-				float padLeft = this.padLeft.get(this), padBottom = this.padBottom.get(this);
-				boolean draw = background == null ? clipBegin(0, 0, getWidth(), getHeight())
-						: clipBegin(padLeft, padBottom, getWidth() - padLeft - padRight.get(this),
-						getHeight() - padBottom - padTop.get(this));
-				if(draw) {
-					drawDebugChildren(shapes);
-					clipEnd();
-				}
-			} else
-				drawDebugChildren(shapes);
-			resetTransform(shapes);
-		} else
-			super.drawDebug(shapes);
-	}
 }

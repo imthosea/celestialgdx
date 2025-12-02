@@ -18,8 +18,6 @@ package com.badlogic.gdx.scenes.scene2d.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -1244,51 +1242,6 @@ public class Table extends WidgetGroup {
 		rect.color = color;
 		rect.set(x, y, w, h);
 		debugRects.add(rect);
-	}
-
-	public void drawDebug(ShapeRenderer shapes) {
-		if(isTransform()) {
-			applyTransform(shapes, computeTransform());
-			drawDebugRects(shapes);
-			if(clip) {
-				shapes.flush();
-				float x = 0, y = 0, width = getWidth(), height = getHeight();
-				if(background != null) {
-					x = padLeft.get(this);
-					y = padBottom.get(this);
-					width -= x + padRight.get(this);
-					height -= y + padTop.get(this);
-				}
-				if(clipBegin(x, y, width, height)) {
-					drawDebugChildren(shapes);
-					clipEnd();
-				}
-			} else
-				drawDebugChildren(shapes);
-			resetTransform(shapes);
-		} else {
-			drawDebugRects(shapes);
-			super.drawDebug(shapes);
-		}
-	}
-
-	protected void drawDebugBounds(ShapeRenderer shapes) {
-	}
-
-	private void drawDebugRects(ShapeRenderer shapes) {
-		if(debugRects == null || !getDebug()) return;
-		shapes.set(ShapeType.Line);
-		if(getStage() != null) shapes.setColor(getStage().getDebugColor());
-		float x = 0, y = 0;
-		if(!isTransform()) {
-			x = getX();
-			y = getY();
-		}
-		for(int i = 0, n = debugRects.size; i < n; i++) {
-			DebugRect debugRect = debugRects.get(i);
-			shapes.setColor(debugRect.color);
-			shapes.rect(x + debugRect.x, y + debugRect.y, debugRect.width, debugRect.height);
-		}
 	}
 
 	/** @return The skin that was passed to this table in its constructor, or null if none was given. */
