@@ -16,8 +16,6 @@
 
 package com.badlogic.gdx.scenes.scene2d.ui;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
@@ -579,12 +577,4 @@ public class HorizontalGroup extends WidgetGroup {
 		return this;
 	}
 
-	protected void drawDebugBounds(ShapeRenderer shapes) {
-		super.drawDebugBounds(shapes);
-		if(!getDebug()) return;
-		shapes.set(ShapeType.Line);
-		if(getStage() != null) shapes.setColor(getStage().getDebugColor());
-		shapes.rect(getX() + padLeft, getY() + padBottom, getOriginX(), getOriginY(), getWidth() - padLeft - padRight,
-				getHeight() - padBottom - padTop, getScaleX(), getScaleY(), getRotation());
-	}
 }

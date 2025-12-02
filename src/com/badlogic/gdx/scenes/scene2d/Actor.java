@@ -18,8 +18,6 @@ package com.badlogic.gdx.scenes.scene2d;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -31,10 +29,7 @@ import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.Pools;
 import org.jetbrains.annotations.Nullable;
 
-import static com.badlogic.gdx.utils.Align.bottom;
-import static com.badlogic.gdx.utils.Align.left;
-import static com.badlogic.gdx.utils.Align.right;
-import static com.badlogic.gdx.utils.Align.top;
+import static com.badlogic.gdx.utils.Align.*;
 
 /**
  * 2D scene graph node. An actor has a position, rectangular size, origin, scale, rotation, Z index, and color. The position
@@ -996,19 +991,6 @@ public class Actor {
 	public Vector2 localToActorCoordinates(Actor actor, Vector2 localCoords) {
 		localToStageCoordinates(localCoords);
 		return actor.stageToLocalCoordinates(localCoords);
-	}
-
-	/** Draws this actor's debug lines if {@link #getDebug()} is true. */
-	public void drawDebug(ShapeRenderer shapes) {
-		drawDebugBounds(shapes);
-	}
-
-	/** Draws a rectangle for the bounds of this actor if {@link #getDebug()} is true. */
-	protected void drawDebugBounds(ShapeRenderer shapes) {
-		if(!debug) return;
-		shapes.set(ShapeType.Line);
-		if(stage != null) shapes.setColor(stage.getDebugColor());
-		shapes.rect(x, y, originX, originY, width, height, scaleX, scaleY, rotation);
 	}
 
 	/** If true, {@link #drawDebug(ShapeRenderer)} will be called for this actor. */

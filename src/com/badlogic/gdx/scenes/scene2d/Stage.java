@@ -23,7 +23,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -80,7 +79,6 @@ public class Stage implements Disposable {
 	private @Nullable Actor keyboardFocus, scrollFocus;
 	final SnapshotArray<TouchFocus> touchFocuses = new SnapshotArray<>(true, 4, TouchFocus[]::new);
 
-	private ShapeRenderer debugShapes;
 	private boolean debugInvisible, debugAll, debugUnderMouse, debugParentUnderMouse;
 	private Debug debugTableUnderMouse = Debug.none;
 	private final Color debugColor = new Color(0, 1, 0, 0.85f);
@@ -843,11 +841,7 @@ public class Stage implements Disposable {
 	 * @see ScissorStack#calculateScissors(Camera, float, float, float, float, Matrix4, Rectangle, Rectangle)
 	 */
 	public void calculateScissors(Rectangle localRect, Rectangle scissorRect) {
-		Matrix4 transformMatrix;
-		if(debugShapes != null && debugShapes.isDrawing())
-			transformMatrix = debugShapes.getTransformMatrix();
-		else
-			transformMatrix = batch.getTransformMatrix();
+		Matrix4 transformMatrix = batch.getTransformMatrix();
 		viewport.calculateScissors(transformMatrix, localRect, scissorRect);
 	}
 
@@ -924,7 +918,6 @@ public class Stage implements Disposable {
 	public void dispose() {
 		clear();
 		if(ownsBatch) batch.dispose();
-		if(debugShapes != null) debugShapes.dispose();
 	}
 
 	/** Check if screen coordinates are inside the viewport's screen area. */

@@ -70,6 +70,7 @@ Additionally, it's far from production ready as of now, though this may change i
   - Inputs no longer has its own input constants. It will directly pass GLFW key inputs instead (i.e. GLFW.GLFW_KEY_E)
   - To set callbacks or query a key, use a window's InputController (available by window.input)
 - Shaders are now abstract classes that use objects for their uniforms. See SpriteBatch shader for an example (proper docs will be written eventually)
+- Mesh rework (TODO write about this)
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader

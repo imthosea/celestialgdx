@@ -18,7 +18,6 @@ package com.badlogic.gdx.scenes.scene2d.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -999,17 +998,6 @@ public class ScrollPane extends WidgetGroup implements Styleable<ScrollPane.Scro
 	 */
 	public void setVariableSizeKnobs(boolean variableSizeKnobs) {
 		this.variableSizeKnobs = variableSizeKnobs;
-	}
-
-	public void drawDebug(ShapeRenderer shapes) {
-		drawDebugBounds(shapes);
-		applyTransform(shapes, computeTransform());
-		if(clipBegin(actorArea.x, actorArea.y, actorArea.width, actorArea.height)) {
-			drawDebugChildren(shapes);
-			shapes.flush();
-			clipEnd();
-		}
-		resetTransform(shapes);
 	}
 
 	/**
