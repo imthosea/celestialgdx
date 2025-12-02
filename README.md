@@ -135,6 +135,8 @@ Additionally, it's far from production ready as of now, though this may change i
 - Many more utility classes
 - DelaunayTriangulator
 - DistanceFieldFont
+- Cubemaps
+- Screen
 
 ### Example initialization
 ```java
