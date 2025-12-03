@@ -51,16 +51,10 @@ public final class Mesh implements Disposable {
 
 	private int eboType;
 
-	/**
-	 * Create a new VAO with no data
-	 * @param vertUsage expected usage for vertex buffer
-	 * @param eboUsage expected usage for index buffer. set to null to have no index buffer
-	 * @param attribs attributes
-	 */
-	public Mesh(
+	private Mesh(
 			@NotNull Mesh.BufferUsage vertUsage,
 			@Nullable Mesh.BufferUsage eboUsage,
-			VxAttrib... attribs
+			VxAttrib[] attribs
 	) {
 		this.vaoHandle = glGenVertexArrays();
 		this.vboHandle = glGenBuffers();
@@ -91,6 +85,20 @@ public final class Mesh implements Disposable {
 
 			currentSize += attrib.size;
 		}
+	}
+
+	/**
+	 * Create a new VAO with no data
+	 * @param vertUsage expected usage for vertex buffer. required
+	 * @param eboUsage expected usage for index buffer. set to null to have no index buffer
+	 * @param attribs attributes
+	 */
+	public static Mesh create(
+			@NotNull Mesh.BufferUsage vertUsage,
+			@Nullable Mesh.BufferUsage eboUsage,
+			VxAttrib... attribs
+	) {
+		return new Mesh(vertUsage, eboUsage, attribs);
 	}
 
 	/**
