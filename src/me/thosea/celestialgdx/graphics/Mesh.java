@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL33;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
@@ -15,6 +16,27 @@ import java.util.Objects;
 
 import static org.lwjgl.opengl.GL33.*;
 
+/**
+ * An OpenGL VAO. Upon creation by {@link #create},
+ * a VAO bound to the specified vertex attributes is created with an empty vertex and index buffer.
+ * <p>
+ * To upload a vertex buffer, use a variant of {@link #uploadVertices}.
+ * Note that using off-heap nio {@link Buffer}s has significantly faster transfer speed than arrays.
+ * Calling {@link #bind} is not required prior.
+ * </p>
+ * <p>
+ * Creating an index buffer can be skipped entirely by passing null as the second parameter
+ * to {@link #create}. If one is present, upload to it using {@link #uploadIndices}.
+ * You must call {@link #bind} before.
+ * </p>
+ * Render by calling {@link #bind} then {@link #render}.
+ * <p>
+ * Since CelestialGDX doesn't support mobile where the OpenGL context can be lost mid-runtime,
+ * this class doesn't need to store the last uploaded buffer or reload it automatically.
+ * </p>
+ * @author thosea
+ * @see <a href="https://wikis.khronos.org/opengl/Vertex_Specification">Vertex Specification - OpenGL wiki</a>
+ */
 public final class Mesh implements Disposable {
 	public final int vaoHandle;
 
@@ -102,7 +124,7 @@ public final class Mesh implements Disposable {
 	}
 
 	/**
-	 * Be sure to call this before calling {@link #uploadVertices}, {@link #uploadIndices} or {@link #render}
+	 * Be sure to call this before calling {@link #uploadIndices} or {@link #render}
 	 */
 	public void bind() {
 		glBindVertexArray(this.vaoHandle);
