@@ -104,7 +104,7 @@ public class SpriteBatch implements Batch {
 		if(size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
 		// size * 4, size * 6
-		mesh = new Mesh(
+		mesh = Mesh.create(
 				BufferUsage.DYNAMIC, BufferUsage.DYNAMIC,
 				VxAttrib.of(2, GL_FLOAT),
 				VxAttrib.of(4, GL_UNSIGNED_BYTE, /*normalize*/true),
