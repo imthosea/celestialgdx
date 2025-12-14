@@ -74,6 +74,17 @@ public final class Mesh implements Disposable {
 	private int eboType;
 
 	private Mesh(
+			int vaoHandle, int vboHandle, int eboHandle,
+			@NotNull BufferUsage vertUsage, @Nullable BufferUsage eboUsage
+	) {
+		this.vaoHandle = vaoHandle;
+		this.vboHandle = vboHandle;
+		this.eboHandle = eboHandle;
+		this.vertUsage = Objects.requireNonNull(vertUsage);
+		this.eboUsage = eboUsage;
+	}
+
+	private Mesh(
 			@NotNull Mesh.BufferUsage vertUsage,
 			@Nullable Mesh.BufferUsage eboUsage,
 			VxAttrib[] attribs
@@ -107,20 +118,6 @@ public final class Mesh implements Disposable {
 
 			currentSize += attrib.size;
 		}
-	}
-
-	/**
-	 * Create a new VAO with no data
-	 * @param vertUsage expected usage for vertex buffer. required
-	 * @param eboUsage expected usage for index buffer. set to null to have no index buffer
-	 * @param attribs attributes
-	 */
-	public static Mesh create(
-			@NotNull Mesh.BufferUsage vertUsage,
-			@Nullable Mesh.BufferUsage eboUsage,
-			VxAttrib... attribs
-	) {
-		return new Mesh(vertUsage, eboUsage, attribs);
 	}
 
 	/**
@@ -225,6 +222,62 @@ public final class Mesh implements Disposable {
 		glDeleteVertexArrays(this.vaoHandle);
 		glDeleteBuffers(this.vboHandle);
 		if(hasIndexBuffer()) glDeleteBuffers(this.eboHandle);
+	}
+
+	/**
+	 * Create a new VAO, VBO and optionally EBO with no data
+	 * @param vertUsage expected usage for vertex buffer. required
+	 * @param eboUsage expected usage for index buffer. set to null to have no index buffer
+	 * @param attribs attributes
+	 */
+	public static Mesh create(
+			@NotNull Mesh.BufferUsage vertUsage,
+			@Nullable Mesh.BufferUsage eboUsage,
+			VxAttrib... attribs
+	) {
+		return new Mesh(vertUsage, eboUsage, attribs);
+	}
+
+	/**
+	 * Create a new VAO and VBO with no data and no index buffer
+	 * @param vertUsage expected usage for vertex buffer. required
+	 * @param attribs attributes
+	 */
+	public static Mesh create(
+			@NotNull Mesh.BufferUsage vertUsage,
+			VxAttrib... attribs
+	) {
+		return new Mesh(vertUsage, null, attribs);
+	}
+
+	/**
+	 * Wraps an existing VAO, VBO and optionally EBO.
+	 * @param vaoHandle handle to the existing VAO
+	 * @param vboHandle handle to the existing VBO
+	 * @param eboHandle handle to the existing EBO. can be -1 if there is none.
+	 * @param vertUsage expected usage of the vertex buffer. required.
+	 * @param eboUsage expected usage of the index buffer. optional.
+	 * @return wrapped mesh
+	 */
+	public static Mesh wrap(
+			int vaoHandle, int vboHandle, int eboHandle,
+			BufferUsage vertUsage, BufferUsage eboUsage
+	) {
+		return new Mesh(vaoHandle, vboHandle, eboHandle, vertUsage, eboUsage);
+	}
+
+	/**
+	 * Wraps an existing VAO and VBO but not an EBO.
+	 * @param vaoHandle handle to the existing VAO
+	 * @param vboHandle handle to the existing VBO
+	 * @param vertUsage expected usage of the vertex buffer
+	 * @return wrapped mesh
+	 */
+	public static Mesh wrap(
+			int vaoHandle, int vboHandle,
+			BufferUsage vertUsage
+	) {
+		return new Mesh(vaoHandle, vboHandle, -1, vertUsage, null);
 	}
 
 	public static final class VxAttrib {
