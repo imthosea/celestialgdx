@@ -19,6 +19,7 @@ import static org.lwjgl.opengl.GL33.*;
 /**
  * An OpenGL VAO. Upon creation by {@link #create},
  * a VAO bound to the specified vertex attributes is created with an empty vertex and index buffer.
+ * Both {@link #create} and {@link #wrap} will automatically bind the mesh.
  * <p>
  * To upload a vertex buffer, use a variant of {@link #uploadVertices}.
  * Note that using off-heap nio {@link Buffer}s has significantly faster transfer speed than arrays.
@@ -82,6 +83,13 @@ public final class Mesh implements Disposable {
 		this.eboHandle = eboHandle;
 		this.vertUsage = Objects.requireNonNull(vertUsage);
 		this.eboUsage = eboUsage;
+
+		glBindVertexArray(vaoHandle);
+		glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
+
+		if(eboUsage != null) {
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboHandle);
+		}
 	}
 
 	private Mesh(
