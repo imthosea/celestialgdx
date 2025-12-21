@@ -1,8 +1,8 @@
 ## CelestialGDX
 
-A highly opinionated fork of LibGDX to cut down on stuff and improve maintainability.
+A highly opinionated ABI-incompatible rewrite of LibGDX to cut down on stuff and improve maintainability.
 
-**This fork is completely undocumented, untested outside of my specific usecase, breaks ABI in more ways than I can count, and doesn't follow the upstream code style. Please don't use it.**  
+**This fork is currently undocumented, untested outside of my specific usecase, breaks ABI in more ways than I can count, and doesn't follow the upstream code style. Please don't use it.**  
 Additionally, it's far from production ready as of now, though this may change is the future.
 
 ### Changes
@@ -186,25 +186,24 @@ gdx.terminate();
 ```
 
 ### Notes
-- For gdx-controllers, bypass Controllers and create JamepadControllerManager directly instead
-- The Gdx class remains for compatibility, but please don't use them - mutable static constants are questionable for
-  maintainability. Use the function constructor in Lwjgl3Application and get the window to initialize your constants
 - GDX GL classes are deprecated. Use GL classes from GLFW instead (`import static org.lwjgl.opengl.GL33.*;`)
+- Many more classes are deprecated and will be removed but are currently here because other things need to be reworked first
 
-### TODO maybe
-- rewrite Sync (fps cap) implementation
-- remove use of deprecated code
-- remove reflection entirely
-- remove Json class (it is a MESS) in favor of Jankson
+### Very Rough Roadmap
+- general code cleanup, and remove more stuff
+- pixmap/texture rework (in the works now)
+- another asset manager rewrite since I had a better idea
+- extensible batching rework
+- optimize tiled renderer
+- new UI framework
+- sequencing extension
+
+### TODO eventually
+- add an FPS capping method
 - unspaghetify TextureAtlas
-- remove more useless stdlib replication classes
-- make TextureRegion and its subclasses immutable
-- try CachedThreadPool instead of virtual threads for asset loader
-- optimize tiled renderer by turning the entire layer into one mesh
 - support angle with GLES3
+- proper wikis and docs
 - finish replacing internal code to directly use LWJGL and remove all libgdx GL classes
-
-This isn't a full code cleanup because I want to make my game. I'm only modifying stuff that affects me.
 
 ### Setup
 
@@ -242,6 +241,6 @@ dependencies {
 ```
 
 </details>
-Currently, the version is 1.0.0-SNAPSHOT.<br><br>
+Currently, the version is 1.0.0.<br><br>
 
 *This repo was initially made in late July 2025, but was deleted and reuploaded in November so it'd be disconnected from the fork network.*
