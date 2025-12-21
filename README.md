@@ -71,6 +71,8 @@ Additionally, it's far from production ready as of now, though this may change i
   - To set callbacks or query a key, use a window's InputController (available by window.input)
 - Shaders are now abstract classes that use objects for their uniforms. See SpriteBatch shader for an example (proper docs will be written eventually)
 - Mesh rework (TODO write about this)
+- Scene2D is gone for now to avoid having to make other reworks work with it to compile
+  - A new Kotlin-based UI system will be written to take its place when I get around to it
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader
@@ -137,6 +139,10 @@ Additionally, it's far from production ready as of now, though this may change i
 - DistanceFieldFont
 - Cubemaps
 - Screen
+- Scene2D
+- GlpyhLayout
+- BitmapFont
+- FreeType module
 
 ### Example initialization
 ```java
@@ -213,24 +219,8 @@ maven {
 ```
 
 ```kotlin
-configurations.all {
-    // celestialgdx bundles the LWJGL backend
-    exclude(group = "com.badlogicgames.gdx", module = "gdx-backend-lwjgl3")
-    
-    val version = "1.0.0-SNAPSHOT"
-	// if using version catalogue:
-	// val version = libs.versions.celestialgdx.get()
-    
-	resolutionStrategy.dependencySubstitution {
-		fun sub(artifact: String) = substitute(
-			module("com.badlogicgames.gdx:$artifact")
-		).using(
-			module("me.thosea.celestialgdx:$artifact:$version")
-		).because("fork")
-
-		sub("gdx")
-		sub("gdx-freetype")
-    }
+dependencies {
+  implementation("me.thosea.celestialgdx:gdx:1.0.0")
 }
 ```
 
@@ -246,19 +236,8 @@ maven {
 ```
 
 ```groovy
-configurations.all {
-    val version = "1.0.0-SNAPSHOT"
-
-    // celestialgdx bundles the LWJGL backend
-    exclude(group: "com.badlogicgames.gdx", module: "gdx-backend-lwjgl3")
-
-    resolutionStrategy.dependencySubstitution {
-        def sub = { String artifact ->
-            substitute module("com.badlogicgames.gdx:$artifact") using module("me.thosea.celestialgdx:$artifact:$version") because "fork"
-        }
-        sub("gdx")
-        sub("gdx-freetype")
-    }
+dependencies {
+  implementation "me.thosea.celestialgdx:gdx:1.0.0"
 }
 ```
 

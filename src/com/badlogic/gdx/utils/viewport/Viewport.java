@@ -19,11 +19,9 @@ package com.badlogic.gdx.utils.viewport;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 
 import static org.lwjgl.opengl.GL33.glViewport;
 
@@ -119,11 +117,6 @@ public abstract class Viewport {
 	/** @see Camera#getPickRay(float, float, float, float, float, float) */
 	public Ray getPickRay(float touchX, float touchY) {
 		return camera.getPickRay(touchX, touchY, this.screenX, this.screenY, screenWidth, screenHeight);
-	}
-
-	/** @see ScissorStack#calculateScissors(Camera, float, float, float, float, Matrix4, Rectangle, Rectangle) */
-	public void calculateScissors(Matrix4 batchTransform, Rectangle area, Rectangle scissor) {
-		ScissorStack.calculateScissors(camera, screenX, screenY, screenWidth, screenHeight, batchTransform, area, scissor);
 	}
 
 	/**
