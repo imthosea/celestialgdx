@@ -96,7 +96,7 @@ public class CelestialGdx implements Application {
 	/**
 	 * Be sure to call this every frame!
 	 */
-	public void pollEvents() {
+	public void poll() {
 		glfwPollEvents();
 		pollRunnables();
 	}
