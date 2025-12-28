@@ -16,8 +16,7 @@
 
 package me.thosea.celestialgdx.maps.layers;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import me.thosea.celestialgdx.image.TextureRegion;
 import me.thosea.celestialgdx.maps.TiledMap;
 
 public final class ImageLayer extends MapLayer {
@@ -42,19 +41,8 @@ public final class ImageLayer extends MapLayer {
 	 * @return boolean
 	 */
 	private boolean hasTransparencySupport(TextureRegion region) {
-		Pixmap.Format format = region.getTexture().getTextureData().getFormat();
-		return switch(format) {
-			case Alpha:
-			case LuminanceAlpha:
-			case RGBA4444:
-			case RGBA8888:
-				yield true;
-			case null:
-			default:
-				yield false;
-		};
+		return true; // TODO celestialgdx
 	}
-
 
 	public TextureRegion getTexture() {
 		return texture;

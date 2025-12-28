@@ -17,6 +17,7 @@
 package me.thosea.celestialgdx.input;
 
 import com.badlogic.gdx.utils.Disposable;
+import me.thosea.celestialgdx.cursor.CursorState;
 import me.thosea.celestialgdx.window.Window;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;

@@ -17,13 +17,13 @@
 package me.thosea.celestialgdx.window;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Cursor;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import me.thosea.celestialgdx.core.CelestialGdx;
+import me.thosea.celestialgdx.cursor.Cursor;
+import me.thosea.celestialgdx.image.PixelFormat;
+import me.thosea.celestialgdx.image.Pixmap;
 import me.thosea.celestialgdx.input.InputController;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
@@ -33,6 +33,7 @@ import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 import org.lwjgl.glfw.GLFWWindowMaximizeCallback;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.Platform;
 
 import java.util.function.Consumer;
@@ -100,6 +101,10 @@ public class Window implements Disposable {
 
 	public void bind() {
 		glfwMakeContextCurrent(this.handle);
+	}
+
+	public void setCursor(Cursor cursor) {
+		glfwSetCursor(this.handle, cursor.getHandle());
 	}
 
 	private static long createWindow(WindowConfig config) {
@@ -232,45 +237,36 @@ public class Window implements Disposable {
 	}
 
 	/**
-	 * Sets the icon that will be used in the window's title bar. Has no effect in macOS, which doesn't use window icons.
-	 * @param images One or more images. The one closest to the system's desired size will be scaled. Good sizes include 16x16,
-	 * 32x32 and 48x48. Pixmap format {@link Format#RGBA8888 RGBA8888} is preferred so
-	 * the images will not have to be copied and converted. The chosen image is copied, and the provided Pixmaps are not
-	 * disposed.
+	 * Set the window's icon. Has no effect in macOS, see
+	 * <a href="https://developer.apple.com/library/content/documentation/CoreFoundation/Conceptual/CFBundles/">Bundle Programming Guide</a>.
+	 * <p>
+	 * The pixmaps must be in {@link PixelFormat#RGBA} or an exception will be thrown.
+	 * The system will pick the best size from the pixmaps based on its settings and rescale as needed.
+	 * Good sizes to target are 16x16, 32x32 and 48x48.
+	 * </p>
+	 * The pixmaps can be disposed of after calling this method.
 	 */
 	public void setIcon(Pixmap... images) {
 		if(Platform.get() == Platform.MACOSX) return;
+		if(images.length == 0) return;
 
-		GLFWImage.Buffer buffer = GLFWImage.malloc(images.length);
-		Pixmap[] pixmaps = new Pixmap[images.length];
-
-		for(int i = 0; i < images.length; i++) {
-			Pixmap pixmap = images[i];
-
-			if(pixmap.getFormat() != Pixmap.Format.RGBA8888) {
-				Pixmap rgba = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), Pixmap.Format.RGBA8888);
-				rgba.setBlending(Pixmap.Blending.None);
-				rgba.drawPixmap(pixmap, 0, 0);
-				pixmaps[i] = rgba;
-				pixmap = rgba;
+		try(MemoryStack stack = MemoryStack.stackPush()) {
+			GLFWImage.Buffer buffer = GLFWImage.malloc(images.length, stack);
+			for(int i = 0; i < images.length; i++) {
+				Pixmap pixmap = images[i];
+				buffer.position(i);
+				buffer.width(pixmap.width);
+				buffer.height(pixmap.height);
+				buffer.pixels(pixmap.getBuffer());
 			}
-
-			GLFWImage icon = GLFWImage.malloc();
-			icon.set(pixmap.getWidth(), pixmap.getHeight(), pixmap.getPixels());
-			buffer.put(icon);
-
-			icon.free();
+			buffer.flip();
+			glfwSetWindowIcon(this.handle, buffer);
 		}
+	}
 
-		buffer.position(0);
-		glfwSetWindowIcon(this.handle, buffer);
-		buffer.free();
-
-		for(Pixmap pixmap : pixmaps) {
-			if(pixmap != null) {
-				pixmap.dispose();
-			}
-		}
+	/** Resets the window's icon to the default */
+	public void resetIcon() {
+		glfwSetWindowIcon(this.handle, null);
 	}
 
 	public void setTitle(CharSequence title) {
@@ -291,7 +287,6 @@ public class Window implements Disposable {
 
 	@Override
 	public void dispose() {
-		Lwjgl3Cursor.dispose(this);
 		Gdx.input.dispose();
 		glfwDestroyWindow(handle);
 

@@ -1,6 +1,5 @@
 package me.thosea.celestialgdx.window;
 
-import com.badlogic.gdx.graphics.Pixmap;
 import org.jetbrains.annotations.Nullable;
 
 public final class WindowConfig implements Cloneable {
@@ -23,7 +22,6 @@ public final class WindowConfig implements Cloneable {
 	public boolean autoIconify = true;
 	public boolean initialVisible = true;
 	public boolean vsync = true;
-	@Nullable public Pixmap[] icon = null;
 
 	/** Specifies a window to share resources with (i.e. textures, vertex buffers) */
 	@Nullable public Window shareWindow = null;

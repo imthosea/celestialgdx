@@ -17,9 +17,9 @@
 package me.thosea.celestialgdx.maps.loader;
 
 import com.badlogic.gdx.assets.loaders.TextureLoader;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import me.thosea.celestialgdx.assets.AssetLoadingContext;
+import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.image.TextureRegion;
 
 @FunctionalInterface
 public interface ImageResolver {
@@ -34,7 +34,6 @@ public interface ImageResolver {
 		TextureLoader.TextureParameter textParam;
 		if(ctx.desc.params instanceof TsxTilesetLoader.Parameters param) {
 			textParam = new TextureLoader.TextureParameter();
-			textParam.genMipMaps = param.generateMipMaps;
 			textParam.minFilter = param.textureMinFilter;
 			textParam.magFilter = param.textureMagFilter;
 		} else {

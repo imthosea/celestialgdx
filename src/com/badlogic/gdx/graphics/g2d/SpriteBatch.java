@@ -19,7 +19,6 @@ package com.badlogic.gdx.graphics.g2d;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
@@ -27,6 +26,8 @@ import com.badlogic.gdx.math.Matrix4;
 import me.thosea.celestialgdx.graphics.Mesh;
 import me.thosea.celestialgdx.graphics.Mesh.BufferUsage;
 import me.thosea.celestialgdx.graphics.Mesh.VxAttrib;
+import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.image.TextureRegion;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -43,6 +44,9 @@ import static org.lwjgl.opengl.GL32.GL_UNSIGNED_BYTE;
  */
 public class SpriteBatch implements Batch {
 	private final Mesh mesh;
+
+	static final int VERTEX_SIZE = 2 + 1 + 2;
+	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
 	final FloatBuffer vertices;
 	int idx = 0;
@@ -113,7 +117,7 @@ public class SpriteBatch implements Batch {
 
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		vertices = MemoryUtil.memAllocFloat(size * Sprite.SPRITE_SIZE);
+		vertices = MemoryUtil.memAllocFloat(size * SPRITE_SIZE);
 		vertices.position(0);
 
 		int len = size * 6;
@@ -589,7 +593,7 @@ public class SpriteBatch implements Batch {
 
 	@Override
 	public void draw(TextureRegion region, float x, float y) {
-		draw(region, x, y, region.getRegionWidth(), region.getRegionHeight());
+		draw(region, x, y, region.width, region.height);
 	}
 
 	@Override
@@ -954,7 +958,7 @@ public class SpriteBatch implements Batch {
 		int spritesInBatch = idx / 20;
 		int count = spritesInBatch * 6;
 
-		lastTexture.bind();
+		lastTexture.bindTexture(0);
 
 		mesh.bind();
 

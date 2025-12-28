@@ -17,14 +17,10 @@
 package com.badlogic.gdx.backends.lwjgl3;
 
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Cursor.SystemCursor;
-import com.badlogic.gdx.graphics.Pixmap;
 import me.thosea.celestialgdx.window.Window;
 
 import static org.lwjgl.glfw.GLFW.glfwExtensionSupported;
 import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
-import static org.lwjgl.glfw.GLFW.glfwSetCursor;
 
 /**
  * CelestialGDX - this class will be removed soon!
@@ -65,20 +61,5 @@ public class Lwjgl3Graphics implements Graphics {
 	@Override
 	public boolean supportsExtension(String extension) {
 		return glfwExtensionSupported(extension);
-	}
-
-	@Override
-	public Cursor newCursor(Pixmap pixmap, int xHotspot, int yHotspot) {
-		return new Lwjgl3Cursor(getWindow(), pixmap, xHotspot, yHotspot);
-	}
-
-	@Override
-	public void setCursor(Cursor cursor) {
-		glfwSetCursor(getWindow().handle, ((Lwjgl3Cursor) cursor).glfwCursor);
-	}
-
-	@Override
-	public void setSystemCursor(SystemCursor systemCursor) {
-		Lwjgl3Cursor.setSystemCursor(getWindow().handle, systemCursor);
 	}
 }

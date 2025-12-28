@@ -18,7 +18,6 @@ package me.thosea.celestialgdx.core;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Cursor;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3NativesLoader;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import me.thosea.celestialgdx.log.GdxLogger;
@@ -90,7 +89,6 @@ public class CelestialGdx implements Application {
 	}
 
 	public void terminate() {
-		Lwjgl3Cursor.disposeSystemCursors();
 		errorCallback.free();
 		glfwTerminate();
 	}

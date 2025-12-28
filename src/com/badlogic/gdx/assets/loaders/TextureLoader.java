@@ -16,15 +16,14 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
-import com.badlogic.gdx.graphics.TextureData;
 import me.thosea.celestialgdx.assets.AssetLoader;
 import me.thosea.celestialgdx.assets.AssetLoaderParameters;
 import me.thosea.celestialgdx.assets.AssetLoadingContext;
 import me.thosea.celestialgdx.assets.AssetManager;
+import me.thosea.celestialgdx.image.Pixmap;
+import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.image.Texture.TextureFilter;
+import me.thosea.celestialgdx.image.Texture.TextureWrap;
 
 /**
  * {@link AssetLoader} for {@link Texture} instances. The pixel data is loaded asynchronously. The texture is then created on the
@@ -40,59 +39,30 @@ public class TextureLoader extends AssetLoader<Texture, TextureLoader.TexturePar
 
 	@Override
 	public Texture load(String path, TextureParameter parameter, AssetLoadingContext<Texture> ctx) throws Exception {
-		Texture texture;
-		TextureData data;
-		if(parameter == null || parameter.textureData == null) {
-			Format format;
-			boolean genMipMaps;
-
-			if(parameter != null) {
-				format = parameter.format;
-				genMipMaps = parameter.genMipMaps;
-				texture = parameter.texture;
-			} else {
-				format = null;
-				genMipMaps = false;
-				texture = null;
-			}
-
-			data = ctx.awaitWork(() -> {
-				return TextureData.Factory.loadFromFile(resolve(path), format, genMipMaps);
-			});
-		} else {
-			texture = parameter.texture;
-			data = parameter.textureData;
-		}
-		if(!data.isPrepared()) data.prepare();
-
+		Pixmap pixmap = ctx.dependOn(path, Pixmap.class);
 		return ctx.awaitMainThread(() -> {
-			Texture result;
-			if(texture != null) {
-				result = texture;
-				texture.load(data);
-			} else {
-				result = new Texture(data);
-			}
+			Texture texture = Texture.create2D();
+			texture.upload(pixmap, parameter != null && parameter.compress);
 			if(parameter != null) {
-				result.setFilter(parameter.minFilter, parameter.magFilter);
-				result.setWrap(parameter.wrapU, parameter.wrapV);
+				texture.setMinificationFilter(parameter.minFilter);
+				texture.setMinificationFilter(parameter.magFilter);
+				texture.setHorizontalWrap(parameter.wrapU);
+				texture.setVerticalWrap(parameter.wrapV);
+			} else {
+				texture.setMinificationFilter(TextureFilter.NEAREST);
+				texture.setMagnificationFilter(TextureFilter.NEAREST);
+				texture.setWrap(TextureWrap.CLAMP_TO_EDGE);
 			}
-			return result;
+			return texture;
 		});
 	}
 
 	static public class TextureParameter extends AssetLoaderParameters<Texture> {
-		/** the format of the final Texture. Uses the source images format if null **/
-		public Format format = null;
-		/** whether to generate mipmaps **/
-		public boolean genMipMaps = false;
-		/** The texture to put the {@link TextureData} in, optional. **/
-		public Texture texture = null;
-		/** TextureData for textures created on the fly, optional. When set, all format and genMipMaps are ignored */
-		public TextureData textureData = null;
-		public TextureFilter minFilter = TextureFilter.Nearest;
-		public TextureFilter magFilter = TextureFilter.Nearest;
-		public TextureWrap wrapU = TextureWrap.ClampToEdge;
-		public TextureWrap wrapV = TextureWrap.ClampToEdge;
+		/* If true, the texture will be compressed on the GPU */
+		public boolean compress = false;
+		public TextureFilter minFilter = TextureFilter.NEAREST;
+		public TextureFilter magFilter = TextureFilter.NEAREST;
+		public TextureWrap wrapU = TextureWrap.CLAMP_TO_EDGE;
+		public TextureWrap wrapV = TextureWrap.CLAMP_TO_EDGE;
 	}
 }

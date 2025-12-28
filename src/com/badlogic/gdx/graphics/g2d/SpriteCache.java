@@ -16,7 +16,6 @@
 
 package com.badlogic.gdx.graphics.g2d;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
@@ -24,7 +23,7 @@ import com.badlogic.gdx.utils.Disposable;
  * later be used for drawing. The size, color, and texture region for each cached image cannot be modified. This information is
  * stored in video memory and does not have to be sent to the GPU each time it is drawn.<br>
  * <br>
- * To cache {@link Sprite sprites} or {@link Texture textures}, first call {@link SpriteCache#beginCache()}, then call the
+ * To cache {@link Sprite sprites} or {@link TextureO textures}, first call {@link SpriteCache#beginCache()}, then call the
  * appropriate add method to define the images. To complete the cache, call {@link SpriteCache#endCache()} and store the returned
  * cache ID.<br>
  * <br>
