@@ -41,7 +41,7 @@ public class TextureLoader extends AssetLoader<Texture, TextureLoader.TexturePar
 	public Texture load(String path, TextureParameter parameter, AssetLoadingContext<Texture> ctx) throws Exception {
 		Pixmap pixmap = ctx.dependOn(path, Pixmap.class);
 		return ctx.awaitMainThread(() -> {
-			Texture texture = Texture.create2D();
+			Texture texture = Texture.create2d();
 			texture.upload(pixmap, parameter != null && parameter.compress);
 			if(parameter != null) {
 				texture.setMinificationFilter(parameter.minFilter);
