@@ -1,7 +1,7 @@
 package me.thosea.celestialgdx.utils;
 
-import com.badlogic.gdx.graphics.glutils.Shader;
 import me.thosea.celestialgdx.core.CelestialGdx;
+import me.thosea.celestialgdx.graphics.Shader;
 import me.thosea.celestialgdx.log.GdxLogger;
 
 import java.io.IOException;

@@ -18,10 +18,10 @@ package com.badlogic.gdx.assets.loaders;
 
 import com.badlogic.gdx.assets.loaders.ShaderLoader.ShaderParameter;
 import com.badlogic.gdx.assets.loaders.ShaderLoader.ShaderParameter.ShaderCreator;
-import com.badlogic.gdx.graphics.glutils.Shader;
 import me.thosea.celestialgdx.assets.AssetLoader;
 import me.thosea.celestialgdx.assets.AssetLoaderParameters;
 import me.thosea.celestialgdx.assets.AssetLoadingContext;
+import me.thosea.celestialgdx.graphics.Shader;
 
 import java.util.Objects;
 
