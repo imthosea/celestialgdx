@@ -19,10 +19,10 @@ package com.badlogic.gdx.graphics.g2d;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.utils.Disposable;
 import me.thosea.celestialgdx.graphics.Shader;
 import me.thosea.celestialgdx.image.Texture;
 import me.thosea.celestialgdx.image.TextureRegion;
+import me.thosea.celestialgdx.utils.Disposable;
 
 /**
  * A Batch is used to draw 2D rectangles that reference a texture (region). The class will batch the drawing commands and

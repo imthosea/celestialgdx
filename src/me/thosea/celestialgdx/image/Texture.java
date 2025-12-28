@@ -1,6 +1,6 @@
 package me.thosea.celestialgdx.image;
 
-import com.badlogic.gdx.utils.Disposable;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.lwjgl.opengl.GL33;
 
 import java.nio.ByteBuffer;

@@ -74,6 +74,7 @@ Additionally, it's far from production ready as of now, though this may change i
 - New texture/pixmap API (TODO write about this)
 - Scene2D is gone for now to avoid having to make other reworks work with it to compile
   - A new Kotlin-based UI system will be written to take its place when I get around to it
+- Disposable now also has isDisposed and requireNotDisposed
 
 ### Removed
 - SynchronousLoader / AsynchronousLoader

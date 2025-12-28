@@ -1,6 +1,6 @@
 package me.thosea.celestialgdx.image.pack;
 
-import com.badlogic.gdx.utils.Disposable;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.stb.STBRPContext;
 import org.lwjgl.stb.STBRPNode;

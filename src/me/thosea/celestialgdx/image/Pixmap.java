@@ -1,6 +1,6 @@
 package me.thosea.celestialgdx.image;
 
-import com.badlogic.gdx.utils.Disposable;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBIWriteCallbackI;
 import org.lwjgl.system.MemoryStack;

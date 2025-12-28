@@ -16,8 +16,8 @@
 
 package me.thosea.celestialgdx.graphics;
 
-import com.badlogic.gdx.utils.Disposable;
 import me.thosea.celestialgdx.files.FileHandle;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.joml.Matrix2fc;
 import org.joml.Matrix3fc;
 import org.joml.Matrix3x2fc;
@@ -61,6 +61,7 @@ public abstract class Shader implements Disposable {
 	public static final String TEXCOORD_ATTRIBUTE = "a_texCoord";
 
 	private int id = -1;
+	private boolean disposed = false;
 
 	protected Shader(FileHandle vertexFile, FileHandle fragmentFile) {
 		this(vertexFile.readString(), fragmentFile.readString());
@@ -78,6 +79,7 @@ public abstract class Shader implements Disposable {
 	}
 
 	public void compile(String vertexShader, String fragmentShader) {
+		requireNotDisposed();
 		int vertexId = compile("vertex", GL_VERTEX_SHADER, vertexShader, /*deleteOnFail*/ -1);
 		int fragmentId = compile("fragment", GL_FRAGMENT_SHADER, fragmentShader, /*deleteOnFail*/ vertexId);
 
@@ -113,16 +115,24 @@ public abstract class Shader implements Disposable {
 	}
 
 	public void bind() {
+		requireNotDisposed();
 		glUseProgram(id);
 	}
 
 	public int getHandle() {
+		requireNotDisposed();
 		return id;
 	}
 
 	@Override
 	public void dispose() {
+		requireNotDisposed();
 		glDeleteProgram(this.id);
+		this.disposed = true;
+	}
+	@Override
+	public boolean isDisposed() {
+		return disposed;
 	}
 
 	public abstract class Uniform {

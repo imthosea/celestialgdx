@@ -1,8 +1,8 @@
 package me.thosea.celestialgdx.cursor;
 
-import com.badlogic.gdx.utils.Disposable;
 import me.thosea.celestialgdx.image.PixelFormat;
 import me.thosea.celestialgdx.image.Pixmap;
+import me.thosea.celestialgdx.utils.Disposable;
 import me.thosea.celestialgdx.window.Window;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;

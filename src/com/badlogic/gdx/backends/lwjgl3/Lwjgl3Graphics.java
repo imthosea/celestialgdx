@@ -43,7 +43,7 @@ public class Lwjgl3Graphics implements Graphics {
 	void updateFramebufferInfo() {
 		int[] width = new int[1];
 		int[] height = new int[1];
-		glfwGetFramebufferSize(window.handle, width, height);
+		glfwGetFramebufferSize(window.getHandle(), width, height);
 		this.backBufferWidth = width[0];
 		this.backBufferHeight = height[0];
 	}

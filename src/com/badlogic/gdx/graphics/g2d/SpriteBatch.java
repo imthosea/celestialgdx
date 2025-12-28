@@ -77,6 +77,8 @@ public class SpriteBatch implements Batch {
 	/** Number of rendering calls, ever. Will not be reset unless set manually. **/
 	public int totalRenderCalls = 0;
 
+	private boolean disposed = false;
+
 	/**
 	 * Constructs a new SpriteBatch with a size of 1000, one buffer, and the default shader.
 	 * @see SpriteBatch#SpriteBatch(int, Shader)
@@ -1036,8 +1038,14 @@ public class SpriteBatch implements Batch {
 
 	@Override
 	public void dispose() {
+		requireNotDisposed();
 		mesh.dispose();
 		shader.dispose();
+		this.disposed = true;
+	}
+	@Override
+	public boolean isDisposed() {
+		return disposed;
 	}
 
 	@Override
