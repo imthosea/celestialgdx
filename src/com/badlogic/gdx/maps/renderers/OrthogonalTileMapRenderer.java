@@ -18,7 +18,7 @@ package com.badlogic.gdx.maps.renderers;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import me.thosea.celestialgdx.image.TextureRegion;
 import me.thosea.celestialgdx.maps.layers.TileLayer;
 import me.thosea.celestialgdx.maps.tiles.TiledMapTile;
 
@@ -73,13 +73,13 @@ public class OrthogonalTileMapRenderer extends BatchTileMapRenderer {
 
 				float x1 = x + layer.getOffsetX() * unitScale;
 				float y1 = y + layer.getOffsetY() * unitScale;
-				float x2 = x1 + region.getRegionWidth() * unitScale;
-				float y2 = y1 + region.getRegionHeight() * unitScale;
+				float x2 = x1 + region.width * unitScale;
+				float y2 = y1 + region.height * unitScale;
 
-				float u1 = region.getU();
-				float v1 = region.getV2();
-				float u2 = region.getU2();
-				float v2 = region.getV();
+				float u1 = region.u;
+				float v1 = region.v2;
+				float u2 = region.u2;
+				float v2 = region.v;
 
 				vertices[X1] = x1;
 				vertices[Y1] = y1;
@@ -122,7 +122,7 @@ public class OrthogonalTileMapRenderer extends BatchTileMapRenderer {
 					vertices[V4] = temp;
 				}
 
-				batch.draw(region.getTexture(), vertices, 0, 20);
+				batch.draw(region.texture, vertices, 0, 20);
 				x += layerTileWidth;
 			}
 			y -= layerTileHeight;

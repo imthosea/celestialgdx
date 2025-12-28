@@ -1,0 +1,37 @@
+package me.thosea.celestialgdx.cursor;
+
+import org.lwjgl.glfw.GLFW;
+
+import static org.lwjgl.glfw.GLFW.*;
+
+/**
+ * @see GLFW#glfwCreateStandardCursor(int)
+ */
+public enum SystemCursor {
+	/** {@link GLFW#GLFW_ARROW_CURSOR} */
+	ARROW_CURSOR(GLFW_ARROW_CURSOR),
+	/** {@link GLFW#GLFW_IBEAM_CURSOR} */
+	IBEAM_CURSOR(GLFW_IBEAM_CURSOR),
+	/** {@link GLFW#GLFW_CROSSHAIR_CURSOR} */
+	CROSSHAIR_CURSOR(GLFW_CROSSHAIR_CURSOR),
+	/** {@link GLFW#GLFW_POINTING_HAND_CURSOR} */
+	POINTING_HAND_CURSOR(GLFW_POINTING_HAND_CURSOR),
+	/** {@link GLFW#GLFW_RESIZE_EW_CURSOR} */
+	RESIZE_EW_CURSOR(GLFW_RESIZE_EW_CURSOR),
+	/** {@link GLFW#GLFW_RESIZE_NS_CURSOR} */
+	RESIZE_NS_CURSOR(GLFW_RESIZE_NS_CURSOR),
+	/** {@link GLFW#GLFW_RESIZE_NWSE_CURSOR} */
+	RESIZE_NWSE_CURSOR(GLFW_RESIZE_NWSE_CURSOR),
+	/** {@link GLFW#GLFW_RESIZE_NESW_CURSOR} */
+	RESIZE_NESW_CURSOR(GLFW_RESIZE_NESW_CURSOR),
+	/** {@link GLFW#GLFW_RESIZE_ALL_CURSOR} */
+	RESIZE_ALL_CURSOR(GLFW_RESIZE_ALL_CURSOR),
+	/** {@link GLFW#GLFW_NOT_ALLOWED_CURSOR} */
+	NOT_ALLOWED_CURSOR(GLFW_NOT_ALLOWED_CURSOR);
+
+	public final int glfwType;
+
+	SystemCursor(int glfwType) {
+		this.glfwType = glfwType;
+	}
+}

@@ -17,23 +17,17 @@
 package me.thosea.celestialgdx.assets;
 
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
 import com.badlogic.gdx.assets.loaders.PixmapLoader;
 import com.badlogic.gdx.assets.loaders.ShaderLoader;
-import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
-import com.badlogic.gdx.graphics.g2d.PolygonRegionLoader;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.Shader;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import me.thosea.celestialgdx.core.CelestialGdx;
+import me.thosea.celestialgdx.image.Pixmap;
+import me.thosea.celestialgdx.image.Texture;
 import me.thosea.celestialgdx.log.GdxLogger;
 import me.thosea.celestialgdx.maps.TiledMap;
 import me.thosea.celestialgdx.maps.TiledProject;
@@ -118,10 +112,7 @@ public class AssetManager implements Disposable {
 		this.logger = gdx.createLogger("AssetManager");
 		if(defaultLoaders) {
 			setLoader(Pixmap.class, new PixmapLoader(resolver));
-			setLoader(TextureAtlas.class, new TextureAtlasLoader(resolver));
 			setLoader(Texture.class, new TextureLoader(resolver));
-			setLoader(ParticleEffect.class, new ParticleEffectLoader(resolver));
-			setLoader(PolygonRegion.class, new PolygonRegionLoader(resolver));
 			setLoader(Shader.class, new ShaderLoader(resolver));
 
 			setLoader(TiledProject.class, new TiledProjectLoader(resolver));

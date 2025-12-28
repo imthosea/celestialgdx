@@ -1,12 +1,12 @@
 package me.thosea.celestialgdx.maps.loader;
 
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.XmlElement;
 import me.thosea.celestialgdx.assets.AssetLoader;
 import me.thosea.celestialgdx.assets.AssetLoaderParameters;
 import me.thosea.celestialgdx.assets.AssetLoadingContext;
+import me.thosea.celestialgdx.image.Texture.TextureFilter;
+import me.thosea.celestialgdx.image.TextureRegion;
 import me.thosea.celestialgdx.maps.MapProperties;
 import me.thosea.celestialgdx.maps.TiledProject;
 import me.thosea.celestialgdx.maps.Tileset;
@@ -148,8 +148,8 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 		int spacing = root.getIntAttribute("spacing", 0);
 		int margin = root.getIntAttribute("margin", 0);
 
-		int stopWidth = texture.getRegionWidth() - tileWidth;
-		int stopHeight = texture.getRegionHeight() - tileHeight;
+		int stopWidth = texture.width - tileWidth;
+		int stopHeight = texture.height - tileHeight;
 
 		int id = 0;
 		for(int y = margin + texture.getRegionY(); y <= stopHeight; y += tileHeight + spacing) {
@@ -225,10 +225,10 @@ public final class TsxTilesetLoader extends AssetLoader<Tileset, TsxTilesetLoade
 		/**
 		 * The TextureFilter to use for minification
 		 **/
-		public Texture.TextureFilter textureMinFilter = Texture.TextureFilter.Nearest;
+		public TextureFilter textureMinFilter = TextureFilter.NEAREST;
 		/**
 		 * The TextureFilter to use for magnification
 		 **/
-		public Texture.TextureFilter textureMagFilter = Texture.TextureFilter.Nearest;
+		public TextureFilter textureMagFilter = TextureFilter.NEAREST;
 	}
 }

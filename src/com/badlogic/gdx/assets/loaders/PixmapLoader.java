@@ -16,14 +16,17 @@
 
 package com.badlogic.gdx.assets.loaders;
 
-import com.badlogic.gdx.graphics.Pixmap;
 import me.thosea.celestialgdx.assets.AssetLoader;
 import me.thosea.celestialgdx.assets.AssetLoaderParameters;
 import me.thosea.celestialgdx.assets.AssetLoadingContext;
+import me.thosea.celestialgdx.image.PixelFormat;
+import me.thosea.celestialgdx.image.Pixmap;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.ByteBuffer;
 
 /**
  * {@link AssetLoader} for {@link Pixmap} instances. The Pixmap is loaded asynchronously.
- * @author mzechner
  */
 public class PixmapLoader extends AssetLoader<Pixmap, PixmapLoader.PixmapParameter> {
 	public PixmapLoader(FileHandleResolver resolver) {
@@ -32,9 +35,28 @@ public class PixmapLoader extends AssetLoader<Pixmap, PixmapLoader.PixmapParamet
 
 	@Override
 	public Pixmap load(String path, PixmapParameter parameter, AssetLoadingContext<Pixmap> ctx) throws Exception {
-		return new Pixmap(resolve(path));
+		/*
+		 * TODO celestialgdx:
+		 * refactor FileHandle to allow directly reading to off-heap buffer to skip copy
+		 */
+		byte[] data = resolve(path).readBytes();
+		return ctx.awaitWork(() -> {
+			ByteBuffer buffer = MemoryUtil.memAlloc(data.length);
+			buffer.put(data);
+			buffer.flip();
+			try {
+				if(parameter != null && parameter.forcedFormat != null) {
+					return Pixmap.load(buffer, parameter.forcedFormat);
+				} else {
+					return Pixmap.load(buffer);
+				}
+			} finally {
+				MemoryUtil.memFree(buffer);
+			}
+		});
 	}
 
-	static public class PixmapParameter extends AssetLoaderParameters<Pixmap> {
+	public static class PixmapParameter extends AssetLoaderParameters<Pixmap> {
+		public PixelFormat forcedFormat;
 	}
 }

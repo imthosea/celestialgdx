@@ -1,4 +1,4 @@
-package me.thosea.celestialgdx.input;
+package me.thosea.celestialgdx.cursor;
 
 import static org.lwjgl.glfw.GLFW.*;
 

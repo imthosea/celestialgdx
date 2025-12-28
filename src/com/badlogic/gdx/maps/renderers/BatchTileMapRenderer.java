@@ -19,9 +19,9 @@ package com.badlogic.gdx.maps.renderers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
+import me.thosea.celestialgdx.image.TextureRegion;
 import me.thosea.celestialgdx.maps.layers.GroupLayer;
 import me.thosea.celestialgdx.maps.layers.ImageLayer;
 import me.thosea.celestialgdx.maps.layers.MapLayer;
@@ -109,17 +109,17 @@ public abstract class BatchTileMapRenderer implements TileMapRenderer {
 		final float y = layer.getOffsetY();
 		final float x1 = x * unitScale - viewBounds.x * (layer.getParallaxX() - 1);
 		final float y1 = y * unitScale - viewBounds.y * (layer.getParallaxY() - 1);
-		final float x2 = x1 + region.getRegionWidth() * unitScale;
-		final float y2 = y1 + region.getRegionHeight() * unitScale;
+		final float x2 = x1 + region.width * unitScale;
+		final float y2 = y1 + region.height * unitScale;
 
 		imageBounds.set(x1, y1, x2 - x1, y2 - y1);
 
 		if(!layer.isRepeatX() && !layer.isRepeatY()) {
 			if(viewBounds.contains(imageBounds) || viewBounds.overlaps(imageBounds)) {
-				final float u1 = region.getU();
-				final float v1 = region.getV2();
-				final float u2 = region.getU2();
-				final float v2 = region.getV();
+				final float u1 = region.u;
+				final float v1 = region.v2;
+				final float u2 = region.u2;
+				final float v2 = region.v2;
 
 				vertices[X1] = x1;
 				vertices[Y1] = y1;
@@ -145,7 +145,7 @@ public abstract class BatchTileMapRenderer implements TileMapRenderer {
 				vertices[U4] = u2;
 				vertices[V4] = v1;
 
-				batch.draw(region.getTexture(), vertices, 0, NUM_VERTICES);
+				batch.draw(region.texture, vertices, 0, NUM_VERTICES);
 			}
 		} else {
 
@@ -182,10 +182,10 @@ public abstract class BatchTileMapRenderer implements TileMapRenderer {
 					repeatedImageBounds.set(rx1, ry1, rx2 - rx1, ry2 - ry1);
 
 					if(viewBounds.contains(repeatedImageBounds) || viewBounds.overlaps(repeatedImageBounds)) {
-						final float ru1 = region.getU();
-						final float rv1 = region.getV2();
-						final float ru2 = region.getU2();
-						final float rv2 = region.getV();
+						final float ru1 = region.u;
+						final float rv1 = region.v2;
+						final float ru2 = region.u2;
+						final float rv2 = region.v;
 
 						vertices[X1] = rx1;
 						vertices[Y1] = ry1;
@@ -211,7 +211,7 @@ public abstract class BatchTileMapRenderer implements TileMapRenderer {
 						vertices[U4] = ru2;
 						vertices[V4] = rv1;
 
-						batch.draw(region.getTexture(), vertices, 0, NUM_VERTICES);
+						batch.draw(region.texture, vertices, 0, NUM_VERTICES);
 					}
 				}
 			}

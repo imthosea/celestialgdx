@@ -16,7 +16,7 @@
 
 package me.thosea.celestialgdx.maps.tiles;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import me.thosea.celestialgdx.image.TextureRegion;
 import me.thosea.celestialgdx.maps.MapProperties;
 import org.jetbrains.annotations.Nullable;
 
