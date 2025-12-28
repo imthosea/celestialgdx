@@ -16,12 +16,9 @@
 
 package me.thosea.celestialgdx.log;
 
-import me.thosea.celestialgdx.core.CelestialGdx;
-
 /**
  * The GdxLogger provides an interface for a libGDX Application to log messages and exceptions.
- * The default implementation prints to System.out/System.err
- * {@link CelestialGdx#setApplicationLogger(GdxLogger) }
+ * The default implementation prints to System.out/System.err.
  */
 public interface GdxLogger {
 	void info(String message);
