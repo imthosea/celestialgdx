@@ -16,8 +16,8 @@
 
 package me.thosea.celestialgdx.input;
 
-import com.badlogic.gdx.utils.Disposable;
 import me.thosea.celestialgdx.cursor.CursorState;
+import me.thosea.celestialgdx.utils.Disposable;
 import me.thosea.celestialgdx.window.Window;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
@@ -41,10 +41,12 @@ public class InputController implements Disposable {
 
 	private InputHandler handler = new InputAdapter() {};
 
+	private boolean disposed = false;
+
 	public InputController(Window window) {
 		this.window = window;
 
-		long handle = window.handle;
+		long handle = window.getHandle();
 		this.keyCallback = GLFWKeyCallback.create((i_, key, scancode, action, mods) -> {
 			handler.onKeyEvent(key, scancode, action, mods);
 		});
@@ -69,15 +71,15 @@ public class InputController implements Disposable {
 	}
 
 	public boolean isKeyPressed(int button) {
-		return glfwGetKey(window.handle, button) == GLFW_PRESS;
+		return glfwGetKey(window.getHandle(), button) == GLFW_PRESS;
 	}
 
 	public boolean isButtonPressed(int button) {
-		return glfwGetMouseButton(window.handle, button) == GLFW_PRESS;
+		return glfwGetMouseButton(window.getHandle(), button) == GLFW_PRESS;
 	}
 
 	public void setCursorState(CursorState state) {
-		glfwSetInputMode(window.handle, GLFW_CURSOR, state.glfwState);
+		glfwSetInputMode(window.getHandle(), GLFW_CURSOR, state.glfwState);
 	}
 
 	/**
@@ -85,13 +87,15 @@ public class InputController implements Disposable {
 	 * have input focus. If the window does not have input focus when this function is called, it fails silently.
 	 */
 	public void setMousePos(double x, double y) {
-		glfwSetCursorPos(window.handle, x, y);
+		glfwSetCursorPos(window.getHandle(), x, y);
 	}
 
 	public InputHandler getInputHandler() {
+		this.requireNotDisposed();
 		return this.handler;
 	}
 	public void setInputHandler(InputHandler handler) {
+		this.requireNotDisposed();
 		if(handler == null) {
 			handler = new InputAdapter() {};
 		}
@@ -105,20 +109,27 @@ public class InputController implements Disposable {
 
 	@Deprecated(forRemoval = true)
 	public MousePos getMousePos() {
+		this.requireNotDisposed();
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			DoubleBuffer x = stack.mallocDouble(1);
 			DoubleBuffer y = stack.mallocDouble(1);
-			glfwGetCursorPos(window.handle, x, y);
+			glfwGetCursorPos(window.getHandle(), x, y);
 			return new MousePos(x.get(), y.get());
 		}
 	}
 
 	@Override
 	public void dispose() {
+		requireNotDisposed();
 		keyCallback.free();
 		charCallback.free();
 		scrollCallback.free();
 		posCallback.free();
 		mouseButtonCallback.free();
+		this.disposed = true;
+	}
+	@Override
+	public boolean isDisposed() {
+		return disposed;
 	}
 }

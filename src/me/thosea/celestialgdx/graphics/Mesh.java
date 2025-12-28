@@ -1,6 +1,6 @@
 package me.thosea.celestialgdx.graphics;
 
-import com.badlogic.gdx.utils.Disposable;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL33;
@@ -47,7 +47,6 @@ public final class Mesh implements Disposable {
 	 */
 	public final int eboHandle;
 
-
 	public enum BufferUsage {
 		/**
 		 * The data store contents will be modified once and used at most a few times
@@ -73,6 +72,8 @@ public final class Mesh implements Disposable {
 	@Nullable public final BufferUsage eboUsage;
 
 	private int eboType;
+
+	private boolean disposed = false;
 
 	private Mesh(
 			int vaoHandle, int vboHandle, int eboHandle,
@@ -132,6 +133,7 @@ public final class Mesh implements Disposable {
 	 * Be sure to call this before calling {@link #uploadIndices} or {@link #render}
 	 */
 	public void bind() {
+		requireNotDisposed();
 		glBindVertexArray(this.vaoHandle);
 	}
 
@@ -227,9 +229,14 @@ public final class Mesh implements Disposable {
 
 	@Override
 	public void dispose() {
+		this.requireNotDisposed();
 		glDeleteVertexArrays(this.vaoHandle);
 		glDeleteBuffers(this.vboHandle);
 		if(hasIndexBuffer()) glDeleteBuffers(this.eboHandle);
+	}
+	@Override
+	public boolean isDisposed() {
+		return disposed;
 	}
 
 	/**

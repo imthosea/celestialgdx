@@ -22,7 +22,6 @@ import com.badlogic.gdx.assets.loaders.ShaderLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import me.thosea.celestialgdx.core.CelestialGdx;
 import me.thosea.celestialgdx.graphics.Shader;
@@ -35,6 +34,7 @@ import me.thosea.celestialgdx.maps.Tileset;
 import me.thosea.celestialgdx.maps.loader.TiledProjectLoader;
 import me.thosea.celestialgdx.maps.loader.TmxMapLoader;
 import me.thosea.celestialgdx.maps.loader.TsxTilesetLoader;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -90,6 +90,8 @@ public class AssetManager implements Disposable {
 
 	public final CelestialGdx gdx;
 	public final GdxLogger logger;
+
+	private volatile boolean disposed = false;
 
 	/** Creates a new AssetManager with all default loaders. */
 	public AssetManager(CelestialGdx gdx) {
@@ -154,6 +156,7 @@ public class AssetManager implements Disposable {
 	 * @return the asset or null if it is not loaded and required is false
 	 */
 	public @Nullable <T> T get(String fileName, boolean required) {
+		this.requireNotDisposed();
 		Asset asset = assets.get(fileName);
 		if(asset != null) {
 			return (T) asset.object;
@@ -169,6 +172,7 @@ public class AssetManager implements Disposable {
 	 * @return the asset or null if it is not loaded and required is false
 	 */
 	public @Nullable <T> T get(String fileName, Class<T> type, boolean required) {
+		this.requireNotDisposed();
 		Asset asset = assets.get(fileName);
 		if(asset != null && asset.type == type) {
 			return (T) asset.object;
@@ -191,6 +195,7 @@ public class AssetManager implements Disposable {
 	 * @return all the assets matching the specified type
 	 */
 	public <T> Array<T> getAll(Class<T> type, Array<T> out) {
+		this.requireNotDisposed();
 		assets.values().forEach(asset -> {
 			if(asset.type == type) out.add((T) asset.object);
 		});
@@ -289,6 +294,7 @@ public class AssetManager implements Disposable {
 	 * @return whether the asset is loaded
 	 */
 	public boolean isLoaded(String fileName) {
+		this.requireNotDisposed();
 		if(fileName == null) return false;
 		return assets.containsKey(fileName);
 	}
@@ -298,6 +304,7 @@ public class AssetManager implements Disposable {
 	 * @return whether the asset is loaded
 	 */
 	public boolean isLoaded(String fileName, Class<?> type) {
+		this.requireNotDisposed();
 		Asset asset = assets.get(fileName);
 		return asset != null && asset.type == type;
 	}
@@ -308,6 +315,7 @@ public class AssetManager implements Disposable {
 	 * @return The loader capable of loading the type, or null if none exists
 	 */
 	public <T> AssetLoader<T, ?> getLoader(final Class<T> type) {
+		this.requireNotDisposed();
 		return (AssetLoader<T, ?>) loaders.get(type);
 	}
 
@@ -327,6 +335,7 @@ public class AssetManager implements Disposable {
 	 * @param parameter parameters for the AssetLoader.
 	 */
 	public synchronized <T> void load(String fileName, Class<T> type, AssetLoaderParameters<T> parameter) {
+		this.requireNotDisposed();
 		AssetLoader<T, ?> loader = getLoader(type);
 		if(loader == null) throw new GdxRuntimeException("No loader for type: " + type.getSimpleName());
 
@@ -375,6 +384,7 @@ public class AssetManager implements Disposable {
 
 	/** Blocks until all assets are loaded. */
 	public void finishLoading() {
+		this.requireNotDisposed();
 		logger.debug("Waiting for loading to complete...");
 		AssetLoadingContext<?> ctx = null;
 		while(true) {
@@ -405,6 +415,7 @@ public class AssetManager implements Disposable {
 	 * @param fileName the file name (interpretation depends on {@link AssetLoader})
 	 */
 	public <T> T finishLoadingAsset(String fileName) {
+		this.requireNotDisposed();
 		logger.debug("Waiting for asset to be loaded: " + fileName);
 		AssetLoadingContext<?> ctx = tasks.get(fileName);
 		if(ctx != null) {
@@ -415,6 +426,7 @@ public class AssetManager implements Disposable {
 	}
 
 	public <T> void addAsset(final String fileName, Class<T> type, T object) {
+		this.requireNotDisposed();
 		assets.put(fileName, new Asset(fileName, type, object, new AtomicInteger(1)));
 	}
 
@@ -424,6 +436,7 @@ public class AssetManager implements Disposable {
 	 * @param loader the loader
 	 */
 	public <T, P extends AssetLoaderParameters<T>> void setLoader(Class<T> type, AssetLoader<T, P> loader) {
+		this.requireNotDisposed();
 		if(type == null) throw new IllegalArgumentException("type cannot be null.");
 		if(loader == null) throw new IllegalArgumentException("loader cannot be null.");
 		logger.debug("Loader set: " + type.getSimpleName() + " -> " + loader.getClass().getSimpleName());
@@ -453,8 +466,15 @@ public class AssetManager implements Disposable {
 	 */
 	@Override
 	public void dispose() {
+		requireNotDisposed();
 		logger.debug("Disposing.");
 		clear();
+		this.disposed = true;
+	}
+
+	@Override
+	public boolean isDisposed() {
+		return disposed;
 	}
 
 	/**
@@ -491,6 +511,7 @@ public class AssetManager implements Disposable {
 
 	/** @return a string containing ref count and dependency information for all assets. */
 	public synchronized String getDiagnostics() {
+		this.requireNotDisposed();
 		StringBuilder buffer = new StringBuilder(256);
 		for(Map.Entry<String, Asset> entry : assets.entrySet()) {
 			if(!buffer.isEmpty()) buffer.append('\n');
@@ -515,6 +536,7 @@ public class AssetManager implements Disposable {
 
 	/** @return the file names of all loaded assets. */
 	public String[] getAssetNames() {
+		this.requireNotDisposed();
 		synchronized(assets) {
 			return assets.keySet().toArray(new String[0]);
 		}
@@ -522,6 +544,7 @@ public class AssetManager implements Disposable {
 
 	/** @return the dependencies of an asset or an empty list if the asset has no dependencies. */
 	public List<String> getDependencies(String fileName) {
+		this.requireNotDisposed();
 		return assetDependencies.get(fileName);
 	}
 
@@ -529,6 +552,7 @@ public class AssetManager implements Disposable {
 	 * @return the type of a loaded asset.
 	 */
 	public Class<?> getAssetType(String fileName) {
+		this.requireNotDisposed();
 		Asset asset = assets.get(fileName);
 		return asset != null ? asset.type : null;
 	}

@@ -18,13 +18,13 @@ package me.thosea.celestialgdx.window;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import me.thosea.celestialgdx.core.CelestialGdx;
 import me.thosea.celestialgdx.cursor.Cursor;
 import me.thosea.celestialgdx.image.PixelFormat;
 import me.thosea.celestialgdx.image.Pixmap;
 import me.thosea.celestialgdx.input.InputController;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWImage;
@@ -45,7 +45,8 @@ import static org.lwjgl.glfw.GLFW.*;
  * When using multiple windows, call {@link #bind()} to change the active OpenGL context
  */
 public class Window implements Disposable {
-	public final long handle;
+	private final long handle;
+
 	public final Lwjgl3Graphics graphics;
 	public final InputController input;
 
@@ -56,6 +57,8 @@ public class Window implements Disposable {
 
 	private volatile boolean minimized = false;
 	private volatile boolean focused = false;
+
+	private volatile boolean disposed = false;
 
 	private final GLFWWindowFocusCallback focusCallback = GLFWWindowFocusCallback.create((handle, focused) -> {
 		Window.this.focused = focused;
@@ -97,6 +100,11 @@ public class Window implements Disposable {
 		this.input = Gdx.input = new InputController(this);
 		Gdx.graphics = graphics;
 		setVisible(config.initialVisible);
+	}
+
+	public long getHandle() {
+		this.requireNotDisposed();
+		return handle;
 	}
 
 	public void bind() {
@@ -287,6 +295,7 @@ public class Window implements Disposable {
 
 	@Override
 	public void dispose() {
+		requireNotDisposed();
 		Gdx.input.dispose();
 		glfwDestroyWindow(handle);
 
@@ -295,6 +304,11 @@ public class Window implements Disposable {
 		maximizeCallback.free();
 		closeCallback.free();
 		resizeCallback.free();
+		this.disposed = true;
+	}
+	@Override
+	public boolean isDisposed() {
+		return disposed;
 	}
 
 	public static Window create(CelestialGdx gdx) {

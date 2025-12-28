@@ -1,6 +1,6 @@
 package me.thosea.celestialgdx.graphics;
 
-import com.badlogic.gdx.utils.Disposable;
+import me.thosea.celestialgdx.utils.Disposable;
 
 import static org.lwjgl.opengl.GL30.*;
 

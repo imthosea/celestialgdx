@@ -1,9 +1,9 @@
 package me.thosea.celestialgdx.image.pack;
 
-import com.badlogic.gdx.utils.Disposable;
 import me.thosea.celestialgdx.image.PixelFormat;
 import me.thosea.celestialgdx.image.Pixmap;
 import me.thosea.celestialgdx.image.trim.PixmapTrim;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -99,9 +99,9 @@ public final class PixmapPacker<K> implements Disposable {
 		}
 		this.disposed = true;
 	}
-
-	public void requireNotDisposed() {
-		if(disposed) throw new IllegalStateException("already disposed");
+	@Override
+	public boolean isDisposed() {
+		return disposed;
 	}
 
 	public record PackedEntry<K>(K key, RectangleSlot slot, @Nullable PixmapTrim trim) {}

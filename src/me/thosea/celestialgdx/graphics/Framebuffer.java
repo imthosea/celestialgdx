@@ -1,7 +1,7 @@
 package me.thosea.celestialgdx.graphics;
 
-import com.badlogic.gdx.utils.Disposable;
 import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.utils.Disposable;
 import org.lwjgl.opengl.GL33;
 
 import static org.lwjgl.opengl.GL33.*;
