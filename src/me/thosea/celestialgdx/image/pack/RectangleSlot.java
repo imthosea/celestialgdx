@@ -1,6 +1,6 @@
 package me.thosea.celestialgdx.image.pack;
 
-import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.graphics.Texture;
 import me.thosea.celestialgdx.image.TextureRegion;
 
 /**

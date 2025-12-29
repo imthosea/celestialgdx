@@ -20,7 +20,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import me.thosea.celestialgdx.graphics.Shader;
-import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.graphics.Texture;
 import me.thosea.celestialgdx.image.TextureRegion;
 import me.thosea.celestialgdx.utils.Disposable;
 

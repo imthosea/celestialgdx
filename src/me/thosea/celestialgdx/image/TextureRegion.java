@@ -1,5 +1,7 @@
 package me.thosea.celestialgdx.image;
 
+import me.thosea.celestialgdx.graphics.Texture;
+
 import java.util.Objects;
 
 /**

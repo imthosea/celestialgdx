@@ -21,16 +21,15 @@ import static org.lwjgl.opengl.GL33.*;
  * a VAO bound to the specified vertex attributes is created with an empty vertex and index buffer.
  * Both {@link #create} and {@link #wrap} will automatically bind the mesh.
  * <p>
- * To upload a vertex buffer, use a variant of {@link #uploadVertices}.
+ * To upload vertex or index data, use a variant of {@link #uploadVertices} / {@link #uploadIndices}.
+ * The VBO/EBO will automatically be bound if needed.
  * Note that using off-heap nio {@link Buffer}s has significantly faster transfer speed than arrays.
- * Calling {@link #bind} is not required prior.
  * </p>
  * <p>
  * Creating an index buffer can be skipped entirely by passing null as the second parameter
- * to {@link #create}. If one is present, upload to it using {@link #uploadIndices}.
- * You must call {@link #bind} before.
+ * to {@link #create}.
  * </p>
- * Render by calling {@link #bind} then {@link #render}.
+ * Render by calling {@link #render}. The VAO will be automatically bound if needed.
  * <p>
  * Since CelestialGDX doesn't support mobile where the OpenGL context can be lost mid-runtime,
  * this class doesn't need to store the last uploaded buffer or reload it automatically.
@@ -39,34 +38,13 @@ import static org.lwjgl.opengl.GL33.*;
  * @see <a href="https://wikis.khronos.org/opengl/Vertex_Specification">Vertex Specification - OpenGL wiki</a>
  */
 public final class Mesh implements Disposable {
-	public final int vaoHandle;
+	private static int lastVao = 0;
+	private static int lastVbo = 0;
+	private static int lastEbo = 0;
 
-	public final int vboHandle;
-	/**
-	 * can be -1 if there is no EBO
-	 */
-	public final int eboHandle;
-
-	public enum BufferUsage {
-		/**
-		 * The data store contents will be modified once and used at most a few times
-		 */
-		STREAM(GL_STREAM_DRAW),
-		/**
-		 * The data store contents will be modified once and used many times
-		 */
-		STATIC(GL_STATIC_DRAW),
-		/**
-		 * The data store contents will be modified repeatedly and used many times
-		 */
-		DYNAMIC(GL_DYNAMIC_DRAW);
-
-		public final int code;
-
-		BufferUsage(int usage) {
-			this.code = usage;
-		}
-	}
+	private final int vaoHandle;
+	private final int vboHandle;
+	private final int eboHandle;
 
 	public final BufferUsage vertUsage;
 	@Nullable public final BufferUsage eboUsage;
@@ -87,9 +65,12 @@ public final class Mesh implements Disposable {
 
 		glBindVertexArray(vaoHandle);
 		glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
+		lastVao = this.vaoHandle;
+		lastVbo = this.vboHandle;
 
 		if(eboUsage != null) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboHandle);
+			lastEbo = eboHandle;
 		}
 	}
 
@@ -105,10 +86,13 @@ public final class Mesh implements Disposable {
 
 		glBindVertexArray(vaoHandle);
 		glBindBuffer(GL_ARRAY_BUFFER, vboHandle);
+		lastVao = this.vaoHandle;
+		lastVbo = this.vboHandle;
 
 		if(eboUsage != null) {
 			this.eboHandle = glGenBuffers();
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboHandle);
+			lastEbo = this.eboHandle;
 		} else {
 			this.eboHandle = -1;
 		}
@@ -129,58 +113,75 @@ public final class Mesh implements Disposable {
 		}
 	}
 
-	/**
-	 * Be sure to call this before calling {@link #uploadIndices} or {@link #render}
-	 */
-	public void bind() {
+	/** Binds the VAO of this mesh (this also binds the EBO if present) */
+	public void bindVertexArray() {
 		requireNotDisposed();
 		glBindVertexArray(this.vaoHandle);
+		lastVao = this.vaoHandle;
+		lastEbo = this.eboHandle;
+	}
+
+	/** Binds the VBO */
+	public void bindVertexBuffer() {
+		requireNotDisposed();
+		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
+		lastVbo = this.vboHandle;
+	}
+
+	private void bindVertexArrayIfNeeded() {
+		requireNotDisposed();
+		if(lastVao != this.vaoHandle || lastEbo != this.eboHandle) bindVertexArray();
+	}
+
+	private void bindVertexBufferIfNeeded() {
+		requireNotDisposed();
+		if(lastVbo != this.vboHandle) bindVertexBuffer();
 	}
 
 	public void uploadVertices(ByteBuffer buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(ShortBuffer buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(IntBuffer buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(LongBuffer buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(FloatBuffer buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(DoubleBuffer buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 
 	public void uploadVertices(short[] buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(int[] buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(long[] buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(float[] buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 	public void uploadVertices(double[] buffer) {
-		glBindBuffer(GL_ARRAY_BUFFER, this.vboHandle);
-		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.code);
+		bindVertexBufferIfNeeded();
+		glBufferData(GL_ARRAY_BUFFER, buffer, this.vertUsage.glType);
 	}
 
 	/*
@@ -190,28 +191,33 @@ public final class Mesh implements Disposable {
 	//
 	public void uploadIndices(ByteBuffer buffer) {
 		if(!this.hasIndexBuffer()) throw new IllegalStateException("this mesh does not have an EBO");
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.code);
+		bindVertexArrayIfNeeded();
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.glType);
 		this.eboType = GL_UNSIGNED_BYTE;
 	}
 	public void uploadIndices(ShortBuffer buffer) {
 		if(!this.hasIndexBuffer()) throw new IllegalStateException("this mesh does not have an EBO");
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.code);
+		bindVertexArrayIfNeeded();
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.glType);
 		this.eboType = GL_UNSIGNED_SHORT;
 	}
 	public void uploadIndices(IntBuffer buffer) {
 		if(!this.hasIndexBuffer()) throw new IllegalStateException("this mesh does not have an EBO");
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.code);
+		bindVertexArrayIfNeeded();
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.glType);
 		this.eboType = GL_UNSIGNED_INT;
 	}
 
 	public void uploadIndices(short[] buffer) {
 		if(!this.hasIndexBuffer()) throw new IllegalStateException("this mesh does not have an EBO");
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.code);
+		bindVertexArrayIfNeeded();
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.glType);
 		this.eboType = GL_UNSIGNED_SHORT;
 	}
 	public void uploadIndices(int[] buffer) {
 		if(!this.hasIndexBuffer()) throw new IllegalStateException("this mesh does not have an EBO");
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.code);
+		bindVertexArrayIfNeeded();
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, eboUsage.glType);
 		this.eboType = GL_UNSIGNED_INT;
 	}
 
@@ -220,6 +226,7 @@ public final class Mesh implements Disposable {
 	}
 
 	public void render(int mode, int count) {
+		bindVertexArrayIfNeeded();
 		if(hasIndexBuffer()) {
 			glDrawElements(mode, count, this.eboType, 0);
 		} else {
@@ -232,7 +239,13 @@ public final class Mesh implements Disposable {
 		this.requireNotDisposed();
 		glDeleteVertexArrays(this.vaoHandle);
 		glDeleteBuffers(this.vboHandle);
-		if(hasIndexBuffer()) glDeleteBuffers(this.eboHandle);
+		if(hasIndexBuffer()) {
+			glDeleteBuffers(this.eboHandle);
+			if(lastEbo == this.eboHandle) lastEbo = 0;
+		}
+		if(lastVao == this.vaoHandle) lastVao = 0;
+		if(lastVbo == this.vboHandle) lastVbo = 0;
+		this.disposed = true;
 	}
 	@Override
 	public boolean isDisposed() {
@@ -367,6 +380,26 @@ public final class Mesh implements Disposable {
 
 		public static VxAttrib of(int components, int type, boolean normalize, int stride, int pointer) {
 			return new VxAttrib(components, type, normalize, stride, pointer);
+		}
+	}
+
+	public enum BufferUsage {
+		/**
+		 * The data store contents will be modified once and used at most a few times
+		 */
+		STREAM(GL_STREAM_DRAW),
+		/**
+		 * The data store contents will be modified once and used many times
+		 */
+		STATIC(GL_STATIC_DRAW),
+		/**
+		 * The data store contents will be modified repeatedly and used many times
+		 */
+		DYNAMIC(GL_DYNAMIC_DRAW);
+
+		public final int glType;
+		BufferUsage(int usage) {
+			this.glType = usage;
 		}
 	}
 }
