@@ -1,6 +1,5 @@
 package me.thosea.celestialgdx.graphics;
 
-import me.thosea.celestialgdx.image.Texture;
 import me.thosea.celestialgdx.utils.Disposable;
 import org.lwjgl.opengl.GL33;
 
@@ -21,6 +20,12 @@ import static org.lwjgl.opengl.GL33.*;
  * {@link #attachColor}, {@link #attachDepth}, or {@link #attachStencil}.
  * </p>
  * <p>
+ * Framebuffers are automatically bound upon creation
+ * and when a uniform is set if it does not match the last known bound shader.
+ * If the active framebuffer outside of this class (like by manually calling glUseProgram),
+ * always call {@link #bind()} or the shader won't be rebounded.
+ * </p>
+ * <p>
  * After attaching targets it's recommended to use {@link #checkComplete()} to make sure this framebuffer
  * is usable by the GPU. If not, it'll throw an exception with the reason.
  * </p>
@@ -30,6 +35,9 @@ import static org.lwjgl.opengl.GL33.*;
 public final class Framebuffer implements Disposable {
 	/** The default framebuffer created from the window. Cannot be disposed. */
 	public static final Framebuffer DEFAULT = new Framebuffer(/*handle*/ 0);
+
+	private static int lastReadBuffer = 0; // GL_READ_FRAMEBUFFER
+	private static int lastDrawBuffer = 0; // GL_DRAW_FRAMEBUFFER
 
 	private final int handle;
 	private int target = -1;
@@ -47,13 +55,29 @@ public final class Framebuffer implements Disposable {
 	}
 
 	public void bindForRead() {
+		requireNotDisposed();
 		glBindFramebuffer(this.target = GL_READ_FRAMEBUFFER, this.handle);
+		lastReadBuffer = this.handle;
 	}
 	public void bindForDraw() {
+		requireNotDisposed();
 		glBindFramebuffer(this.target = GL_DRAW_FRAMEBUFFER, this.handle);
+		lastDrawBuffer = this.handle;
 	}
 	public void bind() {
+		requireNotDisposed();
 		glBindFramebuffer(this.target = GL_FRAMEBUFFER, this.handle);
+		lastReadBuffer = this.handle;
+		lastDrawBuffer = this.handle;
+	}
+
+	private void bindForReadIfNeeded() {
+		requireNotDisposed();
+		if(lastReadBuffer != this.handle) bindForRead();
+	}
+	private void bindForDrawIfNeeded() {
+		requireNotDisposed();
+		if(lastDrawBuffer != this.handle) this.bindForDraw();
 	}
 
 	public void attachColor2d(Texture texture) {
@@ -65,6 +89,7 @@ public final class Framebuffer implements Disposable {
 		} else if(slot > 31) {
 			throw new IllegalArgumentException("slot cannot be above 31");
 		}
+		bindForDrawIfNeeded();
 		glFramebufferTexture2D(
 				GL_FRAMEBUFFER, // must always be GL_FRAMEBUFFER for some reason?
 				GL_COLOR_ATTACHMENT0 + slot,
@@ -76,6 +101,7 @@ public final class Framebuffer implements Disposable {
 		if(texture.glType != GL_TEXTURE_2D) {
 			throw new IllegalArgumentException("cannot attach non-2D texture");
 		}
+		bindForDrawIfNeeded();
 		glFramebufferTexture2D(
 				GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
 				GL_TEXTURE_2D, texture.getHandle(),
@@ -86,6 +112,7 @@ public final class Framebuffer implements Disposable {
 		if(texture.glType != GL_TEXTURE_2D) {
 			throw new IllegalArgumentException("cannot attach non-2D texture");
 		}
+		bindForDrawIfNeeded();
 		glFramebufferTexture2D(
 				GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
 				GL_TEXTURE_2D, texture.getHandle(),
@@ -96,6 +123,7 @@ public final class Framebuffer implements Disposable {
 		if(texture.glType != GL_TEXTURE_2D) {
 			throw new IllegalArgumentException("cannot attach non-2D texture");
 		}
+		bindForDrawIfNeeded();
 		glFramebufferTexture2D(
 				GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
 				GL_TEXTURE_2D, texture.getHandle(),
@@ -110,24 +138,28 @@ public final class Framebuffer implements Disposable {
 		if(slot > 31) {
 			throw new IllegalArgumentException("slot cannot be above 31");
 		}
+		bindForDrawIfNeeded();
 		glFramebufferRenderbuffer(
 				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + slot,
 				GL_RENDERBUFFER, buffer.getHandle()
 		);
 	}
 	public void attachDepth(Renderbuffer buffer) {
+		bindForDrawIfNeeded();
 		glFramebufferRenderbuffer(
 				GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
 				GL_RENDERBUFFER, buffer.getHandle()
 		);
 	}
 	public void attachStencil(Renderbuffer buffer) {
+		bindForDrawIfNeeded();
 		glFramebufferRenderbuffer(
 				GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
 				GL_RENDERBUFFER, buffer.getHandle()
 		);
 	}
 	public void attachDepthStencil(Renderbuffer buffer) {
+		bindForDrawIfNeeded();
 		glFramebufferRenderbuffer(
 				GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
 				GL_RENDERBUFFER, buffer.getHandle()
@@ -135,6 +167,7 @@ public final class Framebuffer implements Disposable {
 	}
 
 	public void checkComplete() {
+		requireNotDisposed();
 		int status = glCheckFramebufferStatus(this.target);
 		if(status == GL_FRAMEBUFFER_COMPLETE) return;
 
@@ -156,16 +189,26 @@ public final class Framebuffer implements Disposable {
 	}
 
 	public void setDrawTargets(int... targets) {
+		this.bindForDrawIfNeeded();
 		glDrawBuffers(targets);
 	}
 
+	/**
+	 * Copies one framebuffer onto another.
+	 * Mask is a bitwise OR of what values to be copied. Can be
+	 * {@link GL33#GL_COLOR_BUFFER_BIT}, {@link GL33#GL_DEPTH_BUFFER_BIT} and/or {@link GL33#GL_STENCIL_BUFFER_BIT}.
+	 */
 	public static void blit(
+			Framebuffer src, Framebuffer target,
 			int srcX0, int srcY0,
 			int srcX1, int srcY1,
 			int dstX0, int dstY0,
 			int dstX1, int dstY1,
 			int mask, BlitFilter filter
 	) {
+		src.bindForReadIfNeeded();
+		target.bindForDrawIfNeeded();
+
 		glBlitFramebuffer(
 				srcX0, srcY0,
 				srcX1, srcY1,
@@ -182,14 +225,14 @@ public final class Framebuffer implements Disposable {
 		}
 		this.requireNotDisposed();
 		glDeleteFramebuffers(this.handle);
+		if(lastReadBuffer == this.handle) lastReadBuffer = 0;
+		if(lastDrawBuffer == this.handle) lastDrawBuffer = 0;
 		disposed = true;
 	}
 
+	@Override
 	public boolean isDisposed() {
 		return disposed;
-	}
-	public void requireNotDisposed() {
-		if(disposed) throw new IllegalStateException("already disposed");
 	}
 
 	public static Framebuffer wrap(int handle) {

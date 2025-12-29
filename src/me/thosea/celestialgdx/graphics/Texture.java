@@ -1,5 +1,7 @@
-package me.thosea.celestialgdx.image;
+package me.thosea.celestialgdx.graphics;
 
+import me.thosea.celestialgdx.image.PixelFormat;
+import me.thosea.celestialgdx.image.Pixmap;
 import me.thosea.celestialgdx.utils.Disposable;
 import org.lwjgl.opengl.GL33;
 
@@ -30,6 +32,8 @@ import static org.lwjgl.opengl.GL33.*;
  * @author thosea
  */
 public final class Texture implements Disposable {
+	private static int lastHandle = 0;
+
 	private final int handle;
 	/** The OpenGL type, like {@link GL33#GL_TEXTURE_2D} or {@link GL33#GL_TEXTURE_3D} */
 	public final int glType;
@@ -62,6 +66,7 @@ public final class Texture implements Disposable {
 	public void bindBuffer() {
 		this.requireNotDisposed();
 		glBindTexture(this.glType, this.handle);
+		lastHandle = this.handle;
 	}
 
 	/**
@@ -76,6 +81,12 @@ public final class Texture implements Disposable {
 		this.requireNotDisposed();
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(this.glType, this.handle);
+		lastHandle = this.handle;
+	}
+
+	private void bindBufferIfNeeded() {
+		requireNotDisposed();
+		if(lastHandle != this.handle) bindBuffer();
 	}
 
 	public int getWidth() {
@@ -119,7 +130,7 @@ public final class Texture implements Disposable {
 			throw new IllegalArgumentException("Pixmap format " + pixmap.format + " cannot be uploaded to OpenGL. " +
 					"The easiest way to fix this is to explicitly specify a format at construction.");
 		}
-
+		this.bindBufferIfNeeded();
 		glTexImage2D(
 				glType,
 				levelOfDetail,
@@ -154,6 +165,7 @@ public final class Texture implements Disposable {
 	 * @param compress whether the texture should be compressed on the GPU
 	 */
 	public void allocate(PixelFormat format, int width, int height, boolean compress) {
+		this.bindBufferIfNeeded();
 		glTexImage2D(
 				glType,
 				/*level*/ 0,
@@ -178,9 +190,11 @@ public final class Texture implements Disposable {
 	}
 
 	public void setHorizontalWrap(TextureWrap wrap) {
+		this.bindBufferIfNeeded();
 		glTexParameteri(this.glType, GL_TEXTURE_WRAP_S, wrap.glType);
 	}
 	public void setVerticalWrap(TextureWrap wrap) {
+		this.bindBufferIfNeeded();
 		glTexParameteri(this.glType, GL_TEXTURE_WRAP_T, wrap.glType);
 	}
 	/** Sets both the horizontal and vertical wrap behavior */
@@ -190,6 +204,7 @@ public final class Texture implements Disposable {
 	}
 	/** Sets the border color for when the wrap behavior is {@link TextureWrap#CLAMP_TO_BORDER} */
 	public void setBorderColor(float r, float g, float b, float a) {
+		this.bindBufferIfNeeded();
 		glTexParameterfv(this.glType, GL_TEXTURE_BORDER_COLOR, new float[] {r, g, b, a});
 	}
 
@@ -206,17 +221,17 @@ public final class Texture implements Disposable {
 	}
 
 	public void setMinificationFilter(TextureFilter filter) {
+		this.bindBufferIfNeeded();
 		glTexParameteri(this.glType, GL_TEXTURE_MIN_FILTER, filter.glType);
 	}
 	public void setMagnificationFilter(TextureFilter filter) {
+		this.bindBufferIfNeeded();
 		glTexParameteri(this.glType, GL_TEXTURE_MAG_FILTER, filter.glType);
 	}
 
+	@Override
 	public boolean isDisposed() {
 		return disposed;
-	}
-	public void requireNotDisposed() {
-		if(disposed) throw new IllegalStateException("already disposed");
 	}
 
 	@Override
@@ -224,6 +239,7 @@ public final class Texture implements Disposable {
 		requireNotDisposed();
 		glDeleteTextures(this.handle);
 		this.disposed = true;
+		if(lastHandle == this.handle) lastHandle = 0;
 	}
 
 	/**

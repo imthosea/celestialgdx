@@ -26,7 +26,7 @@ import me.thosea.celestialgdx.graphics.Mesh;
 import me.thosea.celestialgdx.graphics.Mesh.BufferUsage;
 import me.thosea.celestialgdx.graphics.Mesh.VxAttrib;
 import me.thosea.celestialgdx.graphics.Shader;
-import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.graphics.Texture;
 import me.thosea.celestialgdx.image.TextureRegion;
 import org.lwjgl.system.MemoryUtil;
 
@@ -962,7 +962,7 @@ public class SpriteBatch implements Batch {
 
 		lastTexture.bindTexture(0);
 
-		mesh.bind();
+		mesh.bindVertexBuffer();
 
 		vertices.limit(idx);
 		mesh.uploadVertices(vertices);

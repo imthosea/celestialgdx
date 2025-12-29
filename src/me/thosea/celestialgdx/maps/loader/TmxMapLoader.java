@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.XmlElement;
 import me.thosea.celestialgdx.assets.AssetLoader;
 import me.thosea.celestialgdx.assets.AssetLoaderParameters;
 import me.thosea.celestialgdx.assets.AssetLoadingContext;
-import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.graphics.Texture;
 import me.thosea.celestialgdx.image.TextureRegion;
 import me.thosea.celestialgdx.maps.MapProperties;
 import me.thosea.celestialgdx.maps.TiledMap;

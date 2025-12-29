@@ -20,10 +20,10 @@ import me.thosea.celestialgdx.assets.AssetLoader;
 import me.thosea.celestialgdx.assets.AssetLoaderParameters;
 import me.thosea.celestialgdx.assets.AssetLoadingContext;
 import me.thosea.celestialgdx.assets.AssetManager;
+import me.thosea.celestialgdx.graphics.Texture;
+import me.thosea.celestialgdx.graphics.Texture.TextureFilter;
+import me.thosea.celestialgdx.graphics.Texture.TextureWrap;
 import me.thosea.celestialgdx.image.Pixmap;
-import me.thosea.celestialgdx.image.Texture;
-import me.thosea.celestialgdx.image.Texture.TextureFilter;
-import me.thosea.celestialgdx.image.Texture.TextureWrap;
 
 /**
  * {@link AssetLoader} for {@link Texture} instances. The pixel data is loaded asynchronously. The texture is then created on the

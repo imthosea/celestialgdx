@@ -12,8 +12,9 @@ import static org.lwjgl.opengl.GL30.*;
  * @see <a href="https://wikis.khronos.org/opengl/Renderbuffer">Renderbuffer - OpenGL wiki</a>
  */
 public final class Renderbuffer implements Disposable {
-	private final int handle;
+	private static int lastHandle = 0;
 
+	private final int handle;
 	private boolean disposed = false;
 
 	private Renderbuffer(int handle) {
@@ -29,10 +30,14 @@ public final class Renderbuffer implements Disposable {
 	public void bind() {
 		this.requireNotDisposed();
 		glBindRenderbuffer(GL_RENDERBUFFER, this.handle);
+		lastHandle = this.handle;
 	}
 
 	public void allocate(int format, int width, int height) {
 		this.requireNotDisposed();
+		if(lastHandle != this.handle) {
+			bind();
+		}
 		glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
 	}
 
@@ -41,13 +46,11 @@ public final class Renderbuffer implements Disposable {
 		this.requireNotDisposed();
 		glDeleteFramebuffers(this.handle);
 		this.disposed = true;
+		if(lastHandle == this.handle) lastHandle = 0;
 	}
-
+	@Override
 	public boolean isDisposed() {
 		return disposed;
-	}
-	public void requireNotDisposed() {
-		if(disposed) throw new IllegalStateException("already disposed");
 	}
 
 	public static Renderbuffer wrap(int handle) {

@@ -27,6 +27,9 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
@@ -36,16 +39,20 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 /**
  * A shader encapsulates a vertex and fragment shader pair linked to form a shader program.
  * When a shader is bound, you can use fields exposed by the superclass to set uniforms.
- *
  * <p>
  * Shaders are compiled when constructed and can be recompiled using {@link #compile(String, String)}.
  * If compilation fails, an exception will be thrown, and, in the case of recompiling, will not
  * update the current {@link Shader} to point to the new program. This means a {@link Shader} can never
  * represent a shader which isn't compiled.
  * </p>
- *
  * <p>
- * A shader must be disposed via a call to {@link Shader#dispose()} when it is no longer needed
+ * Shaders are automatically bound upon creation
+ * and when a uniform is set if it does not match the last known bound shader.
+ * If the active shader changed outside of this class (like by manually calling glUseProgram),
+ * always call {@link #bind()} or the shader won't be rebounded.
+ * </p>
+ * <p>
+ * A shader must be disposed via a call to {@link Shader#dispose()} when it is no longer needed.
  * </p>
  * @author thosea
  */
@@ -59,6 +66,11 @@ public abstract class Shader implements Disposable {
 	public static final String COLOR_ATTRIBUTE = "a_color";
 	/** default name for texcoords attributes, append texture unit number **/
 	public static final String TEXCOORD_ATTRIBUTE = "a_texCoord";
+
+	private static int lastId = 0;
+
+	private final List<Uniform> uniforms = new ArrayList<>();
+	private final List<Uniform> uniformsView = Collections.unmodifiableList(uniforms);
 
 	private int id = -1;
 	private boolean disposed = false;
@@ -99,6 +111,11 @@ public abstract class Shader implements Disposable {
 			glDeleteProgram(this.id);
 		}
 		this.id = programId;
+
+		this.bind();
+		if(!uniforms.isEmpty()) {
+			uniforms.forEach(Uniform::setLocation);
+		}
 	}
 
 	private int compile(String name, int type, String source, int deleteOnFail) {
@@ -117,6 +134,12 @@ public abstract class Shader implements Disposable {
 	public void bind() {
 		requireNotDisposed();
 		glUseProgram(id);
+		lastId = id;
+	}
+
+	public List<Uniform> getUniforms() {
+		requireNotDisposed();
+		return uniformsView;
 	}
 
 	public int getHandle() {
@@ -142,6 +165,7 @@ public abstract class Shader implements Disposable {
 		protected Uniform(String name) {
 			this.name = name;
 			this.setLocation();
+			uniforms.add(this);
 		}
 
 		protected void setLocation() {
@@ -151,7 +175,11 @@ public abstract class Shader implements Disposable {
 			}
 		}
 
+		public String getName() {
+			return name;
+		}
 		public int getLocation() {
+			if(lastId != id) bind();
 			return location;
 		}
 	}

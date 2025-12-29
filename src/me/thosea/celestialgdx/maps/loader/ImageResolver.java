@@ -18,7 +18,7 @@ package me.thosea.celestialgdx.maps.loader;
 
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import me.thosea.celestialgdx.assets.AssetLoadingContext;
-import me.thosea.celestialgdx.image.Texture;
+import me.thosea.celestialgdx.graphics.Texture;
 import me.thosea.celestialgdx.image.TextureRegion;
 
 @FunctionalInterface
