@@ -89,26 +89,34 @@ public abstract class Shader implements Disposable {
 		int vertexId = compile("vertex", GL_VERTEX_SHADER, vertexShader, /*deleteOnFail*/ -1);
 		int fragmentId = compile("fragment", GL_FRAGMENT_SHADER, fragmentShader, /*deleteOnFail*/ vertexId);
 
-		int programId = glCreateProgram();
-		glAttachShader(programId, vertexId);
-		glAttachShader(programId, fragmentId);
-		glLinkProgram(programId);
+		int newId = glCreateProgram();
+		glAttachShader(newId, vertexId);
+		glAttachShader(newId, fragmentId);
+		glLinkProgram(newId);
 		glDeleteShader(vertexId);
 		glDeleteShader(fragmentId);
 
-		if(glGetProgrami(programId, GL_LINK_STATUS) == 0) {
-			String error = glGetProgramInfoLog(programId);
+		if(glGetProgrami(newId, GL_LINK_STATUS) == 0) {
+			String error = glGetProgramInfoLog(newId);
 			throw new IllegalStateException("Failed to link shaders\n" + error);
 		}
 
-		if(id != -1) {
-			glDeleteProgram(this.id);
-		}
-		this.id = programId;
-
+		int oldId = this.id;
+		this.id = newId;
 		this.bind();
+
 		if(!uniforms.isEmpty()) {
-			uniforms.forEach(Uniform::setLocation);
+			try {
+				uniforms.forEach(Uniform::setLocation);
+			} catch(IllegalStateException e) {
+				glDeleteProgram(newId);
+				this.id = oldId;
+				throw e;
+			}
+		}
+
+		if(oldId != -1) {
+			glDeleteProgram(oldId);
 		}
 	}
 
