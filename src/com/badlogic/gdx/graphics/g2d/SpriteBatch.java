@@ -22,11 +22,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import me.thosea.celestialgdx.graphics.Mesh;
-import me.thosea.celestialgdx.graphics.Mesh.BufferUsage;
-import me.thosea.celestialgdx.graphics.Mesh.VxAttrib;
 import me.thosea.celestialgdx.graphics.Shader;
 import me.thosea.celestialgdx.graphics.Texture;
+import me.thosea.celestialgdx.graphics.mesh.BufferUsage;
+import me.thosea.celestialgdx.graphics.mesh.EBO;
+import me.thosea.celestialgdx.graphics.mesh.Mesh;
+import me.thosea.celestialgdx.graphics.mesh.Mesh.VxAttrib;
+import me.thosea.celestialgdx.graphics.mesh.VBO;
 import me.thosea.celestialgdx.image.TextureRegion;
 import org.lwjgl.system.MemoryUtil;
 
@@ -44,6 +46,8 @@ import static org.lwjgl.opengl.GL32.GL_UNSIGNED_BYTE;
  */
 public class SpriteBatch implements Batch {
 	private final Mesh mesh;
+	private final VBO vbo;
+	private final EBO ebo;
 
 	static final int VERTEX_SIZE = 2 + 1 + 2;
 	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
@@ -110,11 +114,13 @@ public class SpriteBatch implements Batch {
 		if(size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
 		// size * 4, size * 6
-		mesh = Mesh.create(
-				BufferUsage.DYNAMIC, BufferUsage.DYNAMIC,
-				VxAttrib.of(2, GL_FLOAT),
-				VxAttrib.of(4, GL_UNSIGNED_BYTE, /*normalize*/true),
-				VxAttrib.of(2, GL_FLOAT)
+		this.vbo = VBO.create(BufferUsage.DYNAMIC);
+		this.ebo = EBO.create(BufferUsage.DYNAMIC);
+		this.mesh = Mesh.create(
+				ebo,
+				VxAttrib.of(vbo, 2, GL_FLOAT),
+				VxAttrib.of(vbo, 4, GL_UNSIGNED_BYTE, /*normalize*/true),
+				VxAttrib.of(vbo, 2, GL_FLOAT)
 		);
 
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -133,7 +139,7 @@ public class SpriteBatch implements Batch {
 			indices[i + 4] = (short) (j + 3);
 			indices[i + 5] = j;
 		}
-		mesh.uploadIndices(indices);
+		ebo.uploadIndices(indices);
 
 		shader = createDefaultShader();
 		// customShader = defaultShader;
@@ -962,10 +968,10 @@ public class SpriteBatch implements Batch {
 
 		lastTexture.bindTexture(0);
 
-		mesh.bindVertexBuffer();
+		mesh.bind();
 
 		vertices.limit(idx);
-		mesh.uploadVertices(vertices);
+		vbo.uploadVertices(vertices);
 		vertices.limit(vertices.capacity());
 
 		if(blendingDisabled) {
