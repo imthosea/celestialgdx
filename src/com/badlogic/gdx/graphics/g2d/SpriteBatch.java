@@ -25,10 +25,10 @@ import com.badlogic.gdx.math.Matrix4;
 import me.thosea.celestialgdx.graphics.Shader;
 import me.thosea.celestialgdx.graphics.Texture;
 import me.thosea.celestialgdx.graphics.mesh.BufferUsage;
-import me.thosea.celestialgdx.graphics.mesh.EBO;
+import me.thosea.celestialgdx.graphics.mesh.Ebo;
 import me.thosea.celestialgdx.graphics.mesh.Mesh;
 import me.thosea.celestialgdx.graphics.mesh.Mesh.VxAttrib;
-import me.thosea.celestialgdx.graphics.mesh.VBO;
+import me.thosea.celestialgdx.graphics.mesh.Vbo;
 import me.thosea.celestialgdx.image.TextureRegion;
 import org.lwjgl.system.MemoryUtil;
 
@@ -46,8 +46,8 @@ import static org.lwjgl.opengl.GL32.GL_UNSIGNED_BYTE;
  */
 public class SpriteBatch implements Batch {
 	private final Mesh mesh;
-	private final VBO vbo;
-	private final EBO ebo;
+	private final Vbo vbo;
+	private final Ebo ebo;
 
 	static final int VERTEX_SIZE = 2 + 1 + 2;
 	static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
@@ -114,8 +114,8 @@ public class SpriteBatch implements Batch {
 		if(size > 8191) throw new IllegalArgumentException("Can't have more than 8191 sprites per batch: " + size);
 
 		// size * 4, size * 6
-		this.vbo = VBO.create(BufferUsage.DYNAMIC);
-		this.ebo = EBO.create(BufferUsage.DYNAMIC);
+		this.vbo = Vbo.create(BufferUsage.DYNAMIC);
+		this.ebo = Ebo.create(BufferUsage.DYNAMIC);
 		this.mesh = Mesh.create();
 		this.mesh.setEbo(this.ebo);
 		this.mesh.setAttributes(

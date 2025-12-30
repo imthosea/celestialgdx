@@ -23,7 +23,7 @@ import static org.lwjgl.opengl.GL15.*;
  * @see <a href="https://wikis.khronos.org/opengl/Vertex_Specification#Index_buffers">
  * Vertex Specification/Index Buffers - OpenGL wiki</a>
  */
-public final class EBO implements Disposable {
+public final class Ebo implements Disposable {
 	private static int lastHandle = 0;
 
 	private final int handle;
@@ -32,7 +32,7 @@ public final class EBO implements Disposable {
 	private BufferUsage usage;
 	private boolean disposed = false;
 
-	private EBO(int handle, BufferUsage usage) {
+	private Ebo(int handle, BufferUsage usage) {
 		this.handle = handle;
 		this.usage = usage;
 		bind();
@@ -117,12 +117,12 @@ public final class EBO implements Disposable {
 		return disposed;
 	}
 
-	public static EBO wrap(int handle, BufferUsage usage) {
+	public static Ebo wrap(int handle, BufferUsage usage) {
 		Objects.requireNonNull(usage);
-		return new EBO(handle, usage);
+		return new Ebo(handle, usage);
 	}
-	public static EBO create(BufferUsage usage) {
+	public static Ebo create(BufferUsage usage) {
 		Objects.requireNonNull(usage);
-		return new EBO(glGenBuffers(), usage);
+		return new Ebo(glGenBuffers(), usage);
 	}
 }

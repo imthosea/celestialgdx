@@ -25,14 +25,14 @@ import static org.lwjgl.opengl.GL15.*;
  * @see <a href="https://wikis.khronos.org/opengl/Vertex_Specification#Vertex_Buffer_Object">
  * Vertex Specification/Vertex Buffer Object - OpenGL wiki</a>
  */
-public final class VBO implements Disposable {
+public final class Vbo implements Disposable {
 	private static long lastHandle = 0;
 
 	private final int handle;
 	private BufferUsage usage;
 	private boolean disposed = false;
 
-	private VBO(int handle, BufferUsage usage) {
+	private Vbo(int handle, BufferUsage usage) {
 		this.handle = handle;
 		this.usage = usage;
 		bind();
@@ -118,15 +118,15 @@ public final class VBO implements Disposable {
 		return disposed;
 	}
 
-	public static VBO wrap(int handle) {
-		return new VBO(handle, BufferUsage.STATIC);
+	public static Vbo wrap(int handle) {
+		return new Vbo(handle, BufferUsage.STATIC);
 	}
-	public static VBO wrap(int handle, BufferUsage usage) {
+	public static Vbo wrap(int handle, BufferUsage usage) {
 		Objects.requireNonNull(usage);
-		return new VBO(handle, usage);
+		return new Vbo(handle, usage);
 	}
-	public static VBO create(BufferUsage usage) {
+	public static Vbo create(BufferUsage usage) {
 		Objects.requireNonNull(usage);
-		return new VBO(glGenBuffers(), usage);
+		return new Vbo(glGenBuffers(), usage);
 	}
 }
