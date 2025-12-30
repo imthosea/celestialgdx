@@ -18,7 +18,7 @@ import static org.lwjgl.opengl.GL33.*;
  * Set the known attached EBO using {@link #setEbo}. The VAO and EBO must be bound.
  * </p>
  * <p>
- * Render by calling {@link #render} while the VAO is bound.
+ * Render by calling {@link #render} or {@link #renderInstanced} while the VAO is bound.
  * If the known EBO is set, it will be used when rendering.
  * </p>
  * @author thosea
@@ -131,6 +131,14 @@ public final class Mesh implements Disposable {
 			glDrawElements(mode, count, ebo.getEboType(), 0);
 		} else {
 			glDrawArrays(mode, 0, count);
+		}
+	}
+	public void renderInstanced(int mode, int count, int instances) {
+		requireBound();
+		if(ebo != null) {
+			glDrawElementsInstanced(mode, count, ebo.getEboType(), 0, instances);
+		} else {
+			glDrawArraysInstanced(mode, 0, count, instances);
 		}
 	}
 
