@@ -79,13 +79,14 @@ public abstract class Shader implements Disposable {
 	 * @param fragmentShader fragment
 	 */
 	protected Shader(String vertexShader, String fragmentShader) {
-		Objects.requireNonNull(vertexShader);
-		Objects.requireNonNull(fragmentShader);
 		this.compile(vertexShader, fragmentShader);
 	}
 
 	public void compile(String vertexShader, String fragmentShader) {
 		requireNotDisposed();
+		Objects.requireNonNull(vertexShader);
+		Objects.requireNonNull(fragmentShader);
+
 		int vertexId = compile("vertex", GL_VERTEX_SHADER, vertexShader, /*deleteOnFail*/ -1);
 		int fragmentId = compile("fragment", GL_FRAGMENT_SHADER, fragmentShader, /*deleteOnFail*/ vertexId);
 
