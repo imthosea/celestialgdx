@@ -49,7 +49,6 @@ publishing {
 			licenses {
 				license {
 					name = prop("pom_license_name")
-					url = prop("pom_license_url")
 					distribution = "repo"
 				}
 			}
