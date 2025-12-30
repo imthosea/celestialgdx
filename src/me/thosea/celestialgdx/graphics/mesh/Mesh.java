@@ -28,7 +28,7 @@ public final class Mesh implements Disposable {
 	private static int lastHandle = 0;
 
 	private final int handle;
-	private EBO ebo = null;
+	private Ebo ebo = null;
 	private int lastAttribCount = 0;
 	private boolean disposed = false;
 
@@ -72,7 +72,7 @@ public final class Mesh implements Disposable {
 	}
 
 	private void setAttribsManual(VxAttrib[] attribs) {
-		VBO lastBuffer = null;
+		Vbo lastBuffer = null;
 		for(int i = 0; i < attribs.length; i++) {
 			VxAttrib attrib = attribs[i];
 			if(attrib.source != lastBuffer) {
@@ -87,7 +87,7 @@ public final class Mesh implements Disposable {
 	}
 
 	private void setAttribsAuto(VxAttrib[] attribs) {
-		VBO initialBuffer = attribs[0].source;
+		Vbo initialBuffer = attribs[0].source;
 		initialBuffer.bind();
 
 		int totalSize = 0;
@@ -112,7 +112,7 @@ public final class Mesh implements Disposable {
 		glEnableVertexAttribArray(i);
 	}
 
-	public void setEbo(EBO ebo) {
+	public void setEbo(Ebo ebo) {
 		this.requireBound();
 		if(ebo != null) {
 			ebo.bind();
@@ -155,7 +155,7 @@ public final class Mesh implements Disposable {
 
 	public static final class VxAttrib {
 		/** VBO that contains this attribute */
-		public final VBO source;
+		public final Vbo source;
 
 		/**
 		 * Component count for the attribute. 1 for single types, 2 for vec2, 3 for vec3, 4 for vec4
@@ -195,7 +195,7 @@ public final class Mesh implements Disposable {
 		 */
 		public final int size;
 
-		private VxAttrib(VBO source, int components, int type, boolean normalize, int stride, int pointer) {
+		private VxAttrib(Vbo source, int components, int type, boolean normalize, int stride, int pointer) {
 			if(components < 1 || components > 4) {
 				throw new IllegalArgumentException("components must be between 1 and 4");
 			}
@@ -215,16 +215,16 @@ public final class Mesh implements Disposable {
 			};
 		}
 
-		public static VxAttrib of(VBO source, int components, int type) {
+		public static VxAttrib of(Vbo source, int components, int type) {
 			return new VxAttrib(source, components, type, false, -1, -1);
 		}
-		public static VxAttrib of(VBO source, int components, int type, boolean normalize) {
+		public static VxAttrib of(Vbo source, int components, int type, boolean normalize) {
 			return new VxAttrib(source, components, type, normalize, -1, -1);
 		}
-		public static VxAttrib of(VBO source, int components, int type, int stride, int pointer) {
+		public static VxAttrib of(Vbo source, int components, int type, int stride, int pointer) {
 			return new VxAttrib(source, components, type, false, stride, pointer);
 		}
-		public static VxAttrib of(VBO source, int components, int type, boolean normalize, int stride, int pointer) {
+		public static VxAttrib of(Vbo source, int components, int type, boolean normalize, int stride, int pointer) {
 			return new VxAttrib(source, components, type, normalize, stride, pointer);
 		}
 	}
