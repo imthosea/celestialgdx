@@ -116,8 +116,10 @@ public class SpriteBatch implements Batch {
 		// size * 4, size * 6
 		this.vbo = VBO.create(BufferUsage.DYNAMIC);
 		this.ebo = EBO.create(BufferUsage.DYNAMIC);
-		this.mesh = Mesh.create(
-				ebo,
+		this.mesh = Mesh.create();
+		this.mesh.setEbo(this.ebo);
+		this.mesh.setAttributes(
+				/*autoPosition*/ true,
 				VxAttrib.of(vbo, 2, GL_FLOAT),
 				VxAttrib.of(vbo, 4, GL_UNSIGNED_BYTE, /*normalize*/true),
 				VxAttrib.of(vbo, 2, GL_FLOAT)
@@ -126,7 +128,6 @@ public class SpriteBatch implements Batch {
 		projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		vertices = MemoryUtil.memAllocFloat(size * SPRITE_SIZE);
-		vertices.position(0);
 
 		int len = size * 6;
 		short[] indices = new short[len];
@@ -962,17 +963,17 @@ public class SpriteBatch implements Batch {
 		renderCalls++;
 		totalRenderCalls++;
 
-		vertices.position(0);
 		int spritesInBatch = idx / 20;
 		int count = spritesInBatch * 6;
 
 		lastTexture.bindTexture(0);
 
 		mesh.bind();
+		vbo.bind();
 
-		vertices.limit(idx);
+		vertices.flip();
 		vbo.uploadVertices(vertices);
-		vertices.limit(vertices.capacity());
+		vertices.clear();
 
 		if(blendingDisabled) {
 			Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -1046,6 +1047,8 @@ public class SpriteBatch implements Batch {
 	public void dispose() {
 		requireNotDisposed();
 		mesh.dispose();
+		vbo.dispose();
+		ebo.dispose();
 		shader.dispose();
 		this.disposed = true;
 	}

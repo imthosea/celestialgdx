@@ -10,14 +10,15 @@ import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL33.*;
 
 /**
- * An image on the GPU's memory. The texture's buffer is automatically bound after creation.
+ * An image on the GPU's memory.
+ * The texture's buffer is automatically bound after creation and when {@link #bindBuffer()} is called.
  * <p>
  * To upload data, use a variant of {@link #upload}.
  * To allocate the memory for the texture without uploading anything
  * (for example to use with a framebuffer), use a variant of {@link #allocate}.
- * Be sure to call {@link #bindBuffer()} before using either of those methods.
  * If you want to upload a non-2D texture or data from somewhere other than a pixmap,
  * use the OpenGL methods directly, then call {@link #setKnownSize(int, int)}.
+ * The texture's buffer must be bound prior.
  * </p>
  * <p>
  * You can set the wrap behavior with
@@ -27,7 +28,10 @@ import static org.lwjgl.opengl.GL33.*;
  * to set the color.
  * You can set the filter with
  * {@link #setMagnificationFilter(TextureFilter)} / {@link #setMinificationFilter(TextureFilter)}.
- * Make sure to call {@link #bindBuffer()} before.
+ * The texture's buffer must be bound prior.
+ * </p>
+ * <p>
+ * The texture can be bound for drawing with {@link #bindTexture}.
  * </p>
  * @author thosea
  */
@@ -68,7 +72,6 @@ public final class Texture implements Disposable {
 		glBindTexture(this.glType, this.handle);
 		lastHandle = this.handle;
 	}
-
 	/**
 	 * Bind the texture for use in a shader
 	 * @param slot the texture slot
@@ -83,10 +86,9 @@ public final class Texture implements Disposable {
 		glBindTexture(this.glType, this.handle);
 		lastHandle = this.handle;
 	}
-
-	private void bindBufferIfNeeded() {
+	public void requireBound() {
 		requireNotDisposed();
-		if(lastHandle != this.handle) bindBuffer();
+		if(lastHandle != this.handle) throw new IllegalStateException("the buffer is not bound");
 	}
 
 	public int getWidth() {
@@ -130,7 +132,7 @@ public final class Texture implements Disposable {
 			throw new IllegalArgumentException("Pixmap format " + pixmap.format + " cannot be uploaded to OpenGL. " +
 					"The easiest way to fix this is to explicitly specify a format at construction.");
 		}
-		this.bindBufferIfNeeded();
+		this.requireBound();
 		glTexImage2D(
 				glType,
 				levelOfDetail,
@@ -165,7 +167,7 @@ public final class Texture implements Disposable {
 	 * @param compress whether the texture should be compressed on the GPU
 	 */
 	public void allocate(PixelFormat format, int width, int height, boolean compress) {
-		this.bindBufferIfNeeded();
+		this.requireBound();
 		glTexImage2D(
 				glType,
 				/*level*/ 0,
@@ -190,11 +192,11 @@ public final class Texture implements Disposable {
 	}
 
 	public void setHorizontalWrap(TextureWrap wrap) {
-		this.bindBufferIfNeeded();
+		this.requireBound();
 		glTexParameteri(this.glType, GL_TEXTURE_WRAP_S, wrap.glType);
 	}
 	public void setVerticalWrap(TextureWrap wrap) {
-		this.bindBufferIfNeeded();
+		this.requireBound();
 		glTexParameteri(this.glType, GL_TEXTURE_WRAP_T, wrap.glType);
 	}
 	/** Sets both the horizontal and vertical wrap behavior */
@@ -204,7 +206,7 @@ public final class Texture implements Disposable {
 	}
 	/** Sets the border color for when the wrap behavior is {@link TextureWrap#CLAMP_TO_BORDER} */
 	public void setBorderColor(float r, float g, float b, float a) {
-		this.bindBufferIfNeeded();
+		this.requireBound();
 		glTexParameterfv(this.glType, GL_TEXTURE_BORDER_COLOR, new float[] {r, g, b, a});
 	}
 
@@ -221,11 +223,11 @@ public final class Texture implements Disposable {
 	}
 
 	public void setMinificationFilter(TextureFilter filter) {
-		this.bindBufferIfNeeded();
+		this.requireBound();
 		glTexParameteri(this.glType, GL_TEXTURE_MIN_FILTER, filter.glType);
 	}
 	public void setMagnificationFilter(TextureFilter filter) {
-		this.bindBufferIfNeeded();
+		this.requireBound();
 		glTexParameteri(this.glType, GL_TEXTURE_MAG_FILTER, filter.glType);
 	}
 

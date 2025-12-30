@@ -15,9 +15,9 @@ import static org.lwjgl.opengl.GL15.*;
 
 /**
  * An OpenGL VBO. Most commonly used with VAOs (see {@link Mesh}).
- * The buffer is automatically bound upon creation.
+ * The buffer is bound upon creation and when {@link #bind} is called.
  * <p>
- * Upload vertex data with {@link #uploadVertices}. The VBO will be automatically bound if needed.
+ * Upload vertex data with {@link #uploadVertices}. The buffer must be bound prior.
  * Using off-heap nio {@link Buffer}s has significantly faster transfer speed than arrays but is not required.
  * </p>
  * @author thosea
@@ -26,7 +26,7 @@ import static org.lwjgl.opengl.GL15.*;
  * Vertex Specification/Vertex Buffer Object - OpenGL wiki</a>
  */
 public final class VBO implements Disposable {
-	private static int lastHandle = 0;
+	private static long lastHandle = 0;
 
 	private final int handle;
 	private BufferUsage usage;
@@ -46,11 +46,11 @@ public final class VBO implements Disposable {
 	public void bind() {
 		requireNotDisposed();
 		glBindBuffer(GL_ARRAY_BUFFER, handle);
-		lastHandle = handle;
+		lastHandle = this.handle;
 	}
-	private void bindIfNeeded() {
+	public void requireBound() {
 		requireNotDisposed();
-		if(lastHandle != this.handle) bind();
+		if(lastHandle != this.handle) throw new IllegalStateException("the buffer is not bound");
 	}
 
 	public void setExpectedUsage(BufferUsage usage) {
@@ -62,48 +62,48 @@ public final class VBO implements Disposable {
 	}
 
 	public void uploadVertices(ByteBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(ShortBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(IntBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(LongBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(FloatBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(DoubleBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 
 	public void uploadVertices(short[] buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(int[] buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(long[] buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(float[] buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 	public void uploadVertices(double[] buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ARRAY_BUFFER, buffer, this.usage.glType);
 	}
 
@@ -111,7 +111,6 @@ public final class VBO implements Disposable {
 	public void dispose() {
 		requireNotDisposed();
 		glDeleteBuffers(this.handle);
-		if(lastHandle == handle) lastHandle = 0;
 		this.disposed = true;
 	}
 	@Override

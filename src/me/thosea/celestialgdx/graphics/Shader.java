@@ -46,12 +46,6 @@ import static org.lwjgl.system.MemoryStack.stackPush;
  * represent a shader which isn't compiled.
  * </p>
  * <p>
- * Shaders are automatically bound upon creation
- * and when a uniform is set if it does not match the last known bound shader.
- * If the active shader changed outside of this class (like by manually calling glUseProgram),
- * always call {@link #bind()} or the shader won't be rebounded.
- * </p>
- * <p>
  * A shader must be disposed via a call to {@link Shader#dispose()} when it is no longer needed.
  * </p>
  * @author thosea
@@ -151,6 +145,7 @@ public abstract class Shader implements Disposable {
 	public void dispose() {
 		requireNotDisposed();
 		glDeleteProgram(this.id);
+		if(lastId == this.id) lastId = 0;
 		this.disposed = true;
 	}
 	@Override
@@ -179,7 +174,7 @@ public abstract class Shader implements Disposable {
 			return name;
 		}
 		public int getLocation() {
-			if(lastId != id) bind();
+			if(lastId != id) throw new IllegalStateException("the shader is not bound");
 			return location;
 		}
 	}

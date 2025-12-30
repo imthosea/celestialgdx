@@ -13,9 +13,9 @@ import static org.lwjgl.opengl.GL15.*;
 
 /**
  * An OpenGL EBO. Most commonly used with VAOs (see {@link Mesh}).
- * The buffer is automatically bound upon creation.
+ * The buffer is bound upon creation and when {@link #bind} is called.
  * <p>
- * Upload index data with {@link #uploadIndices}. The EBO will be automatically bound if needed.
+ * Upload index data with {@link #uploadIndices}. The buffer must be bound prior.
  * Using off-heap nio {@link Buffer}s has significantly faster transfer speed than arrays but is not required.
  * </p>
  * @author thosea
@@ -46,14 +46,14 @@ public final class EBO implements Disposable {
 	public void bind() {
 		requireNotDisposed();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle);
+		this.markBound();
+	}
+	void markBound() {
 		lastHandle = handle;
 	}
-	void markBound() { // used by mesh
-		lastHandle = handle;
-	}
-	private void bindIfNeeded() {
+	public void requireBound() {
 		requireNotDisposed();
-		if(lastHandle != this.handle) bind();
+		if(lastHandle != this.handle) throw new IllegalStateException("the buffer is not bound");
 	}
 
 	public void setExpectedUsage(BufferUsage usage) {
@@ -70,7 +70,6 @@ public final class EBO implements Disposable {
 		if(eboType == -1) throw new IllegalStateException("no index data uploaded yet");
 		return eboType;
 	}
-
 	/**
 	 * Sets the known EBO data type (i.e. {@link GL33#GL_UNSIGNED_SHORT}).
 	 * This is done automatically when {@link #uploadIndices} is called.
@@ -81,28 +80,28 @@ public final class EBO implements Disposable {
 	}
 
 	public void uploadIndices(ByteBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, usage.glType);
 		this.eboType = GL_UNSIGNED_BYTE;
 	}
 	public void uploadIndices(ShortBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, usage.glType);
 		this.eboType = GL_UNSIGNED_SHORT;
 	}
 	public void uploadIndices(IntBuffer buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, usage.glType);
 		this.eboType = GL_UNSIGNED_INT;
 	}
 
 	public void uploadIndices(short[] buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, usage.glType);
 		this.eboType = GL_UNSIGNED_SHORT;
 	}
 	public void uploadIndices(int[] buffer) {
-		bindIfNeeded();
+		requireBound();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, usage.glType);
 		this.eboType = GL_UNSIGNED_INT;
 	}
