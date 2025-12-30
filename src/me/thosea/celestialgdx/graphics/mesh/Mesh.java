@@ -163,11 +163,12 @@ public final class Mesh implements Disposable {
 		public final int components;
 
 		/**
-		 * Component type. Can be: {@link GL33#GL_BYTE}, {@link GL33#GL_UNSIGNED_BYTE}, {@link GL33#GL_SHORT},
-		 * {@link GL33# }, {@link GL33#GL_INT} {@link GL33#GL_INT}, {@link GL33#GL_UNSIGNED_INT},
-		 * {@link GL33#GL_HALF_FLOAT}, {@link GL33#GL_FLOAT}, {@link GL33#GL_DOUBLE},
-		 * {@link GL33#GL_INT_2_10_10_10_REV}, {@link GL33#GL_UNSIGNED_INT_2_10_10_10_REV},
-		 * {@link GL33#GL_UNSIGNED_INT_10F_11F_11F_REV}
+		 * Component type. Can be:
+		 * {@link GL33#GL_BYTE}, {@link GL33#GL_UNSIGNED_BYTE},
+		 * {@link GL33#GL_SHORT}, {@link GL33#GL_UNSIGNED_SHORT}, {@link GL33#GL_HALF_FLOAT},
+		 * {@link GL33#GL_INT}, {@link GL33#GL_UNSIGNED_INT}, {@link GL33#GL_INT_2_10_10_10_REV},
+		 * {@link GL33#GL_UNSIGNED_INT_2_10_10_10_REV}, {@link GL33#GL_FLOAT},
+		 * or {@link GL33#GL_DOUBLE}.
 		 */
 		public final int type;
 
@@ -209,7 +210,7 @@ public final class Mesh implements Disposable {
 			this.size = components * switch(type) {
 				case GL_BYTE, GL_UNSIGNED_BYTE -> 1;
 				case GL_SHORT, GL_UNSIGNED_SHORT, GL_HALF_FLOAT -> 2;
-				case GL_INT, GL_UNSIGNALED, GL_INT_2_10_10_10_REV, GL_UNSIGNED_INT_2_10_10_10_REV, GL_FLOAT -> 4;
+				case GL_INT, GL_UNSIGNED_INT, GL_INT_2_10_10_10_REV, GL_UNSIGNED_INT_2_10_10_10_REV, GL_FLOAT -> 4;
 				case GL_DOUBLE -> 8;
 				default -> throw new IllegalArgumentException("unsupported component type");
 			};
