@@ -36,7 +36,7 @@ public final class Renderbuffer implements Disposable {
 	public void allocate(int format, int width, int height) {
 		this.requireNotDisposed();
 		if(lastHandle != this.handle) {
-			bind();
+			throw new IllegalStateException("the buffer is not bound");
 		}
 		glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
 	}

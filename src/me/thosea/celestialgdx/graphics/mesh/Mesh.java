@@ -1,99 +1,132 @@
 package me.thosea.celestialgdx.graphics.mesh;
 
 import me.thosea.celestialgdx.utils.Disposable;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL33;
-
-import java.nio.Buffer;
 
 import static org.lwjgl.opengl.GL33.*;
 
 /**
- * An OpenGL VAO. Upon creation by {@link #create},
- * a VAO bound to the specified vertex attributes is created with an empty vertex and index buffer.
- * Both {@link #create} and {@link #wrap} will automatically bind the mesh.
+ * An OpenGL VAO. Contains attributes pointing to VBOs and an EBO binding.
+ * The buffer is automatically bound upon creation.
  * <p>
- * To upload vertex or index data, use a variant of {@link #uploadVertices} / {@link #uploadIndices}.
- * The VBO/EBO will automatically be bound if needed.
- * Note that using off-heap nio {@link Buffer}s has significantly faster transfer speed than arrays.
+ * Set attributes using {@link #setAttributes}. The VAO must be bound.
+ * If autoPosition is enabled, the stride and initial pointer will be automatically calculated
+ * for each attribute. It will throw an exception if the attributes are sourced from multiple buffers, however.
+ * If autoPosition is disabled, the stride and pointer for each attribute must be explicitly specified.
  * </p>
  * <p>
- * Creating an index buffer can be skipped entirely by passing null as the second parameter
- * to {@link #create}.
+ * Set the known attached EBO using {@link #setEbo}. The VAO and EBO must be bound.
  * </p>
- * Render by calling {@link #render}. The VAO will be automatically bound if needed.
  * <p>
- * Since CelestialGDX doesn't support mobile where the OpenGL context can be lost mid-runtime,
- * this class doesn't need to store the last uploaded buffer or reload it automatically.
+ * Render by calling {@link #render} while the VAO is bound.
+ * If the known EBO is set, it will be used when rendering.
  * </p>
  * @author thosea
  * @see <a href="https://wikis.khronos.org/opengl/Vertex_Specification">Vertex Specification - OpenGL wiki</a>
  */
 public final class Mesh implements Disposable {
-	private static int lastVao = 0;
+	private static int lastHandle = 0;
 
-	private final int vaoHandle;
-	@Nullable private final EBO ebo;
-
+	private final int handle;
+	private EBO ebo = null;
+	private int lastAttribCount = 0;
 	private boolean disposed = false;
 
-	private Mesh(@Nullable EBO ebo, int vaoHandle) {
-		this.vaoHandle = vaoHandle;
-		this.ebo = ebo;
-
-		glBindVertexArray(vaoHandle);
-		lastVao = this.vaoHandle;
-		if(ebo != null) ebo.bind();
-	}
-
-	private Mesh(@Nullable EBO ebo, VxAttrib[] attribs) {
-		this.vaoHandle = glGenVertexArrays();
-		this.ebo = ebo;
-
-		glBindVertexArray(vaoHandle);
-		lastVao = this.vaoHandle;
-		if(ebo != null) ebo.bind();
-
-		int currentSize = 0;
-		int lastBuffer = 0;
-		for(int i = 0; i < attribs.length; i++) {
-			VxAttrib attrib = attribs[i];
-			int buffer = attrib.sourceHandle;
-			if(buffer != lastBuffer) {
-				lastBuffer = buffer;
-				currentSize = 0;
-				VBO.wrap(buffer).bind();
-			}
-
-			int stride = attrib.stride != -1 ? attrib.stride : 0;
-			int pointer = attrib.pointer != -1 ? attrib.pointer : currentSize;
-
-			glVertexAttribPointer(i, attrib.components, attrib.type, attrib.normalize, stride, pointer);
-			glEnableVertexAttribArray(i);
-
-			currentSize += attrib.size;
-		}
+	private Mesh(int handle) {
+		this.handle = handle;
+		this.bind();
 	}
 
 	public int getHandle() {
 		requireNotDisposed();
-		return vaoHandle;
-	}
-	@Nullable
-	public EBO getEbo() {
-		return ebo;
+		return handle;
 	}
 
-	/** Binds the VAO of this mesh (this also binds the EBO if present) */
 	public void bind() {
 		requireNotDisposed();
-		glBindVertexArray(this.vaoHandle);
-		lastVao = this.vaoHandle;
+		glBindVertexArray(this.handle);
+		lastHandle = handle;
 		if(ebo != null) ebo.markBound();
+	}
+	public void requireBound() {
+		requireNotDisposed();
+		if(lastHandle != this.handle) throw new IllegalStateException("the buffer is not bound");
+	}
+
+	public void setAttributes(boolean autoPosition, VxAttrib... attribs) {
+		requireBound();
+		if(this.lastAttribCount > attribs.length) {
+			for(int i = attribs.length; i < lastAttribCount; i++) {
+				glDisableVertexAttribArray(i);
+			}
+		}
+		this.lastAttribCount = attribs.length;
+
+		if(attribs.length == 0) return;
+
+		if(autoPosition) {
+			setAttribsAuto(attribs);
+		} else {
+			setAttribsManual(attribs);
+		}
+	}
+
+	private void setAttribsManual(VxAttrib[] attribs) {
+		VBO lastBuffer = null;
+		for(int i = 0; i < attribs.length; i++) {
+			VxAttrib attrib = attribs[i];
+			if(attrib.source != lastBuffer) {
+				lastBuffer = attrib.source;
+				attrib.source.bind();
+			}
+			if(attrib.stride == -1 || attrib.pointer == -1) {
+				throw new IllegalArgumentException("automatic positioning is disabled and stride/pointer wasn't specified");
+			}
+			addAttribute(i, attrib, attrib.stride, attrib.pointer);
+		}
+	}
+
+	private void setAttribsAuto(VxAttrib[] attribs) {
+		VBO initialBuffer = attribs[0].source;
+		initialBuffer.bind();
+
+		int totalSize = 0;
+		for(VxAttrib attrib : attribs) {
+			totalSize += attrib.size;
+			if(attrib.source.getHandle() != initialBuffer.getHandle()) {
+				throw new IllegalArgumentException("cannot use automatic positioning when there are multiple source VBOs");
+			}
+		}
+		int currentSize = 0;
+		for(int i = 0; i < attribs.length; i++) {
+			VxAttrib attrib = attribs[i];
+			int stride = attrib.stride != -1 ? attrib.stride : totalSize;
+			int pointer = attrib.pointer != -1 ? attrib.pointer : currentSize;
+			addAttribute(i, attrib, stride, pointer);
+			currentSize = pointer + attrib.size;
+		}
+	}
+
+	private void addAttribute(int i, VxAttrib attrib, int stride, int pointer) {
+		glVertexAttribPointer(i, attrib.components, attrib.type, attrib.normalize, stride, pointer);
+		glEnableVertexAttribArray(i);
+	}
+
+	public void setEbo(EBO ebo) {
+		this.requireBound();
+		if(ebo != null) {
+			ebo.bind();
+			this.ebo = ebo;
+		} else {
+			if(this.ebo != null) {
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			}
+			this.ebo = null;
+		}
 	}
 
 	public void render(int mode, int count) {
-		if(lastVao != this.vaoHandle) bind();
+		requireBound();
 		if(ebo != null) {
 			glDrawElements(mode, count, ebo.getEboType(), 0);
 		} else {
@@ -104,8 +137,8 @@ public final class Mesh implements Disposable {
 	@Override
 	public void dispose() {
 		this.requireNotDisposed();
-		glDeleteVertexArrays(this.vaoHandle);
-		if(lastVao == this.vaoHandle) lastVao = 0;
+		glDeleteVertexArrays(this.handle);
+		if(lastHandle == this.handle) lastHandle = 0;
 		this.disposed = true;
 	}
 	@Override
@@ -113,27 +146,16 @@ public final class Mesh implements Disposable {
 		return disposed;
 	}
 
-	/** Create a new VAO with an EBO */
-	public static Mesh create(EBO ebo, VxAttrib... attribs) {
-		return new Mesh(ebo, attribs);
+	public static Mesh create() {
+		return new Mesh(glGenVertexArrays());
 	}
-	/** Create a new VAO with no EBO */
-	public static Mesh create(VxAttrib... attribs) {
-		return new Mesh(/*ebo*/ null, attribs);
-	}
-
-	/** Wrap an existing VAO with an EBO handle */
-	public static Mesh wrap(EBO ebo, int handle) {
-		return new Mesh(ebo, handle);
-	}
-	/** Wrap an existing VAO with no EBO */
 	public static Mesh wrap(int handle) {
-		return new Mesh(/*ebo*/ null, handle);
+		return new Mesh(handle);
 	}
 
 	public static final class VxAttrib {
-		/** Handle to the VBO that contains this attribute */
-		public final int sourceHandle;
+		/** VBO that contains this attribute */
+		public final VBO source;
 
 		/**
 		 * Component count for the attribute. 1 for single types, 2 for vec2, 3 for vec3, 4 for vec4
@@ -173,11 +195,11 @@ public final class Mesh implements Disposable {
 		 */
 		public final int size;
 
-		private VxAttrib(int sourceHandle, int components, int type, boolean normalize, int stride, int pointer) {
+		private VxAttrib(VBO source, int components, int type, boolean normalize, int stride, int pointer) {
 			if(components < 1 || components > 4) {
 				throw new IllegalArgumentException("components must be between 1 and 4");
 			}
-			this.sourceHandle = sourceHandle;
+			this.source = source;
 			this.components = components;
 			this.type = type;
 			this.normalize = normalize;
@@ -193,30 +215,17 @@ public final class Mesh implements Disposable {
 			};
 		}
 
-		public static VxAttrib of(int sourceHandle, int components, int type) {
-			return new VxAttrib(sourceHandle, components, type, false, -1, -1);
-		}
-		public static VxAttrib of(int sourceHandle, int components, int type, boolean normalize) {
-			return new VxAttrib(sourceHandle, components, type, normalize, -1, -1);
-		}
-		public static VxAttrib of(int sourceHandle, int components, int type, int stride, int pointer) {
-			return new VxAttrib(sourceHandle, components, type, false, stride, pointer);
-		}
-		public static VxAttrib of(int sourceHandle, int components, int type, boolean normalize, int stride, int pointer) {
-			return new VxAttrib(sourceHandle, components, type, normalize, stride, pointer);
-		}
-
 		public static VxAttrib of(VBO source, int components, int type) {
-			return new VxAttrib(source.getHandle(), components, type, false, -1, -1);
+			return new VxAttrib(source, components, type, false, -1, -1);
 		}
 		public static VxAttrib of(VBO source, int components, int type, boolean normalize) {
-			return new VxAttrib(source.getHandle(), components, type, normalize, -1, -1);
+			return new VxAttrib(source, components, type, normalize, -1, -1);
 		}
 		public static VxAttrib of(VBO source, int components, int type, int stride, int pointer) {
-			return new VxAttrib(source.getHandle(), components, type, false, stride, pointer);
+			return new VxAttrib(source, components, type, false, stride, pointer);
 		}
 		public static VxAttrib of(VBO source, int components, int type, boolean normalize, int stride, int pointer) {
-			return new VxAttrib(source.getHandle(), components, type, normalize, stride, pointer);
+			return new VxAttrib(source, components, type, normalize, stride, pointer);
 		}
 	}
 }
