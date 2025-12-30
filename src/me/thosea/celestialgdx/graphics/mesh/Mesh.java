@@ -222,6 +222,7 @@ public final class Mesh implements Disposable {
 		public static VxAttrib of(Vbo source, int components, int type, boolean normalize) {
 			return new VxAttrib(source, components, type, normalize, -1, -1);
 		}
+
 		public static VxAttrib of(Vbo source, int components, int type, int stride, int pointer) {
 			return new VxAttrib(source, components, type, false, stride, pointer);
 		}
