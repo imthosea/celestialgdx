@@ -1,10 +1,10 @@
-# This is the official list of people who can contribute
-# (and who have contributed) code to the libGDX project
-# repository.
-# The AUTHORS file lists the copyright holders; this file
-# lists people. Contributors must sign the CLA to grant
-# the AUTHORS copyright within the terms of the Apache 2 license.
-#
+CelestialGDX was based on and takes significant portions of code from libGDX.
+
+Authors of libGDX:
+Mario Zechner <badlogicgames@gmail.com>
+Nathan Sweet <nathan.sweet@gmail.com>
+
+Contributors to the libGDX repository:
 badlogicgames https://code.google.com/p/libgdx/people/detail?u=badlogicgames
 nathan.sweet https://code.google.com/p/libgdx/people/detail?u=111140558169510542790
 xoppabv https://code.google.com/p/libgdx/people/detail?u=107213573289335234557
