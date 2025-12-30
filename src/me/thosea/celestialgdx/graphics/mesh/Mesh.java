@@ -125,6 +125,12 @@ public final class Mesh implements Disposable {
 		}
 	}
 
+	/**
+	 * Renders the VAO. It must be bound.
+	 * @param mode the primitive type to render,
+	 * like {@link GL33#GL_TRIANGLES}, {@link GL33#GL_TRIANGLE_STRIP} or {@link GL33#GL_TRIANGLE_FAN}
+	 * @param count the number of elements to be rendered
+	 */
 	public void render(int mode, int count) {
 		requireBound();
 		if(ebo != null) {
@@ -133,6 +139,15 @@ public final class Mesh implements Disposable {
 			glDrawArrays(mode, 0, count);
 		}
 	}
+
+	/**
+	 * Renders the VAO with instanced rendering. It must be bound.
+	 * @param mode the primitive type to render,
+	 * like {@link GL33#GL_TRIANGLES}, {@link GL33#GL_TRIANGLE_STRIP} or {@link GL33#GL_TRIANGLE_FAN}
+	 * @param count the number of elements to be rendered
+	 * @param instances the amount of instances to render
+	 * @see <a href="https://wikis.khronos.org/opengl/Vertex_Rendering#Instancing">Vertex Rendering - Instancing</a>
+	 */
 	public void renderInstanced(int mode, int count, int instances) {
 		requireBound();
 		if(ebo != null) {
