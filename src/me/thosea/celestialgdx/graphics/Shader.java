@@ -107,12 +107,20 @@ public abstract class Shader implements Disposable {
 		this.bind();
 
 		if(!uniforms.isEmpty()) {
-			try {
-				uniforms.forEach(Uniform::setLocation);
-			} catch(IllegalStateException e) {
-				glDeleteProgram(newId);
-				this.id = oldId;
-				throw e;
+			int[] oldLocations = new int[uniforms.size()];
+			for(int i = 0; i < uniforms.size(); i++) {
+				Uniform uniform = uniforms.get(i);
+				oldLocations[i] = uniform.location;
+				try {
+					uniform.setLocation();
+				} catch(IllegalStateException e) {
+					glDeleteProgram(newId);
+					this.id = oldId;
+					for(int r = 0; r <= i; r++) {
+						uniforms.get(r).location = oldLocations[r];
+					}
+					throw e;
+				}
 			}
 		}
 
