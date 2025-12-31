@@ -1,6 +1,7 @@
 package me.thosea.celestialgdx.graphics;
 
 import me.thosea.celestialgdx.utils.Disposable;
+import org.lwjgl.opengl.GL33;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -33,6 +34,14 @@ public final class Renderbuffer implements Disposable {
 		lastHandle = this.handle;
 	}
 
+	/**
+	 * The buffer must be bound before calling this.
+	 * For supported formats, see
+	 * <a href="https://wikis.khronos.org/opengl/Image_Format">Image Format - OpenGL wiki</a>.
+	 * @param format the OpenGL format, like {@link GL33#GL_STENCIL_INDEX8} or {@link GL33#GL_DEPTH24_STENCIL8}
+	 * @param width the width
+	 * @param height the height
+	 */
 	public void allocate(int format, int width, int height) {
 		this.requireNotDisposed();
 		if(lastHandle != this.handle) {
