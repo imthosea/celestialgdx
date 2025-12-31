@@ -92,12 +92,9 @@ public final class RectPacker implements Disposable {
 		this.nodes.free();
 		this.disposed = true;
 	}
-
+	@Override
 	public boolean isDisposed() {
 		return disposed;
-	}
-	public void requireNotDisposed() {
-		if(disposed) throw new IllegalStateException("already disposed");
 	}
 
 	public static RectPacker create(int width, int height) {
