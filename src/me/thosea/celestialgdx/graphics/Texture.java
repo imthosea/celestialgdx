@@ -167,12 +167,26 @@ public final class Texture implements Disposable {
 	 * @param compress whether the texture should be compressed on the GPU
 	 */
 	public void allocate(PixelFormat format, int width, int height, boolean compress) {
+		this.allocate(compress ? format.glCompressedType : format.glType, width, height);
+	}
+
+	/**
+	 * Allocates the memory required to store the texture without filling it.
+	 * Useful if this is a texture for a framebuffer.
+	 * The texture must have its buffer bound before calling this.
+	 * For supported formats, see
+	 * <a href="https://wikis.khronos.org/opengl/Image_Format">Image Format - OpenGL wiki</a>.
+	 * @param format the OpenGL format
+	 * @param width width
+	 * @param height height
+	 */
+	public void allocate(int format, int width, int height) {
 		this.requireBound();
 		glTexImage2D(
 				glType,
 				/*level*/ 0,
-				format.glType, width, height,
-				/*border*/ 0, compress ? format.glCompressedType : format.glType,
+				format, width, height,
+				/*border*/ 0, format,
 				GL_UNSIGNED_BYTE,
 				(ByteBuffer) null
 		);
