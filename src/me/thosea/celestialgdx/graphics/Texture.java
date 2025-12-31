@@ -247,7 +247,7 @@ public final class Texture implements Disposable {
 	/**
 	 * @return a new texture of type {@link GL33#GL_TEXTURE_2D}
 	 */
-	public static Texture create2d() {
+	public static Texture create2D() {
 		return new Texture(GL_TEXTURE_2D);
 	}
 
