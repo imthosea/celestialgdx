@@ -35,7 +35,7 @@ public final class Renderbuffer implements Disposable {
 	}
 
 	/**
-	 * The buffer must be bound before calling this.
+	 * Allocates data for the renderbuffer. It must be bound before calling this.
 	 * For supported formats, see
 	 * <a href="https://wikis.khronos.org/opengl/Image_Format">Image Format - OpenGL wiki</a>.
 	 * @param format the OpenGL format, like {@link GL33#GL_STENCIL_INDEX8} or {@link GL33#GL_DEPTH24_STENCIL8}
