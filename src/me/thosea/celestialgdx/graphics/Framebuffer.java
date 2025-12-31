@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL33.*;
  * </p>
  * <p>
  * Attach a {@link Texture} of type {@link GL33#GL_TEXTURE_2D} using
- * {@link #attachColor2d}, {@link #attachDepth}, or {@link #attachStencil2d}.
+ * {@link #attachColor2D}, {@link #attachDepth}, or {@link #attachStencil2D}.
  * To attach 1D/3D textures, use the OpenGL methods directly.
  * Attach a {@link Renderbuffer} using
  * {@link #attachColor}, {@link #attachDepth}, or {@link #attachStencil}.
@@ -76,10 +76,10 @@ public final class Framebuffer implements Disposable {
 		if(lastDrawBuffer != this.handle) throw new IllegalStateException("the buffer is not bound for drawing");
 	}
 
-	public void attachColor2d(Texture texture) {
-		attachColor2d(texture, /*slot*/ 0);
+	public void attachColor2D(Texture texture) {
+		attachColor2D(texture, /*slot*/ 0);
 	}
-	public void attachColor2d(Texture texture, int slot) {
+	public void attachColor2D(Texture texture, int slot) {
 		if(texture.glType != GL_TEXTURE_2D) {
 			throw new IllegalArgumentException("cannot attach non-2D texture");
 		} else if(slot > 31) {
@@ -93,7 +93,7 @@ public final class Framebuffer implements Disposable {
 				/*level*/ 0
 		);
 	}
-	public void attachDepth2d(Texture texture) {
+	public void attachDepth2D(Texture texture) {
 		if(texture.glType != GL_TEXTURE_2D) {
 			throw new IllegalArgumentException("cannot attach non-2D texture");
 		}
@@ -104,7 +104,7 @@ public final class Framebuffer implements Disposable {
 				/*level*/ 0
 		);
 	}
-	public void attachStencil2d(Texture texture) {
+	public void attachStencil2D(Texture texture) {
 		if(texture.glType != GL_TEXTURE_2D) {
 			throw new IllegalArgumentException("cannot attach non-2D texture");
 		}
@@ -115,7 +115,7 @@ public final class Framebuffer implements Disposable {
 				/*level*/ 0
 		);
 	}
-	public void attachDepthStencil2d(Texture texture) {
+	public void attachDepthStencil2D(Texture texture) {
 		if(texture.glType != GL_TEXTURE_2D) {
 			throw new IllegalArgumentException("cannot attach non-2D texture");
 		}
