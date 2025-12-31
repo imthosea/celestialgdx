@@ -109,6 +109,7 @@ public final class Mesh implements Disposable {
 
 	private void addAttribute(int i, VxAttrib attrib, int stride, int pointer) {
 		glVertexAttribPointer(i, attrib.components, attrib.type, attrib.normalize, stride, pointer);
+		glVertexAttribDivisor(i, attrib.divisor);
 		glEnableVertexAttribArray(i);
 	}
 
@@ -219,6 +220,9 @@ public final class Mesh implements Disposable {
 		 */
 		public final int size;
 
+		/** In instanced rendering, the amount of instances that pass between updates of this attribte */
+		public int divisor = 0;
+
 		private VxAttrib(Vbo source, int components, int type, boolean normalize, int stride, int pointer) {
 			if(components < 1 || components > 4) {
 				throw new IllegalArgumentException("components must be between 1 and 4");
@@ -237,6 +241,11 @@ public final class Mesh implements Disposable {
 				case GL_DOUBLE -> 8;
 				default -> throw new IllegalArgumentException("unsupported component type");
 			};
+		}
+
+		public VxAttrib divisor(int divisor) {
+			this.divisor = divisor;
+			return this;
 		}
 
 		public static VxAttrib of(Vbo source, int components, int type) {
