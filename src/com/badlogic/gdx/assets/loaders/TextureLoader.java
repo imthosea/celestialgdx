@@ -24,6 +24,9 @@ import me.thosea.celestialgdx.graphics.Texture;
 import me.thosea.celestialgdx.graphics.Texture.TextureFilter;
 import me.thosea.celestialgdx.graphics.Texture.TextureWrap;
 import me.thosea.celestialgdx.image.Pixmap;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.ByteBuffer;
 
 /**
  * {@link AssetLoader} for {@link Texture} instances. The pixel data is loaded asynchronously. The texture is then created on the
@@ -39,7 +42,18 @@ public class TextureLoader extends AssetLoader<Texture, TextureLoader.TexturePar
 
 	@Override
 	public Texture load(String path, TextureParameter parameter, AssetLoadingContext<Texture> ctx) throws Exception {
-		Pixmap pixmap = ctx.dependOn(path, Pixmap.class);
+		// TODO celestialgdx: in asset manager rework, allow same path with different types
+		byte[] data = resolve(path).readBytes();
+		Pixmap pixmap = ctx.awaitWork(() -> {
+			ByteBuffer buffer = MemoryUtil.memAlloc(data.length);
+			buffer.put(data);
+			buffer.flip();
+			try {
+				return Pixmap.load(buffer);
+			} finally {
+				MemoryUtil.memFree(buffer);
+			}
+		});
 		return ctx.awaitMainThread(() -> {
 			Texture texture = Texture.create2D();
 			texture.upload(pixmap, parameter != null && parameter.compress);
@@ -53,6 +67,7 @@ public class TextureLoader extends AssetLoader<Texture, TextureLoader.TexturePar
 				texture.setMagnificationFilter(TextureFilter.NEAREST);
 				texture.setWrap(TextureWrap.CLAMP_TO_EDGE);
 			}
+			pixmap.dispose();
 			return texture;
 		});
 	}
