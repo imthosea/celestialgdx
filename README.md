@@ -195,7 +195,6 @@ gdx.terminate();
 ### Very Rough Roadmap
 - general code cleanup, and remove more stuff
 - another asset manager rewrite since I had a better idea
-- cleaner sprite batching
 - optimize tiled renderer
 - new UI framework
 - sequencing extension

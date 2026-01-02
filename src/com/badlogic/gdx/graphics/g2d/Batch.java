@@ -48,6 +48,7 @@ import me.thosea.celestialgdx.utils.Disposable;
  * @author mzechner
  * @author Nathan Sweet
  */
+@Deprecated(forRemoval = true) // TODO celestialgdx replace
 public interface Batch extends Disposable {
 	/**
 	 * Sets up the Batch for drawing. This will disable depth buffer writing. It enables blending and texturing. If you have more
