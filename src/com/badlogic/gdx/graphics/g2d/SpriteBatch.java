@@ -44,6 +44,7 @@ import static org.lwjgl.opengl.GL32.GL_UNSIGNED_BYTE;
  * @author Nathan Sweet
  * @see Batch
  */
+@Deprecated(forRemoval = true) // TODO celestialgdx replace
 public class SpriteBatch implements Batch {
 	private final Mesh mesh;
 	private final Vbo vbo;
