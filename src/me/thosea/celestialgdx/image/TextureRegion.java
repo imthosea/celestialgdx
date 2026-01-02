@@ -21,8 +21,8 @@ public final class TextureRegion {
 		Objects.requireNonNull(texture);
 		this.texture = texture;
 		this.u = 0f;
-		this.v = 1f;
-		this.u2 = 0f;
+		this.v = 0f;
+		this.u2 = 1f;
 		this.v2 = 1f;
 		this.width = texture.getWidth();
 		this.height = texture.getHeight();
