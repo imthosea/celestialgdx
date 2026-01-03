@@ -571,7 +571,6 @@ public class SpriteBatch implements Batch {
 	}
 
 	@Override
-	// FIXME celestialgdx
 	public void draw(Texture texture, float[] spriteVertices, int offset, int count) {
 		if(!drawing) throw new IllegalStateException("SpriteBatch.begin must be called before draw.");
 
@@ -588,14 +587,14 @@ public class SpriteBatch implements Batch {
 		}
 		int copyCount = Math.min(remainingVertices, count);
 
-		System.arraycopy(spriteVertices, offset, vertices, idx, copyCount);
+		vertices.put(spriteVertices, offset, copyCount);
 		idx += copyCount;
 		count -= copyCount;
 		while(count > 0) {
 			offset += copyCount;
 			flush();
 			copyCount = Math.min(verticesLength, count);
-			System.arraycopy(spriteVertices, offset, vertices, 0, copyCount);
+			vertices.put(spriteVertices, offset, copyCount);
 			idx += copyCount;
 			count -= copyCount;
 		}
