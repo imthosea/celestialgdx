@@ -108,8 +108,19 @@ public final class Mesh implements Disposable {
 	}
 
 	private void addAttribute(int i, VxAttrib attrib, int stride, int pointer) {
-		glVertexAttribPointer(i, attrib.components, attrib.type, attrib.normalize, stride, pointer);
-		glVertexAttribDivisor(i, attrib.divisor);
+		boolean useIntPointer = !attrib.normalize && switch(attrib.type) {
+			case GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT -> true;
+			default -> false;
+		};
+		if(useIntPointer) {
+			glVertexAttribIPointer(i, attrib.components, attrib.type, stride, pointer);
+		} else {
+			glVertexAttribPointer(i, attrib.components, attrib.type, attrib.normalize, stride, pointer);
+		}
+
+		if(attrib.divisor != 0) {
+			glVertexAttribDivisor(i, attrib.divisor);
+		}
 		glEnableVertexAttribArray(i);
 	}
 
