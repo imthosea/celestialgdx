@@ -423,6 +423,7 @@ public abstract class Shader implements Disposable {
 			try(MemoryStack stack = stackPush()) {
 				IntBuffer buffer = stack.mallocInt(values.length);
 				for(boolean bool : values) buffer.put(bool ? 1 : 0);
+				buffer.flip();
 				glUniform1iv(getLocation(), buffer);
 			}
 		}
@@ -441,6 +442,7 @@ public abstract class Shader implements Disposable {
 			try(MemoryStack stack = stackPush()) {
 				IntBuffer buffer = stack.mallocInt(values.length);
 				for(boolean bool : values) buffer.put(bool ? 1 : 0);
+				buffer.flip();
 				glUniform2iv(getLocation(), buffer);
 			}
 		}
@@ -459,6 +461,7 @@ public abstract class Shader implements Disposable {
 			try(MemoryStack stack = stackPush()) {
 				IntBuffer buffer = stack.mallocInt(values.length);
 				for(boolean bool : values) buffer.put(bool ? 1 : 0);
+				buffer.flip();
 				glUniform3iv(getLocation(), buffer);
 			}
 		}
@@ -477,6 +480,7 @@ public abstract class Shader implements Disposable {
 			try(MemoryStack stack = stackPush()) {
 				IntBuffer buffer = stack.mallocInt(values.length);
 				for(boolean bool : values) buffer.put(bool ? 1 : 0);
+				buffer.flip();
 				glUniform4iv(getLocation(), buffer);
 			}
 		}
