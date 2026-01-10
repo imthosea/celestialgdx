@@ -18,7 +18,6 @@ package me.thosea.celestialgdx.files;
 
 import com.badlogic.gdx.utils.GdxIoException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.StreamUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -142,7 +141,7 @@ public abstract class FileHandle {
 	 */
 	public byte[] readBytes() throws IOException {
 		try(InputStream stream = read()) {
-			return StreamUtils.copyStreamToByteArray(stream, stream.available());
+			return stream.readAllBytes();
 		}
 	}
 }

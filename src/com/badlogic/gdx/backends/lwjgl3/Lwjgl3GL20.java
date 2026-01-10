@@ -17,7 +17,6 @@
 package com.badlogic.gdx.backends.lwjgl3;
 
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.lwjgl.opengl.GL33;
 
@@ -35,7 +34,7 @@ class Lwjgl3GL20 implements GL20 {
 
 	private void ensureBufferCapacity(int numBytes) {
 		if(buffer == null || buffer.capacity() < numBytes) {
-			buffer = BufferUtils.newByteBuffer(numBytes);
+			buffer = ByteBuffer.allocateDirect(numBytes);
 			floatBuffer = buffer.asFloatBuffer();
 			intBuffer = buffer.asIntBuffer();
 		}

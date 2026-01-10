@@ -59,7 +59,10 @@ public class JsonReader {
 		} catch(IOException ex) {
 			throw new SerializationException("Error reading input.", ex);
 		} finally {
-			StreamUtils.closeQuietly(reader);
+			try {
+				reader.close();
+			} catch(IOException e) {
+			}
 		}
 		return parse(data, 0, offset);
 	}

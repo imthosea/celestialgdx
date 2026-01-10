@@ -18,7 +18,6 @@ package me.thosea.celestialgdx.core;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3NativesLoader;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import me.thosea.celestialgdx.log.GdxLogger;
 import me.thosea.celestialgdx.log.GdxLoggerFactory;
@@ -66,7 +65,6 @@ public class CelestialGdx implements Application {
 
 	private void initGlfw() {
 		if(initializedGlfw) return;
-		Lwjgl3NativesLoader.load();
 		glfwSetErrorCallback(this.errorCallback);
 		if(!glfwInit()) {
 			throw new GdxRuntimeException("Unable to initialize GLFW");

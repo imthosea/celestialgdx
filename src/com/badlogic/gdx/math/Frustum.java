@@ -27,6 +27,7 @@ import com.badlogic.gdx.math.collision.OrientedBoundingBox;
  * A truncated rectangular pyramid. Used to define the viewable region and its projection onto the screen.
  * @see Camera#frustum
  */
+@Deprecated(forRemoval = true) // TODO celestialgdx
 public class Frustum {
 	protected static final Vector3[] clipSpacePlanePoints = {new Vector3(-1, -1, -1), new Vector3(1, -1, -1),
 			new Vector3(1, 1, -1), new Vector3(-1, 1, -1), // near clip
@@ -65,7 +66,7 @@ public class Frustum {
 	 */
 	public void update(Matrix4 inverseProjectionView) {
 		System.arraycopy(clipSpacePlanePointsArray, 0, planePointsArray, 0, clipSpacePlanePointsArray.length);
-		Matrix4.prj(inverseProjectionView.val, planePointsArray, 0, 8, 3);
+		// Matrix4.prj(inverseProjectionView.val, planePointsArray, 0, 8, 3);
 		for(int i = 0, j = 0; i < 8; i++) {
 			Vector3 v = planePoints[i];
 			v.x = planePointsArray[j++];
