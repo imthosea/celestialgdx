@@ -127,7 +127,7 @@ int height = trim.height(); // height of the trimmed region
 
 Atlas packing without and with pixmap trimming:
 
-|Without trim|With trim|
+|Without trimming|With trimming|
 |:---:|:---:|
 |<img width="256" height="256" alt="Before" src="assets/AtlasBefore.png" />|<img width="256" height="256" alt="After" src="assets/AtlasAfter.png" />|
 
