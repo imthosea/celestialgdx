@@ -59,6 +59,7 @@ gdx.terminate();
 - rewrite tiled map system and renderer, then write docs for it
 - finalize and document spride renderer
 - finish removing all old libGDX classes
+- make a controller, audio and UBO API
 - another asset manager rewrite since I had a better idea
 - new UI framework
 - sequencing extension
