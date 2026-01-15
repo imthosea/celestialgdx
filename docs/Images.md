@@ -127,8 +127,9 @@ int height = trim.height(); // height of the trimmed region
 
 Atlas packing without and with pixmap trimming:
 
-<img width="256" height="256" alt="Before" src="assets/AtlasBefore.png" />
-<img width="256" height="256" alt="After" src="assets/AtlasAfter.png" />
+|Without trim|With trim|
+|:---:|:---:|
+|<img width="256" height="256" alt="Before" src="assets/AtlasBefore.png" />|<img width="256" height="256" alt="After" src="assets/AtlasAfter.png" />|
 
 ### Using PixmapPacker
 PixmapPacker internally uses `RectPacker` but also handles using multiple pages, copying pixmap data and factoring in pixmap trims.
