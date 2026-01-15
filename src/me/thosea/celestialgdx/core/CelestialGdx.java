@@ -48,6 +48,7 @@ public class CelestialGdx implements Application {
 	private final ArrayList<Runnable> runnables = new ArrayList<>();
 
 	private long lastFrameTime = -1;
+	private double lastDrawTime;
 
 	protected CelestialGdx(GdxLoggerFactory loggerFactory, Supplier<GLFWErrorCallback> errorCallbackSupplier) {
 		if(Gdx.app != null) {
@@ -153,7 +154,7 @@ public class CelestialGdx implements Application {
 	}
 
 	/**
-	 * updates the delta time then returns the current one. only call this once per frame.
+	 * Updates the delta time then returns the current one. Only call this once per frame.
 	 * @return the current delta time
 	 */
 	public float updateDeltaTime() {
@@ -162,6 +163,19 @@ public class CelestialGdx implements Application {
 		float deltaTime = (time - lastFrameTime) / 1_000_000_000.0f;
 		this.lastFrameTime = time;
 		return deltaTime;
+	}
+
+	/**
+	 * Caps the FPS with the specified limit.
+	 */
+	public void capFps(int maxFps) {
+		// thanks minecraft
+		double targetTime = this.lastDrawTime + (1.0 / maxFps);
+		double drawTime;
+		for(drawTime = glfwGetTime(); drawTime < targetTime; drawTime = glfwGetTime()) {
+			glfwWaitEventsTimeout(targetTime - drawTime);
+		}
+		this.lastDrawTime = drawTime;
 	}
 
 	public static CelestialGdx init() {
