@@ -102,4 +102,4 @@ dependencies {
 </details>
 Currently, the version is 1.0.0.<br><br>
 
-*This repo was initially made in late July 2025, but was deleted and reuploaded in November so it'd be disconnected from the fork network.*
+*This repo was initially made in late July 2025, but was deleted and reuploaded in January 2026 to disconnect it from the fork network and squash the old commit history.*
