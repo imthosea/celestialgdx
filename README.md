@@ -66,40 +66,26 @@ gdx.terminate();
 
 ### Setup
 
-<details open>
-<summary>Gradle (Kotlin)</summary>
+CelestialGDX releases will be published to maven central, but it doesn't have a stable release yet.  
+To get snapshots, you'll need the snapshot repo:
 
 ```kotlin
 maven {
-	name = "teamcelestial"
-	url = "https://maven.teamcelestial.org/public"
+	name = "Central Portal Snapshots"
+	url = uri("https://central.sonatype.com/repository/maven-snapshots/")
 }
 ```
 
+Then add the dependency.
+
 ```kotlin
 dependencies {
-  implementation("me.thosea.celestialgdx:gdx:1.0.0")
+  implementation("io.github.imthosea:celestialgdx:<version>")
 }
 ```
 
 </details>
-<details>
-<summary>Gradle (Groovy)</summary>
 
-```groovy
-maven {
-    name "teamcelestial"
-    url "https://maven.teamcelestial.org/public"
-}
-```
-
-```groovy
-dependencies {
-  implementation "me.thosea.celestialgdx:gdx:1.0.0"
-}
-```
-
-</details>
-Currently, the version is 1.0.0.<br><br>
+Currently, the latest snapshot is `0.1.0-SNAPSHOT`.<br>
 
 *This repo was initially made in late July 2025, but was deleted and reuploaded in January 2026 to disconnect it from the fork network and squash the old commit history.*

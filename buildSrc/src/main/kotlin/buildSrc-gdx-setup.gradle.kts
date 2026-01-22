@@ -34,8 +34,9 @@ sourceSets.main {
 publishing {
 	repositories {
 		maven {
-			name = "teamCelestialPublic"
-			url = uri("https://maven.teamcelestial.org/public")
+			// TODO: non-snapshots
+			name = "sonatype"
+			url = uri("https://central.sonatype.com/repository/maven-snapshots/")
 			credentials(PasswordCredentials::class)
 		}
 	}
@@ -44,6 +45,7 @@ publishing {
 		from(components["java"])
 		pom {
 			name = prop("pom_name")
+			groupId = prop("pom_group")
 			artifactId = prop("pom_artifact")
 			url = prop("pom_url")
 			licenses {
