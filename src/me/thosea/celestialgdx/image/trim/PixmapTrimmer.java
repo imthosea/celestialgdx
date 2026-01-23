@@ -16,8 +16,14 @@ import java.nio.ByteOrder;
 public final class PixmapTrimmer {
 	private PixmapTrimmer() {}
 
-	/** on any modern machine this is true */
+	/**
+	 * on any modern machine this is true.
+	 * i haven't tested big endian because i don't have big endian hardware.
+	 */
 	private static final boolean IS_LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
+
+	/** require 4-byte pixels so we can fit two pixels into one long */
+	private static final long PIXEL_SIZE = 4; // RGBA
 
 	/** alpha mask when reading two pixels */
 	private static final long DOUBLE_ALPHA_MASK = IS_LITTLE_ENDIAN
@@ -27,8 +33,6 @@ public final class PixmapTrimmer {
 	private static final int SINGLE_ALPHA_MASK = IS_LITTLE_ENDIAN
 			? 0xFF000000
 			: 0x000000FF;
-
-	private static final long PIXEL_SIZE = 4; // RGBA
 
 	public static PixmapTrim trim(Pixmap pixmap) {
 		if(pixmap.format != PixelFormat.RGBA) {
@@ -43,34 +47,39 @@ public final class PixmapTrimmer {
 
 		int top;
 		int bottom;
+		/* first non-empty row */
 		for(top = 0; top < height; top++) {
 			if(!isEmptyRow(address, width, /*y*/ top)) break;
 		}
+		/* last empty row */
 		for(bottom = height; bottom > top + 1; bottom--) {
 			if(!isEmptyRow(address, width, bottom - 1)) break;
 		}
 
 		int left;
 		int right;
+		/* first non-empty column  */
 		for(left = 0; left < width - 1; left += 2) {
 			TwoColumnResult result = findTwoColumn(address, width, height, /*x*/ left);
 			if(result == null) continue;
 			long firstPixel = IS_LITTLE_ENDIAN ? result.data() << 32 : result.data() >> 32;
 			if(firstPixel == 0 && result.y() + 1 < pixmap.height) {
-				// there's only a pixel on the second column
+				/* there's only a pixel on the second column */
 				int y = result.y() + 1;
 				if(isEmptySingleColumn(address, width, height, /*x*/ left, /*startY*/ y)) {
-					// if the rest of the first column was empty, then we use the second column
+					/* the rest of the first column is empty, so we use the second column */
 					left++;
 				}
 			}
 			break;
 		}
+		/* last empty column */
 		for(right = width; right >= left + 2; right -= 2) {
 			TwoColumnResult result = findTwoColumn(address, width, height, /*x*/ right - 2);
 			if(result == null) continue;
 			long secondPixel = IS_LITTLE_ENDIAN ? result.data() >> 32 : result.data() << 32;
 			if(secondPixel == 0 && result.y() + 1 < pixmap.height) {
+				/* there's only a pixel on the first column */
 				int y = result.y() + 1;
 				if(isEmptySingleColumn(address, width, height, /*x*/ right - 1, y)) {
 					right--;
@@ -78,14 +87,19 @@ public final class PixmapTrimmer {
 			}
 			break;
 		}
+		/*
+		 * since we're reading two columns at a time, we need to make sure to check
+		 * the last and first columns if the width is uneven.
+		 * for rows, this is automatically done in #isEmptyRow
+		 */
 		if((width & 1) != 0) { // uneven
 			if(left == width - 1) {
-				// check last column
+				// last column
 				if(isEmptySingleColumn(address, width, height, /*x*/ left))
 					left++;
 			}
 			if(right == 1) {
-				// check first column
+				// first column
 				if(isEmptySingleColumn(address, width, height, /*x*/ 0))
 					right--;
 			}
@@ -97,7 +111,6 @@ public final class PixmapTrimmer {
 	/** checks if all pixels in the row at the Y value are zero */
 	private static boolean isEmptyRow(long address, int width, int y) {
 		long yOffset = width * y * PIXEL_SIZE;
-		// each pixel is 4 bytes, read two pixels at once
 		int x;
 		for(x = 0; x + 1 < width; x += 2) {
 			long xOffset = x * PIXEL_SIZE;
