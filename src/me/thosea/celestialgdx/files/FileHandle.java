@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+// TODO celestialgdx: this abstraction sucks, fix it in the asset manager rework
 public abstract class FileHandle {
 	protected final String path;
 	protected final String name;
