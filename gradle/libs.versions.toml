@@ -4,7 +4,13 @@ jbannotations = "26.0.2"
 joml = "1.10.8"
 lwjgl = "3.3.3"
 
+# Plugins
+publish = "0.36.0"
+
 [libraries]
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jbannotations" }
 joml = { module = "org.joml:joml", version.ref = "joml" }
 lwjgl = { module = "org.lwjgl:lwjgl-bom", version.ref = "lwjgl" }
+
+# Plugins
+buildSrc-publish = { group = "com.vanniktech.maven.publish", name = "com.vanniktech.maven.publish.gradle.plugin", version.ref = "publish" }

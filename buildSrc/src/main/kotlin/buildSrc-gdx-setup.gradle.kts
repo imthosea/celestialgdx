@@ -1,6 +1,8 @@
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+
 plugins {
 	`java-library`
-	`maven-publish`
+	id("com.vanniktech.maven.publish")
 }
 
 version = rootProject.version
@@ -10,8 +12,6 @@ repositories {
 }
 
 java {
-	withSourcesJar()
-	withJavadocJar()
 	toolchain.languageVersion = JavaLanguageVersion.of(prop("java_version"))
 }
 
@@ -22,40 +22,43 @@ tasks.withType<Javadoc> {
 	}
 }
 
-tasks.withType<JavaCompile> {
-	options.isIncremental = true
-}
-
 sourceSets.main {
 	java.setSrcDirs(listOf("src"))
 	resources.setSrcDirs(listOf("resources"))
 }
 
-publishing {
-	repositories {
-		maven {
-			// TODO: non-snapshots
-			name = "sonatype"
-			url = uri("https://central.sonatype.com/repository/maven-snapshots/")
-			credentials(PasswordCredentials::class)
-		}
-	}
+configure<MavenPublishBaseExtension> {
+	publishToMavenCentral()
+	signAllPublications()
+	coordinates("io.github.imthosea", prop("pom_artifact"))
 
-	publications.create<MavenPublication>("maven") {
-		from(components["java"])
-		pom {
-			name = prop("pom_name")
-			groupId = prop("pom_group")
-			artifactId = prop("pom_artifact")
-			url = prop("pom_url")
-			licenses {
-				license {
-					name = prop("pom_license_name")
-					distribution = "repo"
-				}
+	pom {
+		name = prop("pom_name")
+		description = prop("pom_description")
+		url = "https://github.com/imthosea/celestialgdx"
+		licenses {
+			license {
+				name = "BSD 2-clause"
+				url = "https://github.com/imthosea/celestialgdx/blob/master/LICENSE"
 			}
 		}
+		developers {
+			developer {
+				id = "thosea"
+				name = "Thosea"
+				url.set("https://github.com/imthosea/")
+			}
+		}
+		scm {
+			url = "https://github.com/imthosea/celestialgdx"
+			connection = "scm:git:git://https://github.com/imthosea/celestialgdx.git"
+			developerConnection = "scm:git:ssh://github.com:imthosea/celestialgdx.git"
+		}
 	}
+}
+
+configure<SigningExtension> {
+	useGpgCmd()
 }
 
 private fun prop(key: String) = project.property(key)!!.toString()
