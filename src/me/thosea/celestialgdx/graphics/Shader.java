@@ -36,15 +36,6 @@ import static org.lwjgl.system.MemoryStack.stackPush;
  */
 @SuppressWarnings("unused")
 public abstract class Shader implements Disposable {
-	/** default name for position attributes **/
-	public static final String POSITION_ATTRIBUTE = "a_position";
-	/** default name for normal attributes **/
-	public static final String NORMAL_ATTRIBUTE = "a_normal";
-	/** default name for color attributes **/
-	public static final String COLOR_ATTRIBUTE = "a_color";
-	/** default name for texcoords attributes, append texture unit number **/
-	public static final String TEXCOORD_ATTRIBUTE = "a_texCoord";
-
 	private static int lastId = 0;
 
 	private final List<Uniform> uniforms = new ArrayList<>();
